@@ -1,7 +1,7 @@
 import { Box, Divider, Flex, Heading, HStack, Image, Stack, Text, VStack } from "@chakra-ui/react";
-import { fetch, json, type LoaderArgs } from "@remix-run/node"
-import { useLoaderData, useSearchParams } from "@remix-run/react"
-import { useEffect, useState } from "react";
+import { json, type LoaderArgs } from "@remix-run/node"
+import { useLoaderData } from "@remix-run/react"
+import { useEffect, useRef } from "react";
 import Fonts from "~/components/utils/Fonts";
 
 type MinecraftServer = {
@@ -86,8 +86,13 @@ export async function loader({ request, params }: LoaderArgs) {
 };
 
 export default function $server() {
-    const { server, data } = useLoaderData<typeof loader>()
-    console.log(data);
+    const lastServer = useRef({})
+    const lastData = useRef({})
+    const { server, data } = useLoaderData<typeof loader>() || { server: lastServer.current, data: lastData.current }
+    useEffect(() => {
+        if (server) lastServer.current = server
+        if (data) lastData.current = data
+    }, [server, data])
 
     const motd = data.motd.html?.split("\n")
     const bgImageColor = "rgba(0,0,0,.7)"
