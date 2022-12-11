@@ -9,7 +9,10 @@ import {
   Scripts,
   ScrollRestoration,
   useLoaderData,
+  useLocation,
+  useOutlet,
 } from "@remix-run/react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useContext, useEffect } from "react";
 import Layout from "./components/layout/Layout";
 import theme from "./components/utils/theme";
@@ -68,6 +71,8 @@ const Document = withEmotionCache(
 export default function App() {
   const { cookies } = useLoaderData()
   const cookieManager = useConst(cookieStorageManagerSSR(cookies));
+  const location = useLocation()
+  const outlet = useOutlet()
   return (
     <Document>
       <ChakraProvider resetCSS theme={theme} colorModeManager={typeof cookies === 'string'
@@ -75,7 +80,16 @@ export default function App() {
         : localStorageManager
       }>
         <Layout>
-          <Outlet />
+          <AnimatePresence initial={false} mode='wait'>
+            <motion.main key={location.pathname}
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ ease: [0.25, 0.1, 0.25, 1], duration: .15 }}
+            >
+              {outlet}
+            </motion.main>
+          </AnimatePresence>
         </Layout>
       </ChakraProvider>
     </Document>

@@ -19,9 +19,14 @@ export default function Header() {
     return (
         <Flex as={'header'} w='100%' h='80px'>
             <Flex w='100%' maxW={'1500px'} px={4} alignItems='center' h='100%' mx='auto' justifyContent={'space-between'}>
-                <Link to='/' alignItems={'center'}>
-                    <Heading as={'h1'} fontSize='2xl'>IsMcServer.online</Heading>
-                </Link>
+                <HStack>
+                    <Link to='/' alignItems={'center'}>
+                        <Heading as={'h1'} fontSize='2xl'>IsMcServer.online</Heading>
+                    </Link>
+                    <Link to='/awda' alignItems={'center'}>
+                        <Heading as={'h1'} fontSize='xl'>server</Heading>
+                    </Link>
+                </HStack>
 
                 <HStack spacing={3}>
                     <ServerSearch />
