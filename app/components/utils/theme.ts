@@ -107,6 +107,10 @@ const theme = extendTheme({
                 default: 'blackAlpha.50',
                 _dark: 'whiteAlpha.50'
             },
+            alpha100: {
+                default: 'blackAlpha.100',
+                _dark: 'whiteAlpha.100'
+            },
             raisedBg: {
                 default: "#f6f6ff",
                 _dark: "#18181b"

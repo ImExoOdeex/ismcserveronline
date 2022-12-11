@@ -1,7 +1,7 @@
 import { Box } from "@chakra-ui/react";
 import CookieConstent from "./CookieConstent";
 import Footer from "./Footer";
-import Header from "./Header";
+import Header from "./Header/Header";
 
 export default function Layout({ children }: { children?: React.ReactNode }) {
     return (
