@@ -38,7 +38,7 @@ export default function ThemeToggle() {
                         <Kbd verticalAlign={'middle'} fontSize={'10px'} borderColor={borderColor} ml={1} bg={colorMode == 'light' ? "whiteAlpha.300" : "blackAlpha.300"} color={hoverTooltipColor}>i</Kbd>
                     </DarkMode></Text>}
                     openDelay={1000}>
-                    <IconButton role={'group'} ml={2}
+                    <IconButton role={'group'}
                         _hover={{ bg: bgColor, color: color }} _active={{ bg: bgColorActive }}
                         rounded={'xl'} display={{ base: 'none', lg: 'flex' }} bg={'transparent'}
                         icon={colorMode == 'light' ?

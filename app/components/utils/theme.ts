@@ -36,7 +36,7 @@ const styles = {
                 backgroundColor: mode('#c4c4c4', '#39393a')(props),
             },
             '*::selection': {
-                backgroundColor: mode("#0078D7", '#8F4FD3')(props)
+                backgroundColor: "#563B9F"
             }
         }
     })
@@ -44,15 +44,15 @@ const styles = {
 
 const colors = {
     brand: {
-        100: '#a263e6',
-        200: '#8F4FD3',
-        300: '#8F4FD3',
-        400: '#8F4FD3',
-        500: '#8F4FD3',
-        600: '#8F4FD3',
-        700: '#8F4FD3',
-        800: '#8F4FD3',
-        900: '#8F4FD3',
+        100: '#563B9F',
+        200: '#563B9F',
+        300: '#563B9F',
+        400: '#563B9F',
+        500: '#563B9F',
+        600: '#563B9F',
+        700: '#563B9F',
+        800: '#563B9F',
+        900: '#563B9F',
     },
     bg: {
         100: '#ffffff',
@@ -134,10 +134,10 @@ const theme = extendTheme({
                     bg: 'brand.900',
                     color: 'whiteAlpha.900',
                     _hover: {
-                        bg: '#8f4fd3ca'
+                        bg: '#563B9Fca'
                     },
                     _active: {
-                        bg: '#8f4fd3e6'
+                        bg: '#563B9Fe6'
                     },
                 },
                 sec: {
@@ -158,10 +158,10 @@ const theme = extendTheme({
                     bg: 'brand.900',
                     color: 'whiteAlpha.900',
                     _hover: {
-                        bg: '#8f4fd3ca'
+                        bg: '#563B9Fca'
                     },
                     _active: {
-                        bg: '#8f4fd3e6'
+                        bg: '#563B9Fe6'
                     },
                 },
             }
