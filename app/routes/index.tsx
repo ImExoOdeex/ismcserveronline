@@ -1,4 +1,4 @@
-import { Flex, Heading, Stack, chakra, VStack, FormLabel, HStack, Text, Switch, Button, VisuallyHiddenInput, Box } from "@chakra-ui/react";
+import { Flex, Heading, Stack, chakra, VStack, FormLabel, HStack, Text, Switch, Button, VisuallyHiddenInput, Box, Spinner } from "@chakra-ui/react";
 import { type ActionArgs, redirect } from "@remix-run/node"
 import { useFetcher } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -25,7 +25,7 @@ export default function Index() {
   const fetcher = useFetcher()
   const data = fetcher.data
   console.log(data);
-  const [bedrockChecked, setBedrockChecked] = useState(false)
+  const [bedrockChecked, setBedrockChecked] = useState<boolean>(false)
   const [searching, setSearching] = useState<boolean>(false)
   const [serverValue, setServerValue] = useState<string>()
 
@@ -37,6 +37,8 @@ export default function Index() {
       width: "75%"
     }
   }
+
+  const submitting = fetcher.state !== 'idle'
 
   return (
     <Flex flexDir={'column'} maxW='1200px' mx='auto' w='100%' mt={'50px'} px='4'>
@@ -68,7 +70,7 @@ export default function Index() {
               <FormLabel fontSize={'12px'} color='textSec' fontWeight={400} ml={2}>Which server do you want to check?</FormLabel>
 
               <Flex pos={'relative'} w={{ base: "100%", sm: '75%' }} flexDir='row'>
-                <ChakraInput rounded={'2xl'} placeholder="Hypixel.net" name="server" pl='14px'
+                <ChakraInput rounded={'2xl'} placeholder="Hypixel.net" name="server" pl='14px' w='100%'
                   onFocus={() => setSearching(true)} onBlur={() => setSearching(false)}
                   onChange={(e) => setServerValue(e.currentTarget.value)}
                   bg='alpha100' _focus={{ outlineColor: 'transparent', borderColor: 'brand', outlineWidth: 0 }} color='textSec' fontWeight={500}
@@ -97,6 +99,27 @@ export default function Index() {
                     }
                   </AnimatePresence>
                 </Box>
+
+                <AnimatePresence mode="wait">
+                  {submitting &&
+                    <motion.div
+                      style={{ position: 'absolute', top: "0", right: "0", left: "0", bottom: "0" }}
+                      transition={{ duration: .33, ease: [0.25, 0.1, 0.25, 1] }}
+                      initial={{ opacity: 0, y: -40 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -40 }}
+                    >
+                      <Flex w='110%' h='100%' bg='bg' align={'center'} alignItems='center' justifyContent={'center'}>
+                        <HStack>
+                          <Text fontWeight={500}>
+                            Getting real-time data about {serverValue}
+                          </Text>
+                          <Spinner size={'sm'} />
+                        </HStack>
+                      </Flex>
+                    </motion.div>
+                  }
+                </AnimatePresence>
 
 
               </Flex>

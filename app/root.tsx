@@ -84,7 +84,7 @@ export default function App() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ ease: [0.25, 0.1, 0.25, 1], duration: .15 }}
+              transition={{ ease: [0.25, 0.1, 0.25, 1], duration: .2 }}
             >
               {outlet}
             </motion.main>
