@@ -1,4 +1,4 @@
-import { Flex, Heading, Stack, chakra, VStack, FormLabel, HStack, Text, Switch, Button, VisuallyHiddenInput, Box, Spinner } from "@chakra-ui/react";
+import { Flex, Heading, Stack, chakra, VStack, FormLabel, HStack, Text, Switch, Button, VisuallyHiddenInput, Box, Spinner, Divider } from "@chakra-ui/react";
 import { type ActionArgs, redirect } from "@remix-run/node"
 import { useFetcher } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -67,7 +67,7 @@ export default function Index() {
 
           <fetcher.Form style={{ width: '100%' }} method='post'>
             <Flex w='100%' flexDir={'column'}>
-              <FormLabel fontSize={'12px'} color='textSec' fontWeight={400} ml={2}>Which server do you want to check?</FormLabel>
+              <FormLabel ml='14px' fontSize={'12px'} color='textSec' fontWeight={400} mb={1.5}>Which server do you want to check?</FormLabel>
 
               <Flex pos={'relative'} w={{ base: "100%", sm: '75%' }} flexDir='row'>
                 <ChakraInput rounded={'2xl'} placeholder="Hypixel.net" name="server" pl='14px' w='100%'
@@ -124,12 +124,14 @@ export default function Index() {
 
               </Flex>
 
-              <HStack mt={1} fontSize='sm'>
-                <Text minW={'37px'} fontWeight={bedrockChecked ? 500 : 600} transition='.3s' onClick={() => setBedrockChecked(false)} cursor='pointer' userSelect={'none'}>Java</Text>
+              <Divider my={1.5} w='75%' />
+
+              <HStack fontSize='12px' pl='14px'>
+                <Text fontWeight={bedrockChecked ? 500 : 600} transition='.3s' onClick={() => setBedrockChecked(false)} cursor='pointer' userSelect={'none'}>Java</Text>
                 <Switch size={'sm'} colorScheme='brand'
                   onChange={(e) => setBedrockChecked(e.currentTarget.checked)} isChecked={bedrockChecked}
                 />
-                <Text minW={'57px'} fontWeight={bedrockChecked ? 600 : 500} transition='.3s' onClick={() => setBedrockChecked(true)} cursor='pointer' userSelect={'none'}>Bedrock</Text>
+                <Text fontWeight={bedrockChecked ? 600 : 500} transition='.3s' onClick={() => setBedrockChecked(true)} cursor='pointer' userSelect={'none'}>Bedrock</Text>
               </HStack>
             </Flex>
             <VisuallyHiddenInput name="bedrock" defaultValue={bedrockChecked ? "true" : "false"} value={bedrockChecked ? "true" : "false"} />
@@ -140,6 +142,7 @@ export default function Index() {
         <Flex w={{ base: '100%', md: '50%' }}>
 
         </Flex>
+
       </Stack>
 
     </Flex>
