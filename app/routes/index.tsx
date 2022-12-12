@@ -105,9 +105,9 @@ export default function Index() {
                     <motion.div
                       style={{ position: 'absolute', top: "0", right: "0", left: "0", bottom: "0" }}
                       transition={{ duration: .33, ease: [0.25, 0.1, 0.25, 1] }}
-                      initial={{ opacity: 0, y: -40 }}
+                      initial={{ opacity: 0, y: "-25%" }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -40 }}
+                      exit={{ opacity: 0, y: "-25%" }}
                     >
                       <Flex w='110%' h='100%' bg='bg' align={'center'} alignItems='center' justifyContent={'center'}>
                         <HStack>
