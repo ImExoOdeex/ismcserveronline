@@ -1,6 +1,6 @@
 import { ChakraProvider, cookieStorageManagerSSR, localStorageManager, useConst } from "@chakra-ui/react";
 import { withEmotionCache } from "@emotion/react";
-import { json, type LoaderFunction, type MetaFunction } from "@remix-run/node";
+import { type ActionArgs, json, redirect, type LoaderFunction, type MetaFunction } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -97,4 +97,12 @@ export default function App() {
 
 export const loader: LoaderFunction = async ({ request }) => {
   return json({ cookies: request.headers.get("cookie") ?? '' })
+};
+
+export async function action({ request }: ActionArgs) {
+  const formData = await request.formData();
+  const bedrock = formData.get("bedrock")
+  const server = formData.get("server")
+
+  return redirect(`/${bedrock == "true" ? "bedrock/" : ""}${server}`)
 };

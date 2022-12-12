@@ -46,7 +46,7 @@ export async function loader({ request, params }: LoaderArgs) {
         method: 'get'
     })
 
-    const data = await serverData.json()
+    const data: MinecraftServer = await serverData.json()
 
     // const data: MinecraftServer = {
     //     "online": true,

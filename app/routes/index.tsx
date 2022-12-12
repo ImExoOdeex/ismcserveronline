@@ -23,8 +23,7 @@ export async function action({ request }: ActionArgs) {
 export default function Index() {
 
   const fetcher = useFetcher()
-  const data = fetcher.data
-  console.log(data);
+
   const [bedrockChecked, setBedrockChecked] = useState<boolean>(false)
   const [searching, setSearching] = useState<boolean>(false)
   const [serverValue, setServerValue] = useState<string>()
@@ -81,7 +80,7 @@ export default function Index() {
                   transition={{ duration: .2, ease: [0.25, 0.1, 0.25, 1] }}
                 />
 
-                <Box pos={'absolute'} right={-2} top={0} bottom={0}>
+                <Box pos={'absolute'} right={-3} top={0} bottom={0}>
                   <AnimatePresence mode="wait">
                     {(searching || serverValue?.length) &&
                       <motion.div
