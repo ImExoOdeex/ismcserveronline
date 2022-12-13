@@ -24,7 +24,7 @@ export default function ServerSearch() {
     const submitting = fetcher.state !== 'idle'
 
     return (
-        <fetcher.Form method="post" style={{ position: 'relative' }}>
+        <fetcher.Form method="post" style={{ position: 'relative', overflow: 'hidden' }}>
             <Flex w='200%' h='30px' overflow='hidden'>
 
                 <AnimatePresence mode="wait">

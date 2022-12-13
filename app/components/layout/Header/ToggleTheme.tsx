@@ -33,7 +33,7 @@ export default function ThemeToggle() {
                 key={colorMode}
             >
                 <Tooltip
-                    label={<Text alignItems={'center'}>Zmień motyw <DarkMode>
+                    label={<Text alignItems={'center'}>Toggle {colorMode == 'light' ? "Dark" : "Light"} <DarkMode>
                         <Kbd verticalAlign={'middle'} fontSize={'10px'} borderColor={borderColor} bg={colorMode == 'light' ? "whiteAlpha.300" : "blackAlpha.300"} color={hoverTooltipColor}>{actionKey}</Kbd>
                         <Kbd verticalAlign={'middle'} fontSize={'10px'} borderColor={borderColor} ml={1} bg={colorMode == 'light' ? "whiteAlpha.300" : "blackAlpha.300"} color={hoverTooltipColor}>i</Kbd>
                     </DarkMode></Text>}

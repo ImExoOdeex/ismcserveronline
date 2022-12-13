@@ -136,6 +136,10 @@ export default function Index() {
             <VisuallyHiddenInput name="bedrock" defaultValue={bedrockChecked ? "true" : "false"} value={bedrockChecked ? "true" : "false"} />
           </fetcher.Form>
 
+          <Text fontWeight={600} color='textSec' maxW={'423px'} alignSelf='start'>
+            Get information about your favourite Minecraft server for Java or Bedrock edition!
+          </Text>
+
         </VStack>
 
         <Flex w={{ base: '100%', md: '50%' }}>
@@ -143,6 +147,15 @@ export default function Index() {
         </Flex>
 
       </Stack>
+
+      <Divider my='80px' />
+
+      <VStack spacing={'50px'} >
+        <VStack spacing={5} maxW='600px'>
+          <Heading fontSize={'2xl'}>About this app</Heading>
+          <Text fontWeight={600} textAlign='center'>This app was created to help people with most primary problem - they can't connect so some Minecraft server, so first thing they do is check is Minecraft server down.</Text>
+        </VStack>
+      </VStack>
 
     </Flex>
   );
