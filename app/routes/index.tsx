@@ -1,4 +1,4 @@
-import { Flex, Heading, Stack, chakra, VStack, FormLabel, HStack, Text, Switch, Button, VisuallyHiddenInput, Box, Spinner, Divider } from "@chakra-ui/react";
+import { Flex, Heading, Stack, chakra, VStack, FormLabel, HStack, Text, Switch, Button, VisuallyHiddenInput, Box, Spinner, Divider, Image } from "@chakra-ui/react";
 import { type ActionArgs, redirect } from "@remix-run/node"
 import { useFetcher } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -143,7 +143,7 @@ export default function Index() {
         </VStack>
 
         <Flex w={{ base: '100%', md: '50%' }}>
-
+          <Image src="/ismcserveronlineimg.png" alt="image" sx={{ imageRendering: 'pixelated' }} />
         </Flex>
 
       </Stack>
