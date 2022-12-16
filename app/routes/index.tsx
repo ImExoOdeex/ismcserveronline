@@ -1,5 +1,5 @@
 import { Flex, Heading, Stack, chakra, VStack, FormLabel, HStack, Text, Switch, Button, VisuallyHiddenInput, Box, Spinner, Divider, Image } from "@chakra-ui/react";
-import { type ActionArgs, redirect } from "@remix-run/node"
+import { type ActionArgs, redirect, type MetaFunction } from "@remix-run/node"
 import { useFetcher } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
@@ -17,7 +17,11 @@ export async function action({ request }: ActionArgs) {
 };
 
 
-
+export const meta: MetaFunction = () => {
+  return {
+    title: "Minecraft server status | IsMcServer.online"
+  };
+};
 
 
 export default function Index() {

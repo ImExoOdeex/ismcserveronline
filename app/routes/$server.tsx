@@ -1,6 +1,6 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { Box, Divider, Flex, Heading, HStack, Image, Stack, Text, VStack } from "@chakra-ui/react";
-import { fetch, json, type LoaderArgs } from "@remix-run/node"
+import { fetch, json, type MetaFunction, type LoaderArgs } from "@remix-run/node"
 import { useLoaderData } from "@remix-run/react"
 import { useEffect, useRef } from "react";
 import Fonts from "~/components/utils/Fonts";
@@ -85,6 +85,12 @@ export async function loader({ request, params }: LoaderArgs) {
     return json({ server, data })
 };
 
+export const meta: MetaFunction = ({ data }: { data: { server: string, data: MinecraftServer } }) => {
+    return {
+        title: data.server + "'s status | IsMcServer.online"
+    };
+};
+
 export default function $server() {
     const lastServer = useRef({})
     const lastData = useRef({})
@@ -134,16 +140,29 @@ export default function $server() {
 
             <VStack spacing={'30px'} align='start' fontWeight={600}>
                 <Heading as={'h1'} fontSize='lg'>General information</Heading>
-                <HStack spacing={10}>
-                    <Text>Players</Text>
-                    <Text fontWeight={500}>{data.players.online}/{data.players.max}</Text>
-                </HStack>
-                <HStack spacing={10}>
-                    <Text>Version</Text>
-                    <Text fontWeight={500}>{data.version?.string}</Text>
-                </HStack>
-            </VStack>
 
+                <Box>
+                    <HStack w='100%' align={'start'} ml={{ base: 0, md: 5 }}>
+                        <Flex minW={'150px'}>
+                            <VStack spacing={'15px'} align='start' fontWeight={600}>
+                                <Text>Players</Text>
+                                <Text>Version</Text>
+                                <Text>Host</Text>
+                                <Text>Ping</Text>
+                            </VStack>
+                        </Flex>
+                        <Flex>
+                            <VStack spacing={'15px'} align='start' fontWeight={600}>
+                                <Text fontWeight={500}>{data.players.online}/{data.players.max}</Text>
+                                <Text fontWeight={500}>{data.version?.string}</Text>
+                                <Text fontWeight={500}>{data.host}</Text>
+                                <Text fontWeight={500}>{data.ping} miliseconds</Text>
+
+                            </VStack>
+                        </Flex>
+                    </HStack>
+                </Box>
+            </VStack>
         </VStack>
     )
 }
