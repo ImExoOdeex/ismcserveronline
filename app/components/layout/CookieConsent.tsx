@@ -1,26 +1,21 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Button, Flex, Text, Image, LightMode, Stack, Box } from '@chakra-ui/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLoaderData } from '@remix-run/react';
+import { getCookieWithoutDocument } from '../utils/func/cookiesFunc';
+import { type loader } from '~/root';
 
 function CookieConsent() {
 
-    const { cookies } = useLoaderData()
+    const { cookies } = useLoaderData<typeof loader>()
 
     const name = "cookieConsent"
-    const [isCookieConsent, setIsCookieConsent] = useState(true);
+    const loaderConsent = getCookieWithoutDocument(name, cookies)
 
-    useEffect(() => {
-        const storage = localStorage.getItem(name)
-        if (storage == "true") {
-            setIsCookieConsent(true)
-        } else {
-            setIsCookieConsent(false)
-        }
-    }, [])
+    const [isCookieConsent, setIsCookieConsent] = useState(loaderConsent ? true : false);
 
     function accept() {
-        localStorage.setItem(name, "true")
+        document.cookie = `${name}=true`
         setIsCookieConsent(true)
     }
 
