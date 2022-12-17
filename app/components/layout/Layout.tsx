@@ -1,5 +1,5 @@
 import { Box } from "@chakra-ui/react";
-import CookieConstent from "./CookieConstent";
+import CookieConstent from "./CookieConsent";
 import Footer from "./Footer";
 import Header from "./Header/Header";
 
