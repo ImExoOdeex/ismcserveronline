@@ -9,7 +9,7 @@ function CookieConsent() {
 
     const { cookies } = useLoaderData<typeof loader>()
 
-    const name = "cookieConsent"
+    const name = "cookie-consent"
     const loaderConsent = getCookieWithoutDocument(name, cookies)
 
     const [isCookieConsent, setIsCookieConsent] = useState(loaderConsent ? true : false);
