@@ -1,11 +1,13 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { Box, Divider, Flex, Heading, HStack, Icon, Image, Stack, Text, VStack } from "@chakra-ui/react";
-import { fetch, json, type MetaFunction, type LoaderArgs } from "@remix-run/node"
+import { Box, Divider, Flex, Heading, HStack, Icon, Image, Stack, Table, TableCaption, TableContainer, Tbody, Td, Text, Tfoot, Th, Thead, Tr, useColorModeValue, VStack } from "@chakra-ui/react";
+import { fetch, json, type MetaFunction, type LoaderArgs, redirect } from "@remix-run/node"
 import { useLoaderData } from "@remix-run/react"
 import { useEffect, useRef } from "react";
 import { BiBug, BiInfoCircle } from "react-icons/bi";
+import { getClientIPAddress } from "remix-utils";
 import Fonts from "~/components/utils/Fonts";
 import Link from "~/components/utils/Link";
+import { db } from "~/components/utils/db.server";
 
 type MinecraftServer = {
     online: boolean;
@@ -39,9 +41,10 @@ type MinecraftServer = {
     };
 };
 
-export async function loader({ params }: LoaderArgs) {
+export async function loader({ params, request }: LoaderArgs) {
 
-    const server = params.server
+    const server = params.server?.toString().toLowerCase()
+    if (!server) return redirect("/")
 
     // console.log(`fetching http://192.168.0.134:8000/${server}`);
 
@@ -84,7 +87,37 @@ export async function loader({ params }: LoaderArgs) {
         }
     }
 
-    return json({ server, data })
+    const IP = getClientIPAddress(request.headers)
+
+    await db.check.create({
+        data: {
+            server: server,
+            online: data.online,
+            players: data.players.online,
+            client_ip: IP
+        }
+    })
+
+    const checks = await db.check.findMany({
+        where: {
+            server: {
+                contains: server
+            }
+        },
+        select: {
+            id: false,
+            server: false,
+            online: true,
+            players: true,
+            client_ip: false,
+            checked_at: true
+        },
+        orderBy: {
+            id: 'desc'
+        }
+    })
+
+    return json({ server, data, checks })
 };
 
 export const meta: MetaFunction = ({ data }: { data: { server: string, data: MinecraftServer } }) => {
@@ -96,16 +129,20 @@ export const meta: MetaFunction = ({ data }: { data: { server: string, data: Min
 export default function $server() {
     const lastServer = useRef({})
     const lastData = useRef({})
-    const { server, data } = useLoaderData<typeof loader>() || { server: lastServer.current, data: lastData.current }
+    const lastChecks = useRef({})
+    const { server, data, checks } = useLoaderData<typeof loader>() || { server: lastServer.current, data: lastData.current, checks: lastChecks.current }
     useEffect(() => {
         if (server) lastServer.current = server
         if (data) lastData.current = data
-    }, [server, data])
+        if (checks) lastChecks.current = checks
+    }, [server, data, checks])
 
     console.log(data);
 
     const motd = data.motd.html?.split("\n")
     const bgImageColor = "rgba(0,0,0,.7)"
+
+    const borderColor = useColorModeValue('#2f2e32', '#2f2e32 !important')
 
     return (
         <VStack spacing={'40px'} align='start' maxW='1000px' mx='auto' w='100%' mt={'50px'} px={4}>
@@ -207,6 +244,50 @@ export default function $server() {
                     </HStack>
                 </Box>
 
+
+            </VStack>
+
+            <Divider />
+
+            <VStack align={'start'} w='100%'>
+                <Heading as={'h1'} fontSize='lg'>
+                    Last checks
+                </Heading>
+
+                <TableContainer w='100%'>
+                    <Table variant='simple' size={'sm'}>
+                        <TableCaption>Last status checks for {server}</TableCaption>
+                        <Thead>
+                            <Tr sx={{ "> *": { borderColor: borderColor } }}>
+                                <Th>When</Th>
+                                <Th>Online</Th>
+                                <Th isNumeric>Players</Th>
+                            </Tr>
+                        </Thead>
+                        <Tbody>
+                            {checks.map((c) => {
+
+                                return (
+                                    <Tr key={c.id}
+                                        _hover={{ bg: 'alpha' }} transition="background .05s"
+                                        sx={{ "> *": { borderColor: '#2f2e32' } }}
+                                    >
+                                        <Th>{new Date(c.checked_at).toLocaleString()}</Th>
+                                        <Th>{c.online ? "Yes" : "No"}</Th>
+                                        <Th isNumeric>{c.players}</Th>
+                                    </Tr>
+                                )
+                            })}
+                        </Tbody>
+                        <Tfoot>
+                            <Tr>
+                                <Th>When</Th>
+                                <Th>Online</Th>
+                                <Th isNumeric>Players</Th>
+                            </Tr>
+                        </Tfoot>
+                    </Table>
+                </TableContainer>
 
             </VStack>
 

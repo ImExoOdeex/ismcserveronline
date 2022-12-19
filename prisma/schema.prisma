@@ -11,7 +11,10 @@ datasource db {
 }
 
 model Check {
-  id        Int     @id @unique @default(autoincrement())
-  server    String
-  client_ip String?
+  id         Int      @id @unique @default(autoincrement())
+  server     String
+  online     Boolean
+  players    Int
+  client_ip  String?
+  checked_at DateTime @default(now())
 }
