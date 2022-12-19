@@ -168,49 +168,14 @@ const theme = extendTheme({
         },
         Link: {
             variants: {
-                subtle: {
-                    bg: "rgba(0, 120, 215, .15)",
-                    px: 4,
-                    py: 3,
-                    mx: 4,
-                    my: 3,
-                    rounded: '2xl',
-                    fontWeight: '600',
-                    m: 0
-
-                    ,
-                    _dark: {
-                        bg: "#7093c24c",
-                    },
+                link: {
+                    color: 'sec',
+                    transition: "color .2s",
                     _hover: {
-                        textDecor: 'none',
-                        bg: "rgba(0, 120, 215, .20)",
-                        _dark: {
-                            bg: "#6789b659"
-                        }
-                    }
-                },
-                subtleBrand: {
-                    bg: "rgba(143, 79, 211, .15)",
-                    px: 4,
-                    py: 3,
-                    mx: 4,
-                    my: 3,
-                    rounded: '2xl',
-                    fontWeight: '600',
-                    m: 0
-
-                    ,
-                    _dark: {
-                        bg: "rgba(143, 79, 211, .10)",
+                        color: "#278adb"
                     },
-                    _hover: {
-                        textDecor: 'none',
-                        bg: "rgba(143, 79, 211, .2)",
-                        _dark: {
-                            bg: "rgba(143, 79, 211, .15)"
-                        }
-                    }
+                    textDecor: "underline",
+                    fontWeight: 600
                 }
             }
         }
