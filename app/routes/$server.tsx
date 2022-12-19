@@ -1,4 +1,4 @@
-import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { CheckIcon, ExternalLinkIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import { Box, Divider, Flex, Heading, HStack, Icon, Image, Stack, Table, TableCaption, TableContainer, Tbody, Td, Text, Tfoot, Th, Thead, Tr, useColorModeValue, VStack } from "@chakra-ui/react";
 import { fetch, json, type MetaFunction, type LoaderArgs, redirect } from "@remix-run/node"
 import { useLoaderData } from "@remix-run/react"
@@ -260,20 +260,28 @@ export default function $server() {
                         <Thead>
                             <Tr sx={{ "> *": { borderColor: borderColor } }}>
                                 <Th>When</Th>
-                                <Th>Online</Th>
+                                <Th>Status</Th>
                                 <Th isNumeric>Players</Th>
                             </Tr>
                         </Thead>
                         <Tbody>
                             {checks.map((c) => {
-
                                 return (
                                     <Tr key={c.id}
                                         _hover={{ bg: 'alpha' }} transition="background .05s"
-                                        sx={{ "> *": { borderColor: '#2f2e32' } }}
-                                    >
+                                        sx={{ "> *": { borderColor: '#2f2e32' } }}>
                                         <Th>{new Date(c.checked_at).toLocaleString()}</Th>
-                                        <Th>{c.online ? "Yes" : "No"}</Th>
+                                        <Th>{c.online ?
+                                            <HStack rounded={'lg'} color='green' bg={'rgba(72, 187, 120, 0.1)'} w='min-content' px={3} py={1}>
+                                                <Text textTransform={'none'}>Online</Text>
+                                                <CheckIcon />
+                                            </HStack>
+                                            :
+                                            <HStack rounded={'lg'} color='red' bg={'rgba(187, 72, 72, 0.1)'} w='min-content' px={3} py={1}>
+                                                <Text textTransform={'none'}>Offline</Text>
+                                                <SmallCloseIcon />
+                                            </HStack>
+                                        }</Th>
                                         <Th isNumeric>{c.players}</Th>
                                     </Tr>
                                 )
@@ -282,7 +290,7 @@ export default function $server() {
                         <Tfoot>
                             <Tr>
                                 <Th>When</Th>
-                                <Th>Online</Th>
+                                <Th>Status</Th>
                                 <Th isNumeric>Players</Th>
                             </Tr>
                         </Tfoot>

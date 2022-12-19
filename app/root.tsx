@@ -102,7 +102,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 export async function action({ request }: ActionArgs) {
   const formData = await request.formData();
   const bedrock = formData.get("bedrock")
-  const server = formData.get("server")
+  const server = formData.get("server")?.toString().toLowerCase()
 
   return redirect(`/${bedrock == "true" ? "bedrock/" : ""}${server}`)
 };

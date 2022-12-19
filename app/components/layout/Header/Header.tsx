@@ -3,6 +3,7 @@ import Link from "../../utils/Link";
 import APIButton from "./APIButton";
 import ServerSearch from "./ServerSearch";
 import ThemeToggle from "./ToggleTheme";
+import FAQButton from "./FAQButton";
 
 export default function Header() {
     const { toggleColorMode } = useColorMode()
@@ -30,6 +31,7 @@ export default function Header() {
 
                 <HStack spacing={3}>
                     <ServerSearch />
+                    <FAQButton />
                     <APIButton />
                     <ThemeToggle />
                 </HStack>
