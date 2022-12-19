@@ -48,7 +48,7 @@ export default function ServerSearch() {
                     }
                 </AnimatePresence>
 
-                <ChakraInput as={motion.input} h='100%' w='200px' rounded='xl' bg='alpha100' placeholder="Server Name" onFocus={() => setSearching(true)} onBlur={() => setSearching(false)}
+                <ChakraInput as={motion.input} h='100%' w='200px' rounded='xl' bg='alpha100' placeholder="Server" onFocus={() => setSearching(true)} onBlur={() => setSearching(false)}
                     variants={variants} animate={searching ? "open" : "close"} pl={'26px'} _focus={{ outlineColor: 'transparent', outlineWidth: 0 }} color='textSec' fontWeight={500}
                     // @ts-ignore
                     transition={{ ease: [0.25, 0.1, 0.25, 1], duration: .3 }}

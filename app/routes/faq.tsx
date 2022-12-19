@@ -1,4 +1,11 @@
 import { Code, Divider, Heading, Link, Text, VStack } from "@chakra-ui/react";
+import { type MetaFunction } from "@remix-run/node";
+
+export const meta: MetaFunction = () => {
+    return {
+        title: "FAQ | IsMcServer.online"
+    };
+};
 
 export default function Faq() {
     return (
