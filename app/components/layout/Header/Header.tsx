@@ -24,9 +24,9 @@ export default function Header() {
                     <Link to='/' alignItems={'center'}>
                         <Heading as={'h1'} fontSize='2xl'>IsMcServer.online</Heading>
                     </Link>
-                    <Link to='/awda' alignItems={'center'}>
+                    {/* <Link to='/awda' alignItems={'center'}>
                         <Heading as={'h1'} fontSize='xl'>server</Heading>
-                    </Link>
+                    </Link> */}
                 </HStack>
 
                 <HStack spacing={3}>

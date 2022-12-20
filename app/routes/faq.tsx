@@ -1,5 +1,8 @@
 import { Code, Divider, Heading, Link, Text, VStack } from "@chakra-ui/react";
 import { type MetaFunction } from "@remix-run/node";
+import { useMatches } from "@remix-run/react";
+import { useEffect, useState } from "react";
+import { getCookie, getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
 
 export const meta: MetaFunction = () => {
     return {
@@ -8,6 +11,27 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Faq() {
+
+    const name = "blockTracking"
+    const data = useMatches().at(0)?.data
+    const cookies = data?.cookies
+
+    const [cookieState, setCookieState] = useState<string>(getCookieWithoutDocument(name, cookies))
+
+    function toggleTracking() {
+        if (getCookie(name) == "true") {
+            document.cookie = `${name}=false`
+            setCookieState("false")
+        } else {
+            document.cookie = `${name}=true`
+            setCookieState("true")
+        }
+    }
+
+    useEffect(() => {
+        setCookieState(getCookie(name))
+    }, [])
+
     return (
         <VStack maxW={'1200px'} w='100%' align={'start'} mx='auto' px={4} spacing={7} mt={10}>
 
@@ -58,6 +82,17 @@ export default function Faq() {
                 </Heading>
                 <Text color={'textSec'} fontWeight={500}>
                     Yes, our API caches responses for only <i>10 seconds</i>.
+                </Text>
+            </VStack>
+
+            <VStack align={'start'}>
+                <Heading fontSize={'md'}>
+                    How do I disable my server checks?
+                </Heading>
+                <Text color={'textSec'} fontWeight={500}>
+                    You can <Link variant={"link"} onClick={toggleTracking}>Click here</Link> to toggle tracking. This will set cookie <Code colorScheme={'purple'}>{name}</Code> to <Code colorScheme={'purple'}>
+                        {cookieState}
+                    </Code>.
                 </Text>
             </VStack>
 
