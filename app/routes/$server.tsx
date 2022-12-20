@@ -332,7 +332,7 @@ export default function $server() {
             </VStack>
 
             <Stack direction={{ base: "column", md: "row" }} spacing={{ base: "auto", md: 7 }}>
-                <HStack as={Link} to='/awdad' color={'textSec'} fontWeight={500} _hover={{ textDecor: 'none', color: "initial" }}>
+                <HStack as={"a"} href="https://github.com/ImExoOdeex/ismcserveronline/issues" color={'textSec'} fontWeight={500} _hover={{ textDecor: 'none', color: "initial" }}>
                     <Text>Found bug?</Text>
                     <Icon as={BiBug} />
                 </HStack>

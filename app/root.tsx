@@ -16,10 +16,11 @@ import { useContext, useEffect } from "react";
 import Layout from "./components/layout/Layout";
 import theme from "./components/utils/theme";
 import { ClientStyleContext, ServerStyleContext } from "./context";
+import { type LinksFunction } from "@remix-run/react/dist/routeModules";
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
-  title: "",
+  title: "IsMcServer.online",
   viewport: "width=device-width,initial-scale=1",
 });
 
@@ -66,6 +67,14 @@ const Document = withEmotionCache(
     );
   }
 );
+
+export const links: LinksFunction = () => {
+  return [
+    { rel: "preconnect", href: "https://fonts.googleapis.com" },
+    { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+    { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" },
+  ];
+};
 
 export default function App() {
   const { cookies } = useLoaderData()
