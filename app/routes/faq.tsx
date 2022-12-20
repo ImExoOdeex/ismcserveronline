@@ -9,7 +9,7 @@ export const meta: MetaFunction = () => {
 
 export default function Faq() {
     return (
-        <VStack maxW={'1200px'} w='100%' align={'start'} mx='auto' px={4} spacing={7} mt={3}>
+        <VStack maxW={'1200px'} w='100%' align={'start'} mx='auto' px={4} spacing={7} mt={10}>
 
             <VStack w='100%' align={'start'}>
                 <Heading as={'h1'} fontSize='lg'>Frequently Asked Questions</Heading>

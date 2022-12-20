@@ -114,7 +114,8 @@ export async function loader({ params, request }: LoaderArgs) {
         },
         orderBy: {
             id: 'desc'
-        }
+        },
+        take: 20
     })
 
     return json({ server, data, checks })
@@ -145,7 +146,7 @@ export default function $server() {
     const borderColor = useColorModeValue('#2f2e32', '#2f2e32 !important')
 
     return (
-        <VStack spacing={'40px'} align='start' maxW='1000px' mx='auto' w='100%' mt={'50px'} px={4}>
+        <VStack spacing={'40px'} align='start' maxW='1000px' mx='auto' w='100%' mt={'50px'} px={4} mb={5}>
             <Fonts />
             {/* Box up */}
             <Stack direction={{ base: 'column', md: 'row' }} spacing={5} justifyContent={'space-between'} w='100%'>
@@ -192,6 +193,7 @@ export default function $server() {
                                 <Text>Version</Text>
                                 <Text>Ping</Text>
                                 <Text>Players</Text>
+                                <Text>Plugins</Text>
                             </VStack>
                         </Flex>
                         <Flex>
@@ -204,6 +206,20 @@ export default function $server() {
                                         {data.players.list.map((p) => {
                                             return (
                                                 <Text key={p.id}>{p.name}</Text>
+                                            )
+                                        })}
+                                    </>
+                                    :
+                                    <Text color={'textSec'}>
+                                        Unable to get
+                                    </Text>
+                                }
+
+                                {data.plugins.length ?
+                                    <>
+                                        {data.plugins.map((p) => {
+                                            return (
+                                                <Text key={p}>{p}</Text>
                                             )
                                         })}
                                     </>
@@ -269,11 +285,11 @@ export default function $server() {
                                 return (
                                     <Tr key={c.id}
                                         _hover={{ bg: 'alpha' }} transition="background .05s"
-                                        sx={{ "> *": { borderColor: '#2f2e32' } }}>
-                                        <Th>{new Date(c.checked_at).toLocaleString()}</Th>
-                                        <Th>{c.online ?
+                                        sx={{ "> *": { borderColor: borderColor } }}>
+                                        <Td>{new Date(c.checked_at).toLocaleString()}</Td>
+                                        <Td>{c.online ?
                                             <HStack rounded={'lg'} color='green' bg={'rgba(72, 187, 120, 0.1)'} w='min-content' px={3} py={1}>
-                                                <Text textTransform={'none'}>Online</Text>
+                                                <Text textTransform={'none'} fontWeight={600}>Online</Text>
                                                 <CheckIcon />
                                             </HStack>
                                             :
@@ -281,8 +297,8 @@ export default function $server() {
                                                 <Text textTransform={'none'}>Offline</Text>
                                                 <SmallCloseIcon />
                                             </HStack>
-                                        }</Th>
-                                        <Th isNumeric>{c.players}</Th>
+                                        }</Td>
+                                        <Td isNumeric>{c.players}</Td>
                                     </Tr>
                                 )
                             })}
@@ -300,11 +316,11 @@ export default function $server() {
             </VStack>
 
             <Stack direction={{ base: "column", md: "row" }} spacing={{ base: "auto", md: 7 }}>
-                <HStack as={Link} to='/awdad' color={'textSec'} fontWeight={500} _hover={{ textDecor: 'none' }}>
+                <HStack as={Link} to='/awdad' color={'textSec'} fontWeight={500} _hover={{ textDecor: 'none', color: "initial" }}>
                     <Text>Found bug?</Text>
                     <Icon as={BiBug} />
                 </HStack>
-                <HStack as={Link} to='/faq' color={'textSec'} fontWeight={500} _hover={{ textDecor: 'none' }}>
+                <HStack as={Link} to='/faq' color={'textSec'} fontWeight={500} _hover={{ textDecor: 'none', color: "initial" }}>
                     <Text>Frequently asked questions</Text>
                     <Icon as={BiInfoCircle} />
                 </HStack>
