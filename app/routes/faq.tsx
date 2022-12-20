@@ -87,7 +87,7 @@ export default function Faq() {
 
             <VStack align={'start'}>
                 <Heading fontSize={'md'}>
-                    How do I disable my server checks?
+                    How do I disable my server checks tracking?
                 </Heading>
                 <Text color={'textSec'} fontWeight={500}>
                     You can <Link variant={"link"} onClick={toggleTracking}>Click here</Link> to toggle tracking. This will set cookie <Code colorScheme={'purple'}>{name}</Code> to <Code colorScheme={'purple'}>
