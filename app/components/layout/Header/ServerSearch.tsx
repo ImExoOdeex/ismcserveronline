@@ -27,7 +27,7 @@ export default function ServerSearch() {
         <fetcher.Form method="post" style={{ position: 'relative', overflow: 'hidden' }}>
             <Flex w='200%' h='30px' overflow='hidden'>
 
-                <AnimatePresence mode="wait">
+                <AnimatePresence mode="wait" initial={false}>
                     {submitting &&
                         <motion.div
                             style={{ position: 'absolute', top: "0", right: "0", left: "0", bottom: "0" }}
