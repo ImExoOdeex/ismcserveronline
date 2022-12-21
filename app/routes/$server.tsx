@@ -163,7 +163,7 @@ export default function $server() {
 
                     <Flex flexDir={'row'} alignItems='center' justifyContent={'space-between'} w='100%'>
                         <HStack as={'a'} target="_blank" href={`http://${server}`}>
-                            <Heading fontSize='4xl' letterSpacing={'3px'}>{server}</Heading>
+                            <Heading fontSize={{ base: 'lg', sm: '2xl', md: '4xl' }} letterSpacing={'3px'}>{server}</Heading>
                             <ExternalLinkIcon fontSize={'lg'} />
                         </HStack>
                         <HStack spacing={2}>
@@ -323,7 +323,7 @@ export default function $server() {
 
                     <Flex w="100%">
                         <Heading fontSize={'md'} justifySelf='center' textAlign='center' color={'red'} mx='auto'>
-                            There weren't any checks!
+                            There were no checks
                         </Heading>
                     </Flex>
 

@@ -7,7 +7,7 @@ export default function FAQButton() {
         <Link to={'/faq'} _hover={{ textDecor: 'none' }}>
             <Button
                 _hover={{ bg: "alpha" }} _active={{ bg: "alpha100" }}
-                rounded={'xl'} display={{ base: 'none', lg: 'flex' }} bg={'transparent'}
+                rounded={'xl'} bg={'transparent'}
             >
                 <HStack spacing={1.5}>
                     <Text fontWeight={600}>FAQ</Text>

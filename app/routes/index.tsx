@@ -37,7 +37,7 @@ export default function Index() {
       width: "100%"
     },
     open: {
-      width: "75%"
+      width: "70%"
     }
   }
 
@@ -84,16 +84,17 @@ export default function Index() {
                   transition={{ duration: .2, ease: [0.25, 0.1, 0.25, 1] }}
                 />
 
-                <Box pos={'absolute'} right={-3} top={0} bottom={0}>
+                <Box pos={'absolute'} right={{ base: -1, md: 2 }} top={0} bottom={0}>
                   <AnimatePresence mode="wait">
                     {(searching || serverValue?.length) &&
                       <motion.div
+                        style={{ width: "100%" }}
                         transition={{ duration: .33, ease: [0.25, 0.1, 0.25, 1] }}
                         initial={{ opacity: 0, x: 80 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 80, transition: { duration: .15 } }}
                       >
-                        <Button rounded={'2xl'} variant='brand' ml={2} type='submit'>
+                        <Button rounded={'2xl'} variant='brand' type='submit' w='100%'>
                           <Text px={2}>
                             Search
                           </Text>
@@ -147,7 +148,7 @@ export default function Index() {
         </VStack>
 
         <Flex w={{ base: '100%', md: '50%' }}>
-          <Image src="/ismcserveronlineimg.png" alt="image" sx={{ imageRendering: 'pixelated' }} />
+          <Image src="/ismcserveronlineimg.png" alt="image" sx={{ imageRendering: 'pixelated', aspectRatio: "4/3" }} />
         </Flex>
 
       </Stack>
