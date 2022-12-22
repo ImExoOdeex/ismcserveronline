@@ -88,7 +88,8 @@ export async function loader({ params, request }: LoaderArgs) {
     //     }
     // }
 
-    const blockTracking = getCookieWithoutDocument("blockTracking", request.headers.get("cookie") ?? "") == "true" ? true : false
+    const cookie = getCookieWithoutDocument("tracking", request.headers.get("cookie") ?? "")
+    const blockTracking = cookie == "no-track" ? true : false
 
     if (!blockTracking) {
         const IP = getClientIPAddress(request.headers)

@@ -12,18 +12,19 @@ export const meta: MetaFunction = () => {
 
 export default function Faq() {
 
-    const name = "blockTracking"
+    const name = "tracking"
     const data = useMatches().at(0)?.data
     const cookies = data?.cookies
 
     const [cookieState, setCookieState] = useState<string>(getCookieWithoutDocument(name, cookies))
 
     function toggleTracking() {
-        if (getCookie(name) == "true") {
-            document.cookie = `${name}=false`
+        const cookie = getCookie(name)
+        if (cookie == "track" || !cookie) {
+            document.cookie = `${name}=no-track`
             setCookieState("false")
         } else {
-            document.cookie = `${name}=true`
+            document.cookie = `${name}=track`
             setCookieState("true")
         }
     }

@@ -1,9 +1,12 @@
-import { Flex, Heading, HStack, useColorMode, useEventListener } from "@chakra-ui/react";
+import { Box, Flex, Heading, HStack, useColorMode, useDisclosure, useEventListener } from "@chakra-ui/react";
 import Link from "../../utils/Link";
 import APIButton from "./APIButton";
 import ServerSearch from "./ServerSearch";
 import ThemeToggle from "./ToggleTheme";
 import FAQButton from "./FAQButton";
+import HamburgerMenu from "./Mobile/HamburgerMenu";
+import { useEffect, useState } from "react";
+import MobileMenu from "./Mobile/MobileMenu";
 
 export default function Header() {
     const { toggleColorMode } = useColorMode()
@@ -17,21 +20,31 @@ export default function Header() {
         }
     })
 
-    return (
-        <Flex as={'header'} w='100%' h='80px'>
-            <Flex w='100%' maxW={'1500px'} px={4} alignItems='center' h='100%' mx='auto' justifyContent={'space-between'}>
-                <HStack>
-                    <Link to='/' alignItems={'center'}>
-                        <Heading as={'h1'} fontSize='2xl'>IsMcServer.online</Heading>
-                    </Link>
-                </HStack>
+    // const [isOpen, setIsOpen] = useState<boolean>(false)
+    const { isOpen, onOpen, onClose, onToggle } = useDisclosure()
 
-                <HStack spacing={3} display={{ base: 'none', lg: 'flex' }} >
+    useEffect(() => {
+        onOpen()
+    }, [])
+
+    return (
+        <Flex as={'header'} w='100%' h='80px' top={0} pos={{ base: 'sticky', md: 'relative' }} backdropFilter="blur(12px)">
+            <Flex w='100%' maxW={'1500px'} px={4} alignItems='center' h='100%' mx='auto' justifyContent={'space-between'}>
+                <Link to='/' alignItems={'center'}>
+                    <Heading as={'h1'} fontSize='2xl'>IsMcServer.online</Heading>
+                </Link>
+
+                <HStack spacing={3} display={{ base: 'none', lg: 'flex' }}>
                     <ServerSearch />
                     <FAQButton />
                     <APIButton />
                     <ThemeToggle />
                 </HStack>
+
+                <Box display={{ base: 'flex', lg: 'none' }} cursor='pointer'>
+                    <HamburgerMenu isOpen={isOpen} onClick={onToggle} />
+                    <MobileMenu isOpen={isOpen} onClose={onClose} onOpen={onOpen} />
+                </Box>
 
             </Flex>
         </Flex>
