@@ -1,4 +1,4 @@
-import { Flex, Button, HStack, Spinner, Box, Text } from "@chakra-ui/react"
+import { Flex, Button, HStack, Spinner, Box, Text, Switch, VisuallyHiddenInput } from "@chakra-ui/react"
 import { AnimatePresence, motion } from "framer-motion"
 import { ChakraInput } from "../../MotionComponents"
 import { useState } from "react"
@@ -10,6 +10,7 @@ export default function ServerSearchMobile() {
 
     const fetcher = useFetcher()
     const submitting = fetcher.state !== 'idle'
+    const [bedrockChecked, setBedrockChecked] = useState<boolean>(false)
 
     return (
         <fetcher.Form method="post" style={{ width: "100%" }}>
@@ -22,6 +23,15 @@ export default function ServerSearchMobile() {
                     // @ts-ignore
                     transition={{ duration: .2, ease: [0.25, 0.1, 0.25, 1] }}
                 />
+
+                <HStack fontSize='12px' pl='14px' mt={2}>
+                    <Text fontWeight={bedrockChecked ? 500 : 600} transition='.3s' onClick={() => setBedrockChecked(false)} cursor='pointer' userSelect={'none'}>Java</Text>
+                    <Switch size={'sm'} colorScheme='brand'
+                        onChange={(e) => setBedrockChecked(e.currentTarget.checked)} isChecked={bedrockChecked}
+                    />
+                    <Text fontWeight={bedrockChecked ? 600 : 500} transition='.3s' onClick={() => setBedrockChecked(true)} cursor='pointer' userSelect={'none'}>Bedrock</Text>
+                </HStack>
+                <VisuallyHiddenInput name="bedrock" defaultValue={bedrockChecked ? "true" : "false"} value={bedrockChecked ? "true" : "false"} />
 
                 <Box>
                     <AnimatePresence mode="wait">

@@ -25,7 +25,7 @@ export default function ServerSearch() {
 
     return (
         <fetcher.Form method="post" style={{ position: 'relative', overflow: 'hidden' }}>
-            <Flex w='200%' h='30px' overflow='hidden'>
+            <Flex w='200%' h='30px' overflow='hidden' flexDir={'column'}>
 
                 <AnimatePresence mode="wait" initial={false}>
                     {submitting &&

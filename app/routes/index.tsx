@@ -113,7 +113,7 @@ export default function Index() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: "-25%" }}
                     >
-                      <Flex w='110%' h='100%' bg='bg' align={'center'} alignItems='center' justifyContent={'center'}>
+                      <Flex w='100%' h='100%' bg='bg' align={'center'} alignItems='center' justifyContent={'center'}>
                         <HStack>
                           <Text fontWeight={500}>
                             Getting real-time data about {serverValue}
