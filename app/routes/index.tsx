@@ -156,10 +156,8 @@ export default function Index() {
       <Divider my='80px' />
 
       <VStack spacing={'50px'} >
-        <VStack spacing={5} maxW='600px'>
-          <Heading fontSize={'2xl'}>About this app</Heading>
-          <Text fontWeight={600} textAlign='center'>This app was created to help people with most primary problem - they can't connect so some Minecraft server, so first thing they do is check is Minecraft server down.</Text>
-        </VStack>
+        <Stack direction={{ base: 'column', md: 'row' }}>
+        </Stack>
       </VStack>
 
     </Flex>
