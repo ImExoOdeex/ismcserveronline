@@ -76,7 +76,11 @@ export default function Index() {
                 <ChakraInput rounded={'2xl'} placeholder="Hypixel.net" name="server" pl='14px' w='100%'
                   onFocus={() => setSearching(true)} onBlur={() => setSearching(false)}
                   onChange={(e) => setServerValue(e.currentTarget.value)}
-                  bg='alpha100' _focus={{ outlineColor: 'transparent', borderColor: 'brand', outlineWidth: 0 }} color='textSec' fontWeight={500}
+                  bg='alpha100' color='textSec' fontWeight={500}
+
+                  _focus={{ outlineColor: 'brand.900', borderColor: "brand.900" }}
+                  outlineColor='brand.900' borderColor="brand.900"
+
                   h={'40px'}
                   variants={variants}
                   animate={searching || serverValue?.length ? "open" : "closed"}
