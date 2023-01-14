@@ -1,12 +1,12 @@
-import { Flex, Heading, Stack, chakra, VStack, FormLabel, HStack, Text, Switch, Button, VisuallyHiddenInput, Box, Spinner, Divider, Image } from "@chakra-ui/react";
-import { type ActionArgs, redirect, type MetaFunction } from "@remix-run/node"
-import { useFetcher } from "@remix-run/react";
+import { Flex, Heading, Stack, chakra, VStack, FormLabel, HStack, Text, Button, VisuallyHiddenInput, Box, Spinner, Image } from "@chakra-ui/react";
+import { type ActionArgs, redirect, type MetaFunction, json } from "@remix-run/node"
+import { useFetcher, useLoaderData } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
-import { ChakraInput } from "~/components/layout/MotionComponents";
-
-
-
+import { useEffect, useRef, useState } from "react";
+import { ChakraBox, ChakraInput } from "~/components/layout/MotionComponents";
+import { VersionChangeComp } from "~/components/layout/index/VersionChangeComp";
+import type { LoaderArgs } from "@remix-run/node"
+import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
 
 export async function action({ request }: ActionArgs) {
   const formData = await request.formData();
@@ -24,13 +24,33 @@ export const meta: MetaFunction = () => {
 };
 
 
+export async function loader({ request }: LoaderArgs) {
+
+  const cookies = request.headers.get("Cookie")
+  const bedrock = getCookieWithoutDocument("bedrock", cookies ?? "")
+
+  return json({ bedrock: bedrock == "true" ? true : false })
+};
+
 export default function Index() {
 
   const fetcher = useFetcher()
 
-  const [bedrockChecked, setBedrockChecked] = useState<boolean>(false)
+  const lastBedrock = useRef({})
+
+  const { bedrock } = useLoaderData<typeof loader>() ?? { bedrock: lastBedrock.current }
+
+  useEffect(() => {
+    if (bedrock) lastBedrock.current = bedrock
+  }, [bedrock])
+
+  const [bedrockChecked, setBedrockChecked] = useState<boolean>(bedrock ? bedrock : false)
   const [searching, setSearching] = useState<boolean>(false)
   const [serverValue, setServerValue] = useState<string>()
+
+  useEffect(() => {
+    document.cookie = `bedrock=${bedrockChecked}`
+  }, [bedrockChecked])
 
   const variants = {
     closed: {
@@ -73,20 +93,49 @@ export default function Index() {
               <FormLabel ml='14px' fontSize={'12px'} color='textSec' fontWeight={400} mb={1.5}>Which server do you want to check?</FormLabel>
 
               <Flex pos={'relative'} w={{ base: "100%", sm: '75%' }} flexDir='row'>
-                <ChakraInput rounded={'2xl'} placeholder="Hypixel.net" name="server" pl='14px' w='100%'
-                  onFocus={() => setSearching(true)} onBlur={() => setSearching(false)}
-                  onChange={(e) => setServerValue(e.currentTarget.value)}
-                  bg='alpha100' color='textSec' fontWeight={500}
+                <Flex flexDir={'column'} w='100%'>
+                  <ChakraInput rounded={'2xl'} placeholder="Hypixel.net" name="server" pl='14px' w='100%'
+                    onFocus={() => setSearching(true)} onBlur={() => setSearching(false)}
+                    onChange={(e) => setServerValue(e.currentTarget.value)}
+                    bg='alpha100' color='textSec' fontWeight={500} borderBottomRadius={0}
 
-                  _focus={{ outlineColor: 'brand.900', borderColor: "brand.900" }}
-                  outlineColor='brand.900' borderColor="brand.900"
+                    _focus={{ outlineColor: 'brand', borderColor: "brand" }}
+                    outlineColor='brand' borderColor="brand"
 
-                  h={'40px'}
-                  variants={variants}
-                  animate={searching || serverValue?.length ? "open" : "closed"}
-                  // @ts-ignore
-                  transition={{ duration: .2, ease: [0.25, 0.1, 0.25, 1] }}
-                />
+                    h={'40px'}
+                    variants={variants}
+                    animate={searching || serverValue?.length ? "open" : "closed"}
+                    // @ts-ignore
+                    transition={{ duration: .2, ease: [0.25, 0.1, 0.25, 1] }}
+                  />
+
+                  <ChakraBox borderBottomRadius={"2xl"} h='40px' bg='alpha' outlineOffset={"2px"} outlineColor={"inv"} w='100%' pos={'relative'}
+                    variants={variants} zIndex={0}
+                    animate={searching || serverValue?.length ? "open" : "closed"}
+                    // @ts-ignore
+                    transition={{ duration: .2, ease: [0.25, 0.1, 0.25, 1] }}>
+
+                    <HStack w='100%' h='100%'>
+                      <Button w='50%' variant={'unstyled'} h='100%' pos={'relative'} onClick={() => setBedrockChecked(false)}>
+                        <Text zIndex={4} color={bedrockChecked ? "initial" : "inv"} transition={"color .15s"}>
+                          Java
+                        </Text>
+                        {!bedrockChecked &&
+                          <VersionChangeComp />
+                        }
+                      </Button>
+                      <Button w='50%' variant={'unstyled'} h='100%' pos={'relative'} onClick={() => setBedrockChecked(true)}>
+                        <Text zIndex={4} color={bedrockChecked ? "inv" : "initial"} transition={"color .15s"}>
+                          Bedrock
+                        </Text>
+                        {bedrockChecked &&
+                          <VersionChangeComp />
+                        }
+                      </Button>
+                    </HStack>
+
+                  </ChakraBox>
+                </Flex>
 
                 <Box pos={'absolute'} right={{ base: -1, md: 2 }} top={0} bottom={0}>
                   <AnimatePresence mode="wait">
@@ -132,15 +181,6 @@ export default function Index() {
 
               </Flex>
 
-              <Divider my={1.5} w='75%' />
-
-              <HStack fontSize='12px' pl='14px'>
-                <Text fontWeight={bedrockChecked ? 500 : 600} transition='.3s' onClick={() => setBedrockChecked(false)} cursor='pointer' userSelect={'none'}>Java</Text>
-                <Switch size={'sm'} colorScheme='brand'
-                  onChange={(e) => setBedrockChecked(e.currentTarget.checked)} isChecked={bedrockChecked}
-                />
-                <Text fontWeight={bedrockChecked ? 600 : 500} transition='.3s' onClick={() => setBedrockChecked(true)} cursor='pointer' userSelect={'none'}>Bedrock</Text>
-              </HStack>
             </Flex>
             <VisuallyHiddenInput name="bedrock" defaultValue={bedrockChecked ? "true" : "false"} value={bedrockChecked ? "true" : "false"} />
           </fetcher.Form>
@@ -156,13 +196,6 @@ export default function Index() {
         </Flex>
 
       </Stack>
-
-      <Divider my='80px' />
-
-      <VStack spacing={'50px'} >
-        <Stack direction={{ base: 'column', md: 'row' }}>
-        </Stack>
-      </VStack>
 
     </Flex>
   );

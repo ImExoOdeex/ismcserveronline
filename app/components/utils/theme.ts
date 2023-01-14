@@ -91,6 +91,10 @@ const theme = extendTheme({
                 default: 'white',
                 _dark: 'black'
             },
+            invNormal: {
+                default: 'bg.900',
+                _dark: 'bg.100'
+            },
             red: {
                 default: 'red.500',
                 _dark: 'red.400'
