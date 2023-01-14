@@ -114,7 +114,6 @@ import { renderToPipeableStream, renderToString } from 'react-dom/server'
 import { CacheProvider } from '@emotion/react'
 import createEmotionServer from '@emotion/server/create-instance'
 import { RemixServer } from '@remix-run/react'
-import isbot from "isbot";
 import { PassThrough } from "stream";
 import type { EntryContext } from '@remix-run/node' // Depends on the runtime you choose
 
@@ -129,19 +128,20 @@ export default function handleRequest(
   responseHeaders: Headers,
   remixContext: EntryContext
 ) {
-  return isbot(request.headers.get("user-agent"))
-    ? handleBotRequest(
-      request,
-      responseStatusCode,
-      responseHeaders,
-      remixContext
-    )
-    : handleBrowserRequest(
-      request,
-      responseStatusCode,
-      responseHeaders,
-      remixContext
-    );
+  return handleBrowserRequest(
+    request,
+    responseStatusCode,
+    responseHeaders,
+    remixContext
+  );
+  // isbot(request.headers.get("user-agent"))
+  //   ? handleBotRequest(
+  //     request,
+  //     responseStatusCode,
+  //     responseHeaders,
+  //     remixContext
+  //   )
+  // :
 }
 
 function handleBrowserRequest(
@@ -172,6 +172,13 @@ function handleBrowserRequest(
         </CacheProvider>
       </ServerStyleContext.Provider>,
     )
+
+    responseHeaders.set('Content-Type', 'text/html')
+
+    // return new Response(`<!DOCTYPE html>${markup}`, {
+    //   status: responseStatusCode,
+    //   headers: responseHeaders,
+    // })
 
     const { pipe, abort } = renderToPipeableStream(
       markup

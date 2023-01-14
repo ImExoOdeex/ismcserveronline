@@ -10,6 +10,7 @@ import {
   useLoaderData,
   useLocation,
   useOutlet,
+  useTransition,
 } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useContext, useEffect } from "react";
@@ -17,6 +18,8 @@ import Layout from "./components/layout/Layout";
 import theme from "./components/utils/theme";
 import { ClientStyleContext, ServerStyleContext } from "./context";
 import { type LinksFunction } from "@remix-run/react/dist/routeModules";
+import NProgress from "nprogress";
+import nProgressStyles from "nprogress/nprogress.css";
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
@@ -95,6 +98,7 @@ export const links: LinksFunction = () => {
     { rel: "preconnect", href: "https://fonts.googleapis.com" },
     { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
     { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" },
+    { rel: "stylesheet", href: nProgressStyles }
   ];
 };
 
@@ -103,6 +107,17 @@ export default function App() {
   const cookieManager = useConst(cookieStorageManagerSSR(cookies));
   const location = useLocation()
   const outlet = useOutlet()
+
+  const transition = useTransition();
+  NProgress.configure({ showSpinner: false, trickle: true, trickleSpeed: 200, speed: 200, minimum: .25 })
+  useEffect(() => {
+    // when the state is idle then we can to complete the progress bar
+    if (transition.state === "idle") NProgress.done();
+    // and when it's something else it means it's either submitting a form or
+    // waiting for the loaders of the next location so we start it
+    else NProgress.start();
+  }, [transition.state]);
+
   return (
     <Document>
       <ChakraProvider resetCSS theme={theme} colorModeManager={typeof cookies === 'string'

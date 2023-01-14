@@ -25,15 +25,16 @@
     "framer-motion": "^7.6.19",
     "isbot": "^3.6.5",
     "morgan": "^1.10.0",
+    "nprogress": "^0.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.7.1",
-    "react-snowfall": "^1.2.1",
     "remix-utils": "^5.1.0"
   },
   "devDependencies": {
     "@remix-run/dev": "^1.8.2",
     "@remix-run/eslint-config": "^1.8.2",
+    "@types/nprogress": "^0.2.0",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.8",
     "dotenv": "^16.0.3",
