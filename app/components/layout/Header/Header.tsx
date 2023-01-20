@@ -6,6 +6,7 @@ import ThemeToggle from "./ToggleTheme";
 import FAQButton from "./FAQButton";
 import HamburgerMenu from "./Mobile/HamburgerMenu";
 import MobileMenu from "./Mobile/MobileMenu";
+import InviteButton from "./InviteButton";
 
 export default function Header() {
     const { toggleColorMode } = useColorMode()
@@ -34,6 +35,7 @@ export default function Header() {
                     <FAQButton />
                     <APIButton />
                     <ThemeToggle />
+                    <InviteButton />
                 </HStack>
 
                 <Box display={{ base: 'flex', lg: 'none' }} cursor='pointer'>
