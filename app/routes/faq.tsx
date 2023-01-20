@@ -1,4 +1,4 @@
-import { Code, Divider, Heading, Link, Text, VStack } from "@chakra-ui/react";
+import { Badge, Code, Divider, Heading, Link, Text, VStack } from "@chakra-ui/react";
 import { type MetaFunction } from "@remix-run/node";
 import { useMatches } from "@remix-run/react";
 import { useEffect, useState } from "react";
@@ -16,21 +16,21 @@ export default function Faq() {
     const data = useMatches().at(0)?.data
     const cookies = data?.cookies
 
-    const [cookieState, setCookieState] = useState<string>(getCookieWithoutDocument(name, cookies))
+    const [cookieState, setCookieState] = useState<"track" | "no-track">(getCookieWithoutDocument(name, cookies) == "no-track" ? "no-track" : "track")
 
     function toggleTracking() {
         const cookie = getCookie(name)
         if (cookie == "track" || !cookie) {
             document.cookie = `${name}=no-track`
-            setCookieState("false")
+            setCookieState("no-track")
         } else {
             document.cookie = `${name}=track`
-            setCookieState("true")
+            setCookieState("track")
         }
     }
 
     useEffect(() => {
-        setCookieState(getCookie(name))
+        setCookieState(getCookie(name) == "no-track" ? "no-track" : "track" ?? "track")
     }, [])
 
     return (
@@ -91,9 +91,7 @@ export default function Faq() {
                     How do I disable my server checks tracking?
                 </Heading>
                 <Text color={'textSec'} fontWeight={500}>
-                    You can <Link variant={"link"} onClick={toggleTracking}>Click here</Link> to toggle tracking. This will set cookie <Code colorScheme={'purple'}>{name}</Code> to <Code colorScheme={'purple'}>
-                        {cookieState}
-                    </Code>.
+                    You can <Link variant={"link"} onClick={toggleTracking}>Click here</Link> to toggle tracking. Tracking is <Badge colorScheme={cookieState == "track" ? "green" : "red"}>{cookieState == "track" ? "Enabled" : "Disabled"}</Badge>
                 </Text>
             </VStack>
 
