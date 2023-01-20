@@ -51,6 +51,7 @@ const Document = withEmotionCache(
     return (
       <html lang="en">
         <head>
+          <meta name="robots" content="all"></meta>
           <Meta />
           {/* <!-- Google Tag Manager --> */}
           <script dangerouslySetInnerHTML={{
@@ -111,10 +112,7 @@ export default function App() {
   const transition = useTransition();
   NProgress.configure({ showSpinner: false, trickle: true, trickleSpeed: 200, speed: 200, minimum: .25 })
   useEffect(() => {
-    // when the state is idle then we can to complete the progress bar
     if (transition.state === "idle") NProgress.done();
-    // and when it's something else it means it's either submitting a form or
-    // waiting for the loaders of the next location so we start it
     else NProgress.start();
   }, [transition.state]);
 
