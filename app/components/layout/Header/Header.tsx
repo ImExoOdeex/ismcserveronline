@@ -1,7 +1,6 @@
 import { Box, Flex, Heading, HStack, useColorMode, useDisclosure, useEventListener } from "@chakra-ui/react";
 import Link from "../../utils/Link";
 import APIButton from "./APIButton";
-import ServerSearch from "./ServerSearch";
 import ThemeToggle from "./ToggleTheme";
 import FAQButton from "./FAQButton";
 import HamburgerMenu from "./Mobile/HamburgerMenu";
@@ -31,7 +30,7 @@ export default function Header() {
                 </Link>
 
                 <HStack spacing={3} display={{ base: 'none', lg: 'flex' }}>
-                    <ServerSearch />
+                    {/* <ServerSearch /> */}
                     <FAQButton />
                     <APIButton />
                     <ThemeToggle />

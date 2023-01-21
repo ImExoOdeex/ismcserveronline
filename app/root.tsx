@@ -20,6 +20,7 @@ import { ClientStyleContext, ServerStyleContext } from "./context";
 import { type LinksFunction } from "@remix-run/react/dist/routeModules";
 import NProgress from "nprogress";
 import nProgressStyles from "nprogress/nprogress.css";
+import { getCookieWithoutDocument } from "./components/utils/func/cookiesFunc";
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
@@ -37,6 +38,9 @@ const Document = withEmotionCache(
     const serverStyleData = useContext(ServerStyleContext);
     const clientStyleData = useContext(ClientStyleContext);
 
+    const { cookies } = useLoaderData<typeof loader>()
+    const themeValue = getCookieWithoutDocument("chakra-ui-color-mode", cookies)
+
     useEffect(() => {
       emotionCache.sheet.container = document.head;
       const tags = emotionCache.sheet.tags;
@@ -49,9 +53,9 @@ const Document = withEmotionCache(
     }, []);
 
     return (
-      <html lang="en">
+      <html lang="en" style={{ colorScheme: themeValue }} data-theme={themeValue}>
         <head>
-          <meta name="robots" content="all"></meta>
+          <meta name="robots" content="all" />
           <Meta />
           {/* <!-- Google Tag Manager --> */}
           <script dangerouslySetInnerHTML={{
