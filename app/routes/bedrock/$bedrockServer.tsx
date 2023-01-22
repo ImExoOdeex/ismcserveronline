@@ -1,10 +1,11 @@
-import { CheckIcon, ExternalLinkIcon, SmallCloseIcon } from "@chakra-ui/icons";
-import { Box, Divider, Flex, Heading, HStack, Icon, Stack, Table, TableCaption, TableContainer, Tbody, Td, Text, Tfoot, Th, Thead, Tr, useColorModeValue, VStack } from "@chakra-ui/react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { Box, Divider, Flex, Heading, HStack, Icon, Stack, Text, VStack } from "@chakra-ui/react";
 import { fetch, json, type MetaFunction, type LoaderArgs } from "@remix-run/node"
 import { useLoaderData } from "@remix-run/react"
 import { useEffect, useRef } from "react";
 import { BiBug, BiInfoCircle } from "react-icons/bi";
 import { getClientIPAddress } from "remix-utils";
+import ChecksTable from "~/components/layout/server/ChecksTable";
 import Fonts from "~/components/utils/Fonts";
 import Link from "~/components/utils/Link";
 import { db } from "~/components/utils/db.server";
@@ -70,13 +71,15 @@ export async function loader({ params, request }: LoaderArgs) {
         where: {
             server: {
                 contains: server
-            }
+            },
+            bedrock: true
         },
         select: {
             id: false,
             server: false,
             online: true,
             players: true,
+            source: true,
             client_ip: false,
             checked_at: true
         },
@@ -110,8 +113,6 @@ export default function $server() {
 
     const motd = data.motd.html?.split("\n")
     const bgImageColor = "rgba(0,0,0,.7)"
-
-    const borderColor = useColorModeValue('#2f2e32', '#2f2e32 !important')
 
     return (
         <VStack spacing={'40px'} align='start' maxW='1000px' mx='auto' w='100%' mt={'50px'} px={4} mb={5}>
@@ -207,59 +208,8 @@ export default function $server() {
                     Last checks
                 </Heading>
 
-                {checks.length ?
-                    <TableContainer w='100%'>
-                        <Table variant='simple' size={'sm'}>
-                            <TableCaption>Last status checks for {server}</TableCaption>
-                            <Thead>
-                                <Tr sx={{ "> *": { borderColor: borderColor } }}>
-                                    <Th>When</Th>
-                                    <Th>Status</Th>
-                                    <Th isNumeric>Players</Th>
-                                </Tr>
-                            </Thead>
-                            <Tbody>
-                                {checks.map((c) => {
-                                    return (
-                                        <Tr key={c.id}
-                                            _hover={{ bg: 'alpha' }} transition="background .05s"
-                                            sx={{ "> *": { borderColor: borderColor } }}>
-                                            <Td>{new Date(c.checked_at).toLocaleString()}</Td>
-                                            <Td>{c.online ?
-                                                <HStack rounded={'lg'} color='green' bg={'rgba(72, 187, 120, 0.1)'} w='min-content' px={3} py={1}>
-                                                    <Text textTransform={'none'} fontWeight={600}>Online</Text>
-                                                    <CheckIcon />
-                                                </HStack>
-                                                :
-                                                <HStack rounded={'lg'} color='red' bg={'rgba(187, 72, 72, 0.1)'} w='min-content' px={3} py={1}>
-                                                    <Text textTransform={'none'}>Offline</Text>
-                                                    <SmallCloseIcon />
-                                                </HStack>
-                                            }</Td>
-                                            <Td isNumeric>{c.players}</Td>
-                                        </Tr>
-                                    )
-                                })}
-                            </Tbody>
-                            <Tfoot>
-                                <Tr>
-                                    <Th>When</Th>
-                                    <Th>Status</Th>
-                                    <Th isNumeric>Players</Th>
-                                </Tr>
-                            </Tfoot>
-                        </Table>
-                    </TableContainer>
-
-                    :
-
-                    <Flex w="100%">
-                        <Heading fontSize={'md'} justifySelf='center' textAlign='center' color={'red'} mx='auto'>
-                            There were no checks
-                        </Heading>
-                    </Flex>
-
-                }
+                {/* @ts-ignore */}
+                <ChecksTable checks={checks} server={server} />
 
             </VStack>
 
