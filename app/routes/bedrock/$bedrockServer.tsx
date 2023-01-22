@@ -1,6 +1,6 @@
 import { CheckIcon, ExternalLinkIcon, SmallCloseIcon } from "@chakra-ui/icons";
-import { Box, Divider, Flex, Heading, HStack, Icon, Image, Stack, Table, TableCaption, TableContainer, Tbody, Td, Text, Tfoot, Th, Thead, Tr, useColorModeValue, VStack } from "@chakra-ui/react";
-import { fetch, json, type MetaFunction, type LoaderArgs, redirect } from "@remix-run/node"
+import { Box, Divider, Flex, Heading, HStack, Icon, Stack, Table, TableCaption, TableContainer, Tbody, Td, Text, Tfoot, Th, Thead, Tr, useColorModeValue, VStack } from "@chakra-ui/react";
+import { fetch, json, type MetaFunction, type LoaderArgs } from "@remix-run/node"
 import { useLoaderData } from "@remix-run/react"
 import { useEffect, useRef } from "react";
 import { BiBug, BiInfoCircle } from "react-icons/bi";
@@ -41,9 +41,9 @@ type BedrockServer = {
 export async function loader({ params, request }: LoaderArgs) {
 
     const server = params.bedrockServer?.toString().toLowerCase()
-    if (!server) return redirect("/")
-
-    // console.log(`fetching http://192.168.0.134:8000/bedrock/${server}`);
+    if (!server?.includes(".")) throw new Response(null, {
+        status: 404
+    })
 
     const serverData = await fetch(`http://192.168.0.134:8000/bedrock/${server}`, {
         method: 'get'
@@ -59,6 +59,8 @@ export async function loader({ params, request }: LoaderArgs) {
                 server: server,
                 online: data.online,
                 players: data.players.online,
+                bedrock: true,
+                source: "WEB",
                 client_ip: IP
             }
         })

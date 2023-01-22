@@ -10,11 +10,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum SOURCE {
+  WEB
+  DISCORD
+  API
+}
+
 model Check {
   id         Int      @id @unique @default(autoincrement())
   server     String
   online     Boolean
   players    Int
+  bedrock    Boolean  @default(false)
+  source     SOURCE   @default(API)
   client_ip  String?
   checked_at DateTime @default(now())
 }

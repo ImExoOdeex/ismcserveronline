@@ -129,10 +129,10 @@ export default function App() {
         <Layout>
           <AnimatePresence initial={false} mode='wait'>
             <motion.main key={location.pathname}
-              initial={{ scale: 1, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 1, opacity: 0 }}
-              transition={{ ease: [0.25, 0.1, 0.25, 1], duration: .1 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ ease: [0.25, 0.1, 0.25, 1], duration: .1125 }}
             >
               {outlet}
             </motion.main>

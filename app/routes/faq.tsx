@@ -91,7 +91,7 @@ export default function Faq() {
                     How do I disable my server checks tracking?
                 </Heading>
                 <Text color={'textSec'} fontWeight={500}>
-                    You can <Link variant={"link"} onClick={toggleTracking} userSelect={"none"}>Click here</Link> to toggle tracking. Tracking is <Badge colorScheme={cookieState == "track" ? "green" : "red"}>{cookieState == "track" ? "Enabled" : "Disabled"}</Badge>
+                    You can <Link variant={"link"} onClick={toggleTracking} userSelect={"none"}>Click here</Link> to toggle tracking. Tracking is <Badge colorScheme={cookieState == "track" ? "green" : "red"}>{cookieState == "track" ? "Enabled" : "Disabled"}</Badge>.
                 </Text>
             </VStack>
 
@@ -100,7 +100,7 @@ export default function Faq() {
                     How can I contact you?
                 </Heading>
                 <Text color={'textSec'} fontWeight={500}>
-                    You can send an e-mail to <Link href="mailto:contact@ismcserver.online"><Code colorScheme={'purple'}>contact@ismcserver.online</Code></Link>
+                    You can send an e-mail to <Link href="mailto:contact@ismcserver.online"><Code colorScheme={'purple'}>contact@ismcserver.online</Code></Link>.
                 </Text>
             </VStack>
 

@@ -1,4 +1,4 @@
-import { Flex, Heading, Stack, chakra, VStack, FormLabel, HStack, Text, Button, VisuallyHiddenInput, Box, Spinner, Image } from "@chakra-ui/react";
+import { Flex, Heading, Stack, chakra, VStack, FormLabel, HStack, Text, Button, VisuallyHiddenInput, Box, Spinner, Image, Tooltip } from "@chakra-ui/react";
 import { type ActionArgs, redirect, type MetaFunction, json } from "@remix-run/node"
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -148,11 +148,13 @@ export default function Index() {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 80, transition: { duration: .15 } }}
                       >
-                        <Button rounded={'2xl'} variant='brand' type='submit' w='100%'>
-                          <Text px={2}>
-                            Search
-                          </Text>
-                        </Button>
+                        <Tooltip hasArrow label={`Please Enter valid server address`} isDisabled={serverValue?.includes(".")}>
+                          <Button rounded={'2xl'} variant='brand' type='submit' w='100%' disabled={!serverValue?.includes(".")}>
+                            <Text px={2}>
+                              Search
+                            </Text>
+                          </Button>
+                        </Tooltip>
                       </motion.div>
                     }
                   </AnimatePresence>

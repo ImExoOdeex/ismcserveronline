@@ -3,7 +3,7 @@ export async function loader() {
         `User-agent: *
 Allow: /
 
-Sitemap: https://www.example.com/sitemap.xml`, {
+Sitemap: https://ismcserver.online/sitemap.xml`, {
         status: 200,
         headers: {
             "Content-Type": "application/text",
