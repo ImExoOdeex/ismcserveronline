@@ -61,6 +61,10 @@ const colors = {
     sec: {
         100: "#93b8e9",
         900: "#0078D7"
+    },
+    discord: {
+        100: "#5865F2",
+        900: "#6A5ACD"
     }
 }
 const theme = extendTheme({

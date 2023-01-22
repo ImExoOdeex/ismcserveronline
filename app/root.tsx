@@ -57,6 +57,7 @@ const Document = withEmotionCache(
         <head>
           <meta name="robots" content="all" />
           <Meta />
+          <link rel="icon" type="image/png" href="/favicon.png" sizes="48x48" />
           {/* <!-- Google Tag Manager --> */}
           <script dangerouslySetInnerHTML={{
             __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
