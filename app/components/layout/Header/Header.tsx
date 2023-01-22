@@ -30,7 +30,6 @@ export default function Header() {
                 </Link>
 
                 <HStack spacing={3} display={{ base: 'none', lg: 'flex' }}>
-                    {/* <ServerSearch /> */}
                     <FAQButton />
                     <APIButton />
                     <ThemeToggle />

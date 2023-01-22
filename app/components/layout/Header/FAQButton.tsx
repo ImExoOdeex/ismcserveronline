@@ -4,7 +4,10 @@ import Link from "~/components/utils/Link";
 
 export default function FAQButton() {
     return (
-        <Link to={'/faq'} _hover={{ textDecor: 'none' }}>
+        <Link to={'/faq'}
+            _hover={{ textDecor: 'none' }}
+            transform={'auto-gpu'} _active={{ scale: .9 }}
+        >
             <Button
                 _hover={{ bg: "alpha" }} _active={{ bg: "alpha100" }}
                 rounded={'xl'} bg={'transparent'}

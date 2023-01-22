@@ -7,6 +7,7 @@ import { ChakraBox, ChakraInput } from "~/components/layout/MotionComponents";
 import { VersionChangeComp } from "~/components/layout/index/VersionChangeComp";
 import type { LoaderArgs } from "@remix-run/node"
 import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
+import BotInfo from "~/components/layout/index/BotInfo";
 
 export async function action({ request }: ActionArgs) {
   const formData = await request.formData();
@@ -196,6 +197,8 @@ export default function Index() {
         </Flex>
 
       </Stack>
+
+      <BotInfo />
 
     </Flex>
   );

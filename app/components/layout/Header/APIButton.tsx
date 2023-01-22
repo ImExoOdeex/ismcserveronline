@@ -3,7 +3,9 @@ import { BiCode } from 'react-icons/bi'
 
 export default function APIButton() {
     return (
-        <Link href="https://rapidapi.com/odeex722-TbH352Ij4z/api/minecraft-server-data/" target={'_blank'} _hover={{ textDecor: 'none' }}>
+        <Link href="https://rapidapi.com/odeex722-TbH352Ij4z/api/minecraft-server-data/" target={'_blank'} _hover={{ textDecor: 'none' }}
+            transform={'auto-gpu'} _active={{ scale: .9 }}
+        >
             <Button
                 _hover={{ bg: "alpha" }} _active={{ bg: "alpha100" }}
                 rounded={'xl'} bg={'transparent'}

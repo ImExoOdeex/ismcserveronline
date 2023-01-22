@@ -39,8 +39,9 @@ export default function ThemeToggle() {
                     </DarkMode></Text>}
                     openDelay={1000}>
                     <IconButton role={'group'}
-                        _hover={{ bg: bgColor, color: color }} _active={{ bg: bgColorActive }}
+                        _hover={{ bg: bgColor, color: color }} _active={{ bg: bgColorActive, scale: .9 }}
                         rounded={'xl'} bg={'transparent'}
+                        transform={'auto-gpu'}
                         icon={colorMode == 'light' ?
                             <MoonIcon _groupHover={{ rotate: '-100deg' }} transition={'transform .4s'} transform='auto' /> :
                             <SunIcon _groupHover={{ rotate: '50deg', scale: 1.05 }} transition={'transform .4s'} transform='auto' />}
