@@ -65,7 +65,7 @@ export default function Index() {
   const submitting = fetcher.state !== 'idle'
 
   return (
-    <Flex flexDir={'column'} maxW='1200px' mx='auto' w='100%' mt={'50px'} px='4'>
+    <Flex flexDir={'column'} maxW='1200px' mx='auto' w='100%' mt={'75px'} px='4'>
 
       <Stack spacing={10} direction={{ base: 'column', md: 'row' }}>
 
