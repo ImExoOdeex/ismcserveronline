@@ -19,7 +19,7 @@ export default function BotInfo() {
         }
     }
 
-    const [opened, setOpened] = useState<boolean>(true)
+    const [opened, setOpened] = useState<boolean>(false)
 
     return (
         <VStack w='100%' align={'start'} my={20} spacing={20}>
@@ -32,7 +32,7 @@ export default function BotInfo() {
                 >
                     <VStack align={'start'} spacing={0} pos={'relative'}>
                         <Text fontSize={'xs'}>Add our discord bot!</Text>
-                        <Heading as={'h1'} fontSize={'lg'}>Is Minecraft Server Online</Heading>
+                        <Heading as={'h1'} fontSize={'lg'}>Is Minecraft Server Online bot</Heading>
                         <Text fontSize={'10px'}
                             pos={"absolute"} bottom={-2} right={0}
                         >Read {opened ? "less" : "more"}</Text>

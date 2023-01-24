@@ -12,7 +12,8 @@ const styles = {
     global: (props: StyleFunctionProps | Dict<any>) => ({
         body: {
             minH: '100vh',
-            bg: mode('bg.100', 'bg.900')(props)
+            bg: mode('bg.100', 'bg.900')(props),
+            overflowY: "scroll"
         },
         th: {
             color: mode("#393942cc!important", "#dedef1be!important")(props),

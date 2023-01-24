@@ -25,7 +25,6 @@
     "framer-motion": "^7.6.19",
     "isbot": "^3.6.5",
     "morgan": "^1.10.0",
-    "nprogress": "^0.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.7.1",

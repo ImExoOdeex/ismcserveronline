@@ -8,6 +8,7 @@ import { VersionChangeComp } from "~/components/layout/index/VersionChangeComp";
 import type { LoaderArgs } from "@remix-run/node"
 import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
 import BotInfo from "~/components/layout/index/BotInfo";
+import HowToUse from "~/components/layout/index/HowToUse";
 
 export async function action({ request }: ActionArgs) {
   const formData = await request.formData();
@@ -201,6 +202,8 @@ export default function Index() {
       </Stack>
 
       <BotInfo />
+
+      <HowToUse />
 
     </Flex>
   );
