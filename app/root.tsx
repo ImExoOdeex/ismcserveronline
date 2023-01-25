@@ -10,7 +10,6 @@ import {
   useLoaderData,
   useLocation,
   useOutlet,
-  useTransition,
 } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useContext, useEffect } from "react";

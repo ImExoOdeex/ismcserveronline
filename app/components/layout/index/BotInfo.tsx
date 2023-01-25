@@ -28,7 +28,9 @@ export default function BotInfo() {
 
                 <Flex p={5} rounded={"2xl"} bg={'alpha'} w="100%" flexDir={'column'} onClick={() => setOpened(!opened)}
                     userSelect={"none"} cursor={opened ? "initial" : "pointer"}
-                    _hover={{ bg: opened ? "" : "alpha100" }} transition={".15s"}
+                    _hover={{ bg: opened ? "" : "alpha100" }}
+                    _active={{ bg: opened ? "" : "alpha200" }}
+                    transition={".1s"}
                 >
                     <VStack align={'start'} spacing={0} pos={'relative'}>
                         <Text fontSize={'xs'}>Add our discord bot!</Text>

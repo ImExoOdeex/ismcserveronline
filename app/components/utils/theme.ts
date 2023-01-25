@@ -120,6 +120,10 @@ const theme = extendTheme({
                 default: 'blackAlpha.100',
                 _dark: 'whiteAlpha.100'
             },
+            alpha200: {
+                default: 'blackAlpha.200',
+                _dark: 'whiteAlpha.200'
+            },
             raisedBg: {
                 default: "#f6f6ff",
                 _dark: "#18181b"
