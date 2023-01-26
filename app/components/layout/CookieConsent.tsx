@@ -26,7 +26,7 @@ function CookieConsent() {
                     exit={{ height: 0, transition: { ease: 'easeInOut' } }}
                     style={{ overflow: 'hidden', display: 'block' }}
                 >
-                    <Box fontWeight={'500'} py={[5, 5, 7]} h={'auto'} w='100%' bg={'brand.900'}
+                    <Box fontWeight={'500'} py={5} h={'auto'} w='100%' bg={'brand.900'}
                         display='flex' color="white" px={[2, 2, 5]} justifyContent='space-around' flexDir={['column', 'column', 'row']} alignItems='center'>
                         <LightMode>
                             <Stack direction={{ base: 'column', md: 'row' }} spacing={[3, 5, 10]} alignItems={'center'}>

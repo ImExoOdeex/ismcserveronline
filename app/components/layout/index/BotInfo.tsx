@@ -36,7 +36,7 @@ export default function BotInfo() {
                         <Text fontSize={'xs'}>Add our discord bot!</Text>
                         <Heading as={'h1'} fontSize={'lg'}>Is Minecraft Server Online bot</Heading>
                         <Text fontSize={'10px'}
-                            pos={"absolute"} bottom={-2} right={0}
+                            pos={"absolute"} bottom={{ base: -3, sm: -2 }} right={0}
                         >Read {opened ? "less" : "more"}</Text>
                     </VStack>
 

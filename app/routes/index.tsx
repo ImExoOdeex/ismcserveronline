@@ -119,7 +119,7 @@ export default function Index() {
 
                     <HStack w='100%' h='100%'>
                       <Button w='50%' variant={'unstyled'} h='100%' pos={'relative'} onClick={() => setBedrockChecked(false)}>
-                        <Text zIndex={4} color={bedrockChecked ? "initial" : "inv"} transition={"color .15s"}>
+                        <Text zIndex={4} color={bedrockChecked ? "text" : "inv"} transition={"color .15s"}>
                           Java
                         </Text>
                         {!bedrockChecked &&
@@ -127,7 +127,7 @@ export default function Index() {
                         }
                       </Button>
                       <Button w='50%' variant={'unstyled'} h='100%' pos={'relative'} onClick={() => setBedrockChecked(true)}>
-                        <Text zIndex={4} color={bedrockChecked ? "inv" : "initial"} transition={"color .15s"}>
+                        <Text zIndex={4} color={bedrockChecked ? "inv" : "text"} transition={"color .15s"}>
                           Bedrock
                         </Text>
                         {bedrockChecked &&
