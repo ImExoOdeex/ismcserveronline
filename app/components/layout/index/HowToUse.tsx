@@ -2,7 +2,7 @@ import { Divider, Heading, Text, VStack } from "@chakra-ui/react";
 
 export default function HowToUse() {
     return (
-        <VStack spacing={5} width={"100%"} align={"start"}>
+        <VStack spacing={5} width={"100%"} align={"start"} mb={10}>
             <Heading as={"h1"} fontSize={"xl"}>How to use this tool?</Heading>
             <Divider />
             <Text>

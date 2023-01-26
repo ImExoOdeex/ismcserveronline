@@ -170,11 +170,18 @@ export default function Index() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: "-25%" }}
                     >
-                      <Flex w='100%' h='100%' bg='bg' align={'center'} alignItems='center' justifyContent={'center'}>
+                      <Flex w={{ base: '105%', sm: "100%" }} h='100%' bg='bg' align={'center'} alignItems='center' justifyContent={'center'}>
                         <HStack>
-                          <Text fontWeight={500}>
-                            Getting real-time data about {serverValue}
-                          </Text>
+
+                          <VStack spacing={0}>
+                            <Text fontWeight={500}>
+                              Getting real-time data about {serverValue}
+                            </Text>
+                            <Text fontSize={'10px'} opacity={.7}>
+                              This shouldn't take longer than 5 seconds
+                            </Text>
+                          </VStack>
+
                           <Spinner size={'sm'} />
                         </HStack>
                       </Flex>
