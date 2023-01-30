@@ -45,16 +45,14 @@ type MinecraftServer = {
 
 export async function loader({ params, request }: LoaderArgs) {
 
-    const server = await params.server?.toString().toLowerCase()
+    const server = params.server?.toString().toLowerCase()
     if (!server?.includes(".")) throw new Response(null, {
         status: 404
     })
 
-    const data: any = (fetch(`http://192.168.0.134:8000/${server}`, {
+    const data: any = (fetch(`http://localhost:8000/${server}`, {
         method: 'get'
-    })).then(async (e) => e.json())
-
-    console.log(data);
+    })).then(res => res.json())
 
     // const data: MinecraftServer = await serverData.json()
 
@@ -130,8 +128,8 @@ export default function $server() {
         <VStack spacing={'40px'} align='start' maxW='1000px' mx='auto' w='100%' mt={'50px'} px={4} mb={5}>
             <Fonts />
             {/* Box up */}
-            <Suspense fallback={<>ni ma</>}>
-                <Await resolve={data} errorElement={<>no</>}>
+            <Suspense fallback={<>Suspense</>}>
+                <Await resolve={data} errorElement={<>HOLY SHIT</>}>
                     {(data) =>
                     (
                         <>
