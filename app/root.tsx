@@ -18,6 +18,7 @@ import theme from "./components/utils/theme";
 import { ClientStyleContext, ServerStyleContext } from "./context";
 import { type LinksFunction } from "@remix-run/react/dist/routeModules";
 import { getCookieWithoutDocument } from "./components/utils/func/cookiesFunc";
+import Fonts from "./components/utils/Fonts";
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
@@ -112,6 +113,7 @@ export default function App() {
 
   return (
     <Document>
+      <Fonts />
       <ChakraProvider resetCSS theme={theme} colorModeManager={typeof cookies === 'string'
         ? cookieManager
         : localStorageManager
