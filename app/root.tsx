@@ -18,13 +18,14 @@ import theme from "./components/utils/theme";
 import { ClientStyleContext, ServerStyleContext } from "./context";
 import { type LinksFunction } from "@remix-run/react/dist/routeModules";
 import { getCookieWithoutDocument } from "./components/utils/func/cookiesFunc";
-import Fonts from "./components/utils/Fonts";
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
   title: "IsMcServer.online",
   viewport: "width=device-width,initial-scale=1",
-  description: "Check Minecraft server status and data by real-time."
+  description: "Check Minecraft server status and data by real-time.",
+  keywords: "Minecraft server check, Server status check, Minecraft server status, Online server status, Minecraft server monitor, Server checker tool, Minecraft server checker, Real-time server status, Minecraft server status checker, Server uptime checker, Minecraft server monitor tool, Minecraft server status monitor, Real-time server monitoring, Server availability checker, Minecraft server uptime checker",
+  author: ".imexoodeex#0528",
 });
 
 interface DocumentProps {
@@ -101,7 +102,7 @@ export const links: LinksFunction = () => {
   return [
     { rel: "preconnect", href: "https://fonts.googleapis.com" },
     { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-    { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" },
+    { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" }
   ];
 };
 
@@ -113,7 +114,6 @@ export default function App() {
 
   return (
     <Document>
-      <Fonts />
       <ChakraProvider resetCSS theme={theme} colorModeManager={typeof cookies === 'string'
         ? cookieManager
         : localStorageManager

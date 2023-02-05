@@ -6,7 +6,6 @@ import { useEffect, useRef } from "react";
 import { BiBug, BiInfoCircle } from "react-icons/bi";
 import { getClientIPAddress } from "remix-utils";
 import ChecksTable from "~/components/layout/server/ChecksTable";
-import Fonts from "~/components/utils/Fonts";
 import Link from "~/components/utils/Link";
 import { db } from "~/components/utils/db.server";
 import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
@@ -116,7 +115,6 @@ export default function $server() {
 
     return (
         <VStack spacing={'40px'} align='start' maxW='1000px' mx='auto' w='100%' mt={'50px'} px={4} mb={5}>
-            <Fonts />
             {/* Box up */}
             <Stack direction={{ base: 'column', md: 'row' }} spacing={5} justifyContent={'space-between'} w='100%'>
 

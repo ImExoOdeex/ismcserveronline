@@ -10,10 +10,10 @@ export default function BotInfo() {
 
     const variants = {
         open: {
-            height: "30%"
+            height: "70%"
         },
         open1: {
-            height: "70%"
+            height: "30%"
         },
         closed: {
             height: "50%"
@@ -71,7 +71,7 @@ export default function BotInfo() {
                                                 onMouseLeave={() => setActiveBlock(null)}
                                             >
                                                 <Stack w='100%' py={{ base: 5, sm: 3 }} px={3} h='100%' alignItems={'center'} justifyContent={'center'} boxShadow={'lg'} transition={'.2s'}
-                                                    direction={{ base: "column", sm: "row" }} spacing={5} rounded={'2xl'} bg='discord.100' _hover={{ bg: "discord.900", textDecor: "none" }} transform={'auto-gpu'} _active={{ scale: .9 }}
+                                                    direction={{ base: "column", sm: "row" }} spacing={5} rounded={'2xl'} bg='discord.100' _hover={{ bg: "discord.900", textDecor: "none", scale: .975 }} transform={'auto-gpu'} _active={{ scale: .95 }}
                                                     as={Link} href="https://discord.com/api/oauth2/authorize?client_id=1043569248427061380&permissions=2147789824&scope=bot"
                                                 >
                                                     <Icon boxSize={'48px'} fill={"white"}>
@@ -91,7 +91,7 @@ export default function BotInfo() {
                                                 onMouseLeave={() => setActiveBlock(null)}
                                             >
                                                 <Stack w='100%' py={{ base: 5, sm: 3 }} px={3} h='100%' alignItems={'center'} justifyContent={'center'} boxShadow={'lg'} transition={'.2s'}
-                                                    direction={{ base: "column", sm: "row" }} spacing={5} rounded={'2xl'} bg='discord.900' _hover={{ bg: "discord.100", textDecor: "none" }} transform={'auto-gpu'} _active={{ scale: .9 }}
+                                                    direction={{ base: "column", sm: "row" }} spacing={5} rounded={'2xl'} bg='discord.900' _hover={{ bg: "discord.100", textDecor: "none", scale: .975 }} transform={'auto-gpu'} _active={{ scale: .95 }}
                                                     as={Link} href="https://discord.gg/e2c4DgRbWN">
                                                     <Icon as={MdPeople} color={'white'} boxSize={'48px'} />
                                                     <Text fontWeight={700} color={"white"} textAlign={'center'}>

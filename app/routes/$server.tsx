@@ -141,7 +141,7 @@ export default function $server() {
                         <Flex py={4} flexDir={'column'} w='100%' pos='relative' rounded={'3xl'} justifyContent='center' align={'center'} alignItems='center'>
                             <pre>
                                 {data?.motd?.html?.split("\n")?.map((m: string) => (
-                                    <Flex key={m} dangerouslySetInnerHTML={{ __html: m }} w='100%' fontFamily={"'Minecraft'"} justifyContent='center' align={'center'} alignItems='center' fontSize={'sm'} />
+                                    <Flex key={m} dangerouslySetInnerHTML={{ __html: m }} w='100%' fontFamily={"mono"} justifyContent='center' align={'center'} alignItems='center' fontSize={'md'} fontWeight={"normal"} />
                                 ))}
                             </pre>
 
