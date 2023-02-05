@@ -1,5 +1,5 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { Box, Divider, Flex, Heading, HStack, Icon, Stack, Text, VStack } from "@chakra-ui/react";
+import { Box, Divider, Flex, Heading, HStack, Icon, Stack, Table, TableContainer, Tbody, Td, Text, Tr, VStack } from "@chakra-ui/react";
 import { fetch, json, type MetaFunction, type LoaderArgs } from "@remix-run/node"
 import { useLoaderData } from "@remix-run/react"
 import { useEffect, useRef } from "react";
@@ -135,7 +135,7 @@ export default function $server() {
                     <Flex py={4} flexDir={'column'} w='100%' pos='relative' rounded={'3xl'} justifyContent='center' align={'center'} alignItems='center'>
                         <pre>
                             {motd?.map((m: string) => (
-                                <Flex key={m} dangerouslySetInnerHTML={{ __html: m }} w='100%' fontFamily={"'Minecraft'"} justifyContent='center' align={'center'} alignItems='center' fontSize={'sm'} />
+                                <Flex key={m} dangerouslySetInnerHTML={{ __html: m }} w='100%' fontFamily={"mono"} justifyContent='center' align={'center'} alignItems='center' fontSize={'sm'} />
                             ))}
                         </pre>
 
@@ -150,24 +150,28 @@ export default function $server() {
                 <Heading as={'h1'} fontSize='lg'>General info</Heading>
 
                 <Box>
-                    <HStack w='100%' align={'start'} ml={{ base: 0, md: 5 }}>
-                        <Flex minW={'150px'}>
-                            <VStack spacing={'7px'} align='start' fontWeight={600}>
-                                <Text>Players</Text>
-                                <Text>Version</Text>
-                                <Text>Edition</Text>
-                                <Text>Gamemode</Text>
-                            </VStack>
-                        </Flex>
-                        <Flex>
-                            <VStack spacing={'7px'} align='start' fontWeight={400}>
-                                <Text>{data.players.online} / {data.players.max}</Text>
-                                <Text>{data.version}</Text>
-                                <Text>{data.edition}</Text>
-                                <Text>{data.gamemode.name}</Text>
-                            </VStack>
-                        </Flex>
-                    </HStack>
+                    <TableContainer>
+                        <Table variant={"unstyled"} size={"sm"}>
+                            <Tbody>
+                                <Tr>
+                                    <Td>Players</Td>
+                                    <Td fontWeight={"normal"}>{data.players.online} / {data.players.max}</Td>
+                                </Tr>
+                                <Tr>
+                                    <Td>Version</Td>
+                                    <Td fontWeight={"normal"}>{data.version}</Td>
+                                </Tr>
+                                <Tr>
+                                    <Td>Edition</Td>
+                                    <Td fontWeight={"normal"}>{data.edition}</Td>
+                                </Tr>
+                                <Tr>
+                                    <Td>Gamemode</Td>
+                                    <Td fontWeight={"normal"}>{data.gamemode.name}</Td>
+                                </Tr>
+                            </Tbody>
+                        </Table>
+                    </TableContainer>
                 </Box>
 
 
@@ -175,25 +179,28 @@ export default function $server() {
                 <Heading as={'h1'} fontSize='lg'>Debug info</Heading>
 
                 <Box>
-                    <HStack w='100%' align={'start'} ml={{ base: 0, md: 5 }}>
-                        <Flex minW={'150px'}>
-                            <VStack spacing={'7px'} align='start' fontWeight={600}>
-                                <Text>Host</Text>
-                                <Text>Port</Text>
-                                <Text>Protocol</Text>
-                                <Text>Guid</Text>
-                            </VStack>
-                        </Flex>
-                        <Flex>
-                            <VStack spacing={'7px'} align='start' fontWeight={400}>
-                                <Text>{data.host}</Text>
-                                <Text>{data.port.ipv4}</Text>
-                                <Text>{data.protocol}</Text>
-                                <Text>{data.guid}</Text>
-
-                            </VStack>
-                        </Flex>
-                    </HStack>
+                    <TableContainer>
+                        <Table variant={"unstyled"} size={"sm"}>
+                            <Tbody>
+                                <Tr>
+                                    <Td>Host</Td>
+                                    <Td fontWeight={"normal"}>{data.host}</Td>
+                                </Tr>
+                                <Tr>
+                                    <Td>Port</Td>
+                                    <Td fontWeight={"normal"}>{data.port.ipv4}</Td>
+                                </Tr>
+                                <Tr>
+                                    <Td>Protocol</Td>
+                                    <Td fontWeight={"normal"}>{data.protocol}</Td>
+                                </Tr>
+                                <Tr>
+                                    <Td>Guid</Td>
+                                    <Td fontWeight={"normal"}>{data.guid}</Td>
+                                </Tr>
+                            </Tbody>
+                        </Table>
+                    </TableContainer>
                 </Box>
 
 

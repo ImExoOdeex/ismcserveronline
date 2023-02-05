@@ -1,5 +1,5 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { Box, Divider, Flex, Heading, HStack, Icon, Image, Stack, Text, VStack } from "@chakra-ui/react";
+import { Box, Divider, Flex, Heading, HStack, Icon, Image, Stack, Table, TableContainer, Tbody, Td, Text, Tr, VStack } from "@chakra-ui/react";
 import { fetch, type MetaFunction, type LoaderArgs, json } from "@remix-run/node"
 import { useLoaderData } from "@remix-run/react"
 import { useEffect, useRef } from "react";
@@ -152,56 +152,61 @@ export default function $server() {
 
                 <Divider />
 
-                <VStack spacing={'30px'} align='start' fontWeight={600}>
+                <VStack spacing={'20px'} align='start' fontWeight={600}>
                     <Heading as={'h1'} fontSize='lg'>General info</Heading>
 
                     <Box>
-                        <HStack w='100%' align={'start'} ml={{ base: 0, md: 5 }}>
-                            <Flex minW={'150px'}>
-                                <VStack spacing={'7px'} align='start' fontWeight={600}>
-                                    <Text>Players</Text>
-                                    <Text>Version</Text>
-                                    <Text>Ping</Text>
-                                    <Text>Players</Text>
-                                    <Text>Plugins</Text>
-                                </VStack>
-                            </Flex>
-                            <Flex>
-                                <VStack spacing={'7px'} align='start' fontWeight={400}>
-                                    <Text>{data.players.online} / {data.players.max}</Text>
-                                    <Text>{data.version?.string}</Text>
-                                    <Text fontFamily={'mono'}>{data.ping} miliseconds</Text>
-                                    {data.players.list.length ?
-                                        <>
-                                            {data.players.list.map((p: { id: number, name: string } | any) => {
-                                                return (
-                                                    <Text key={p.id}>{p.name}</Text>
-                                                )
-                                            })}
-                                        </>
-                                        :
-                                        <Text color={'textSec'}>
-                                            Unable to get
-                                        </Text>
-                                    }
+                        <TableContainer>
+                            <Table variant={"unstyled"} size={"sm"}>
+                                <Tbody>
+                                    <Tr>
+                                        <Td>Players</Td>
+                                        <Td fontWeight={"normal"}>{data.players.online} / {data.players.max}</Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td>Version</Td>
+                                        <Td fontWeight={"normal"}>{data.version?.string}</Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td>Ping</Td>
+                                        <Td fontWeight={"normal"} fontFamily={'mono'}>{data.ping} miliseconds</Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td>Players</Td>
+                                        {data.players.list.length ?
+                                            <>
+                                                {data.players.list.map((p: { id: number, name: string } | any) => {
+                                                    return (
+                                                        <Td fontWeight={"normal"} key={p.id}>{p.name}</Td>
+                                                    )
+                                                })}
+                                            </>
+                                            :
+                                            <Td fontWeight={"normal"} color={'textSec'}>
+                                                Unable to get
+                                            </Td>
+                                        }
+                                    </Tr>
+                                    <Tr>
+                                        <Td>Plugins</Td>
+                                        {data.plugins.length ?
+                                            <>
+                                                {data.plugins.map((p: string) => {
+                                                    return (
+                                                        <Td fontWeight={"normal"} key={p}>{p}</Td>
+                                                    )
+                                                })}
+                                            </>
+                                            :
+                                            <Td fontWeight={"normal"} color={'textSec'}>
+                                                Unable to get
+                                            </Td>
+                                        }
+                                    </Tr>
 
-                                    {data.plugins.length ?
-                                        <>
-                                            {data.plugins.map((p: string) => {
-                                                return (
-                                                    <Text key={p}>{p}</Text>
-                                                )
-                                            })}
-                                        </>
-                                        :
-                                        <Text color={'textSec'}>
-                                            Unable to get
-                                        </Text>
-                                    }
-
-                                </VStack>
-                            </Flex>
-                        </HStack>
+                                </Tbody>
+                            </Table>
+                        </TableContainer>
                     </Box>
 
 
@@ -209,25 +214,28 @@ export default function $server() {
                     <Heading as={'h1'} fontSize='lg'>Debug info</Heading>
 
                     <Box>
-                        <HStack w='100%' align={'start'} ml={{ base: 0, md: 5 }}>
-                            <Flex minW={'150px'}>
-                                <VStack spacing={'7px'} align='start' fontWeight={600}>
-                                    <Text>Host</Text>
-                                    <Text>Port</Text>
-                                    <Text>Protocol</Text>
-                                    <Text>Software</Text>
-                                </VStack>
-                            </Flex>
-                            <Flex>
-                                <VStack spacing={'7px'} align='start' fontWeight={400}>
-                                    <Text>{data.host}</Text>
-                                    <Text>{data.port}</Text>
-                                    <Text>{data.protocol}</Text>
-                                    <Text>{data.software}</Text>
-
-                                </VStack>
-                            </Flex>
-                        </HStack>
+                        <TableContainer>
+                            <Table variant={"unstyled"} size={"sm"}>
+                                <Tbody>
+                                    <Tr>
+                                        <Td>Host</Td>
+                                        <Td fontWeight={"normal"}>{data.host}</Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td>Port</Td>
+                                        <Td fontWeight={"normal"}>{data.port}</Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td>Protocol</Td>
+                                        <Td fontWeight={"normal"}>{data.protocol}</Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td>Software</Td>
+                                        <Td fontWeight={"normal"}>{data.software}</Td>
+                                    </Tr>
+                                </Tbody>
+                            </Table>
+                        </TableContainer>
                     </Box>
 
 
