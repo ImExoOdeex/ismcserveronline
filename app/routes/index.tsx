@@ -203,7 +203,7 @@ export default function Index() {
         </VStack>
 
         <Flex w={{ base: '100%', md: '50%' }}>
-          <Image src="/ismcserveronlineimg.png" alt="image" sx={{ imageRendering: 'pixelated', aspectRatio: "4/3" }} />
+          <Image src="/ismcserveronlineimg.webp" alt="image" sx={{ imageRendering: 'pixelated', aspectRatio: "4/3" }} />
         </Flex>
 
       </Stack>
