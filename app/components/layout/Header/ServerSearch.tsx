@@ -30,7 +30,7 @@ export default function ServerSearch() {
     const [server, setServer] = useState<string>()
 
     return (
-        <>
+        <Flex display={{ base: 'none', md: "flex" }}>
             <AnimatePresence mode="wait" initial={false}>
                 {pathname !== "/" &&
                     <motion.div
@@ -92,6 +92,6 @@ export default function ServerSearch() {
                     </motion.div>
                 }
             </AnimatePresence>
-        </>
+        </Flex>
     )
 }
