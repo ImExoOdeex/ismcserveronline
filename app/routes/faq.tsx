@@ -1,8 +1,10 @@
 import { Badge, Code, Divider, Heading, Link, Text, VStack } from "@chakra-ui/react";
-import { type MetaFunction } from "@remix-run/node";
-import { useMatches } from "@remix-run/react";
-import { useEffect, useState } from "react";
+import { json, type MetaFunction } from "@remix-run/node";
+import { useLoaderData, useRouteLoaderData } from "@remix-run/react";
+import { useEffect, useRef, useState } from "react";
+import SystemInfo from "~/components/layout/faq/SystemInfo";
 import { getCookie, getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
+import os from "os"
 
 export const meta: MetaFunction = () => {
     return {
@@ -10,10 +12,35 @@ export const meta: MetaFunction = () => {
     };
 };
 
+export async function loader() {
+
+    const bytesToMegabytes = (bytes: number) => Math.round((bytes / 1024 / 1024) * 100) / 100;
+
+    const mem = bytesToMegabytes(process.memoryUsage().heapUsed)
+    const totalMem = bytesToMegabytes(os.totalmem())
+    const usedMem = totalMem - bytesToMegabytes(os.freemem())
+    const platform = os.platform()
+    const arch = os.arch()
+    const cpu = os.cpus()[0].model
+    const processUptimeDays = (process.uptime() / (3600 * 24)).toFixed(2)
+    const nodeVersion = process.versions.node
+    const v8Version = process.versions.v8
+    const mode = process.env.NODE_ENV
+
+    return json({ system: { mem, totalMem, usedMem, platform, cpu, processUptimeDays, nodeVersion, v8Version, arch, mode } })
+};
+
 export default function Faq() {
 
+    const lastSystem = useRef({})
+    const { system } = useLoaderData() || { system: lastSystem.current }
+
+    useEffect(() => {
+        if (system) lastSystem.current = system
+    }, [system])
+
     const name = "tracking"
-    const data = useMatches().at(0)?.data
+    const data: any = useRouteLoaderData("root")
     const cookies = data?.cookies
 
     const [cookieState, setCookieState] = useState<"track" | "no-track">(getCookieWithoutDocument(name, cookies) == "no-track" ? "no-track" : "track")
@@ -112,6 +139,9 @@ export default function Faq() {
                 <Text fontWeight={500}>If you found any bug, please <Link href="https://github.com/ImExoOdeex/ismcserveronline/issues" variant={'link'}>create new issue on github</Link>.</Text>
             </VStack>
 
+            <SystemInfo system={system} />
+
         </VStack >
     )
+
 }
