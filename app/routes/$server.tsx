@@ -60,7 +60,7 @@ export async function loader({ params, request }: LoaderArgs) {
 
     if (!blockTracking && data) {
         const IP = getClientIPAddress(request.headers)
-        db.check.create({
+        await db.check.create({
             data: {
                 server: server,
                 online: data.online,

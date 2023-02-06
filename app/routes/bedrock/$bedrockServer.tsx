@@ -45,14 +45,14 @@ export async function loader({ params, request }: LoaderArgs) {
         status: 404
     })
 
-    const serverData = await fetch(`http://192.168.0.134:8000/bedrock/${server}`, {
+    const data: any = await (await fetch(`http://192.168.0.134:8000/bedrock/${server}`, {
         method: 'get'
-    })
-    const data: BedrockServer = await serverData.json()
+    })).json()
 
-    const blockTracking = getCookieWithoutDocument("blockTracking", request.headers.get("cookie") ?? "")
+    const cookie = getCookieWithoutDocument("tracking", request.headers.get("cookie") ?? "")
+    const blockTracking = cookie == "no-track" ? true : false
 
-    if (!blockTracking) {
+    if (!blockTracking && data) {
         const IP = getClientIPAddress(request.headers)
         await db.check.create({
             data: {
