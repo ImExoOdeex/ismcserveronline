@@ -7,6 +7,7 @@ import InviteButton from "./InviteButton";
 import HamburgerMenu from "./Mobile/HamburgerMenu";
 import { ExternalLinkIcon, MoonIcon, QuestionOutlineIcon, SunIcon } from "@chakra-ui/icons";
 import { BiCode, BiHome } from "react-icons/bi";
+import ServerSearch from "./ServerSearch";
 
 export default function Header() {
 
@@ -24,11 +25,14 @@ export default function Header() {
     return (
         <Flex as={'header'} w='100%' h='80px'>
             <Flex w='100%' maxW={'1500px'} px={4} alignItems='center' h='100%' mx='auto' justifyContent={'space-between'}>
-                <Link to='/' alignItems={'center'}>
-                    <Heading as={'h1'} fontSize='2xl' transition={'.1s'}
-                        transform={'auto-gpu'} _active={{ scale: .9 }}
-                    >IsMcServer.online</Heading>
-                </Link>
+                <HStack spacing={5}>
+                    <Link to='/' alignItems={'center'}>
+                        <Heading as={'h1'} fontSize='2xl' transition={'.1s'}
+                            transform={'auto-gpu'} _active={{ scale: .9 }}
+                        >IsMcServer.online</Heading>
+                    </Link>
+                    <ServerSearch />
+                </HStack>
 
                 <HStack spacing={3} display={{ base: 'none', lg: 'flex' }}>
                     <FAQButton />

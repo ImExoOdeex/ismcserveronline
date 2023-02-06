@@ -8,7 +8,7 @@ export default function APIButton() {
         >
             <Button
                 _hover={{ bg: "alpha" }} _active={{ bg: "alpha100" }}
-                rounded={'xl'} bg={'transparent'}
+                rounded={'xl'} bg={'transparent'} tabIndex={-1}
             >
                 <HStack spacing={1.5}>
                     <Text fontWeight={600}>API</Text>

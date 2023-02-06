@@ -127,7 +127,7 @@ export default function Faq() {
                     How can I contact you?
                 </Heading>
                 <Text color={'textSec'} fontWeight={500}>
-                    You can send an e-mail to <Link href="mailto:contact@ismcserver.online"><Code colorScheme={'purple'}>contact@ismcserver.online</Code></Link>.
+                    You can join our <Link href="https://discord.gg/e2c4DgRbWN"><Code colorScheme={'purple'}>discord server</Code></Link>.
                 </Text>
             </VStack>
 
@@ -138,6 +138,8 @@ export default function Faq() {
                 <Text fontWeight={500}>This project is <Link href="https://github.com/ImExoOdeex/ismcserveronline" variant={'link'}>open-source</Link>. It's made with <Link href="https://remix.run/" variant={'link'}>Remix</Link> and <Link href="https://chakra-ui.com/" variant={'link'}>Chakra UI</Link>. API is written in Typescript, nodeJS.</Text>
                 <Text fontWeight={500}>If you found any bug, please <Link href="https://github.com/ImExoOdeex/ismcserveronline/issues" variant={'link'}>create new issue on github</Link>.</Text>
             </VStack>
+
+            <Divider />
 
             <SystemInfo system={system} />
 
