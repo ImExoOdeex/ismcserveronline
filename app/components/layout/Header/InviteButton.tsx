@@ -1,10 +1,11 @@
 import { HStack, Icon, Link, Text } from "@chakra-ui/react";
+import links from "../../config/links.json"
 
 export default function InviteButton() {
     return (
         <Link _hover={{ textDecoration: "none", bg: "discord.900" }} h='40px' px={4} fontWeight={500} bg="discord.100" rounded={'xl'} color={'white'} alignItems={'center'} userSelect={"none"}
             transform={'auto-gpu'} _active={{ scale: .9 }}
-            href="https://discord.com/api/oauth2/authorize?client_id=1043569248427061380&permissions=2147789824&scope=bot"
+            href={links.discordBotInvite}
         >
             <HStack h={"100%"} alignItems={'center'}>
                 <Icon h={'24px'} fill={"white"}>

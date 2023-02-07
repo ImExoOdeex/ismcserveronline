@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import SystemInfo from "~/components/layout/faq/SystemInfo";
 import { getCookie, getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
 import os from "os"
+import links from "../components/config/links.json"
 
 export const meta: MetaFunction = () => {
     return {
@@ -127,7 +128,7 @@ export default function Faq() {
                     How can I contact you?
                 </Heading>
                 <Text color={'textSec'} fontWeight={500}>
-                    You can join our <Link href="https://discord.gg/e2c4DgRbWN"><Code colorScheme={'purple'}>discord server</Code></Link>.
+                    You can join our <Link href={links.discordServerInvite}><Code colorScheme={'purple'}>discord server</Code></Link>.
                 </Text>
             </VStack>
 
