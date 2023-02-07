@@ -71,6 +71,15 @@ export default function Faq() {
 
             <VStack align={'start'}>
                 <Heading fontSize={'md'}>
+                    How do I change port of server I want to check?
+                </Heading>
+                <Text color={'textSec'} fontWeight={500}>
+                    You can use the same way as in game. Add the <Badge>:</Badge> and port you want to check after the domain.
+                </Text>
+            </VStack>
+
+            <VStack align={'start'}>
+                <Heading fontSize={'md'}>
                     How can I disable status for my server?
                 </Heading>
                 <Text color={'textSec'} fontWeight={500}>
@@ -128,7 +137,7 @@ export default function Faq() {
                     How can I contact you?
                 </Heading>
                 <Text color={'textSec'} fontWeight={500}>
-                    You can join our <Link href={links.discordServerInvite}><Code colorScheme={'purple'}>discord server</Code></Link>.
+                    You can join our <Link href={links.discordServerInvite} variant={'link'}>discord server</Link>.
                 </Text>
             </VStack>
 

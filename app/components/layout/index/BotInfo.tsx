@@ -55,7 +55,7 @@ export default function BotInfo() {
                                 <VStack spacing={10} w='100%' pt={10} align={"start"}>
 
                                     <Text maxW={'800px'} mx={'auto'} textAlign={'center'}>
-                                        <Box as={"span"} fontStyle={"italic"} >Is Minecraft Server Online</Box> is a bot, that allows you to check any Minecraft server status direclty on your Discord server. Use <Badge>/status</Badge> command and enter the server address to check the status! You can also set up the <Badge>/livecheck</Badge> command and see your server status in real-time!
+                                        <Box as={"span"} fontStyle={"italic"} >Is Minecraft Server Online</Box> is a bot, that allows you to check any Minecraft server status directly on your Discord server. Use <Badge>/status</Badge> command and enter the server address to check the status! You can also set up the <Badge>/livecheck</Badge> command and see your server status in real-time!
 
                                     </Text>
 
@@ -80,7 +80,7 @@ export default function BotInfo() {
                                                     </Icon>
                                                     <Text fontWeight={700} color={"white"} textAlign={'center'}>
                                                         Invite our bot to your server to check Server status directly in discord!
-                                                    </Text>
+                                                    </Text>links.discordServerInvite
                                                 </Stack>
                                             </ChakraBox>
 
