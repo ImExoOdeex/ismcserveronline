@@ -31,8 +31,10 @@ export async function loader({ request }: LoaderArgs) {
   const cookies = request.headers.get("Cookie")
   const bedrock = getCookieWithoutDocument("bedrock", cookies ?? "")
 
+
   // TODO: will get working defer later
-  const sampleServers = await new Promise((resolve) => {
+  console.time("servers")
+  const sampleServers = new Promise((resolve) => {
     resolve(
       db.sampleServer.findMany({
         select: {
@@ -62,6 +64,7 @@ export async function loader({ request }: LoaderArgs) {
       }
       ))
   })
+  console.timeEnd("servers")
 
   return defer({ bedrock: bedrock == "true" ? true : false, sampleServers })
 };
@@ -205,11 +208,11 @@ export default function Index() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: "-25%" }}
                     >
-                      <Flex w={{ base: '105%', sm: "100%" }} h='100%' bg='bg' align={'center'} alignItems='center' justifyContent={'center'}>
-                        <HStack>
+                      <Flex w={{ base: '102%', sm: "100%" }} h='100%' bg='bg' align={'center'} alignItems='center' justifyContent={'center'}>
+                        <HStack spacing={4}>
 
                           <VStack spacing={0}>
-                            <Text fontWeight={500}>
+                            <Text fontWeight={500} textAlign={"center"}>
                               Getting real-time data about {serverValue}
                             </Text>
                             <Text fontSize={'10px'} opacity={.7}>
@@ -238,7 +241,7 @@ export default function Index() {
         </VStack>
 
         <Flex w={{ base: '100%', md: '50%' }}>
-          <Image src="/webp/ismcserveronlineimg.webp" alt="image" sx={{ imageRendering: 'pixelated', aspectRatio: "4/3" }} />
+          <Image src="/webp/ismcserveronlineimg.webp" alt="image" width={"100%"} height={"100%"} sx={{ imageRendering: 'pixelated', aspectRatio: "4/3" }} />
         </Flex>
 
       </Stack>

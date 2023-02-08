@@ -1,4 +1,4 @@
-import { Flex, Grid, GridItem, HStack, Heading, Image, Skeleton, SkeletonText, Text } from "@chakra-ui/react";
+import { Flex, Grid, GridItem, HStack, Heading, Image, Skeleton, Text } from "@chakra-ui/react";
 import { Await, useLoaderData } from "@remix-run/react";
 import { Suspense, useEffect, useRef } from "react";
 import AddServerPopover from "./AddServerPopover";
@@ -19,21 +19,21 @@ export default function SampleServers({ setServerValue }: { setServerValue: (s: 
 
             <Heading as='h1' fontSize={'lg'}>Just looking? Try out these sample servers!</Heading>
 
-            <Flex mt={5}>
+            <Flex mt={5} w='100%'>
                 <Suspense fallback={
-                    <Grid templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }} px={{ base: 0, md: 3 }} w='100%' gap={5}>
+                    <Grid gridTemplateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }} px={{ base: 0, md: 3 }} w='100%' gap={5}>
                         {[1, 2, 3, 4].map((s) => (
                             <GridItem key={s} p={3} userSelect={"none"} rounded={'lg'} bg={'alpha'} color={"textSec"} transform={"auto-gpu"} transition={"all .2s"} _active={{ scale: .95, bg: "alpha200" }} _hover={{ bg: "alpha100", textDecor: 'none' }} cursor={"pointer"}>
                                 <HStack spacing={5}>
                                     <Skeleton rounded={"md"} width={"64px"} height={"64px"} sx={{ aspectRatio: "1/1" }} startColor="alpha" endColor="alpha200" />
-                                    <SkeletonText noOfLines={2} skeletonHeight={4} h={4} />
+                                    <Skeleton rounded={"lg"} width={"200px"} height={4} startColor="alpha" endColor="alpha200" />
                                 </HStack>
                             </GridItem>
                         ))}
                     </Grid>}>
                     <Await resolve={sampleServers} errorElement={<Text color={"red"} textAlign={'center'}>Coundn't load sample servers</Text>}>
                         {(sampleServers) => (
-                            <Grid templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }} px={{ base: 0, md: 3 }} w='100%' gap={5}>
+                            <Grid gridTemplateColumns={{ md: 'repeat(2, 1fr)', base: 'repeat(1, 1fr)' }} px={{ base: 0, md: 3 }} w='100%' gap={5 + " !important"}>
                                 {sampleServers.map((s: server) => (
                                     <GridItem key={s.server} p={3} rounded={'lg'} bg={'alpha'} transform={"auto-gpu"} transition={"all .2s"} _active={{ scale: .95, bg: "alpha200" }} _hover={{ bg: "alpha100", textDecor: 'none' }} onClick={() => { setServerValue(s.server); window.scrollTo(0, 0) }} cursor={"pointer"}>
                                         <HStack spacing={5}>
@@ -42,9 +42,7 @@ export default function SampleServers({ setServerValue }: { setServerValue: (s: 
                                         </HStack>
                                     </GridItem>
                                 ))}
-
                                 <AddServerPopover />
-
                             </Grid>
                         )}
                     </Await>

@@ -1,4 +1,4 @@
-import { Box, Flex, HStack, Icon, Input, Kbd, Spinner, Text, VStack, useEventListener } from "@chakra-ui/react";
+import { Box, Flex, HStack, Icon, Input, Kbd, Spinner, Text, VStack, useColorModeValue, useEventListener } from "@chakra-ui/react";
 import { useFetcher, useLocation } from "@remix-run/react";
 import { AnimatePresence } from "framer-motion";
 import { useRef, useState } from "react";
@@ -28,6 +28,8 @@ export default function ServerSearch() {
     const { pathname } = useLocation()
 
     const [server, setServer] = useState<string>()
+    const bgInputAutoFill = useColorModeValue("#e2e8f0", "#1d1d1d")
+    const borderInputAutoFill = useColorModeValue("#dfe4e8", "#262626")
 
     return (
         <Flex display={{ base: 'none', md: "flex" }}>
@@ -46,6 +48,14 @@ export default function ServerSearch() {
                             <Flex pos={'relative'}>
                                 <Input variant={"filled"} w='100%' display={"block"} rounded={'xl'} border={"2px"} px={4} py={1.5} pl={10} pr={14} fontWeight={"normal"}
                                     _focus={{ borderColor: "brand" }} borderColor={"alpha100"}
+
+                                    _autofill={{
+                                        borderColor: borderInputAutoFill, boxShadow: `0 0 0px 1000px ${bgInputAutoFill} inset`,
+                                        _active: { borderColor: "brand", boxShadow: `0 0 0px 1000px ${bgInputAutoFill} inset` },
+                                        _focus: { borderColor: "brand", boxShadow: `0 0 0px 1000px ${bgInputAutoFill} inset` },
+                                        _hover: { borderColor: "brand", boxShadow: `0 0 0px 1000px ${bgInputAutoFill} inset` }
+                                    }}
+
                                     id="search" ref={inputRef} disabled={submitting} minLength={1}
                                     name="server" onChange={(e) => setServer(e.currentTarget.value)} value={server}
                                     placeholder="Server address"
@@ -72,7 +82,7 @@ export default function ServerSearch() {
                                                 <HStack>
 
                                                     <VStack spacing={0}>
-                                                        <Text fontWeight={400} fontSize={'12px'}>
+                                                        <Text fontWeight={400} fontSize={'14px'}>
                                                             Fetching {server}
                                                         </Text>
                                                         <Text fontSize={'10px'} opacity={.7}>

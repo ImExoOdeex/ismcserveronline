@@ -128,7 +128,7 @@ export default function $server() {
 
                         <Flex flexDir={'row'} alignItems='center' justifyContent={'space-between'} w='100%'>
                             <HStack as={'a'} target="_blank" href={`http://${server}`}>
-                                <Heading fontSize={{ base: 'lg', sm: '2xl', md: '4xl' }} letterSpacing={'3px'}>{server}</Heading>
+                                <Heading fontSize={{ base: 'md', sm: '2xl', md: '4xl' }} letterSpacing={'3px'}>{server}</Heading>
                                 <ExternalLinkIcon fontSize={'lg'} />
                             </HStack>
                             <HStack spacing={2}>
@@ -138,7 +138,7 @@ export default function $server() {
                             </HStack>
                         </Flex>
 
-                        <Flex py={4} flexDir={'column'} w='100%' pos='relative' rounded={'3xl'} justifyContent='center' align={'center'} alignItems='center'>
+                        <Flex py={4} flexDir={'column'} w='100%' pos='relative' maxW={'100%'} overflowX={"auto"} rounded={'3xl'} justifyContent='center' align={'center'} alignItems='center'>
                             <pre>
                                 {data?.motd?.html?.split("\n")?.map((m: string) => (
                                     <Flex key={m} dangerouslySetInnerHTML={{ __html: m }} w='100%' fontFamily={"mono"} justifyContent='center' align={'center'} alignItems='center' fontSize={'md'} fontWeight={"normal"} />
@@ -152,10 +152,10 @@ export default function $server() {
 
                 <Divider />
 
-                <VStack spacing={'20px'} align='start' fontWeight={600}>
+                <VStack spacing={'20px'} align='start' fontWeight={600} w='100%' maxW={"100%"}>
                     <Heading as={'h1'} fontSize='lg'>General info</Heading>
 
-                    <Box>
+                    <Flex overflowX={"auto"} w='100%' maxW={"100%"} pos={"relative"}>
                         <TableContainer>
                             <Table variant={"unstyled"} size={"sm"}>
                                 <Tbody>
@@ -207,7 +207,7 @@ export default function $server() {
                                 </Tbody>
                             </Table>
                         </TableContainer>
-                    </Box>
+                    </Flex>
 
 
 

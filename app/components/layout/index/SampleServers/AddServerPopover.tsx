@@ -6,7 +6,7 @@ export default function AddServerPopover() {
         <>
             <Popover isLazy placement="top">
                 <PopoverTrigger>
-                    <GridItem p={3} userSelect={"none"} rounded={'lg'} bg={'alpha'} color={"textSec"} transform={"auto-gpu"} transition={"all .2s"} _active={{ scale: .95, bg: "alpha200" }} _hover={{ bg: "alpha100", textDecor: 'none' }} cursor={"pointer"}>
+                    <GridItem p={3 + " !important"} userSelect={"none"} rounded={'lg'} bg={'alpha'} color={"textSec"} transform={"auto-gpu"} transition={"all .2s"} _active={{ scale: .95, bg: "alpha200" }} _hover={{ bg: "alpha100", textDecor: 'none' }} cursor={"pointer"}>
                         <HStack spacing={5}>
                             <Flex border={"2px dashed"} rounded={"md"} width={"64px"} height={"64px"} sx={{ aspectRatio: "1/1" }} />
                             <Text fontWeight={'bold'} color={"text"}>Your.server.com! Add it in a couple of seconds!</Text>
