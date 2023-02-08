@@ -1,5 +1,4 @@
 import { ChakraProvider, cookieStorageManagerSSR, localStorageManager, useConst } from "@chakra-ui/react";
-import { withEmotionCache } from "@emotion/react";
 import { type ActionArgs, json, redirect, type LoaderFunction, type MetaFunction } from "@remix-run/node";
 import {
   Links,
@@ -12,10 +11,9 @@ import {
   useOutlet,
 } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useContext, useEffect } from "react";
+import React from "react";
 import Layout from "./components/layout/Layout";
 import theme from "./components/utils/theme";
-import { ClientStyleContext, ServerStyleContext } from "./context";
 import { type LinksFunction } from "@remix-run/react/dist/routeModules";
 import { getCookieWithoutDocument } from "./components/utils/func/cookiesFunc";
 
@@ -32,71 +30,53 @@ interface DocumentProps {
   children: React.ReactNode;
 }
 
-const Document = withEmotionCache(
-  ({ children }: DocumentProps, emotionCache) => {
-    const serverStyleData = useContext(ServerStyleContext);
-    const clientStyleData = useContext(ClientStyleContext);
+export const loader: LoaderFunction = async ({ request }) => {
+  return json({ cookies: request.headers.get("cookie") ?? '' })
+};
 
-    const { cookies } = useLoaderData<typeof loader>()
-    const themeValue = getCookieWithoutDocument("chakra-ui-color-mode", cookies)
+const Document = ({ children }: DocumentProps) => {
 
-    useEffect(() => {
-      emotionCache.sheet.container = document.head;
-      const tags = emotionCache.sheet.tags;
-      emotionCache.sheet.flush();
-      tags.forEach((tag) => {
-        (emotionCache.sheet as any)._insertTag(tag);
-      });
-      clientStyleData?.reset();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+  const { cookies } = useLoaderData<typeof loader>()
+  const themeValue = getCookieWithoutDocument("chakra-ui-color-mode", cookies)
 
-    return (
-      <html lang="en" style={{ colorScheme: themeValue, scrollBehavior: "smooth" }} data-theme={themeValue}>
-        <head>
-          <meta name="robots" content="all" />
-          <Meta />
-          <link rel="icon" type="image/png" href="/favicon.png" sizes="20x20" />
-          {/* <!-- Google Tag Manager --> */}
-          <script dangerouslySetInnerHTML={{
-            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-WW2Z3RZ');`}}></script>
-          {/* <!-- End Google Tag Manager --> */}
-          {/* <!-- Google tag (gtag.js) --> */}
-          <script async src="https://www.googletagmanager.com/gtag/js?id=G-F1BWR503G2"></script>
-          <script dangerouslySetInnerHTML={{
-            __html: `window.dataLayer = window.dataLayer || [];
+  return (
+    <html lang="en" style={{ colorScheme: themeValue, scrollBehavior: "smooth" }} data-theme={themeValue}>
+      <head>
+        <meta name="robots" content="all" />
+        <Meta />
+        <link rel="icon" type="image/png" href="/favicon.png" sizes="20x20" />
+        {/* <!-- Google Tag Manager --> */}
+        {/* <script dangerouslySetInnerHTML={{
+          __html: `(function(w,d,s,l,i){w[l] = w[l] || [];w[l].push({"gtm.start":
+          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+          })(window,document,'script','dataLayer','GTM-WW2Z3RZ');`}}></script> */}
+        {/* <!-- End Google Tag Manager --> */}
+        {/* <!-- Google tag (gtag.js) --> */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-F1BWR503G2"></script>
+        <script dangerouslySetInnerHTML={{
+          __html: `window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
   gtag('config', 'G-F1BWR503G2');`}}>
-          </script>
-          <Links />
-          {serverStyleData?.map(({ key, ids, css }) => (
-            <style
-              key={key}
-              data-emotion={`${key} ${ids.join(' ')}`}
-              dangerouslySetInnerHTML={{ __html: css }}
-            />
-          ))}
-        </head>
-        <body>
-          {/* <!-- Google Tag Manager (noscript) --> */}
-          <noscript><iframe title="Google Tag Manager" src="https://www.googletagmanager.com/ns.html?id=GTM-WW2Z3RZ"
-            height="0" width="0" style={{ display: 'none', visibility: 'hidden' }}></iframe></noscript>
-          {/* <!-- End Google Tag Manager (noscript) --> */}
-          {children}
-          <ScrollRestoration />
-          <Scripts />
-          <LiveReload />
-        </body>
-      </html>
-    );
-  }
-);
+        </script>
+        <Links />
+      </head>
+      <body>
+        {/* <!-- Google Tag Manager (noscript) --> */}
+        <noscript><iframe title="Google Tag Manager" src="https://www.googletagmanager.com/ns.html?id=GTM-WW2Z3RZ"
+          height="0" width="0" style={{ display: 'none', visibility: 'hidden' }}></iframe></noscript>
+        {/* <!-- End Google Tag Manager (noscript) --> */}
+        {children}
+        <ScrollRestoration />
+        <Scripts />
+        <LiveReload />
+      </body>
+    </html>
+  );
+}
 
 export const links: LinksFunction = () => {
   return [
@@ -134,10 +114,6 @@ export default function App() {
     </Document>
   );
 }
-
-export const loader: LoaderFunction = async ({ request }) => {
-  return json({ cookies: request.headers.get("cookie") ?? '' })
-};
 
 export async function action({ request }: ActionArgs) {
   const formData = await request.formData();

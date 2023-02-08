@@ -8,6 +8,8 @@ import HamburgerMenu from "./Mobile/HamburgerMenu";
 import { ExternalLinkIcon, MoonIcon, QuestionOutlineIcon, SunIcon } from "@chakra-ui/icons";
 import { BiCode, BiHome } from "react-icons/bi";
 import ServerSearch from "./ServerSearch";
+import links from "../../config/links.json"
+import { useEffect, useState } from "react";
 
 export default function Header() {
 
@@ -22,8 +24,22 @@ export default function Header() {
 
     const { toggleColorMode, colorMode } = useColorMode()
 
+    const [scrollPosition, setScrollPosition] = useState(0);
+    const handleScroll = () => {
+        const position = window.pageYOffset;
+        setScrollPosition(position);
+    };
+
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll, { passive: true });
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
+
     return (
-        <Flex as={'header'} w='100%' h='80px'>
+        <Flex as={'header'} w='100%' h='80px' pos={"sticky"} top={0} bg="bg" zIndex={1799} borderBottom={"1px"} borderBottomColor={scrollPosition > 0 ? 'alpha' : "transparent"} transition={"all .2s"}>
             <Flex w='100%' maxW={'1500px'} px={4} alignItems='center' h='100%' mx='auto' justifyContent={'space-between'}>
                 <HStack spacing={5}>
                     <Link to='/' alignItems={'center'}>
@@ -70,7 +86,7 @@ export default function Header() {
                                             </Flex>
                                         </MenuItem>
                                     </Link>
-                                    <a href="https://rapidapi.com/odeex722-TbH352Ij4z/api/minecraft-server-data/" target={'_blank'} rel="noreferrer">
+                                    <a href={links.rapidAPI} target={'_blank'} rel="noreferrer">
                                         <MenuItem bg="bg">
                                             <Flex flexDir={"row"} justifyContent={"space-between"} w='100%'>
                                                 <HStack>
@@ -83,7 +99,7 @@ export default function Header() {
                                             </Flex>
                                         </MenuItem>
                                     </a>
-                                    <a href="https://discord.com/api/oauth2/authorize?client_id=1043569248427061380&permissions=2147789824&scope=bot">
+                                    <a href={links.discordBotInvite}>
                                         <MenuItem bg="bg">
                                             <Flex flexDir={"row"} justifyContent={"space-between"} w='100%'>
                                                 <HStack>

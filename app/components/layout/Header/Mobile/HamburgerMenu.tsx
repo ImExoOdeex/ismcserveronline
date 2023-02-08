@@ -62,6 +62,7 @@ function HamburgerMenu({
     };
     const unitHeight = 4;
     const unitWidth = (unitHeight * (width as number)) / (height as number);
+    const transition: Transition = { ease: [0.25, 0.1, 0.25, 1], duration: .33 }
 
     return (
         // @ts-ignore
@@ -79,6 +80,7 @@ function HamburgerMenu({
                 y1="0"
                 y2="0"
                 variants={top}
+                transition={transition}
                 {...lineProps}
             />
             <motion.line
@@ -87,6 +89,7 @@ function HamburgerMenu({
                 y1="2"
                 y2="2"
                 variants={center}
+                transition={transition}
                 {...lineProps}
             />
             <motion.line
@@ -95,6 +98,7 @@ function HamburgerMenu({
                 y1="4"
                 y2="4"
                 variants={bottom}
+                transition={transition}
                 {...lineProps}
             />
         </motion.svg>

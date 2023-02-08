@@ -1,5 +1,5 @@
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
-import { DarkMode, IconButton, Kbd, Text, Tooltip, useColorMode, useColorModeValue, useEventListener } from "@chakra-ui/react";
+import { DarkMode, IconButton, Text, Tooltip, useColorMode, useColorModeValue, useEventListener } from "@chakra-ui/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useActionKey } from "~/components/utils/func/useActionKey";
 
@@ -18,9 +18,6 @@ export default function ThemeToggle() {
         }
     })
 
-    // eslint-disable-next-line no-useless-concat
-    const hoverTooltipColor = useColorModeValue("bg.100", "bg.900" + " !important")
-    const borderColor = useColorModeValue("#8a8a8a", "#3a3a3a")
     const actionKey = useActionKey()
 
     return (
@@ -34,8 +31,7 @@ export default function ThemeToggle() {
             >
                 <Tooltip
                     label={<Text alignItems={'center'}>Toggle {colorMode == 'light' ? "Dark" : "Light"} <DarkMode>
-                        <Kbd verticalAlign={'middle'} fontSize={'10px'} borderColor={borderColor} bg={colorMode == 'light' ? "whiteAlpha.300" : "blackAlpha.300"} color={hoverTooltipColor}>{actionKey}</Kbd>
-                        <Kbd verticalAlign={'middle'} fontSize={'10px'} borderColor={borderColor} ml={1} bg={colorMode == 'light' ? "whiteAlpha.300" : "blackAlpha.300"} color={hoverTooltipColor}>i</Kbd>
+                        ({actionKey} + i)
                     </DarkMode></Text>}
                     openDelay={1000}>
                     <IconButton role={'group'}
