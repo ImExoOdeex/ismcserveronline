@@ -14,7 +14,7 @@ export async function action({ request }: ActionArgs) {
         })
     }
 
-    const IP = getClientIPAddress(request.headers)
+    const IP = body.source === "DISCORD" ? null : getClientIPAddress(request.headers)
 
     await db.check.create({
         data: {

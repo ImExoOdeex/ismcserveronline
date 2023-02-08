@@ -62,7 +62,7 @@ export default function BotInfo() {
                                     <Stack w='100%' maxW={'1200px'} mx='auto' spacing={5} pos={'relative'}
                                         direction={{ base: "column", md: "row" }}>
 
-                                        <Image src="/statusbotlogo512.webp" rounded={'2xl'} h='300px' boxShadow={'md'} border="2px solid white" />
+                                        <Image src="/webp/statusbotlogo512.webp" rounded={'2xl'} h='300px' boxShadow={'md'} border="2px solid white" />
 
                                         <VStack w='100%' align={"start"} spacing={5}>
                                             {/* bot */}
