@@ -1,5 +1,5 @@
 import { Flex, Heading, Stack, chakra, VStack, FormLabel, HStack, Text, Button, VisuallyHiddenInput, Box, Spinner, Image, Tooltip } from "@chakra-ui/react";
-import { type ActionArgs, redirect, type MetaFunction, defer } from "@remix-run/node"
+import { type ActionArgs, redirect, type MetaFunction, defer, json } from "@remix-run/node"
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
@@ -34,7 +34,7 @@ export async function loader({ request }: LoaderArgs) {
 
   // TODO: will get working defer later
   console.time("servers")
-  const sampleServers = new Promise((resolve) => {
+  const sampleServers = await new Promise((resolve) => {
     resolve(
       db.sampleServer.findMany({
         select: {
@@ -66,7 +66,7 @@ export async function loader({ request }: LoaderArgs) {
   })
   console.timeEnd("servers")
 
-  return defer({ bedrock: bedrock == "true" ? true : false, sampleServers })
+  return json({ bedrock: bedrock == "true" ? true : false, sampleServers })
 };
 
 export default function Index() {

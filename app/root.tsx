@@ -55,14 +55,14 @@ const Document = ({ children }: DocumentProps) => {
           })(window,document,'script','dataLayer','GTM-WW2Z3RZ');`}}></script> */}
         {/* <!-- End Google Tag Manager --> */}
         {/* <!-- Google tag (gtag.js) --> */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-F1BWR503G2"></script>
+        {/* <script async src="https://www.googletagmanager.com/gtag/js?id=G-F1BWR503G2"></script>
         <script dangerouslySetInnerHTML={{
           __html: `window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
   gtag('config', 'G-F1BWR503G2');`}}>
-        </script>
+        </script> */}
         <Links />
       </head>
       <body>
