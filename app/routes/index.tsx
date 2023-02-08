@@ -31,33 +31,37 @@ export async function loader({ request }: LoaderArgs) {
   const cookies = request.headers.get("Cookie")
   const bedrock = getCookieWithoutDocument("bedrock", cookies ?? "")
 
-  const sampleServers = await new Promise((resolve) => resolve(db.sampleServer.findMany({
-    select: {
-      bedrock: true,
-      server: true,
-      favicon: true,
-    },
-    orderBy: {
-      add_date: "desc"
-    },
-    // get only servers that end dates are below current date or that doesnt have end date
-    where: {
-      OR: [
-        {
-          end_date: {
-            lt: new Date(),
-            equals: null
-          }
+  // TODO: will get working defer later
+  const sampleServers = await new Promise((resolve) => {
+    resolve(
+      db.sampleServer.findMany({
+        select: {
+          bedrock: true,
+          server: true,
+          favicon: true,
         },
-        {
-          end_date: {
-            equals: null
-          }
+        orderBy: {
+          add_date: "desc"
+        },
+        // get only servers that end dates are below current date or that doesnt have end date
+        where: {
+          OR: [
+            {
+              end_date: {
+                lt: new Date(),
+                equals: null
+              }
+            },
+            {
+              end_date: {
+                equals: null
+              }
+            }
+          ]
         }
-      ]
-    }
-  }
-  )))
+      }
+      ))
+  })
 
   return defer({ bedrock: bedrock == "true" ? true : false, sampleServers })
 };
@@ -239,7 +243,7 @@ export default function Index() {
 
       </Stack>
 
-      <SampleServers sampleServers={sampleServers} setServerValue={setServerValue} />
+      <SampleServers setServerValue={setServerValue} />
 
       <BotInfo />
 
