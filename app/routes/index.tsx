@@ -1,5 +1,5 @@
 import { Flex, Heading, Stack, chakra, VStack, FormLabel, HStack, Text, Button, VisuallyHiddenInput, Box, Spinner, Image, Tooltip } from "@chakra-ui/react";
-import { type ActionArgs, redirect, type MetaFunction, json } from "@remix-run/node"
+import { type ActionArgs, redirect, type MetaFunction, defer } from "@remix-run/node"
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
@@ -9,6 +9,8 @@ import type { LoaderArgs } from "@remix-run/node"
 import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
 import BotInfo from "~/components/layout/index/BotInfo";
 import HowToUse from "~/components/layout/index/HowToUse";
+import SampleServers from "~/components/layout/index/SampleServers/SampleServers";
+import { db } from "~/components/utils/db.server";
 
 export async function action({ request }: ActionArgs) {
   const formData = await request.formData();
@@ -18,20 +20,46 @@ export async function action({ request }: ActionArgs) {
   return redirect(`/${bedrock == "true" ? "bedrock/" : ""}${server}`)
 };
 
-
 export const meta: MetaFunction = () => {
   return {
     title: "Minecraft server status | IsMcServer.online"
   };
 };
 
-
 export async function loader({ request }: LoaderArgs) {
 
   const cookies = request.headers.get("Cookie")
   const bedrock = getCookieWithoutDocument("bedrock", cookies ?? "")
 
-  return json({ bedrock: bedrock == "true" ? true : false })
+  const sampleServers = await new Promise((resolve) => resolve(db.sampleServer.findMany({
+    select: {
+      bedrock: true,
+      server: true,
+      favicon: true,
+    },
+    orderBy: {
+      add_date: "desc"
+    },
+    // get only servers that end dates are below current date or that doesnt have end date
+    where: {
+      OR: [
+        {
+          end_date: {
+            lt: new Date(),
+            equals: null
+          }
+        },
+        {
+          end_date: {
+            equals: null
+          }
+        }
+      ]
+    }
+  }
+  )))
+
+  return defer({ bedrock: bedrock == "true" ? true : false, sampleServers })
 };
 
 export default function Index() {
@@ -39,12 +67,14 @@ export default function Index() {
   const fetcher = useFetcher()
 
   const lastBedrock = useRef({})
+  const lastSampleServers = useRef({})
 
-  const { bedrock } = useLoaderData<typeof loader>() ?? { bedrock: lastBedrock.current }
+  const { bedrock, sampleServers } = useLoaderData() ?? { bedrock: lastBedrock.current, sampleServers: lastSampleServers.current }
 
   useEffect(() => {
     if (bedrock) lastBedrock.current = bedrock
-  }, [bedrock])
+    if (sampleServers) lastSampleServers.current = sampleServers
+  }, [bedrock, sampleServers])
 
   const [bedrockChecked, setBedrockChecked] = useState<boolean>(bedrock ? bedrock : false)
   const [searching, setSearching] = useState<boolean>(false)
@@ -99,6 +129,7 @@ export default function Index() {
                   <ChakraInput rounded={'2xl'} placeholder="Hypixel.net" name="server" pl='14px' w='100%'
                     onFocus={() => setSearching(true)} onBlur={() => setSearching(false)}
                     onChange={(e) => setServerValue(e.currentTarget.value)}
+                    value={serverValue}
                     bg='alpha100' color='textSec' fontWeight={500} borderBottomRadius={0}
 
                     _focus={{ outlineColor: 'brand', borderColor: "brand" }}
@@ -207,6 +238,8 @@ export default function Index() {
         </Flex>
 
       </Stack>
+
+      <SampleServers sampleServers={sampleServers} setServerValue={setServerValue} />
 
       <BotInfo />
 

@@ -52,7 +52,7 @@ const Document = withEmotionCache(
     }, []);
 
     return (
-      <html lang="en" style={{ colorScheme: themeValue }} data-theme={themeValue}>
+      <html lang="en" style={{ colorScheme: themeValue, scrollBehavior: "smooth" }} data-theme={themeValue}>
         <head>
           <meta name="robots" content="all" />
           <Meta />
