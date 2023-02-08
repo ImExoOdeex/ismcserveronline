@@ -1,4 +1,4 @@
-import { ChakraProvider, cookieStorageManagerSSR, localStorageManager, useConst } from "@chakra-ui/react";
+import { Box, ChakraProvider, Heading, cookieStorageManagerSSR, localStorageManager, useConst } from "@chakra-ui/react";
 import { type ActionArgs, json, redirect, type LoaderFunction, type MetaFunction } from "@remix-run/node";
 import {
   Links,
@@ -6,6 +6,7 @@ import {
   Meta,
   Scripts,
   ScrollRestoration,
+  useCatch,
   useLoaderData,
   useLocation,
   useOutlet,
@@ -123,3 +124,32 @@ export async function action({ request }: ActionArgs) {
 
   return redirect(`/${bedrock == "true" ? "bedrock/" : ""}${server}`)
 };
+
+export function CatchBoundary() {
+  const caught = useCatch();
+  console.log(caught);
+
+  return (
+    <html>
+      <head>
+      </head>
+      <body>
+        sdfsf
+      </body>
+    </html>
+  );
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return (
+    <Document>
+      <ChakraProvider>
+        <Box>
+          <Heading as="h1" color="red.500">
+            There was an error: {error.message}
+          </Heading>
+        </Box>
+      </ChakraProvider>
+    </Document>
+  );
+}
