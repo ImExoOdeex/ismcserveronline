@@ -52,12 +52,15 @@ export default function BotInfo() {
                                 transition={{ ease: [0.25, 0.1, 0.25, 1] }}
                                 style={{ height: "auto", overflow: "hidden" }}
                             >
-                                <VStack spacing={10} w='100%' pt={10} align={"start"}>
+                                <VStack spacing={10} w='100%' pt={10} align={"center"}>
 
                                     <Text maxW={'800px'} mx={'auto'} textAlign={'center'}>
                                         <Box as={"span"} fontStyle={"italic"} >Is Minecraft Server Online</Box> is a bot, that allows you to check any Minecraft server status directly on your Discord server. Use <Badge>/status</Badge> command and enter the server address to check the status! You can also set up the <Badge>/livecheck</Badge> command and see your server status in real-time!
-
                                     </Text>
+
+                                    <Text fontWeight={"black"} textAlign={'center'}>See it on {" "}
+                                        <Link href="https://top.gg/bot/1043569248427061380" target="_blank" color={"#ff3366"}>Top.gg</Link>
+                                        !</Text>
 
                                     <Stack w='100%' maxW={'1200px'} mx='auto' spacing={5} pos={'relative'}
                                         direction={{ base: "column", md: "row" }}>

@@ -231,7 +231,7 @@ export default function Index() {
               </Flex>
 
             </Flex>
-            <VisuallyHiddenInput name="bedrock" defaultValue={bedrockChecked ? "true" : "false"} value={bedrockChecked ? "true" : "false"} />
+            <VisuallyHiddenInput name="bedrock" defaultValue={bedrockChecked ? "true" : "false"} />
           </fetcher.Form>
 
           <Text fontWeight={600} color='textSec' maxW={'423px'} alignSelf='start'>

@@ -31,4 +31,16 @@ model Check {
   source     SOURCE   @default(API)
   client_ip  String?
   checked_at DateTime @default(now())
+  Token      Token?   @relation(fields: [token_id], references: [id])
+  token_id   Int
+}
+
+model Token {
+  id         Int      @id @unique @default(autoincrement())
+  token      String   @unique
+  user_id    String   @unique
+  check      Check[]
+  client_ip  String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }

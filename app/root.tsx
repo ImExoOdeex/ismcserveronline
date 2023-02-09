@@ -161,7 +161,7 @@ export function CatchBoundary() {
       <head>
       </head>
       <body>
-        sdfsf
+        sdfsf {caught.status}
       </body>
     </html>
   );

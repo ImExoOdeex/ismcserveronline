@@ -21,7 +21,7 @@ app.use(
 
 // Everything else (like favicon.ico) is cached for an hour. You may want to be
 // more aggressive with this caching.
-app.use(express.static("public", { maxAge: "1h" }));
+app.use(express.static("public", { maxAge: "1y" }));
 
 app.use(morgan("tiny"));
 
@@ -29,19 +29,19 @@ app.all(
   "*",
   process.env.NODE_ENV === "development"
     ? (req, res, next) => {
-        purgeRequireCache();
+      purgeRequireCache();
 
-        return createRequestHandler({
-          build: require(BUILD_DIR),
-          mode: process.env.NODE_ENV,
-        })(req, res, next);
-      }
-    : createRequestHandler({
+      return createRequestHandler({
         build: require(BUILD_DIR),
         mode: process.env.NODE_ENV,
-      })
+      })(req, res, next);
+    }
+    : createRequestHandler({
+      build: require(BUILD_DIR),
+      mode: process.env.NODE_ENV,
+    })
 );
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || process.env.NODE_ENV === "development" ? 3000 : 3003;
 
 app.listen(port, () => {
   console.log(`Express server listening on port ${port}`);
