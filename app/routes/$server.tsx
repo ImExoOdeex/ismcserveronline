@@ -60,6 +60,14 @@ export async function loader({ params, request }: LoaderArgs) {
 
     if (!blockTracking && data) {
         const IP = getClientIPAddress(request.headers)
+
+        const token_id = (await db.token.findUnique({
+            where: {
+                token: process.env.API_TOKEN
+            }
+        }))?.id
+        if (!token_id) throw new Error("There's no valid API token!")
+
         await db.check.create({
             data: {
                 server: server,
@@ -67,7 +75,8 @@ export async function loader({ params, request }: LoaderArgs) {
                 players: data.players.online,
                 bedrock: false,
                 source: "WEB",
-                client_ip: IP
+                client_ip: IP,
+                token_id: token_id
             }
         })
     }

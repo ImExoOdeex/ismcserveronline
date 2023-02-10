@@ -7,12 +7,13 @@ export async function action({ request }: ActionArgs) {
 
     const body: any = JSON.parse(await request.text())
 
-    if (body.token !== process.env.SUPER_DUPER_API_ACCESS_TOKEN) {
-        return new Response("Super Duper Token does not match the real 2048 bit Super Duper Token!", {
-            // not allowed status code
-            status: 405
-        })
-    }
+    const headerToken = request.headers.get("Authorization")
+    console.log(headerToken);
+
+    if (!headerToken) return new Response("Super Duper Token does not match the real 2048 bit Super Duper Token!", {
+        // not allowed status code
+        status: 405
+    })
 
     const IP = body.source === "DISCORD" ? null : getClientIPAddress(request.headers)
 
@@ -23,11 +24,18 @@ export async function action({ request }: ActionArgs) {
             players: body.players,
             bedrock: body.bedrock ?? false,
             source: body.source ?? "WEB",
+            Token: {
+                connect: {
+                    token: process.env.API_TOKEN
+                }
+            },
             client_ip: IP
         }
     })
 
-    return null
+    return new Response(null, {
+        status: 200
+    })
 };
 
 // return 404, since without it, it will throw error
