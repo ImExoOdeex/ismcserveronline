@@ -8,7 +8,6 @@ export async function action({ request }: ActionArgs) {
     const body: any = JSON.parse(await request.text())
 
     const headerToken = request.headers.get("Authorization")
-    console.log(headerToken);
 
     if (!headerToken) return new Response("Super Duper Token does not match the real 2048 bit Super Duper Token!", {
         // not allowed status code
@@ -17,6 +16,12 @@ export async function action({ request }: ActionArgs) {
 
     const IP = body.source === "DISCORD" ? null : getClientIPAddress(request.headers)
 
+    const token_id = (await db.token.findUnique({
+        where: {
+            token: process.env.API_TOKEN
+        }
+    }))?.id
+
     await db.check.create({
         data: {
             server: body.server,
@@ -24,11 +29,7 @@ export async function action({ request }: ActionArgs) {
             players: body.players,
             bedrock: body.bedrock ?? false,
             source: body.source ?? "WEB",
-            Token: {
-                connect: {
-                    token: process.env.API_TOKEN
-                }
-            },
+            token_id: token_id,
             client_ip: IP
         }
     })
