@@ -10,6 +10,10 @@ type Props = {
 export default function ChecksTable({ server, checks }: Props) {
     const borderColor = useColorModeValue('#2f2e32', '#2f2e32 !important')
 
+    const discordBg = useColorModeValue("rgba(88, 101, 242, 0.16)", "rgba(88, 147, 242, 0.12)")
+    const discordColor = useColorModeValue("discord.100", "#6f9ce6")
+    const apiColor = useColorModeValue("blue.500", "blue.200")
+
     return (
         <>
             {checks.length ?
@@ -43,7 +47,10 @@ export default function ChecksTable({ server, checks }: Props) {
                                             </HStack>
                                         }</Td>
                                         <Td>
-                                            <Badge rounded={"md"} fontWeight={700} px={3} py={1} colorScheme={c.source == "WEB" ? "gray" : c.source == "DISCORD" ? "blue" : "blackAlpha"}>{c.source}</Badge>
+                                            <Badge rounded={"md"} fontWeight={700} px={3} py={1}
+                                                bg={c.source == "WEB" ? "alpha200" : c.source == "DISCORD" ? discordBg : "rgba(144, 206, 244, 0.16)"}
+                                                color={c.source == "WEB" ? "text" : c.source == "DISCORD" ? discordColor : apiColor}
+                                            >{c.source}</Badge>
                                         </Td>
                                         <Td isNumeric>{c.players}</Td>
                                     </Tr>

@@ -201,7 +201,7 @@ export const ErrorBoundary = withEmotionCache(
     return (
       <html>
         <head>
-          <title>hehe</title>
+          <title>frick</title>
           {serverStyleData?.map(({ key, ids, css }) => (
             <style
               key={key}

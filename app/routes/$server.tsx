@@ -45,13 +45,13 @@ type MinecraftServer = {
 export async function loader({ params, request }: LoaderArgs) {
 
     const server = params.server?.toString().toLowerCase()
-    if (!server?.includes(".")) throw new Response(null, {
+    if (!server?.includes(".")) throw new Response("", {
         status: 404
     })
 
     if (!process.env.API_TOKEN) throw new Error("API_TOKEN is not definied!")
 
-    const data: any = await (await fetch(`https://api.ismcserver.online/query/${server}`, {
+    const data: any = await (await fetch(`https://api.ismcserver.online/${server}`, {
         method: 'get',
         headers: [
             ["Authorization", process.env.API_TOKEN]
@@ -201,7 +201,7 @@ export default function $server() {
                                             </Td>
                                         }
                                     </Tr>
-                                    <Tr>
+                                    {/* <Tr>
                                         <Td>Plugins</Td>
                                         {data.plugins.length ?
                                             <>
@@ -216,7 +216,7 @@ export default function $server() {
                                                 Unable to get
                                             </Td>
                                         }
-                                    </Tr>
+                                    </Tr> */}
 
                                 </Tbody>
                             </Table>
