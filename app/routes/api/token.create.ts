@@ -24,36 +24,43 @@ export async function action({ request }: ActionArgs) {
     const headerToken = request.headers.get("Authorization")
 
     if (headerToken !== process.env.SUPER_DUPER_API_ACCESS_TOKEN) {
-        return new Response("Super Duper Token does not match the real 2048 bit Super Duper Token!", {
+        return json({ message: "Super Duper Token does not match the real 2048 bit Super Duper Token!" }, {
             // not allowed status code
             status: 405
         })
     }
 
-    crypto.generateKey("aes", { length: 256 }, async (err, key) => {
-
-        if (err) {
-            console.log(err);
-            return json({ message: "Couldn't generate token!" }, {
-                status: 500
-            })
-        }
-        const tokenExported = key.export().toString("hex")
-
-        await db.token.create({
-            data: {
-                token: tokenExported,
-                user_id: body.userId
-            }
-        })
-    })
-
-    // finding token, casue I can't get the token from crypto generation
-    const token = (await db.token.findUnique({
+    const userExistsInDb = (await db.token.findUnique({
         where: {
             user_id: body.userId
         }
-    }))?.token
+    })) ? true : false
+
+    if (userExistsInDb) {
+        return json({ message: "User actually has generated their own token!" }, {
+            // not allowed status code
+            status: 200
+        })
+    }
+
+    // crypto.generateKey("aes", { length: 256 }, async (err, key) => {
+    //     if (err) {
+    //         console.log(err);
+    //         return json({ message: "Couldn't generate token!" }, {
+    //             status: 500
+    //         })
+    //     }
+    //     const tokenExported = key.export().toString("hex")
+    // })
+
+    const token = crypto.randomUUID()
+
+    await db.token.create({
+        data: {
+            token: token,
+            user_id: body.userId
+        }
+    })
 
     return json({ token }, {
         headers: {
