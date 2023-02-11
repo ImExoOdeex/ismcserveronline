@@ -49,8 +49,13 @@ export async function loader({ params, request }: LoaderArgs) {
         status: 404
     })
 
-    const data: any = await (await fetch(`http://192.168.0.134:8000/${server}`, {
-        method: 'get'
+    if (!process.env.API_TOKEN) throw new Error("API_TOKEN is not definied!")
+
+    const data: any = await (await fetch(`https://api.ismcserver.online/query/${server}`, {
+        method: 'get',
+        headers: [
+            ["Authorization", process.env.API_TOKEN]
+        ]
     })).json()
 
     // const data: MinecraftServer = await serverData.json()
