@@ -12,11 +12,16 @@ export async function action({ request }: ActionArgs) {
     */
     const body: any = JSON.parse(await request.text())
 
+    if (!body.userId) {
+        return json({ message: "Missing userId in body!" }, {
+            headers: {
+                "Content-type": "application/json"
+            },
+            status: 500
+        })
+    }
+
     const headerToken = request.headers.get("Authorization")
-    if (!headerToken) return new Response("Super Duper Token does not match the real 2048 bit Super Duper Token!", {
-        // not allowed status code
-        status: 405
-    })
 
     if (headerToken !== process.env.SUPER_DUPER_API_ACCESS_TOKEN) {
         return new Response("Super Duper Token does not match the real 2048 bit Super Duper Token!", {
@@ -27,27 +32,36 @@ export async function action({ request }: ActionArgs) {
 
     crypto.generateKey("aes", { length: 256 }, async (err, key) => {
 
-        if (err) return new Response("Couldn't generate token!", {
-            status: 500
-        })
-        const token = key.export().toString("hex")
+        if (err) {
+            console.log(err);
+            return json({ message: "Couldn't generate token!" }, {
+                status: 500
+            })
+        }
+        const tokenExported = key.export().toString("hex")
 
         await db.token.create({
             data: {
-                token: token,
+                token: tokenExported,
                 user_id: body.userId
             }
         })
+    })
 
-        return json({ token }, {
-            headers: {
-                "Content-type": "application/json"
-            },
-            status: 200
-        })
-    });
+    // finding token, casue I can't get the token from crypto generation
+    const token = (await db.token.findUnique({
+        where: {
+            user_id: body.userId
+        }
+    }))?.token
 
-    return null
+    return json({ token }, {
+        headers: {
+            "Content-type": "application/json"
+        },
+        status: 200
+    })
+
 };
 
 // return 404, since without it, it will throw error
