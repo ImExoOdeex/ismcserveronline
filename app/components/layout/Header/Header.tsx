@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, HStack, Icon, Menu, MenuButton, MenuItem, MenuList, Text, useColorMode, useColorModeValue, useEventListener } from "@chakra-ui/react";
+import { Badge, Box, Flex, Heading, HStack, Icon, Menu, MenuButton, MenuItem, MenuList, Text, useColorMode, useEventListener } from "@chakra-ui/react";
 import Link from "../../utils/Link";
 import APIButton from "./APIButton";
 import ThemeToggle from "./ToggleTheme";
@@ -38,17 +38,22 @@ export default function Header() {
         };
     }, []);
 
-    const headerLogoName = useColorModeValue("black 50%, green.700 75%", "white 50%, #78e078 75%")
-
     return (
         <Flex as={'header'} w='100%' h='80px' pos={"sticky"} top={0} bg="bg" zIndex={1799} borderBottom={"1px"} borderBottomColor={scrollPosition > 0 ? 'alpha' : "transparent"} transition={"all .2s"}>
             <Flex w='100%' maxW={'1500px'} px={4} alignItems='center' h='100%' mx='auto' justifyContent={'space-between'}>
                 <HStack spacing={5}>
                     <Link to='/' alignItems={'center'} _hover={{ textDecor: "none" }}>
                         <Heading as={'h1'} fontSize='2xl' transition={'all .2s'}
-                            transform={'auto-gpu'} _active={{ scale: .95 }}
-                            bgClip={"text"} bgGradient={`linear(to-r, ${headerLogoName})`}
-                        >IsMcServer.online</Heading>
+                            transform={'auto-gpu'} _active={{ scale: .95 }}>
+                            <HStack spacing={1} alignItems={'baseline'}>
+                                <Text>
+                                    IsMcServer
+                                </Text>
+                                <Badge fontSize={'md'} rounded={'md'} ml={1} py={.5} px={1.5} colorScheme="green" h='fit-content'>
+                                    .online
+                                </Badge>
+                            </HStack>
+                        </Heading>
                     </Link>
                     <ServerSearch />
                 </HStack>
@@ -89,14 +94,13 @@ export default function Header() {
                                             </Flex>
                                         </MenuItem>
                                     </Link>
-                                    <Link to={"/api"}>
+                                    <Link to={"/api"} _hover={{ textDecor: "none" }}>
                                         <MenuItem bg="bg">
                                             <Flex flexDir={"row"} justifyContent={"space-between"} w='100%'>
                                                 <HStack>
                                                     <Text>
                                                         API
                                                     </Text>
-                                                    <ExternalLinkIcon opacity={.7} />
                                                 </HStack>
                                                 <Icon as={BiCode} />
                                             </Flex>
