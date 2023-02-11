@@ -14,13 +14,20 @@ export async function action({ request }: ActionArgs) {
         status: 405
     })
 
-    const IP = body.source === "DISCORD" ? null : getClientIPAddress(request.headers)
+    const IP = body.source === "DISCORD" || body.source === "API" ? body?.IP ? body.IP : null : getClientIPAddress(request.headers)
 
-    const token_id = (await db.token.findUnique({
-        where: {
-            token: process.env.API_TOKEN
-        }
-    }))?.id
+    const token_id = body.source !== "API" ?
+        (await db.token.findUnique({
+            where: {
+                token: process.env.API_TOKEN
+            }
+        }))?.id
+        :
+        (await db.token.findUnique({
+            where: {
+                token: body.token
+            }
+        }))?.id
 
     await db.check.create({
         data: {
