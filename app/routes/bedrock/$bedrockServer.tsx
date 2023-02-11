@@ -6,37 +6,10 @@ import { useEffect, useRef } from "react";
 import { BiBug, BiInfoCircle } from "react-icons/bi";
 import { getClientIPAddress } from "remix-utils";
 import ChecksTable from "~/components/layout/server/ChecksTable";
+import { type BedrockServer } from "~/components/types/minecraftServer";
 import Link from "~/components/utils/Link";
 import { db } from "~/components/utils/db.server";
 import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
-
-type BedrockServer = {
-    online: boolean;
-    host: string;
-    port: {
-        ipv4: number | null;
-        ipv6: number | null;
-        srv: number | null;
-    };
-    edition: string | null;
-    version: string | null;
-    protocol: number | null;
-    guid: string | null;
-    id: string | null;
-    gamemode: {
-        id: number | null;
-        name: string | null;
-    };
-    motd: {
-        raw: string | null;
-        clean: string | null;
-        html: string | null;
-    };
-    players: {
-        online: number;
-        max: number;
-    };
-};
 
 export async function loader({ params, request }: LoaderArgs) {
 

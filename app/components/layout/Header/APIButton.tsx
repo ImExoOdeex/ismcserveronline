@@ -1,9 +1,10 @@
-import { Button, HStack, Icon, Link, Text } from "@chakra-ui/react";
+import { Badge, Button, HStack, Icon, Text } from "@chakra-ui/react";
 import { BiCode } from 'react-icons/bi'
+import Link from "~/components/utils/Link";
 
 export default function APIButton() {
     return (
-        <Link href="https://rapidapi.com/odeex722-TbH352Ij4z/api/minecraft-server-data/" target={'_blank'} _hover={{ textDecor: 'none' }}
+        <Link to="/api" _hover={{ textDecor: 'none' }}
             transform={'auto-gpu'} _active={{ scale: .9 }}
         >
             <Button
@@ -13,8 +14,9 @@ export default function APIButton() {
                 <HStack spacing={1.5}>
                     <Text fontWeight={600}>API</Text>
                     <Icon as={BiCode} />
+                    <Badge colorScheme="green" variant={"subtle"} rounded={'sm'}>new!</Badge>
                 </HStack>
             </Button>
-        </Link>
+        </Link >
     )
 }

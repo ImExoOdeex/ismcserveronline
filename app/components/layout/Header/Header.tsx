@@ -89,7 +89,7 @@ export default function Header() {
                                             </Flex>
                                         </MenuItem>
                                     </Link>
-                                    <a href={links.rapidAPI} target={'_blank'} rel="noreferrer">
+                                    <Link to={"/api"}>
                                         <MenuItem bg="bg">
                                             <Flex flexDir={"row"} justifyContent={"space-between"} w='100%'>
                                                 <HStack>
@@ -101,7 +101,7 @@ export default function Header() {
                                                 <Icon as={BiCode} />
                                             </Flex>
                                         </MenuItem>
-                                    </a>
+                                    </Link>
                                     <a href={links.discordBotInvite}>
                                         <MenuItem bg="bg">
                                             <Flex flexDir={"row"} justifyContent={"space-between"} w='100%'>

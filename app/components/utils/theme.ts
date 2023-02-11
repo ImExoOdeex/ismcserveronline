@@ -105,7 +105,7 @@ const theme = extendTheme({
                 _dark: 'red.400'
             },
             green: {
-                default: 'green.500',
+                default: 'green.600',
                 _dark: 'green.400'
             },
             bg: {

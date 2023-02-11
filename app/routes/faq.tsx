@@ -119,7 +119,7 @@ export default function Faq() {
                     Is it really real-time data?
                 </Heading>
                 <Text color={'textSec'} fontWeight={500}>
-                    Yes, our API caches responses for only <i>10 seconds</i>.
+                    Yes, our API <b>do not</b> cache any responses!
                 </Text>
             </VStack>
 

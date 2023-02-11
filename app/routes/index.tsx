@@ -1,5 +1,5 @@
 import { Flex, Heading, Stack, chakra, VStack, FormLabel, HStack, Text, Button, VisuallyHiddenInput, Box, Spinner, Image, Tooltip } from "@chakra-ui/react";
-import { type ActionArgs, redirect, type MetaFunction, defer, json } from "@remix-run/node"
+import { type ActionArgs, redirect, type MetaFunction, json } from "@remix-run/node"
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
@@ -11,11 +11,19 @@ import BotInfo from "~/components/layout/index/BotInfo";
 import HowToUse from "~/components/layout/index/HowToUse";
 import SampleServers from "~/components/layout/index/SampleServers/SampleServers";
 import { db } from "~/components/utils/db.server";
+import { validateServer } from "~/components/server/validateServer";
 
 export async function action({ request }: ActionArgs) {
   const formData = await request.formData();
   const bedrock = formData.get("bedrock")
-  const server = formData.get("server")
+  const server = formData.get("server")?.toString()
+
+  if (!server) {
+    return null
+  }
+
+  const error = validateServer(server)
+  if (error) return json({ error })
 
   return redirect(`/${bedrock == "true" ? "bedrock/" : ""}${server}`)
 };
@@ -102,6 +110,8 @@ export default function Index() {
 
   const submitting = fetcher.state !== 'idle'
 
+  console.log(fetcher.data);
+
   return (
     <Flex flexDir={'column'} maxW='1200px' mx='auto' w='100%' mt={'75px'} px='4'>
 
@@ -129,7 +139,13 @@ export default function Index() {
 
           <fetcher.Form style={{ width: '100%' }} method='post'>
             <Flex w='100%' flexDir={'column'}>
-              <FormLabel ml='14px' fontSize={'12px'} color='textSec' fontWeight={400} mb={1.5}>Which server do you want to check?</FormLabel>
+              <FormLabel ml='14px' fontSize={'12px'} color={fetcher?.data ? "red" : 'textSec'} fontWeight={400} mb={1.5}>
+                {fetcher?.data ?
+                  fetcher.data?.error
+                  :
+                  "Which server do you want to check?"
+                }
+              </FormLabel>
 
               <Flex pos={'relative'} w={{ base: "100%", sm: '75%' }} flexDir='row'>
                 <Flex flexDir={'column'} w='100%'>
@@ -213,7 +229,7 @@ export default function Index() {
 
                           <VStack spacing={0}>
                             <Text fontWeight={500} textAlign={"center"}>
-                              Getting real-time data about {serverValue}
+                              Getting real-time data about <Text noOfLines={2} maxW={"500px"}>{serverValue}</Text>
                             </Text>
                             <Text fontSize={'10px'} opacity={.7}>
                               This shouldn't take longer than 5 seconds

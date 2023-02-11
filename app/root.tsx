@@ -19,6 +19,7 @@ import { type LinksFunction } from "@remix-run/react/dist/routeModules";
 import { getCookieWithoutDocument } from "./components/utils/func/cookiesFunc";
 import { withEmotionCache } from "@emotion/react";
 import { ClientStyleContext, ServerStyleContext } from "./context";
+import { validateServer } from "./components/server/validateServer";
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
@@ -158,6 +159,13 @@ export async function action({ request }: ActionArgs) {
   const bedrock = getCookieWithoutDocument("bedrock", request.headers.get("Cookie") ?? "")
 
   const server = formData.get("server")?.toString().toLowerCase()
+
+  if (!server) {
+    return null
+  }
+
+  const error = validateServer(server)
+  if (error) return json({ error })
 
   return redirect(`/${bedrock == "true" ? "bedrock/" : ""}${server}`)
 };

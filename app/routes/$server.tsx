@@ -6,41 +6,10 @@ import { useEffect, useRef } from "react";
 import { BiBug, BiInfoCircle } from "react-icons/bi";
 import { getClientIPAddress } from "remix-utils";
 import ChecksTable from "~/components/layout/server/ChecksTable";
+import { type MinecraftServerWoQuery } from "~/components/types/minecraftServer";
 import Link from "~/components/utils/Link";
 import { db } from "~/components/utils/db.server";
 import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
-
-type MinecraftServer = {
-    online: boolean;
-    host: string;
-    ip: string | null;
-    port: number | null;
-    version: {
-        array: Array<string> | null,
-        string: string | null | undefined
-    } | null;
-    protocol: number | null;
-    software: string | null;
-    plugins: string[];
-    map: string | null;
-    motd: {
-        raw: string | null;
-        clean: string | null;
-        html: string | null;
-    };
-    favicon: string | null;
-    players: {
-        online: number;
-        max: number;
-        list: { name: string; id: string | null }[];
-    };
-    ping: number | null;
-    debug: {
-        status: boolean;
-        query: boolean;
-        legacy: boolean;
-    };
-};
 
 export async function loader({ params, request }: LoaderArgs) {
 
@@ -110,7 +79,7 @@ export async function loader({ params, request }: LoaderArgs) {
     return json({ server, data, checks })
 };
 
-export const meta: MetaFunction = ({ data }: { data: { server: string, data: MinecraftServer } }) => {
+export const meta: MetaFunction = ({ data }: { data: { server: string, data: MinecraftServerWoQuery } }) => {
     return {
         title: data.server + "'s status | IsMcServer.online"
     };
@@ -120,7 +89,7 @@ export default function $server() {
     const lastServer = useRef({})
     const lastData = useRef({})
     const lastChecks = useRef({})
-    const { server, data, checks } = useLoaderData() || { server: lastServer.current, data: lastData.current, checks: lastChecks.current }
+    const { server, data, checks } = useLoaderData<{ data: MinecraftServerWoQuery, server: string, checks: any }>() || { server: lastServer.current, data: lastData.current, checks: lastChecks.current }
     useEffect(() => {
         if (server) lastServer.current = server
         if (data) lastData.current = data
@@ -187,7 +156,7 @@ export default function $server() {
                                     </Tr>
                                     <Tr>
                                         <Td>Players</Td>
-                                        {data.players.list.length ?
+                                        {data.players?.list?.length ?
                                             <>
                                                 {data.players.list.map((p: { id: number, name: string } | any) => {
                                                     return (
@@ -201,23 +170,6 @@ export default function $server() {
                                             </Td>
                                         }
                                     </Tr>
-                                    {/* <Tr>
-                                        <Td>Plugins</Td>
-                                        {data.plugins.length ?
-                                            <>
-                                                {data.plugins.map((p: string) => {
-                                                    return (
-                                                        <Td fontWeight={"normal"} key={p}>{p}</Td>
-                                                    )
-                                                })}
-                                            </>
-                                            :
-                                            <Td fontWeight={"normal"} color={'textSec'}>
-                                                Unable to get
-                                            </Td>
-                                        }
-                                    </Tr> */}
-
                                 </Tbody>
                             </Table>
                         </TableContainer>

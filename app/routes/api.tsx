@@ -1,0 +1,181 @@
+import { Badge, Box, Code, Flex, HStack, Heading, Icon, Link, Stack, Text, Tooltip, VStack, useClipboard, useColorModeValue } from "@chakra-ui/react";
+import { json } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
+import crypto from "crypto"
+import { useEffect, useRef } from "react";
+import links from "../components/config/links.json"
+import DiscordIcon from "~/components/layout/icons/DiscordIcon";
+import { CheckIcon, CopyIcon } from "@chakra-ui/icons";
+import { type MinecraftServerWoQuery } from "~/components/types/minecraftServer";
+
+export async function loader() {
+
+    const sampleToken = crypto.randomUUID()
+
+    if (!process.env.API_TOKEN) throw new Error("API_TOKEN is not definied!")
+
+    const data: any = await (await fetch(`https://api.ismcserver.online/hypixel.net`, {
+        method: 'get',
+        headers: [
+            ["Authorization", process.env.API_TOKEN]
+        ]
+    })).json()
+
+    return json({ sampleToken, data }, {
+        headers: { "Cache-Control": "max-age=86400" }
+    })
+};
+
+export default function Api() {
+
+    // that much code, cuz data will go on page transition. (framer motion full page transition)
+    const lastSampleToken = useRef({})
+    const lastData = useRef({})
+    const { sampleToken, data } = useLoaderData<{ sampleToken: string, data: MinecraftServerWoQuery }>() || { sampleToken: lastSampleToken.current, data: lastData.current }
+    useEffect(() => {
+        if (sampleToken) lastSampleToken.current = sampleToken
+        if (data) lastData.current = data
+    }, [sampleToken, data])
+
+    const { onCopy, hasCopied } = useClipboard(`await request("https://api.ismcserver.online/hypixel.net", {
+        headers: {
+            "Authorization": "${sampleToken}"
+        }
+      })`);
+
+    const teal = useColorModeValue("teal.600", "teal.300")
+
+    return (
+        <>
+            <VStack maxW={'1200px'} w='100%' align={'start'} mx='auto' px={4} spacing={{ base: 10, md: "125px" }} mt={10}>
+
+                <Stack direction={{ base: "column", md: "row" }} w='100%' spacing={{ base: 10, md: 20 }}>
+
+                    {/* first column */}
+                    <VStack alignItems={"start"} textAlign={"left"} w='100%' spacing={6}>
+                        <Heading fontSize={{ base: "xl", sm: "2xl", lg: "4xl" }} letterSpacing={'1px'} lineHeight={"150%"} fontWeight={"semibold"}>
+                            <Box as="span">{"IsMcServer.online's "}</Box>
+                            <Badge colorScheme="green" fontSize={{ base: "xl", sm: "2xl", lg: "4xl" }} px={2} rounded={'xl'}>API</Badge>
+                        </Heading>
+                        <Text fontWeight={500} color={'textSec'}>
+                            IsMcServer.online API is a free-to-use API, that allows checking any Minecraft Server status. To generate API token join our Discord server and navigate to <Badge textTransform={"lowercase"}>#generate-token</Badge> text channel. Use <Badge textTransform={"lowercase"}>
+                                /generatetoken
+                            </Badge> command to get your new private token!
+                        </Text>
+                        <VStack spacing={2} w={{ base: '100%', sm: "unset" }}>
+
+                            <Flex flexDir={'column'} w='100%'>
+                                <Tooltip hasArrow label={<>Sample token*</>} placement="top">
+                                    <Flex rounded={'xl'} bg="alpha" fontWeight={"semibold"} px={{ base: 5, md: 10 }} py={1.5} fontFamily={"mono"} cursor={"not-allowed"} userSelect={"none"} _hover={{ opacity: .7 }} transition={".2s"} minW={{ base: '100%', sm: "unset" }}>
+                                        {sampleToken}
+                                    </Flex>
+                                </Tooltip>
+                                <Text fontSize={"10px"} opacity={.7} fontWeight={100}>Sample token*</Text>
+                            </Flex>
+
+                            <Link _hover={{ textDecoration: "none", bg: "discord.900" }} h='40px' px={4} fontWeight={500} bg="discord.100"
+                                rounded={'xl'} w='100%' color={'white'} alignItems={'center'} userSelect={"none"} transform={'auto-gpu'} _active={{ scale: .9 }}
+                                href={links.discordServerInvite}
+                            >
+                                <HStack h={"100%"} alignItems={'center'} justifyContent={"center"} mx='auto'>
+                                    <DiscordIcon />
+                                    <Text>
+                                        Join server to generate private token!
+                                    </Text>
+                                </HStack>
+                            </Link>
+                        </VStack>
+                    </VStack>
+
+                    {/* second column */}
+                    <VStack alignItems={"center"} w='100%' maxW={{ base: '100%', md: "70%" }} spacing={0} justifyContent={'center'} minH='100%'>
+                        <Icon boxSize={64}>
+                            <svg viewBox="0 0 128 128">
+                                <path fill="currentColor" d="M112.771 30.334L68.674 4.729c-2.781-1.584-6.402-1.584-9.205 0L14.901 30.334C12.031 31.985 10 35.088 10 38.407v51.142c0 3.319 2.084 6.423 4.954 8.083l11.775 6.688c5.628 2.772 7.617 2.772 10.178 2.772 8.333 0 13.093-5.039 13.093-13.828v-50.49c0-.713-.371-1.774-1.071-1.774h-5.623C42.594 41 41 42.061 41 42.773v50.49c0 3.896-3.524 7.773-10.11 4.48L18.723 90.73c-.424-.23-.723-.693-.723-1.181V38.407c0-.482.555-.966.982-1.213l44.424-25.561c.415-.235 1.025-.235 1.439 0l43.882 25.555c.42.253.272.722.272 1.219v51.142c0 .488.183.963-.232 1.198l-44.086 25.576c-.378.227-.847.227-1.261 0l-11.307-6.749c-.341-.198-.746-.269-1.073-.086-3.146 1.783-3.726 2.02-6.677 3.043-.726.253-1.797.692.41 1.929l14.798 8.754a9.294 9.294 0 004.647 1.246c1.642 0 3.25-.426 4.667-1.246l43.885-25.582c2.87-1.672 4.23-4.764 4.23-8.083V38.407c0-3.319-1.36-6.414-4.229-8.073zM77.91 81.445c-11.726 0-14.309-3.235-15.17-9.066-.1-.628-.633-1.379-1.272-1.379h-5.731c-.709 0-1.279.86-1.279 1.566 0 7.466 4.059 16.512 23.453 16.512 14.039 0 22.088-5.455 22.088-15.109 0-9.572-6.467-12.084-20.082-13.886-13.762-1.819-15.16-2.738-15.16-5.962 0-2.658 1.184-6.203 11.374-6.203 9.105 0 12.461 1.954 13.842 8.091.118.577.645.991 1.24.991h5.754c.354 0 .692-.143.94-.396.24-.272.367-.613.335-.979-.891-10.568-7.912-15.493-22.112-15.493-12.631 0-20.166 5.334-20.166 14.275 0 9.698 7.497 12.378 19.622 13.577 14.505 1.422 15.633 3.542 15.633 6.395 0 4.955-3.978 7.066-13.309 7.066z"></path>
+                            </svg>
+                        </Icon>
+                    </VStack>
+                </Stack>
+
+                <VStack w='100%' alignItems={'start'} spacing={2}>
+                    <Heading fontSize={'xl'}>How to use the API?</Heading>
+                    <Text>To use the api, enter your generated token into <Badge>Autorization</Badge> header, like shown on example below.</Text>
+
+                    <Box as="pre" w='100%'>
+                        <Code p={5} rounded={"md"} pos={"relative"} role="group" overflowX={"scroll"} overflow={"auto"} w='100%' bg='alpha100'>
+                            <Flex>
+                                <Box as="span" color={teal}>await</Box> request(<Box as="span" color={"green"}>"https://api.ismcserver.online/hypixel.net"</Box>, {`{`}
+                            </Flex>
+                            <Flex>
+                                {`  headers: {`}
+                            </Flex>
+                            <Flex>
+                                <Box as="span" color={"green"}>{`      `}{`"Authorization"`}</Box>: <Box as="span" color={"green"}>{`"${sampleToken}"`}</Box><Box as="span" color={"gray"}>{` // insert your token here`}</Box>
+                            </Flex>
+                            <Flex>
+                                {`  }`}
+                            </Flex>
+                            <Flex>
+                                {`})`}
+                            </Flex>
+                            {hasCopied ?
+                                <CheckIcon pos={"absolute"} right={2} bottom={2} display={"none"} _groupHover={{ display: "flex" }} cursor={"pointer"} onClick={() => onCopy()} />
+                                :
+                                <CopyIcon pos={"absolute"} right={2} bottom={2} display={"none"} _groupHover={{ display: "flex" }} cursor={"pointer"} onClick={() => onCopy()} />
+                            }
+                        </Code>
+                    </Box>
+
+                    <Text>See the example below to know what should be right API response.</Text>
+
+                </VStack>
+
+                <VStack w='100%' align={'start'} spacing={4}>
+                    <Heading fontSize={"xl"} letterSpacing={"1px"}>Hypixel.net - sample API response</Heading>
+
+                    <Box as="pre" w='100%'>
+                        <Code p={5} rounded={"md"} overflowX={"scroll"} overflow={"auto"} w='100%' bg='alpha100'>
+                            {`"online": ${data.online},
+"host": "${data.host}",
+"port": ${data.port},
+"version": {
+    "array": [${data.version?.array?.map((v: string) => (
+                                <p key={v}>"{v}"</p>
+                            ))}
+    ],
+    "string": "${data.version?.string}"
+},
+"players": {
+    "online": ${data.players.online},
+    "max": ${data.players.max},
+    "list": [${data.players.list?.map((p) => (
+                                <p key={p.id}>{`{
+            "id": ${p.id},
+            "name": ${p.name}
+        }`}</p>
+                            ))}]
+},
+"protocol": ${data.protocol},
+"software": "${data.software}",
+"motd": {
+    "raw": "${data.motd.raw}",
+    "clean": "${data.motd.clean}",
+    "html": "${data.motd.html}"
+},
+"favicon": "data:image/png;base64,iVBORw0...ORK5CYII=",
+"ping": ${data.ping},
+"debug": {
+    "status": ${data.debug.status},
+    "query": ${data.debug.query},
+    "legacy": ${data.debug.legacy}
+}
+                        `}
+                        </Code>
+                    </Box>
+
+                </VStack>
+
+            </VStack>
+        </>
+    )
+}

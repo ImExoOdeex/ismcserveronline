@@ -1,7 +1,7 @@
 import { Box, Flex, HStack, Icon, Input, Kbd, Spinner, Text, VStack, useColorModeValue, useEventListener } from "@chakra-ui/react";
 import { useFetcher, useLocation } from "@remix-run/react";
 import { AnimatePresence } from "framer-motion";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BiSearchAlt } from "react-icons/bi";
 import { useActionKey } from "~/components/utils/func/useActionKey";
 import { motion } from 'framer-motion'
@@ -31,8 +31,14 @@ export default function ServerSearch() {
     const bgInputAutoFill = useColorModeValue("#e2e8f0", "#1d1d1d")
     const borderInputAutoFill = useColorModeValue("#dfe4e8", "#262626")
 
+    useEffect(() => {
+        if (fetcher.data?.error) {
+            setServer("")
+        }
+    }, [fetcher.data])
+
     return (
-        <Flex display={{ base: 'none', md: "flex" }}>
+        <Flex display={{ base: 'none', md: "flex" }} w='350px'>
             <AnimatePresence mode="wait" initial={false}>
                 {pathname !== "/" &&
                     <motion.div
@@ -58,7 +64,7 @@ export default function ServerSearch() {
 
                                     id="search" ref={inputRef} disabled={submitting} minLength={1}
                                     name="server" onChange={(e) => setServer(e.currentTarget.value)} value={server}
-                                    placeholder="Server address"
+                                    placeholder={fetcher.data ? fetcher.data?.error : "Server address"}
                                 />
                                 <Flex pos={"absolute"} insetY={"0"} left={0} alignItems={"center"} pl={4}>
                                     <Icon as={BiSearchAlt} boxSize={5} color={"text"} fill={"text"} />
