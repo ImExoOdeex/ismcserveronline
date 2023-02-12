@@ -1,4 +1,4 @@
-import { Box, ChakraProvider, Heading, cookieStorageManagerSSR, localStorageManager, useConst } from "@chakra-ui/react";
+import { Box, ChakraProvider, Flex, Heading, VStack, cookieStorageManagerSSR, localStorageManager, useConst } from "@chakra-ui/react";
 import { type ActionArgs, json, redirect, type LoaderFunction, type MetaFunction } from "@remix-run/node";
 import {
   Links,
@@ -22,12 +22,13 @@ import { ClientStyleContext, ServerStyleContext } from "./context";
 import { validateServer } from "./components/server/validateServer";
 
 export const meta: MetaFunction = () => ({
-  charset: "utf-8",
   title: "IsMcServer.online",
-  viewport: "width=device-width,initial-scale=1",
+  robots: "all",
   description: "Check Minecraft server status and data by real-time.",
   keywords: "Minecraft server check, Server status check, Minecraft server status, Online server status, Minecraft server monitor, Server checker tool, Minecraft server checker, Real-time server status, Minecraft server status checker, Server uptime checker, Minecraft server monitor tool, Minecraft server status monitor, Real-time server monitoring, Server availability checker, Minecraft server uptime checker",
-  author: ".imexoodeex#0528",
+  charset: "utf-8",
+  viewport: "width=device-width,initial-scale=1",
+  author: ".imexoodeex#0528"
 });
 
 interface DocumentProps {
@@ -74,7 +75,6 @@ const Document = withEmotionCache(
     return (
       <html lang="en" style={{ colorScheme: themeValue, scrollBehavior: "smooth" }} data-theme={themeValue}>
         <head>
-          <meta name="robots" content="all" />
           <Meta />
           <link rel="icon" type="image/png" href="/favicon.ico" sizes="20x20" />
           {/* <!-- Google Tag Manager --> */}
@@ -172,61 +172,38 @@ export async function action({ request }: ActionArgs) {
 
 export function CatchBoundary() {
   const caught = useCatch();
-  console.log(caught);
 
   return (
-    <html>
-      <head>
-      </head>
-      <body>
-        sdfsf <pre>{caught.status}</pre>
-      </body>
-    </html>
+    <Document>
+      <ChakraProvider resetCSS theme={theme} colorModeManager={localStorageManager}>
+        <Layout>
+          <Flex h='100%' minH={"calc(100vh - 80px)"}>
+            <VStack m='auto'>
+              <Heading color={'red'}>{caught.status}</Heading>
+              <Heading>{caught.statusText}</Heading>
+            </VStack>
+          </Flex>
+        </Layout>
+      </ChakraProvider>
+    </Document>
   );
 }
 
 export const ErrorBoundary = withEmotionCache(
-  ({ children, error }: DocumentErrorProps, emotionCache) => {
-
-    const serverStyleData = useContext(ServerStyleContext);
-    const clientStyleData = useContext(ClientStyleContext);
-
-    // Only executed on client
-    useEffect(() => {
-      // re-link sheet container
-      emotionCache.sheet.container = document.head;
-      // re-inject tags
-      const tags = emotionCache.sheet.tags;
-      emotionCache.sheet.flush();
-      tags.forEach((tag) => {
-        (emotionCache.sheet as any)._insertTag(tag);
-      });
-      // reset cache to reapply global styles
-      clientStyleData?.reset();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+  ({ error }: DocumentErrorProps, emotionCache) => {
 
     return (
-      <html>
-        <head>
-          <title>frick</title>
-          {serverStyleData?.map(({ key, ids, css }) => (
-            <style
-              key={key}
-              data-emotion={`${key} ${ids.join(' ')}`}
-              dangerouslySetInnerHTML={{ __html: css }}
-            />
-          ))}
-        </head>
-        <body>
-          <ChakraProvider>
-            <Box>
-              <Heading as="h1" >
-                There was an error: <Box as={"pre"} fontSize={'sm'}>{error.message}</Box>
-              </Heading>
-            </Box>
-          </ChakraProvider>
-        </body>
-      </html>
+      <Document>
+        <ChakraProvider resetCSS theme={theme} colorModeManager={localStorageManager}>
+          <Layout>
+            <Flex h='100%' minH={"calc(100vh - 80px)"}>
+              <VStack m='auto'>
+                <Heading color={'red'}>Error {error.name}</Heading>
+                <Box as="pre">{error.message}</Box>
+              </VStack>
+            </Flex>
+          </Layout>
+        </ChakraProvider>
+      </Document>
     );
   })
