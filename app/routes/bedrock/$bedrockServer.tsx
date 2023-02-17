@@ -95,8 +95,6 @@ export default function $server() {
         if (checks) lastChecks.current = checks
     }, [server, data, checks])
 
-    console.log(data);
-
     const motd = data.motd.html?.split("\n")
     const bgImageColor = "rgba(0,0,0,.7)"
 

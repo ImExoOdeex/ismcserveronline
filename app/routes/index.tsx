@@ -16,7 +16,7 @@ import { validateServer } from "~/components/server/validateServer";
 export async function action({ request }: ActionArgs) {
   const formData = await request.formData();
   const bedrock = formData.get("bedrock")
-  const server = formData.get("server")?.toString()
+  const server = formData.get("server")?.toString().toLowerCase()
 
   if (!server) {
     return null
@@ -109,8 +109,6 @@ export default function Index() {
   }
 
   const submitting = fetcher.state !== 'idle'
-
-  console.log(fetcher.data);
 
   return (
     <Flex flexDir={'column'} maxW='1200px' mx='auto' w='100%' mt={'75px'} px='4'>

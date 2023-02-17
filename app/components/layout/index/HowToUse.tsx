@@ -24,7 +24,7 @@ export default function HowToUse() {
 
             {/* bot */}
             <VStack spacing={3} width={"100%"} align={"start"}>
-                <Heading as={"h1"} fontSize={"xl"}>Discord bot?</Heading>
+                <Heading as={"h1"} fontSize={"xl"}>Hardly using Discord? We got you covered!</Heading>
                 <Divider />
                 <Text color={"textSec"} letterSpacing={'1px'} textAlign={"justify"}>
                     With the Minecraft server status  Discord bot, checking the status of your favorite Minecraft servers has never been easier. All you need to do is hop into your Discord channel and type in the <Badge>/status</Badge> command followed by the server's address or hostname. In just a matter of seconds, the bot will fetch all the information about the server's current status for you. You'll be able to see the server version, the number of players online, and the maximum number of players the server can handle and motd. No more switching between different platforms or navigating through complex websites. Just type in the command and get all the information you need, right there in your Discord channel. <Badge>/livecheck</Badge> command updates server online status and player count automatically every 15 seconds and updates the message if changes occur. Stay updated on your favorite Minecraft server in real-time.

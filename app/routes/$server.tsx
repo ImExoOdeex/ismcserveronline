@@ -14,9 +14,15 @@ import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
 export async function loader({ params, request }: LoaderArgs) {
 
     const server = params.server?.toString().toLowerCase()
-    if (!server?.includes(".")) throw new Response("", {
+    if (!server?.includes(".")) throw new Response("Not found", {
         status: 404
     })
+
+    if (server.endsWith(".php")) {
+        throw new Response("Not found", {
+            status: 404
+        })
+    }
 
     if (!process.env.API_TOKEN) throw new Error("API_TOKEN is not definied!")
 
@@ -89,7 +95,7 @@ export default function $server() {
     const lastServer = useRef({})
     const lastData = useRef({})
     const lastChecks = useRef({})
-    const { server, data, checks } = useLoaderData<{ data: MinecraftServerWoQuery, server: string, checks: any }>() || { server: lastServer.current, data: lastData.current, checks: lastChecks.current }
+    const { server, data, checks } = useLoaderData<typeof loader>() || { server: lastServer.current, data: lastData.current, checks: lastChecks.current }
     useEffect(() => {
         if (server) lastServer.current = server
         if (data) lastData.current = data

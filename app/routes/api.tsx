@@ -88,8 +88,10 @@ export default function Api() {
 
                             <Flex flexDir={'column'} w='100%'>
                                 <Tooltip hasArrow label={<>Sample token*</>} placement="top">
-                                    <Flex rounded={'xl'} bg="alpha" fontWeight={"semibold"} px={{ base: 5, md: 10 }} py={1.5} fontFamily={"mono"} cursor={"not-allowed"} userSelect={"none"} _hover={{ opacity: .7 }} transition={".2s"} minW={{ base: '100%', sm: "unset" }}>
-                                        {sampleToken}
+                                    <Flex rounded={'xl'} bg="alpha" fontWeight={"semibold"} px={{ base: 5, md: 10 }} py={1.5} fontFamily={"mono"} cursor={"not-allowed"} userSelect={"none"} _hover={{ opacity: .7 }} transition={".2s"} minW={{ base: '100%', sm: "unset" }} fontSize={{ base: "sm", md: "md" }}>
+                                        <Text textAlign={'center'} w='100%'>
+                                            {sampleToken}
+                                        </Text>
                                     </Flex>
                                 </Tooltip>
                                 <Text fontSize={"10px"} opacity={.7} fontWeight={100}>Sample token*</Text>
