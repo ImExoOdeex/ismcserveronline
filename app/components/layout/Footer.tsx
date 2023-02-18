@@ -4,7 +4,7 @@ import Link from "../utils/Link";
 
 export default function Footer() {
     return (
-        <Stack direction={{ base: "column", md: 'row' }} mx='auto' w='100%' maxW={"1200px"} justifyContent={'space-between'} as={"footer"} fontWeight={"normal"} my={2} px={4} letterSpacing={"1px"}>
+        <Stack direction={{ base: "column", md: 'row' }} mx='auto' w='100%' maxW={"1200px"} justifyContent={'space-between'} as={"footer"} fontWeight={"normal"} my={2} px={4} letterSpacing={"1px"} fontSize={'sm'}>
             <HStack>
                 <Text>
                     version {pack.version} | <Link to={'/tos'}>Terms of service</Link>

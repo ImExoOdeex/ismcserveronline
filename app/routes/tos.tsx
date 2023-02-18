@@ -95,7 +95,7 @@ export default function Tos() {
                 </VStack>
             </OrderedList>
 
-            <Text mt={5}>Copyright imexoodeex © {new Date().getFullYear()}</Text>
+            <Text mt={5} fontSize={'sm'} fontWeight={"semibold"}>Copyright imexoodeex © {new Date().getFullYear()}</Text>
 
         </Flex>
 

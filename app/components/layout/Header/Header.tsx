@@ -70,7 +70,7 @@ export default function Header() {
                         {({ isOpen }) => (
 
                             <>
-                                <MenuButton>
+                                <MenuButton aria-label="Mobile menu button" aria-labelledby="Mobile menu button">
                                     <HamburgerMenu isOpen={isOpen} />
                                 </MenuButton>
                                 <MenuList bg="bg" _focus={{ bg: "alpha" }} _active={{ bg: "alpha" }}>

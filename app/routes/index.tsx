@@ -245,7 +245,7 @@ export default function Index() {
               </Flex>
 
             </Flex>
-            <VisuallyHiddenInput name="bedrock" defaultValue={bedrockChecked ? "true" : "false"} />
+            <VisuallyHiddenInput aria-labelledby="Bedrock server" aria-label="Bedrock server" tabIndex={-1} userSelect={"none"} name="bedrock" defaultValue={bedrockChecked ? "true" : "false"} />
           </fetcher.Form>
 
           <Text fontWeight={600} color='textSec' maxW={'423px'} alignSelf='start'>
@@ -260,7 +260,7 @@ export default function Index() {
 
       </Stack>
 
-      <SampleServers setServerValue={setServerValue} />
+      <SampleServers setServerValue={setServerValue} setBedrock={setBedrockChecked} />
 
       <BotInfo />
 
