@@ -153,8 +153,8 @@ export default function Index() {
                     value={serverValue}
                     bg='alpha100' color='textSec' fontWeight={500} borderBottomRadius={0}
 
-                    _focus={{ outlineColor: 'brand', borderColor: "brand" }}
-                    outlineColor='brand' borderColor="brand"
+                    _focus={{ outlineWidth: "2px", outlineColor: "text", outlineOffset: "-2px" }}
+                    outline={"none"}
 
                     h={'40px'}
                     variants={variants}
