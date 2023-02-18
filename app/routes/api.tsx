@@ -182,9 +182,8 @@ export default function Api() {
 "host": "${data.host}",
 "port": ${data.port},
 "version": {
-    "array": [${data.version?.array?.map((v: string) => (
-                                    <p key={v}>"{v}"</p>
-                                ))}
+    "array": [
+        "1.8 / 1.19"
     ],
     "string": "${data.version?.string}"
 },
