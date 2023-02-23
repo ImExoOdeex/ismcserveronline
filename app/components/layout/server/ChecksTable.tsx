@@ -15,10 +15,12 @@ import {
   Text,
   useColorModeValue,
   Badge,
+  Skeleton,
 } from "@chakra-ui/react";
+import { useSize } from "@chakra-ui/react-use-size";
 import { type SOURCE } from "@prisma/client";
-import { useFetcher } from "@remix-run/react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { ScrollRestoration, useFetcher } from "@remix-run/react";
+import { useEffect, useRef, useState } from "react";
 
 type Check = {
   id: number;
@@ -33,9 +35,19 @@ type Props = {
   checks: Check[];
 };
 
+/* 
+
+  Infinite scroll in remix.run
+  Made using some random blog posts and some random github repos
+  Read comments to get know how it's working
+  
+  In short: We get bottom table position from top of all page and then we comapre it to current scroll position + page height. 
+  If current scroll is higher than point that is should react, we make an API call from endpoint we made earlier "/api/checks/get".
+   We add new fetched checks to state and then display it.
+
+ */
 export default function ChecksTable({ server, checks }: Props) {
   const borderColor = useColorModeValue("#2f2e32", "#2f2e32 !important");
-
   const discordBg = useColorModeValue(
     "rgba(88, 101, 242, 0.16)",
     "rgba(88, 147, 242, 0.12)"
@@ -43,55 +55,101 @@ export default function ChecksTable({ server, checks }: Props) {
   const discordColor = useColorModeValue("discord.100", "#6f9ce6");
   const apiColor = useColorModeValue("blue.500", "blue.200");
 
-  const checksFetcher = useFetcher();
-  const checksNew = checksFetcher.data;
-  const [checksState, setChecksState] = useState(checks)
-  
-  const loadNext = () => {
-    const c = checksFetcher.data ?  0: 20;
-    const query = `/api/checks/get?c=${c}&server=${server}`;
-    checksFetcher.load(query);
-  };
-  
-  const scrollListener = useRef(loadNext);
-  
-  const onScroll = () => {
-    const documentHeight = document.documentElement.scrollHeight;
-    const scrollDifference = Math.floor(window.innerHeight + window.scrollY);
-    const scrollEnded = documentHeight == scrollDifference;
+  const [checksState, setChecksState] = useState(checks);
 
-    if (scrollEnded && checksFetcher.state === "idle") {
-      scrollListener.current();
-    }
-  };
+  // positions states
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const [clientHeight, setClientHeight] = useState(0);
 
+  // use effet to run event that will update our scroll position
   useEffect(() => {
+    const scrollListener = () => {
+      setClientHeight(window.innerHeight);
+      setScrollPosition(window.scrollY);
+    };
     if (typeof window !== "undefined") {
-      window.addEventListener("scroll", onScroll);
+      window.addEventListener("scroll", scrollListener);
     }
-
     return () => {
-      window.removeEventListener("scroll", onScroll);
+      if (typeof window !== "undefined") {
+        window.removeEventListener("scroll", scrollListener);
+      }
     };
   }, []);
 
-  const [height, setHeight] = useState(null);
+  // now we are getting and calculating
+  // ref for element we want to run fetch when we see it
+  const divHeight = useRef<HTMLTableSectionElement>(null);
+  // note! you could use `divHeight.current?.clientHeight` and update the clientHeight with `useEffect`, but I'd like to use that chakra thing
+  const tableDimenstions = useSize(divHeight);
 
-  // Set height of the parent container whenever photos are loaded
-  const divHeight = useCallback(
-    (node: any) => {
-      if (node !== null) {
-        setHeight(node.getBoundingClientRect().height);
+  // position from our element from top of window. note! window, not document, so when we scroll it will get smaller (we'll add scroll position later)
+  const tableTop = divHeight.current?.getBoundingClientRect().top ?? 0;
+
+  // height of our element
+  const height = tableDimenstions?.height ?? 0;
+  // here we calculate position of bottom of our element from top of docuemnt.
+  const tableReactPosFromTop = tableTop + height + scrollPosition;
+  // bottom position of scrolled page
+  const pos = clientHeight + scrollPosition;
+
+  const [isOnBottom, setisOnBottom] = useState<boolean>(false);
+
+  // default to true, because initial load is provided by route loader
+  const [shouldFetch, setShouldFetch] = useState(true);
+
+  useEffect(() => {
+    if (!shouldFetch || !tableReactPosFromTop) return;
+    if (pos < tableReactPosFromTop) return;
+
+    setShouldFetch(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clientHeight, scrollPosition]);
+
+  // skip elements state (step by 20)
+  const [skip, setSkip] = useState(20);
+  // fetcher to fetch data
+  const fetcher = useFetcher();
+
+  useEffect(() => {
+    setisOnBottom(
+      clientHeight + scrollPosition >= document.body.offsetHeight - 50
+    );
+    console.log(isOnBottom);
+
+    // if our position if greater than expected, we'll fetch the data from our API route
+    if (!shouldFetch || !tableReactPosFromTop) return;
+    if (pos < tableReactPosFromTop) return;
+
+    fetcher.load(`/api/checks/get?c=${skip}&server=${server}`);
+
+    setShouldFetch(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clientHeight, scrollPosition, fetcher]);
+
+  useEffect(() => {
+    // discontinue API calls if the last page has been reached
+    if (fetcher.data && fetcher.data.checks.length === 0) {
+      setShouldFetch(false);
+      return;
+    }
+
+    // if our fetcher is not empty, we add items to state
+    if (fetcher.data?.checks) {
+      setChecksState((prev) => [...prev, ...fetcher.data.checks]);
+      setSkip((skip: number) => skip + 20);
+      setShouldFetch(true);
+      if (isOnBottom) {
+        window.scrollTo({ top: tableReactPosFromTop - 20, behavior: "auto" });
       }
-    },
-    [checksState]
-  );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetcher.data]);
 
-  
   return (
     <>
       {checks.length ? (
-        <TableContainer w="100%">
+        <TableContainer w="100%" __css={{ clear: "both" }}>
           <Table variant="simple" size={"sm"}>
             <TableCaption>Last status checks for {server}</TableCaption>
             <Thead>
@@ -102,8 +160,9 @@ export default function ChecksTable({ server, checks }: Props) {
                 <Th isNumeric>Players</Th>
               </Tr>
             </Thead>
+            {/* <ScrollRestoration  /> */}
             <Tbody>
-              {checks.map((c: Check) => {
+              {checksState.map((c: Check) => {
                 return (
                   <Tr
                     key={c.id}
@@ -169,8 +228,63 @@ export default function ChecksTable({ server, checks }: Props) {
                   </Tr>
                 );
               })}
+
+              {fetcher.state !== "idle" && (
+                <>
+                  {Array.from({ length: 20 }, (v, i) => i).map((c: number) => {
+                    return (
+                      <Tr
+                        key={c}
+                        _hover={{ bg: "alpha" }}
+                        transition="background .05s"
+                        sx={{ "> *": { borderColor: borderColor } }}
+                      >
+                        <Td>
+                          <Skeleton
+                            h={3}
+                            w="45%"
+                            startColor="alpha200"
+                            endColor="alpha"
+                          />
+                        </Td>
+                        <Td>
+                          <Skeleton
+                            h={3}
+                            w="43%"
+                            startColor="alpha200"
+                            endColor="alpha"
+                          />
+                        </Td>
+                        <Td>
+                          <Skeleton
+                            h={3}
+                            w="45%"
+                            startColor="alpha200"
+                            endColor="alpha"
+                          />
+                        </Td>
+                        <Td isNumeric>
+                          <Flex
+                            w="100%"
+                            alignItems={"end"}
+                            justifyContent={"end"}
+                          >
+                            <Skeleton
+                              h={3}
+                              w="30%"
+                              startColor="alpha200"
+                              endColor="alpha"
+                            />
+                          </Flex>
+                        </Td>
+                      </Tr>
+                    );
+                  })}
+                </>
+              )}
             </Tbody>
-            <Tfoot>
+            <ScrollRestoration />
+            <Tfoot ref={divHeight} __css={{ clear: "both" }}>
               <Tr>
                 <Th>Date</Th>
                 <Th>Status</Th>

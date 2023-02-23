@@ -6,7 +6,7 @@ export async function loader({ request }: LoaderArgs) {
 
   const server = url.searchParams.get("server");
   if (!server) {
-    return null;
+    return "no server given!";
   }
   const c = url.searchParams.get("c") || 0;
 
