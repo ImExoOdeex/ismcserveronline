@@ -13,11 +13,12 @@
 	  <priority>1.0</priority>
   </url>
   </urlset>
-  `, {
-		status: 200,
-		headers: {
-			"Content-Type": "application/xml",
+  `,
+		{
+			status: 200,
+			headers: {
+				"Content-Type": "application/xml"
+			}
 		}
-	}
-	)
-};
+	);
+}

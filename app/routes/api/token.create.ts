@@ -1,79 +1,94 @@
-import { type ActionArgs, json } from "@remix-run/node"
+import { type ActionArgs, json } from "@remix-run/node";
 import { db } from "~/components/utils/db.server";
-import crypto from "crypto"
+import crypto from "crypto";
 
 export async function action({ request }: ActionArgs) {
-
-    /* 
+	/* 
         body: 
         {
             userId: string
         }
     */
-    const body: any = JSON.parse(await request.text())
+	const body: any = JSON.parse(await request.text());
 
-    if (!body.userId) {
-        return json({ message: "Missing userId in body!" }, {
-            headers: {
-                "Content-type": "application/json"
-            },
-            status: 500
-        })
-    }
+	if (!body.userId) {
+		return json(
+			{ message: "Missing userId in body!" },
+			{
+				headers: {
+					"Content-type": "application/json"
+				},
+				status: 500
+			}
+		);
+	}
 
-    const headerToken = request.headers.get("Authorization")
+	const headerToken = request.headers.get("Authorization");
 
-    if (headerToken !== process.env.SUPER_DUPER_API_ACCESS_TOKEN) {
-        return json({ message: "Super Duper Token does not match the real 2048 bit Super Duper Token!" }, {
-            // not allowed status code
-            status: 405
-        })
-    }
+	if (headerToken !== process.env.SUPER_DUPER_API_ACCESS_TOKEN) {
+		return json(
+			{
+				message:
+					"Super Duper Token does not match the real 2048 bit Super Duper Token!"
+			},
+			{
+				// not allowed status code
+				status: 405
+			}
+		);
+	}
 
-    const userExistsInDb = (await db.token.findUnique({
-        where: {
-            user_id: body.userId
-        }
-    })) ? true : false
+	const userExistsInDb = (await db.token.findUnique({
+		where: {
+			user_id: body.userId
+		}
+	}))
+		? true
+		: false;
 
-    if (userExistsInDb) {
-        return json({ message: "User actually has generated their own token!" }, {
-            // not allowed status code
-            status: 200
-        })
-    }
+	if (userExistsInDb) {
+		return json(
+			{ message: "User actually has generated their own token!" },
+			{
+				// not allowed status code
+				status: 200
+			}
+		);
+	}
 
-    // crypto.generateKey("aes", { length: 256 }, async (err, key) => {
-    //     if (err) {
-    //         console.log(err);
-    //         return json({ message: "Couldn't generate token!" }, {
-    //             status: 500
-    //         })
-    //     }
-    //     const tokenExported = key.export().toString("hex")
-    // })
+	// crypto.generateKey("aes", { length: 256 }, async (err, key) => {
+	//     if (err) {
+	//         console.log(err);
+	//         return json({ message: "Couldn't generate token!" }, {
+	//             status: 500
+	//         })
+	//     }
+	//     const tokenExported = key.export().toString("hex")
+	// })
 
-    const token = crypto.randomUUID()
+	const token = crypto.randomUUID();
 
-    await db.token.create({
-        data: {
-            token: token,
-            user_id: body.userId
-        }
-    })
+	await db.token.create({
+		data: {
+			token: token,
+			user_id: body.userId
+		}
+	});
 
-    return json({ token }, {
-        headers: {
-            "Content-type": "application/json"
-        },
-        status: 200
-    })
-
-};
+	return json(
+		{ token },
+		{
+			headers: {
+				"Content-type": "application/json"
+			},
+			status: 200
+		}
+	);
+}
 
 // return 404, since without it, it will throw error
 export async function loader() {
-    throw new Response("Not found", {
-        status: 404
-    })
-};
+	throw new Response("Not found", {
+		status: 404
+	});
+}
