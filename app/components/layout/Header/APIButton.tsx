@@ -32,7 +32,7 @@ export default function APIButton() {
 				tabIndex={-1}
 			>
 				<Flex flexDir={"row"}>
-					<HStack spacing={1.5}>
+					<HStack spacing={2}>
 						<Text fontWeight={600}>API</Text>
 						<Icon as={BiCode} />
 					</HStack>

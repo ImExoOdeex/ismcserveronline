@@ -115,15 +115,19 @@ export default function ChecksTable({ server, checks }: Props) {
 		setisOnBottom(
 			clientHeight + scrollPosition >= document.body.offsetHeight - 50
 		);
-		console.log(isOnBottom);
 
 		// if our position if greater than expected, we'll fetch the data from our API route
 		if (!shouldFetch || !tableReactPosFromTop) return;
 		if (pos < tableReactPosFromTop) return;
 
-		fetcher.load(`/api/checks/get?c=${skip}&server=${server}`);
+		console.log("promising");
 
-		setShouldFetch(false);
+		setTimeout(() => {
+			console.log("resolve");
+			setShouldFetch(false);
+			fetcher.load(`/api/checks/get?c=${skip}&server=${server}`);
+		}, 1000);
+
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [clientHeight, scrollPosition, fetcher]);
 

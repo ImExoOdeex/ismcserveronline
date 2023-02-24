@@ -191,7 +191,12 @@ const theme = extendTheme({
 					color: "sec",
 					transition: "color .2s",
 					_hover: {
-						color: "#278adb"
+						color: "#005395"
+					},
+					_dark: {
+						_hover: {
+							color: "#278adb"
+						}
 					},
 					textDecor: "underline",
 					fontWeight: 600

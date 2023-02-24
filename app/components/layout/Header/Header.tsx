@@ -29,6 +29,7 @@ import { BiCode, BiHome } from "react-icons/bi";
 import ServerSearch from "./ServerSearch";
 import links from "../../config/links.json";
 import { useEffect, useState } from "react";
+import PopularServersButton from "./PopularServersButton";
 
 export default function Header() {
 	useEventListener("keydown", (event: any) => {
@@ -111,6 +112,7 @@ export default function Header() {
 				</HStack>
 
 				<HStack spacing={3} display={{ base: "none", lg: "flex" }}>
+					<PopularServersButton />
 					<FAQButton />
 					<APIButton />
 					<ThemeToggle />
