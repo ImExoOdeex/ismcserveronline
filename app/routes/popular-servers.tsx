@@ -30,7 +30,6 @@ export default function PopularServers() {
 		if (servers) lastServers.current = servers;
 		if (serverCount) lastServerCount.current = serverCount;
 	}, [servers, serverCount]);
-	console.log(servers);
 
 	return (
 		<VStack
