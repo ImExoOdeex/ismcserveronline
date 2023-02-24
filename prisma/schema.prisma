@@ -22,6 +22,12 @@ model SampleServer {
   end_date DateTime?
 }
 
+model Server {
+  id         Int      @id @unique @default(autoincrement())
+  server     String
+  created_at DateTime @default(now())
+}
+
 model Check {
   id         Int      @id @unique @default(autoincrement())
   server     String
