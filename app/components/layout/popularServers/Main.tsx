@@ -1,34 +1,27 @@
-import { Flex, Heading, Icon, Stack, Text, VStack } from "@chakra-ui/react";
+import { Box, Flex, Heading, Icon, Stack, Text, VStack } from "@chakra-ui/react";
 
 export default function Main({ count }: { count: number }) {
 	return (
 		<VStack w="100%" align={"start"} spacing={16}>
 			<Stack direction={{ base: "column", md: "row" }} w="100%">
-				<VStack
-					w={{ base: "100%", md: "60%" }}
-					align={"start"}
-					spacing={5}
-				>
+				<VStack w={{ base: "100%", md: "60%" }} align={"start"} spacing={5}>
 					<Heading>Most popular Minecraft servers</Heading>
 					<Text fontSize={"md"} lineHeight={"150%"}>
-						This is a list of the most popular Minecraft servers
-						currently played by thousands of players worldwide. The
-						servers offer different gameplay experiences and cater
-						to various preferences. If you're looking to join a
-						thriving Minecraft community, take a look at the most
-						played servers below.
+						This is a list of the most popular Minecraft servers currently played by thousands of players
+						worldwide. The servers offer different gameplay experiences and cater to various preferences. If
+						you're looking to join a thriving Minecraft community, take a look at the most played servers
+						below.
 					</Text>
+					<Heading fontSize={"lg"} fontWeight={"normal"}>
+						Search from{" "}
+						<Box as={"span"} fontWeight={"semibold"}>
+							{count}
+						</Box>{" "}
+						available servers!
+					</Heading>
 				</VStack>
-				<Flex
-					w={{ base: "100%", md: "40%" }}
-					alignItems={"center"}
-					justifyContent={"center"}
-				>
-					<Icon
-						boxSize={"300px"}
-						fill="currentcolor"
-						alignItems={"cetner"}
-					>
+				<Flex w={{ base: "100%", md: "40%" }} alignItems={"center"} justifyContent={"center"}>
+					<Icon boxSize={"300px"} fill="currentcolor" alignItems={"cetner"}>
 						<svg version="1.1" viewBox="0 0 700 700">
 							<g>
 								<path d="m388.18 470.91h-76.363c-8.9102 0-12.727 5.0898-12.727 12.727s3.8164 12.727 12.727 12.727h76.363c8.9102 0 12.727-5.0898 12.727-12.727s-3.8203-12.727-12.727-12.727z" />

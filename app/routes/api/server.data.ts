@@ -16,5 +16,5 @@ export async function loader({ request }: LoaderArgs) {
 		})
 	).json();
 
-	return data;
+	return { data, server };
 }

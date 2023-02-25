@@ -21,6 +21,7 @@ import { useSize } from "@chakra-ui/react-use-size";
 import { type SOURCE } from "@prisma/client";
 import { ScrollRestoration, useFetcher } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
+import { debounce } from "lodash";
 
 type Check = {
 	id: number;
@@ -93,8 +94,6 @@ export default function ChecksTable({ server, checks }: Props) {
 	// bottom position of scrolled page
 	const pos = clientHeight + scrollPosition;
 
-	const [isOnBottom, setisOnBottom] = useState<boolean>(false);
-
 	// default to true, because initial load is provided by route loader
 	const [shouldFetch, setShouldFetch] = useState(true);
 
@@ -111,22 +110,17 @@ export default function ChecksTable({ server, checks }: Props) {
 	// fetcher to fetch data
 	const fetcher = useFetcher();
 
-	useEffect(() => {
-		setisOnBottom(
-			clientHeight + scrollPosition >= document.body.offsetHeight - 50
-		);
+	const loadDebounced = debounce(() => {
+		setShouldFetch(false);
+		fetcher.load(`/api/checks/get?c=${skip}&server=${server}`);
+	}, 1000);
 
+	useEffect(() => {
 		// if our position if greater than expected, we'll fetch the data from our API route
 		if (!shouldFetch || !tableReactPosFromTop) return;
 		if (pos < tableReactPosFromTop) return;
 
-		console.log("promising");
-
-		setTimeout(() => {
-			console.log("resolve");
-			setShouldFetch(false);
-			fetcher.load(`/api/checks/get?c=${skip}&server=${server}`);
-		}, 1000);
+		loadDebounced();
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [clientHeight, scrollPosition, fetcher]);
@@ -143,12 +137,6 @@ export default function ChecksTable({ server, checks }: Props) {
 			setChecksState((prev) => [...prev, ...fetcher.data.checks]);
 			setSkip((skip: number) => skip + 20);
 			setShouldFetch(true);
-			if (isOnBottom) {
-				window.scrollTo({
-					top: tableReactPosFromTop - 20,
-					behavior: "auto"
-				});
-			}
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [fetcher.data]);
