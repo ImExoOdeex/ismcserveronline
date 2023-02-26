@@ -1,5 +1,5 @@
 import { CheckIcon } from "@chakra-ui/icons";
-import { Flex, Grid, HStack, Image, Text, VStack } from "@chakra-ui/react";
+import { Flex, Grid, HStack, Heading, Image, Text, VStack, useColorMode } from "@chakra-ui/react";
 import { useFetcher } from "@remix-run/react";
 import { FastAverageColor } from "fast-average-color";
 import { AnimatePresence, motion } from "framer-motion";
@@ -20,6 +20,7 @@ export default function ServerList({
 	const [serversExpanded, setServersExpanded] = useState<number[]>([]);
 
 	const [colors, setColors] = useState<{ id: number; color: string }[]>([]);
+
 	const fac = new FastAverageColor();
 
 	useEffect(() => {
@@ -70,8 +71,16 @@ export default function ServerList({
 		}
 	}
 
+	const { colorMode } = useColorMode();
+
 	return (
 		<VStack spacing={5} w="100%" align={"start"}>
+			<Flex flexDir={"row"} justifyContent={"space-between"} alignItems={"center"} w="100%">
+				<Heading fontSize={"sm"}>Page {page}</Heading>
+				<Heading fontSize={"sm"}>
+					Showing {servers[0].id} - {servers[servers.length - 1].id}
+				</Heading>
+			</Flex>
 			<fetcher.Form style={{ width: "100%" }} method="get">
 				<VStack w="100%" align={"start"} spacing={5}>
 					{servers.map((s) => {
@@ -84,7 +93,7 @@ export default function ServerList({
 								py={4}
 								w="100%"
 								_hover={{
-									bg: colors[s.id - 1]?.color,
+									bg: colors.find((c) => c.id === s.id)?.color,
 									rounded: "3xl",
 									borderColor: "transparent"
 								}}
@@ -94,7 +103,12 @@ export default function ServerList({
 								alignItems={"center"}
 								onClick={() => hadleServerClick(s)}
 							>
-								<Grid templateColumns="repeat(4, 1fr)" w="100%" alignItems={"center"}>
+								<Grid
+									templateColumns={{ base: "repeat(2, 2fr)", md: "repeat(4, 1fr)" }}
+									gap={{ base: 5, md: 2 }}
+									w="100%"
+									alignItems={"center"}
+								>
 									<Flex>
 										<Image
 											id={`img${s.id}`}
@@ -112,12 +126,12 @@ export default function ServerList({
 										</Text>
 									</Flex>
 
-									<Flex justifyContent={"end"}>
+									<Flex justifyContent={{ base: "center", md: "end" }}>
 										{/* <Text fontWeight={"semibold"}>2137</Text> */}
-										<Text> {s.id}</Text>
+										<Text>{s.id}</Text>
 									</Flex>
 
-									<Flex justifySelf={"flex-end"}>
+									<Flex justifyContent={{ base: "center", md: "end" }}>
 										<HStack
 											rounded={"md"}
 											color="green"
@@ -146,10 +160,14 @@ export default function ServerList({
 											}}
 											style={{
 												overflow: "hidden",
-												display: "block"
+												display: "block",
+												width: "100%"
 											}}
 										>
-											<ServerDetails data={serverData.find((i) => i.server === s.server)?.data} />
+											<ServerDetails
+												data={serverData.find((i) => i.server === s.server)?.data}
+												colorMode={colorMode}
+											/>
 										</motion.div>
 									)}
 								</AnimatePresence>

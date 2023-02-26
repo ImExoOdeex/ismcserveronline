@@ -29,8 +29,8 @@ export default function Pagination({ page, count, ...props }: { page: number; co
 				w={{ base: "100%", sm: "unset" }}
 			>
 				{/* prev page */}
-				<Tooltip label={"Previous page"}>
-					<Link rounded={"xl"} to={page === 1 ? "" : page === 2 ? `/popular-servers` : `/popular-servers/${page - 1}`}>
+				<Link rounded={"xl"} to={page === 1 ? "" : page === 2 ? `/popular-servers` : `/popular-servers/${page - 1}`}>
+					<Tooltip label={"Previous page"} hasArrow placement="top" openDelay={750}>
 						<IconButton
 							aria-label="prev page"
 							disabled={page === 1}
@@ -38,13 +38,15 @@ export default function Pagination({ page, count, ...props }: { page: number; co
 							rounded={"xl"}
 							variant={"outline"}
 						/>
-					</Link>
-				</Tooltip>
+					</Tooltip>
+				</Link>
 
 				<Link rounded={"xl"} to={page === 1 || page === 2 ? "" : `/popular-servers`} _hover={{ textDecor: "none" }}>
-					<Button rounded={"xl"} variant={"solid"} disabled={page === 1 || page === 2}>
-						1
-					</Button>
+					<Tooltip label={"First page"} hasArrow placement="top" openDelay={750}>
+						<Button rounded={"xl"} variant={"solid"} disabled={page === 1 || page === 2}>
+							1
+						</Button>
+					</Tooltip>
 				</Link>
 
 				<Button
@@ -142,20 +144,24 @@ export default function Pagination({ page, count, ...props }: { page: number; co
 					to={page === lastPageNo || page === lastPageNo - 1 ? "" : `/popular-servers/256`}
 					_hover={{ textDecor: "none" }}
 				>
-					<Button rounded={"xl"} variant={"solid"} disabled={page == lastPageNo || page === lastPageNo - 1}>
-						{lastPageNo}
-					</Button>
+					<Tooltip label={"Last page"} hasArrow placement="top" openDelay={750}>
+						<Button rounded={"xl"} variant={"solid"} disabled={page == lastPageNo || page === lastPageNo - 1}>
+							{lastPageNo}
+						</Button>
+					</Tooltip>
 				</Link>
 
 				{/* next page */}
 				<Link rounded={"xl"} to={page === lastPageNo ? "" : `/popular-servers/${page + 1}`}>
-					<IconButton
-						aria-label="next page"
-						icon={<ArrowForwardIcon />}
-						rounded={"xl"}
-						disabled={page === lastPageNo}
-						variant={"outline"}
-					/>
+					<Tooltip label={"Next page"} hasArrow placement="top" openDelay={750}>
+						<IconButton
+							aria-label="next page"
+							icon={<ArrowForwardIcon />}
+							rounded={"xl"}
+							disabled={page === lastPageNo}
+							variant={"outline"}
+						/>
+					</Tooltip>
 				</Link>
 			</HStack>
 		</Flex>

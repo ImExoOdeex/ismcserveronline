@@ -1,9 +1,15 @@
 import { VStack } from "@chakra-ui/react";
-import { json } from "@remix-run/node";
+import { type MetaFunction, json } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 import Main from "~/components/layout/popularServers/Main";
 import { db } from "~/components/utils/db.server";
+
+export const meta: MetaFunction = () => {
+	return {
+		title: "Popular servers | IsMcServer.online"
+	};
+};
 
 export async function loader() {
 	// 1ms - 2ms to count for 2.5k servers
