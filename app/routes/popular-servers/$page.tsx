@@ -6,7 +6,7 @@ import { useLoaderData } from "@remix-run/react";
 
 export async function loader({ params }: LoaderArgs) {
 	const page = Number(params.page);
-	if (page === 0) {
+	if (page === 1) {
 		return redirect("/popular-servers");
 	}
 

@@ -49,10 +49,7 @@ type Props = {
  */
 export default function ChecksTable({ server, checks }: Props) {
 	const borderColor = useColorModeValue("#2f2e32", "#2f2e32 !important");
-	const discordBg = useColorModeValue(
-		"rgba(88, 101, 242, 0.16)",
-		"rgba(88, 147, 242, 0.12)"
-	);
+	const discordBg = useColorModeValue("rgba(88, 101, 242, 0.16)", "rgba(88, 147, 242, 0.12)");
 	const discordColor = useColorModeValue("discord.100", "#6f9ce6");
 	const apiColor = useColorModeValue("blue.500", "blue.200");
 
@@ -90,7 +87,7 @@ export default function ChecksTable({ server, checks }: Props) {
 	// height of our element
 	const height = tableDimenstions?.height ?? 0;
 	// here we calculate position of bottom of our element from top of docuemnt.
-	const tableReactPosFromTop = tableTop + height + scrollPosition;
+	const tableReactPosFromTop = tableTop + height + scrollPosition - 500;
 	// bottom position of scrolled page
 	const pos = clientHeight + scrollPosition;
 
@@ -113,7 +110,7 @@ export default function ChecksTable({ server, checks }: Props) {
 	const loadDebounced = debounce(() => {
 		setShouldFetch(false);
 		fetcher.load(`/api/checks/get?c=${skip}&server=${server}`);
-	}, 1000);
+	}, 50);
 
 	useEffect(() => {
 		// if our position if greater than expected, we'll fetch the data from our API route
@@ -146,9 +143,7 @@ export default function ChecksTable({ server, checks }: Props) {
 			{checks.length ? (
 				<TableContainer w="100%" __css={{ clear: "both" }}>
 					<Table variant="simple" size={"sm"}>
-						<TableCaption>
-							Last status checks for {server}
-						</TableCaption>
+						<TableCaption>Last status checks for {server}</TableCaption>
 						<Thead>
 							<Tr sx={{ "> *": { borderColor: borderColor } }}>
 								<Th>Date</Th>
@@ -169,27 +164,18 @@ export default function ChecksTable({ server, checks }: Props) {
 											"> *": { borderColor: borderColor }
 										}}
 									>
-										<Td>
-											{new Date(
-												c.checked_at
-											).toLocaleString()}
-										</Td>
+										<Td>{new Date(c.checked_at).toLocaleString()}</Td>
 										<Td>
 											{c.online ? (
 												<HStack
 													rounded={"md"}
 													color="green"
-													bg={
-														"rgba(72, 187, 120, 0.1)"
-													}
+													bg={"rgba(72, 187, 120, 0.1)"}
 													w="min-content"
 													px={3}
 													py={1}
 												>
-													<Text
-														textTransform={"none"}
-														fontWeight={600}
-													>
+													<Text textTransform={"none"} fontWeight={600}>
 														Online
 													</Text>
 													<CheckIcon />
@@ -198,18 +184,12 @@ export default function ChecksTable({ server, checks }: Props) {
 												<HStack
 													rounded={"md"}
 													color="red"
-													bg={
-														"rgba(187, 72, 72, 0.1)"
-													}
+													bg={"rgba(187, 72, 72, 0.1)"}
 													w="min-content"
 													px={3}
 													py={1}
 												>
-													<Text
-														textTransform={"none"}
-													>
-														Offline
-													</Text>
+													<Text textTransform={"none"}>Offline</Text>
 													<SmallCloseIcon />
 												</HStack>
 											)}
@@ -245,10 +225,7 @@ export default function ChecksTable({ server, checks }: Props) {
 
 							{fetcher.state !== "idle" && (
 								<>
-									{Array.from(
-										{ length: 20 },
-										(v, i) => i
-									).map((c: number) => {
+									{Array.from({ length: 20 }, (v, i) => i).map((c: number) => {
 										return (
 											<Tr
 												key={c}
@@ -261,35 +238,16 @@ export default function ChecksTable({ server, checks }: Props) {
 												}}
 											>
 												<Td>
-													<Skeleton
-														h={3}
-														w="45%"
-														startColor="alpha200"
-														endColor="alpha"
-													/>
+													<Skeleton h={3} w="45%" startColor="alpha200" endColor="alpha" />
 												</Td>
 												<Td>
-													<Skeleton
-														h={3}
-														w="43%"
-														startColor="alpha200"
-														endColor="alpha"
-													/>
+													<Skeleton h={3} w="43%" startColor="alpha200" endColor="alpha" />
 												</Td>
 												<Td>
-													<Skeleton
-														h={3}
-														w="45%"
-														startColor="alpha200"
-														endColor="alpha"
-													/>
+													<Skeleton h={3} w="45%" startColor="alpha200" endColor="alpha" />
 												</Td>
 												<Td isNumeric>
-													<Flex
-														w="100%"
-														alignItems={"end"}
-														justifyContent={"end"}
-													>
+													<Flex w="100%" alignItems={"end"} justifyContent={"end"}>
 														<Skeleton
 															h={3}
 															w="30%"
@@ -317,13 +275,7 @@ export default function ChecksTable({ server, checks }: Props) {
 				</TableContainer>
 			) : (
 				<Flex w="100%">
-					<Heading
-						fontSize={"md"}
-						justifySelf="center"
-						textAlign="center"
-						color={"red"}
-						mx="auto"
-					>
+					<Heading fontSize={"md"} justifySelf="center" textAlign="center" color={"red"} mx="auto">
 						There were no checks
 					</Heading>
 				</Flex>

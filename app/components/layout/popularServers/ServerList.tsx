@@ -71,7 +71,7 @@ export default function ServerList({
 	}
 
 	return (
-		<VStack spacing={2} w="100%" align={"start"}>
+		<VStack spacing={5} w="100%" align={"start"}>
 			<fetcher.Form style={{ width: "100%" }} method="get">
 				<VStack w="100%" align={"start"} spacing={5}>
 					{servers.map((s) => {
@@ -113,7 +113,8 @@ export default function ServerList({
 									</Flex>
 
 									<Flex justifyContent={"end"}>
-										<Text fontWeight={"semibold"}>2137</Text>
+										{/* <Text fontWeight={"semibold"}>2137</Text> */}
+										<Text> {s.id}</Text>
 									</Flex>
 
 									<Flex justifySelf={"flex-end"}>
