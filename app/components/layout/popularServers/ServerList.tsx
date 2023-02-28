@@ -32,7 +32,7 @@ export default function ServerList({
 				do {
 					ele = document.querySelector(`#img${s.id}`);
 					const faqColor = fac.getColor(ele);
-					const color = Color(faqColor?.rgba).saturate(1).alpha(0.15).string();
+					const color = Color(faqColor?.rgba).alpha(0.15).string();
 					setColors((prev) => [...prev, { id: s.id, color }]);
 				} while (!ele);
 
@@ -72,7 +72,8 @@ export default function ServerList({
 	const { colorMode } = useColorMode();
 
 	return (
-		<VStack spacing={5} w="100%" align={"start"}>
+		<VStack spacing={5} w="100%" align={"start"} pb={5}>
+			<Text fontSize={"xs"}>Click on any server to view details!</Text>
 			<Flex flexDir={"row"} justifyContent={"space-between"} alignItems={"center"} w="100%">
 				<Heading fontSize={"sm"}>Page {page}</Heading>
 				<Heading fontSize={"sm"}>
