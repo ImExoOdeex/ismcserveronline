@@ -9,12 +9,30 @@ import {
 	Flex
 } from "@chakra-ui/react";
 import { type MinecraftServerWoQuery } from "../../types/minecraftServer";
+const Color = require("color");
 
-function Skeleton({ ...props }: SkeletonProps) {
-	return <ChakraSkeleton h={3} w="100px" alignSelf={"center"} {...props} />;
+function Skeleton({ endColor = "alpha200", ...props }: { endColor: string } & SkeletonProps) {
+	return (
+		<ChakraSkeleton
+			h={3}
+			w="100px"
+			alignSelf={"center"}
+			startColor={Color(endColor).alpha(0.25).string()}
+			endColor={"transparent"}
+			{...props}
+		/>
+	);
 }
 
-export default function ServerDetails({ data, colorMode }: { data: MinecraftServerWoQuery; colorMode: "light" | "dark" }) {
+export default function ServerDetails({
+	data,
+	colorMode,
+	color = ""
+}: {
+	data: MinecraftServerWoQuery;
+	colorMode: "light" | "dark";
+	color?: string;
+}) {
 	return (
 		<SimpleGrid minChildWidth={"200px"} justifyContent={"space-around"} w="100%" py={8} gap={{ base: 8, md: "unset" }}>
 			<GridItem alignContent={"start"}>
@@ -27,13 +45,13 @@ export default function ServerDetails({ data, colorMode }: { data: MinecraftServ
 									{data.players.online}/{data.players.max}
 								</>
 							) : (
-								<Skeleton />
+								<Skeleton endColor={color} />
 							)}
 						</Text>
 					</HStack>
 					<HStack spacing={4} align={"start"} alignItems={"center"}>
 						<Text fontWeight={"semibold"}>Version</Text>
-						<Text>{data?.version ? <>{data.version?.string}</> : <Skeleton />}</Text>
+						<Text>{data?.version ? <>{data.version?.string}</> : <Skeleton endColor={color} />}</Text>
 					</HStack>
 				</VStack>
 			</GridItem>
@@ -45,7 +63,7 @@ export default function ServerDetails({ data, colorMode }: { data: MinecraftServ
 								dangerouslySetInnerHTML={{
 									__html:
 										colorMode === "light"
-											? `${data.motd.html?.replace(/#FFFFFF/g, "#000000").split("\n")[0]}`
+											? `${data.motd.html?.replace(/#FFFFFF/g, "#000000").split("\n")[0] ?? ""}`
 											: `${data?.motd?.html ? data?.motd?.html.split("\n")[0] : ""}`
 								}}
 							></Text>
@@ -53,7 +71,7 @@ export default function ServerDetails({ data, colorMode }: { data: MinecraftServ
 								dangerouslySetInnerHTML={{
 									__html:
 										colorMode === "light"
-											? `${data.motd.html?.replace(/#FFFFFF/g, "#000000").split("\n")[1]}`
+											? `${data.motd.html?.replace(/#FFFFFF/g, "#000000").split("\n")[1] ?? ""}`
 											: `${data?.motd?.html?.split("\n")[1] ? data?.motd?.html.split("\n")[1] : ""}`
 								}}
 							></Text>
@@ -61,10 +79,10 @@ export default function ServerDetails({ data, colorMode }: { data: MinecraftServ
 					) : (
 						<>
 							<Flex w="100%" minH={"24px"} alignItems={"center"}>
-								<Skeleton w="100%" />
+								<Skeleton w="100%" endColor={color} />
 							</Flex>
 							<Flex w="100%" minH={"24px"} alignItems={"center"}>
-								<Skeleton w="100%" />
+								<Skeleton w="100%" endColor={color} />
 							</Flex>
 						</>
 					)}
@@ -73,11 +91,11 @@ export default function ServerDetails({ data, colorMode }: { data: MinecraftServ
 			<GridItem>
 				<VStack align={"end"}>
 					<HStack spacing={4} alignItems={"center"}>
-						<Text>{data?.host ? data.host : <Skeleton />}</Text>
+						<Text>{data?.host ? data.host : <Skeleton endColor={color} />}</Text>
 						<Text fontWeight={"semibold"}>Host</Text>
 					</HStack>
 					<HStack spacing={4} align={"start"} alignItems={"center"}>
-						<Text fontFamily={"mono"}>{data?.ping ? data.ping + " miliseconds" : <Skeleton />}</Text>
+						<Text fontFamily={"mono"}>{data?.ping ? data.ping + " miliseconds" : <Skeleton endColor={color} />}</Text>
 						<Text fontWeight={"semibold"}>Latency</Text>
 					</HStack>
 				</VStack>

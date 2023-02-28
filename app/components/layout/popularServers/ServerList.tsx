@@ -167,6 +167,7 @@ export default function ServerList({
 											<ServerDetails
 												data={serverData.find((i) => i.server === s.server)?.data}
 												colorMode={colorMode}
+												color={colors.find((c) => c.id === s.id)?.color}
 											/>
 										</motion.div>
 									)}

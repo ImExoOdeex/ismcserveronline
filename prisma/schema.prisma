@@ -25,6 +25,8 @@ model SampleServer {
 model Server {
   id         Int      @id @unique @default(autoincrement())
   server     String
+  icon       String?
+  tags       Json?
   created_at DateTime @default(now())
 }
 
