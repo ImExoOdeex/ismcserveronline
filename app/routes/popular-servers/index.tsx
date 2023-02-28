@@ -9,7 +9,9 @@ export async function loader() {
 		take: 10,
 		select: {
 			id: true,
-			server: true
+			server: true,
+			icon: true,
+			tags: true
 		}
 	});
 	const count = await db.server.count();

@@ -141,7 +141,7 @@ export default function Pagination({ page, count, ...props }: { page: number; co
 
 				<Link
 					rounded={"xl"}
-					to={page === lastPageNo || page === lastPageNo - 1 ? "" : `/popular-servers/256`}
+					to={page === lastPageNo || page === lastPageNo - 1 ? "" : `/popular-servers/${lastPageNo}`}
 					_hover={{ textDecor: "none" }}
 				>
 					<Tooltip label={"Last page"} hasArrow placement="top" openDelay={750}>

@@ -1,11 +1,12 @@
 import { CheckIcon } from "@chakra-ui/icons";
-import { Flex, Grid, HStack, Heading, Image, Text, VStack, useColorMode } from "@chakra-ui/react";
+import { Badge, Flex, Grid, HStack, Heading, Image, Text, VStack, Wrap, WrapItem, useColorMode } from "@chakra-ui/react";
 import { useFetcher } from "@remix-run/react";
 import { FastAverageColor } from "fast-average-color";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import ServerDetails from "./ServerDetails";
 import Pagination from "./Pagination";
+import { type Prisma } from "@prisma/client";
 const Color = require("color");
 
 export default function ServerList({
@@ -13,7 +14,7 @@ export default function ServerList({
 	count,
 	page = 1
 }: {
-	servers: { id: number; server: string }[];
+	servers: { id: number; server: string; icon: string | null; tags: Prisma.JsonValue }[];
 	count: number;
 	page?: number;
 }) {
@@ -30,10 +31,8 @@ export default function ServerList({
 				let ele: any;
 				do {
 					ele = document.querySelector(`#img${s.id}`);
-					console.log(ele);
-
 					const faqColor = fac.getColor(ele);
-					const color = Color(faqColor?.rgba).alpha(0.15).string();
+					const color = Color(faqColor?.rgba).saturate(1).alpha(0.15).string();
 					setColors((prev) => [...prev, { id: s.id, color }]);
 				} while (!ele);
 
@@ -66,7 +65,6 @@ export default function ServerList({
 			setServersExpanded((prev) => [...prev, s.id]);
 			if (!serverData.find((i) => i.server === s.server)?.server) {
 				fetcher.load(`/api/server/data?server=${s.server}`);
-				console.log(fetcher.data, serverData);
 			}
 		}
 	}
@@ -87,6 +85,7 @@ export default function ServerList({
 						return (
 							<Flex
 								key={s.id}
+								role="group"
 								cursor={"pointer"}
 								flexDir={"column"}
 								px={5}
@@ -112,7 +111,7 @@ export default function ServerList({
 									<Flex>
 										<Image
 											id={`img${s.id}`}
-											src={`/favicons/${s.server.toLowerCase()}.webp`}
+											src={s.icon ?? ""}
 											sx={{ imageRendering: "pixelated" }}
 											rounded={"sm"}
 											h={16}
@@ -127,8 +126,24 @@ export default function ServerList({
 									</Flex>
 
 									<Flex justifyContent={{ base: "center", md: "end" }}>
-										{/* <Text fontWeight={"semibold"}>2137</Text> */}
-										<Text>{s.id}</Text>
+										<Wrap w="100%" spacing={1} justify={"start"}>
+											{s?.tags
+												?.toString()
+												.split(",")
+												.map((tag: string) => (
+													<WrapItem key={tag}>
+														<Badge
+															w={"fit-content"}
+															_groupHover={{
+																bg: "alpha200"
+															}}
+															transition={"background .2s"}
+														>
+															{tag}
+														</Badge>
+													</WrapItem>
+												))}
+										</Wrap>
 									</Flex>
 
 									<Flex justifyContent={{ base: "center", md: "end" }}>

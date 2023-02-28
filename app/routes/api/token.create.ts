@@ -28,8 +28,7 @@ export async function action({ request }: ActionArgs) {
 	if (headerToken !== process.env.SUPER_DUPER_API_ACCESS_TOKEN) {
 		return json(
 			{
-				message:
-					"Super Duper Token does not match the real 2048 bit Super Duper Token!"
+				message: "Super Duper Token does not match the real 2048 bit Super Duper Token!"
 			},
 			{
 				// not allowed status code
@@ -55,16 +54,6 @@ export async function action({ request }: ActionArgs) {
 			}
 		);
 	}
-
-	// crypto.generateKey("aes", { length: 256 }, async (err, key) => {
-	//     if (err) {
-	//         console.log(err);
-	//         return json({ message: "Couldn't generate token!" }, {
-	//             status: 500
-	//         })
-	//     }
-	//     const tokenExported = key.export().toString("hex")
-	// })
 
 	const token = crypto.randomUUID();
 

@@ -10,16 +10,26 @@ export async function loader({ params }: LoaderArgs) {
 		return redirect("/popular-servers");
 	}
 
-	const servers = await db.server.findMany({
-		take: 10,
-		skip: (page - 1) * 10,
-		select: {
-			id: true,
-			server: true
-		}
-	});
-
 	const count = await db.server.count();
+
+	const servers = await db.server
+		.findMany({
+			take: 10,
+			skip: (page - 1) * 10,
+			select: {
+				id: true,
+				server: true,
+				icon: true,
+				tags: true
+			}
+		})
+		.catch(() => null);
+
+	// @ts-ignore
+	if (!servers?.length) {
+		const lastPage = Number((count / 10).toFixed(0));
+		return redirect(`/popular-servers/${lastPage}`);
+	}
 
 	return json({ servers, page, count });
 }
