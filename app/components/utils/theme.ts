@@ -74,7 +74,7 @@ const theme = extendTheme({
 	styles,
 	fonts: {
 		body: `"Poppins", sans-serif`,
-		heading: `"Poppins", sans-serif`
+		heading: '"Outfit"'
 	},
 	semanticTokens: {
 		colors: {
@@ -93,6 +93,10 @@ const theme = extendTheme({
 			textSec: {
 				default: "blackAlpha.800",
 				_dark: "whiteAlpha.800"
+			},
+			gold: {
+				default: "yellow.400",
+				_dark: "orange.200"
 			},
 			inv: {
 				default: "white",

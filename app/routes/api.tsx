@@ -16,7 +16,7 @@ import {
 	useClipboard,
 	useColorModeValue
 } from "@chakra-ui/react";
-import { json } from "@remix-run/node";
+import { type MetaFunction, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import crypto from "crypto";
 import { useEffect, useRef } from "react";
@@ -24,6 +24,12 @@ import links from "../components/config/links.json";
 import DiscordIcon from "~/components/layout/icons/DiscordIcon";
 import { CheckIcon, CopyIcon } from "@chakra-ui/icons";
 import { type MinecraftServerWoQuery } from "~/components/types/minecraftServer";
+
+export const meta: MetaFunction = () => {
+	return {
+		title: "API | IsMcServer.online"
+	};
+};
 
 export async function loader() {
 	const sampleToken = crypto.randomUUID();
@@ -81,8 +87,7 @@ export default function Api() {
 		}
 	};
 
-	const { onCopy, hasCopied } =
-		useClipboard(`await request("https://api.ismcserver.online/hypixel.net", {
+	const { onCopy, hasCopied } = useClipboard(`await request("https://api.ismcserver.online/hypixel.net", {
         headers: {
             "Authorization": "${sampleToken}"
         }
@@ -92,27 +97,10 @@ export default function Api() {
 
 	return (
 		<>
-			<VStack
-				maxW={"1200px"}
-				w="100%"
-				align={"start"}
-				mx="auto"
-				px={4}
-				spacing={{ base: 10, md: "125px" }}
-				mt={10}
-			>
-				<Stack
-					direction={{ base: "column", md: "row" }}
-					w="100%"
-					spacing={{ base: 10, md: 20 }}
-				>
+			<VStack maxW={"1200px"} w="100%" align={"start"} mx="auto" px={4} spacing={{ base: 10, md: "125px" }} mt={10}>
+				<Stack direction={{ base: "column", md: "row" }} w="100%" spacing={{ base: 10, md: 20 }}>
 					{/* first column */}
-					<VStack
-						alignItems={"start"}
-						textAlign={"left"}
-						w="100%"
-						spacing={6}
-					>
+					<VStack alignItems={"start"} textAlign={"left"} w="100%" spacing={6}>
 						<Heading
 							fontSize={{ base: "xl", sm: "2xl", lg: "4xl" }}
 							letterSpacing={"1px"}
@@ -120,36 +108,19 @@ export default function Api() {
 							fontWeight={"semibold"}
 						>
 							<Box as="span">{"IsMcServer.online's "}</Box>
-							<Badge
-								colorScheme="green"
-								fontSize={{ base: "xl", sm: "2xl", lg: "4xl" }}
-								px={2}
-								rounded={"xl"}
-							>
+							<Badge colorScheme="green" fontSize={{ base: "xl", sm: "2xl", lg: "4xl" }} px={2} rounded={"xl"}>
 								API
 							</Badge>
 						</Heading>
 						<Text fontWeight={500} color={"textSec"}>
-							IsMcServer.online API is a free-to-use API, that
-							allows checking any Minecraft Server status. To
-							generate API token join our Discord server and
-							navigate to{" "}
-							<Badge textTransform={"lowercase"}>
-								#generate-token
-							</Badge>{" "}
-							text channel. Use{" "}
-							<Badge textTransform={"lowercase"}>
-								/generatetoken
-							</Badge>{" "}
-							command to get your new private token!
+							IsMcServer.online API is a free-to-use API, that allows checking any Minecraft Server status. To
+							generate API token join our Discord server and navigate to{" "}
+							<Badge textTransform={"lowercase"}>#generate-token</Badge> text channel. Use{" "}
+							<Badge textTransform={"lowercase"}>/generatetoken</Badge> command to get your new private token!
 						</Text>
 						<VStack spacing={2} w={{ base: "100%", sm: "unset" }}>
 							<Flex flexDir={"column"} w="100%">
-								<Tooltip
-									hasArrow
-									label={<>Sample token*</>}
-									placement="top"
-								>
+								<Tooltip hasArrow label={<>Sample token*</>} placement="top">
 									<Flex
 										rounded={"xl"}
 										bg="alpha"
@@ -169,11 +140,7 @@ export default function Api() {
 										</Text>
 									</Flex>
 								</Tooltip>
-								<Text
-									fontSize={"10px"}
-									opacity={0.7}
-									fontWeight={100}
-								>
+								<Text fontSize={"10px"} opacity={0.7} fontWeight={100}>
 									Sample token*
 								</Text>
 							</Flex>
@@ -196,16 +163,9 @@ export default function Api() {
 								_active={{ scale: 0.9 }}
 								href={links.discordServerInvite}
 							>
-								<HStack
-									h={"100%"}
-									alignItems={"center"}
-									justifyContent={"center"}
-									mx="auto"
-								>
+								<HStack h={"100%"} alignItems={"center"} justifyContent={"center"} mx="auto">
 									<DiscordIcon />
-									<Text>
-										Join server to generate private token!
-									</Text>
+									<Text>Join server to generate private token!</Text>
 								</HStack>
 							</Link>
 						</VStack>
@@ -235,10 +195,8 @@ export default function Api() {
 					<VStack w="100%" alignItems={"start"} spacing={2}>
 						<Heading fontSize={"xl"}>How to use the API?</Heading>
 						<Text>
-							To use the api, enter your generated token into{" "}
-							<Badge>Autorization</Badge> header, like shown on
-							example below. It is important to note that API
-							tokens should be kept secure and not shared with
+							To use the api, enter your generated token into <Badge>Autorization</Badge> header, like shown on
+							example below. It is important to note that API tokens should be kept secure and not shared with
 							unauthorized users.
 						</Text>
 
@@ -255,8 +213,8 @@ export default function Api() {
 							>
 								<Flex>
 									<Box as="span" color={teal}>
-										await
-									</Box>{" "}
+										await{" "}
+									</Box>
 									request(
 									<Box as="span" color={"green"}>
 										"https://api.ismcserver.online/hypixel.net"
@@ -269,15 +227,8 @@ export default function Api() {
 										{`      `}
 										{`"Authorization"`}
 									</Box>
-									:{" "}
-									<Box
-										as="span"
-										color={"green"}
-									>{`"${sampleToken}"`}</Box>
-									<Box
-										as="span"
-										color={"gray"}
-									>{` // insert your token here`}</Box>
+									: <Box as="span" color={"green"}>{`"${sampleToken}"`}</Box>
+									<Box as="span" color={"gray"}>{` // insert your token here`}</Box>
 								</Flex>
 								<Flex>{`  }`}</Flex>
 								<Flex>{`})`}</Flex>
@@ -306,45 +257,29 @@ export default function Api() {
 						</Box>
 
 						<Heading fontSize={"lg"}>In short:</Heading>
-						<OrderedList
-							listStylePosition={"inside"}
-							lineHeight={"150%"}
-							spacing={4}
-						>
+						<OrderedList listStylePosition={"inside"} lineHeight={"150%"} spacing={4}>
 							<ListItem>
-								Obtain an API token: You need to get an API
-								token in order to use the API. This token is
-								used to authenticate your API requests and
-								ensure that your usage is authorized.
+								Obtain an API token: You need to get an API token in order to use the API. This token is used to
+								authenticate your API requests and ensure that your usage is authorized.
 							</ListItem>
 							<ListItem>
-								Include the token in the request header: Once
-								you have the API token, you need to include it
-								in the "Authorization" header of your API
-								request. This header is used to pass along your
-								API token, so that the API server can verify
-								your authorization.
+								Include the token in the request header: Once you have the API token, you need to include it in
+								the "Authorization" header of your API request. This header is used to pass along your API token,
+								so that the API server can verify your authorization.
 							</ListItem>
 							<ListItem>
-								Send the API request: After you have included
-								the API token in the request header, you can
-								send the API request to the server and receive a
-								response. The response will contain the data you
-								requested, as well as any other relevant
-								information.
+								Send the API request: After you have included the API token in the request header, you can send
+								the API request to the server and receive a response. The response will contain the data you
+								requested, as well as any other relevant information.
 							</ListItem>
 							<ListItem>
-								Keep your token secure: It is important to keep
-								your API token secure and not share it with
+								Keep your token secure: It is important to keep your API token secure and not share it with
 								unauthorized users.
 							</ListItem>
 						</OrderedList>
 
 						<Box pt={5}>
-							<Text>
-								See the example below to know what should be
-								right API response.
-							</Text>
+							<Text>See the example below to know what should be right API response.</Text>
 						</Box>
 					</VStack>
 
@@ -354,14 +289,7 @@ export default function Api() {
 						</Heading>
 
 						<Box as="pre" w="100%">
-							<Code
-								p={5}
-								rounded={"md"}
-								overflowX={"scroll"}
-								overflow={"auto"}
-								w="100%"
-								bg="alpha100"
-							>
+							<Code p={5} rounded={"md"} overflowX={"scroll"} overflow={"auto"} w="100%" bg="alpha100">
 								{`"online": ${data.online},
 "host": "${data.host}",
 "port": ${data.port},

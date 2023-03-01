@@ -1,21 +1,11 @@
-import {
-	Badge,
-	Box,
-	Flex,
-	Heading,
-	Icon,
-	Image,
-	Link,
-	Stack,
-	Text,
-	VStack
-} from "@chakra-ui/react";
+import { Badge, Box, Flex, Heading, Icon, Image, Link, Stack, Text, VStack } from "@chakra-ui/react";
 import { ChakraBox } from "../MotionComponents";
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { MdPeople } from "react-icons/md";
 import links from "../../config/links.json";
 import DiscordIcon from "../icons/DiscordIcon";
+import { context } from "~/components/utils/GlobalContext";
 
 export default function BotInfo() {
 	const [activeBlock, setActiveBlock] = useState<number | null>();
@@ -33,6 +23,13 @@ export default function BotInfo() {
 	};
 
 	const [opened, setOpened] = useState<boolean>(false);
+
+	const { updateData } = useContext(context);
+
+	useEffect(() => {
+		updateData("displayLogoInBg", opened);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [opened]);
 
 	return (
 		<VStack w="100%" align={"start"} my={20} spacing={20}>
@@ -55,12 +52,7 @@ export default function BotInfo() {
 						<Heading as={"h1"} fontSize={"lg"}>
 							Is Minecraft Server Online bot
 						</Heading>
-						<Text
-							fontSize={"10px"}
-							pos={"absolute"}
-							bottom={{ base: -3, sm: -2 }}
-							right={0}
-						>
+						<Text fontSize={"10px"} pos={"absolute"} bottom={{ base: -3, sm: -2 }} right={0}>
 							Read {opened ? "less" : "more"}
 						</Text>
 					</VStack>
@@ -78,40 +70,20 @@ export default function BotInfo() {
 								transition={{ ease: [0.25, 0.1, 0.25, 1] }}
 								style={{ height: "auto", overflow: "hidden" }}
 							>
-								<VStack
-									spacing={10}
-									w="100%"
-									pt={10}
-									align={"center"}
-								>
-									<Text
-										maxW={"800px"}
-										mx={"auto"}
-										textAlign={"center"}
-									>
+								<VStack spacing={10} w="100%" pt={10} align={"center"}>
+									<Text maxW={"800px"} mx={"auto"} textAlign={"center"}>
 										<Box as={"span"} fontStyle={"italic"}>
 											Is Minecraft Server Online
 										</Box>{" "}
-										is a bot, that allows you to check any
-										Minecraft server status directly on your
-										Discord server. Use{" "}
-										<Badge>/status</Badge> command and enter
-										the server address to check the status!
-										You can also set up the{" "}
-										<Badge>/livecheck</Badge> command and
-										see your server status in real-time!
+										is a bot, that allows you to check any Minecraft server status directly on your Discord
+										server. Use <Badge>/status</Badge> command and enter the server address to check the
+										status! You can also set up the <Badge>/livecheck</Badge> command and see your server
+										status in real-time!
 									</Text>
 
-									<Text
-										fontWeight={"black"}
-										textAlign={"center"}
-									>
+									<Text fontWeight={"black"} textAlign={"center"}>
 										See it on{" "}
-										<Link
-											href="https://top.gg/bot/1043569248427061380"
-											target="_blank"
-											color={"#ff3366"}
-										>
+										<Link href="https://top.gg/bot/1043569248427061380" target="_blank" color={"#ff3366"}>
 											Top.gg
 										</Link>
 										!
@@ -136,29 +108,15 @@ export default function BotInfo() {
 											border="2px solid white"
 										/>
 
-										<VStack
-											w="100%"
-											align={"start"}
-											spacing={5}
-										>
+										<VStack w="100%" align={"start"} spacing={5}>
 											{/* bot */}
 											<ChakraBox
 												w="100%"
 												h="50%"
 												variants={variants}
-												animate={
-													activeBlock == 0
-														? "open"
-														: activeBlock == 1
-														? "open1"
-														: "closed"
-												}
-												onMouseEnter={() =>
-													setActiveBlock(0)
-												}
-												onMouseLeave={() =>
-													setActiveBlock(null)
-												}
+												animate={activeBlock == 0 ? "open" : activeBlock == 1 ? "open1" : "closed"}
+												onMouseEnter={() => setActiveBlock(0)}
+												onMouseLeave={() => setActiveBlock(null)}
 											>
 												<Stack
 													w="100%"
@@ -184,22 +142,11 @@ export default function BotInfo() {
 													transform={"auto-gpu"}
 													_active={{ scale: 0.95 }}
 													as={Link}
-													href={
-														links.discordBotInvite
-													}
+													href={links.discordBotInvite}
 												>
-													<DiscordIcon
-														boxSize={"48px"}
-													/>
-													<Text
-														fontWeight={700}
-														color={"white"}
-														textAlign={"center"}
-													>
-														Invite our bot to your
-														server to check Server
-														status directly in
-														discord!
+													<DiscordIcon boxSize={"48px"} />
+													<Text fontWeight={700} color={"white"} textAlign={"center"}>
+														Invite our bot to your server to check Server status directly in discord!
 													</Text>
 													links.discordServerInvite
 												</Stack>
@@ -210,19 +157,9 @@ export default function BotInfo() {
 												w="100%"
 												h="50%"
 												variants={variants}
-												animate={
-													activeBlock == 1
-														? "open"
-														: activeBlock == 0
-														? "open1"
-														: "closed"
-												}
-												onMouseEnter={() =>
-													setActiveBlock(1)
-												}
-												onMouseLeave={() =>
-													setActiveBlock(null)
-												}
+												animate={activeBlock == 1 ? "open" : activeBlock == 0 ? "open1" : "closed"}
+												onMouseEnter={() => setActiveBlock(1)}
+												onMouseLeave={() => setActiveBlock(null)}
 											>
 												<Stack
 													w="100%"
@@ -248,23 +185,11 @@ export default function BotInfo() {
 													transform={"auto-gpu"}
 													_active={{ scale: 0.95 }}
 													as={Link}
-													href={
-														links.discordServerInvite
-													}
+													href={links.discordServerInvite}
 												>
-													<Icon
-														as={MdPeople}
-														color={"white"}
-														boxSize={"48px"}
-													/>
-													<Text
-														fontWeight={700}
-														color={"white"}
-														textAlign={"center"}
-													>
-														Join our server if you
-														need any help or just
-														want to talk!
+													<Icon as={MdPeople} color={"white"} boxSize={"48px"} />
+													<Text fontWeight={700} color={"white"} textAlign={"center"}>
+														Join our server if you need any help or just want to talk!
 													</Text>
 												</Stack>
 											</ChakraBox>
