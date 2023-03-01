@@ -19,12 +19,7 @@ import ThemeToggle from "./ToggleTheme";
 import FAQButton from "./FAQButton";
 import InviteButton from "./InviteButton";
 import HamburgerMenu from "./Mobile/HamburgerMenu";
-import {
-	ExternalLinkIcon,
-	MoonIcon,
-	QuestionOutlineIcon,
-	SunIcon
-} from "@chakra-ui/icons";
+import { ExternalLinkIcon, MoonIcon, QuestionOutlineIcon, SunIcon } from "@chakra-ui/icons";
 import { BiCode, BiHome } from "react-icons/bi";
 import ServerSearch from "./ServerSearch";
 import links from "../../config/links.json";
@@ -64,34 +59,16 @@ export default function Header() {
 			h="80px"
 			pos={"sticky"}
 			top={0}
-			bg="bg"
+			backdropFilter={scrollPosition > 0 ? "blur(20px)" : "none"}
 			zIndex={1799}
 			borderBottom={"1px"}
 			borderBottomColor={scrollPosition > 0 ? "alpha" : "transparent"}
 			transition={"all .2s"}
 		>
-			<Flex
-				w="100%"
-				maxW={"1500px"}
-				px={4}
-				alignItems="center"
-				h="100%"
-				mx="auto"
-				justifyContent={"space-between"}
-			>
+			<Flex w="100%" maxW={"1500px"} px={4} alignItems="center" h="100%" mx="auto" justifyContent={"space-between"}>
 				<HStack spacing={5}>
-					<Link
-						to="/"
-						alignItems={"center"}
-						_hover={{ textDecor: "none" }}
-					>
-						<Heading
-							as={"h1"}
-							fontSize="2xl"
-							transition={"all .2s"}
-							transform={"auto-gpu"}
-							_active={{ scale: 0.95 }}
-						>
+					<Link to="/" alignItems={"center"} _hover={{ textDecor: "none" }}>
+						<Heading as={"h1"} fontSize="2xl" transition={"all .2s"} transform={"auto-gpu"} _active={{ scale: 0.95 }}>
 							<HStack spacing={1} alignItems={"baseline"}>
 								<Text>IsMcServer</Text>
 								<Badge
@@ -123,57 +100,29 @@ export default function Header() {
 					<Menu>
 						{({ isOpen }) => (
 							<>
-								<MenuButton
-									aria-label="Mobile menu button"
-									aria-labelledby="Mobile menu button"
-								>
+								<MenuButton aria-label="Mobile menu button" aria-labelledby="Mobile menu button">
 									<HamburgerMenu isOpen={isOpen} />
 								</MenuButton>
-								<MenuList
-									bg="bg"
-									_focus={{ bg: "alpha" }}
-									_active={{ bg: "alpha" }}
-								>
-									<Link
-										to={"/"}
-										_hover={{ textDecor: "none" }}
-									>
+								<MenuList bg="bg" _focus={{ bg: "alpha" }} _active={{ bg: "alpha" }}>
+									<Link to={"/"} _hover={{ textDecor: "none" }}>
 										<MenuItem bg="bg">
-											<Flex
-												flexDir={"row"}
-												justifyContent={"space-between"}
-												w="100%"
-											>
+											<Flex flexDir={"row"} justifyContent={"space-between"} w="100%">
 												<Text>Home</Text>
 												<BiHome />
 											</Flex>
 										</MenuItem>
 									</Link>
-									<Link
-										to={"/faq"}
-										_hover={{ textDecor: "none" }}
-									>
+									<Link to={"/faq"} _hover={{ textDecor: "none" }}>
 										<MenuItem bg="bg">
-											<Flex
-												flexDir={"row"}
-												justifyContent={"space-between"}
-												w="100%"
-											>
+											<Flex flexDir={"row"} justifyContent={"space-between"} w="100%">
 												<Text>FAQ</Text>
 												<QuestionOutlineIcon />
 											</Flex>
 										</MenuItem>
 									</Link>
-									<Link
-										to={"/api"}
-										_hover={{ textDecor: "none" }}
-									>
+									<Link to={"/api"} _hover={{ textDecor: "none" }}>
 										<MenuItem bg="bg">
-											<Flex
-												flexDir={"row"}
-												justifyContent={"space-between"}
-												w="100%"
-											>
+											<Flex flexDir={"row"} justifyContent={"space-between"} w="100%">
 												<HStack>
 													<Text>API</Text>
 												</HStack>
@@ -183,31 +132,16 @@ export default function Header() {
 									</Link>
 									<a href={links.discordBotInvite}>
 										<MenuItem bg="bg">
-											<Flex
-												flexDir={"row"}
-												justifyContent={"space-between"}
-												w="100%"
-											>
+											<Flex flexDir={"row"} justifyContent={"space-between"} w="100%">
 												<HStack>
 													<Text>Invite bot</Text>
-													<ExternalLinkIcon
-														opacity={0.7}
-													/>
+													<ExternalLinkIcon opacity={0.7} />
 												</HStack>
 												<Icon h={"24px"} fill={"text"}>
-													<svg
-														xmlns="http://www.w3.org/2000/svg"
-														viewBox="0 0 127.14 96.36"
-													>
+													<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 127.14 96.36">
 														<defs></defs>
-														<g
-															id="图层_2"
-															data-name="图层 2"
-														>
-															<g
-																id="Discord_Logos"
-																data-name="Discord Logos"
-															>
+														<g id="图层_2" data-name="图层 2">
+															<g id="Discord_Logos" data-name="Discord Logos">
 																<g
 																	id="Discord_Logo_-_Large_-_White"
 																	data-name="Discord Logo - Large - White"
@@ -225,22 +159,9 @@ export default function Header() {
 										</MenuItem>
 									</a>
 									<MenuItem bg="bg" onClick={toggleColorMode}>
-										<Flex
-											flexDir={"row"}
-											justifyContent={"space-between"}
-											w="100%"
-										>
-											<Text>
-												Toggle{" "}
-												{colorMode == "light"
-													? "dark"
-													: "light"}
-											</Text>
-											{colorMode == "light" ? (
-												<MoonIcon />
-											) : (
-												<SunIcon />
-											)}
+										<Flex flexDir={"row"} justifyContent={"space-between"} w="100%">
+											<Text>Toggle {colorMode == "light" ? "dark" : "light"}</Text>
+											{colorMode == "light" ? <MoonIcon /> : <SunIcon />}
 										</Flex>
 									</MenuItem>
 								</MenuList>
