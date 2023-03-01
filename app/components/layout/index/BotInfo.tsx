@@ -1,4 +1,4 @@
-import { Badge, Box, Flex, Heading, Icon, Image, Link, Stack, Text, VStack } from "@chakra-ui/react";
+import { Badge, Box, Flex, Heading, Icon, Image, Link, Stack, Text, VStack, HStack } from "@chakra-ui/react";
 import { ChakraBox } from "../MotionComponents";
 import { useState, useContext, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -81,13 +81,25 @@ export default function BotInfo() {
 										status in real-time!
 									</Text>
 
-									<Text fontWeight={"black"} textAlign={"center"}>
-										See it on{" "}
-										<Link href="https://top.gg/bot/1043569248427061380" target="_blank" color={"#ff3366"}>
-											Top.gg
-										</Link>
-										!
-									</Text>
+									<Link
+										href="https://top.gg/bot/1043569248427061380"
+										target="_blank"
+										w="100%"
+										maxW={"800px"}
+										mx="auto"
+										p={3}
+										rounded={"2xl"}
+										border={"3px solid #ff3366"}
+										justifyContent={"center"}
+										display={"flex"}
+										_hover={{ textDecor: "none", bg: "alpha" }}
+									>
+										<HStack spacing={5}>
+											<Image src="/topgg.svg" h={"48px"} />
+											<Flex rounded={"full"} w={"3px"} h={"100%"} bg={"#ff3366"} />
+											<Text fontWeight={"black"}>Check out our bot on Top.gg</Text>
+										</HStack>
+									</Link>
 
 									<Stack
 										w="100%"

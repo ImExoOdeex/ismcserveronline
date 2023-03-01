@@ -46,6 +46,7 @@ export default function Header() {
 
 	useEffect(() => {
 		window.addEventListener("scroll", handleScroll, { passive: true });
+		handleScroll();
 
 		return () => {
 			window.removeEventListener("scroll", handleScroll);
@@ -59,7 +60,7 @@ export default function Header() {
 			h="80px"
 			pos={"sticky"}
 			top={0}
-			backdropFilter={scrollPosition > 0 ? "blur(20px)" : "none"}
+			backdropFilter={scrollPosition < 0 ? "none" : "blur(20px)"}
 			zIndex={1799}
 			borderBottom={"1px"}
 			borderBottomColor={scrollPosition > 0 ? "alpha" : "transparent"}

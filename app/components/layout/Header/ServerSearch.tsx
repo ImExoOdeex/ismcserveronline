@@ -87,6 +87,7 @@ export default function ServerSearch() {
 									rounded={"xl"}
 									border={"2px"}
 									px={4}
+									bg={"alpha"}
 									py={1.5}
 									pl={10}
 									pr={14}

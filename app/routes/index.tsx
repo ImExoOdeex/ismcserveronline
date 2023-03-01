@@ -12,21 +12,17 @@ import {
 	Box,
 	Spinner,
 	Image,
-	Tooltip
+	Tooltip,
+	useColorMode
 } from "@chakra-ui/react";
-import {
-	type ActionArgs,
-	redirect,
-	type MetaFunction,
-	json
-} from "@remix-run/node";
+import { type ActionArgs, redirect, type MetaFunction, json } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { ChakraBox, ChakraInput } from "~/components/layout/MotionComponents";
 import { VersionChangeComp } from "~/components/layout/index/VersionChangeComp";
 import type { LoaderArgs } from "@remix-run/node";
-import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
+import { getCookie, getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
 import BotInfo from "~/components/layout/index/BotInfo";
 import HowToUse from "~/components/layout/index/HowToUse";
 import SampleServers from "~/components/layout/index/SampleServers/SampleServers";
@@ -35,7 +31,7 @@ import { validateServer } from "~/components/server/validateServer";
 
 export async function action({ request }: ActionArgs) {
 	const formData = await request.formData();
-	const bedrock = formData.get("bedrock");
+	const bedrock = getCookieWithoutDocument("bedrock", request.headers.get("cookie") ?? "") === "true" ? true : false;
 	const server = formData.get("server")?.toString().toLowerCase();
 
 	if (!server) {
@@ -45,7 +41,7 @@ export async function action({ request }: ActionArgs) {
 	const error = validateServer(server);
 	if (error) return json({ error });
 
-	return redirect(`/${bedrock == "true" ? "bedrock/" : ""}${server}`);
+	return redirect(`/${bedrock ? "bedrock/" : ""}${server}`);
 }
 
 export const meta: MetaFunction = () => {
@@ -111,9 +107,7 @@ export default function Index() {
 		if (sampleServers) lastSampleServers.current = sampleServers;
 	}, [bedrock, sampleServers]);
 
-	const [bedrockChecked, setBedrockChecked] = useState<boolean>(
-		bedrock ? bedrock : false
-	);
+	const [bedrockChecked, setBedrockChecked] = useState<boolean>(bedrock ? bedrock : false);
 	const [searching, setSearching] = useState<boolean>(false);
 	const [serverValue, setServerValue] = useState<string>();
 
@@ -130,24 +124,25 @@ export default function Index() {
 		}
 	};
 
-	const submitting = fetcher.state !== "idle";
+	// let submitting = fetcher.state !== "idle";
+	const [submitting, setSubmitting] = useState<boolean>(fetcher.state !== "idle");
+
+	useEffect(() => {
+		setTimeout(() => {
+			setSubmitting(true);
+		}, 1500);
+	}, []);
+
+	useEffect(() => {
+		console.log(getCookie("bedrock"), bedrockChecked);
+	});
+
+	const { colorMode } = useColorMode();
 
 	return (
-		<Flex
-			flexDir={"column"}
-			maxW="1200px"
-			mx="auto"
-			w="100%"
-			mt={"75px"}
-			px="4"
-		>
+		<Flex flexDir={"column"} maxW="1200px" mx="auto" w="100%" mt={"75px"} px="4">
 			<Stack spacing={10} direction={{ base: "column", md: "row" }}>
-				<VStack
-					spacing={"50px"}
-					w={{ base: "100%", md: "50%" }}
-					mt={"50px"}
-					flexDir="column"
-				>
+				<VStack spacing={"50px"} w={{ base: "100%", md: "50%" }} mt={"50px"} flexDir="column">
 					<Heading as={"h1"} fontSize="3xl">
 						<chakra.span color={"orange"}>Real</chakra.span>
 						-time
@@ -168,16 +163,10 @@ export default function Index() {
 								fontWeight={400}
 								mb={1.5}
 							>
-								{fetcher?.data
-									? fetcher.data?.error
-									: "Which server do you want to check?"}
+								{fetcher?.data ? fetcher.data?.error : "Which server do you want to check?"}
 							</FormLabel>
 
-							<Flex
-								pos={"relative"}
-								w={{ base: "100%", sm: "75%" }}
-								flexDir="row"
-							>
+							<Flex pos={"relative"} w={{ base: "100%", sm: "75%" }} flexDir="row">
 								<Flex flexDir={"column"} w="100%">
 									<ChakraInput
 										rounded={"2xl"}
@@ -187,11 +176,7 @@ export default function Index() {
 										w="100%"
 										onFocus={() => setSearching(true)}
 										onBlur={() => setSearching(false)}
-										onChange={(e) =>
-											setServerValue(
-												e.currentTarget.value
-											)
-										}
+										onChange={(e) => setServerValue(e.currentTarget.value)}
 										value={serverValue}
 										bg="alpha100"
 										color="textSec"
@@ -205,11 +190,7 @@ export default function Index() {
 										outline={"none"}
 										h={"40px"}
 										variants={variants}
-										animate={
-											searching || serverValue?.length
-												? "open"
-												: "closed"
-										}
+										animate={searching || serverValue?.length ? "open" : "closed"}
 										// @ts-ignore
 										transition={{
 											duration: 0.2,
@@ -227,11 +208,7 @@ export default function Index() {
 										pos={"relative"}
 										variants={variants}
 										zIndex={0}
-										animate={
-											searching || serverValue?.length
-												? "open"
-												: "closed"
-										}
+										animate={searching || serverValue?.length ? "open" : "closed"}
 										// @ts-ignore
 										transition={{
 											duration: 0.2,
@@ -244,59 +221,38 @@ export default function Index() {
 												variant={"unstyled"}
 												h="100%"
 												pos={"relative"}
-												onClick={() =>
-													setBedrockChecked(false)
-												}
+												onClick={() => setBedrockChecked(false)}
 											>
 												<Text
 													zIndex={4}
-													color={
-														bedrockChecked
-															? "text"
-															: "inv"
-													}
+													color={bedrockChecked ? "text" : "inv"}
 													transition={"color .15s"}
 												>
 													Java
 												</Text>
-												{!bedrockChecked && (
-													<VersionChangeComp />
-												)}
+												{!bedrockChecked && <VersionChangeComp />}
 											</Button>
 											<Button
 												w="50%"
 												variant={"unstyled"}
 												h="100%"
 												pos={"relative"}
-												onClick={() =>
-													setBedrockChecked(true)
-												}
+												onClick={() => setBedrockChecked(true)}
 											>
 												<Text
 													zIndex={4}
-													color={
-														bedrockChecked
-															? "inv"
-															: "text"
-													}
+													color={bedrockChecked ? "inv" : "text"}
 													transition={"color .15s"}
 												>
 													Bedrock
 												</Text>
-												{bedrockChecked && (
-													<VersionChangeComp />
-												)}
+												{bedrockChecked && <VersionChangeComp />}
 											</Button>
 										</HStack>
 									</ChakraBox>
 								</Flex>
 
-								<Box
-									pos={"absolute"}
-									right={{ base: -1, md: 2 }}
-									top={0}
-									bottom={0}
-								>
+								<Box pos={"absolute"} right={{ base: -1, md: 2 }} top={0} bottom={0}>
 									<AnimatePresence mode="wait">
 										{(searching || serverValue?.length) && (
 											<motion.div
@@ -318,24 +274,16 @@ export default function Index() {
 												<Tooltip
 													hasArrow
 													label={`Please Enter valid server address`}
-													isDisabled={serverValue?.includes(
-														"."
-													)}
+													isDisabled={serverValue?.includes(".")}
 												>
 													<Button
 														rounded={"2xl"}
 														variant="brand"
 														type="submit"
 														w="100%"
-														disabled={
-															!serverValue?.includes(
-																"."
-															)
-														}
+														disabled={!serverValue?.includes(".")}
 													>
-														<Text px={2}>
-															Search
-														</Text>
+														<Text px={2}>Search</Text>
 													</Button>
 												</Tooltip>
 											</motion.div>
@@ -363,34 +311,22 @@ export default function Index() {
 										>
 											<Flex
 												w={{ base: "102%", sm: "100%" }}
+												rounded={"xl"}
 												h="100%"
-												bg="bg"
 												align={"center"}
 												alignItems="center"
 												justifyContent={"center"}
 											>
 												<HStack spacing={4}>
 													<VStack spacing={0}>
-														<Text
-															fontWeight={500}
-															textAlign={"center"}
-														>
-															Getting real-time
-															data about{" "}
-															<Text
-																noOfLines={2}
-																maxW={"500px"}
-															>
+														<Text fontWeight={500} textAlign={"center"}>
+															Getting real-time data about{" "}
+															<Text noOfLines={2} maxW={"500px"}>
 																{serverValue}
 															</Text>
 														</Text>
-														<Text
-															fontSize={"10px"}
-															opacity={0.7}
-														>
-															This shouldn't take
-															longer than 5
-															seconds
+														<Text fontSize={"10px"} opacity={0.7}>
+															This shouldn't take longer than 5 seconds
 														</Text>
 													</VStack>
 
@@ -412,14 +348,8 @@ export default function Index() {
 						/>
 					</fetcher.Form>
 
-					<Text
-						fontWeight={600}
-						color="textSec"
-						maxW={"423px"}
-						alignSelf="start"
-					>
-						Get information about your favourite Minecraft server
-						for Java or Bedrock edition!
+					<Text fontWeight={600} color="textSec" maxW={"423px"} alignSelf="start">
+						Get information about your favourite Minecraft server for Java or Bedrock edition!
 					</Text>
 				</VStack>
 
@@ -435,10 +365,7 @@ export default function Index() {
 				</Flex>
 			</Stack>
 
-			<SampleServers
-				setServerValue={setServerValue}
-				setBedrock={setBedrockChecked}
-			/>
+			<SampleServers setServerValue={setServerValue} setBedrock={setBedrockChecked} />
 
 			<BotInfo />
 
