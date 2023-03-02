@@ -13,7 +13,7 @@ export default function BackgroundUtils() {
 
 	return (
 		<Flex pos={"absolute"} zIndex={-1} maxH={"100vh"} w="100%" h="100%">
-			<AnimatePresence mode="wait">
+			<AnimatePresence mode="sync">
 				{displayLogoInBg && path === "/" && (
 					<motion.div
 						initial={{ opacity: 0 }}

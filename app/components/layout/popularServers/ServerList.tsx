@@ -43,7 +43,7 @@ export default function ServerList({
 
 				return null;
 			});
-		}, 50);
+		}, 1);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 

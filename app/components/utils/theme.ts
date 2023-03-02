@@ -3,7 +3,7 @@ import { mode, type StyleFunctionProps } from "@chakra-ui/theme-tools";
 import type { Dict } from "@chakra-ui/utils";
 
 const config: ThemeConfig = {
-	initialColorMode: "dark",
+	initialColorMode: "light",
 	useSystemColorMode: true,
 	disableTransitionOnChange: true
 };
@@ -75,7 +75,7 @@ const theme = extendTheme({
 	styles,
 	fonts: {
 		body: `"Poppins", sans-serif`,
-		heading: '"Outfit"'
+		heading: '"Outfit", "Poppins", sans-serif'
 	},
 	semanticTokens: {
 		colors: {

@@ -6,7 +6,7 @@ export default function HowToUse() {
 		<VStack spacing={28} width={"100%"} align={"start"} mb={10}>
 			{/* how to use */}
 			<VStack spacing={5} width={"100%"} align={"start"}>
-				<Heading as={"h1"} fontSize={"5xl"} fontWeight={"black"} letterSpacing={"3px"}>
+				<Heading as={"h1"} fontSize={{ base: "3xl", md: "5xl" }} fontWeight={"black"} letterSpacing={"3px"}>
 					How to use this tool?
 				</Heading>
 				<Stack direction={{ base: "column", md: "row" }} spacing={{ base: 5, md: 20 }} alignItems={"center"}>
@@ -23,11 +23,17 @@ export default function HowToUse() {
 			</VStack>
 
 			{/* how it works */}
-			<VStack spacing={5} width={"100%"} align={"end"}>
-				<Heading as={"h1"} fontSize={"5xl"} fontWeight={"black"} textAlign={"end"} letterSpacing={"3px"}>
-					How it works?
+			<VStack spacing={5} width={"100%"} align={{ base: "start", md: "end" }}>
+				<Heading
+					as={"h1"}
+					fontSize={{ base: "3xl", md: "5xl" }}
+					fontWeight={"black"}
+					textAlign={{ base: "start", md: "end" }}
+					letterSpacing={"3px"}
+				>
+					How does it work?
 				</Heading>
-				<Stack direction={{ base: "column", md: "row" }} spacing={{ base: 5, md: 20 }} alignItems={"center"}>
+				<Stack direction={{ base: "column-reverse", md: "row" }} spacing={{ base: 5, md: 20 }} alignItems={"center"}>
 					<Icon as={BiNetworkChart} boxSize={"150px"} />
 					<Text color={"textSec"} letterSpacing={"1px"} textAlign={"justify"}>
 						Real-time information about a Minecraft server is fetched and shown on a website that checks the status of
@@ -43,7 +49,13 @@ export default function HowToUse() {
 
 			{/* bot */}
 			<VStack spacing={5} width={"100%"} align={"start"}>
-				<Heading as={"h1"} fontSize={"5xl"} fontWeight={"black"} textAlign={"end"} letterSpacing={"3px"}>
+				<Heading
+					as={"h1"}
+					fontSize={{ base: "3xl", md: "5xl" }}
+					fontWeight={"black"}
+					textAlign={{ base: "start", md: "end" }}
+					letterSpacing={"3px"}
+				>
 					Hardly using Discord? We got you covered!
 				</Heading>
 				<Stack direction={{ base: "column", md: "row" }} spacing={{ base: 5, md: 20 }} alignItems={"center"}>

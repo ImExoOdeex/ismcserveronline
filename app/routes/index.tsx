@@ -36,8 +36,6 @@ export async function loader({ request }: LoaderArgs) {
 	const cookies = request.headers.get("Cookie");
 	const bedrock = getCookieWithoutDocument("bedrock", cookies ?? "");
 
-	// TODO: will get working defer later
-	console.time("servers");
 	const sampleServers = await new Promise((resolve) => {
 		resolve(
 			db.sampleServer.findMany({
@@ -68,7 +66,6 @@ export async function loader({ request }: LoaderArgs) {
 			})
 		);
 	});
-	console.timeEnd("servers");
 
 	return json({ bedrock: bedrock == "true" ? true : false, sampleServers });
 }

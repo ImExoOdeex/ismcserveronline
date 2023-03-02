@@ -11,8 +11,8 @@ interface Props extends SVGMotionProps<Props> {
 function HamburgerMenu({
 	isOpen = false,
 	width = 20,
-	height = 16,
-	strokeWidth = 2,
+	height = 10,
+	strokeWidth = 1,
 	color = "currentColor",
 	lineProps = null,
 	...props
@@ -77,16 +77,8 @@ function HamburgerMenu({
 			height={height}
 			{...props}
 		>
-			<motion.line
-				x1="0"
-				x2={unitWidth}
-				y1="0"
-				y2="0"
-				variants={top}
-				transition={transition}
-				{...lineProps}
-			/>
-			<motion.line
+			<motion.line x1="0" x2={unitWidth} y1="0" y2="0" variants={top} transition={transition} {...lineProps} />
+			{/* <motion.line
 				x1="0"
 				x2={unitWidth}
 				y1="2"
@@ -94,16 +86,8 @@ function HamburgerMenu({
 				variants={center}
 				transition={transition}
 				{...lineProps}
-			/>
-			<motion.line
-				x1="0"
-				x2={unitWidth}
-				y1="4"
-				y2="4"
-				variants={bottom}
-				transition={transition}
-				{...lineProps}
-			/>
+			/> */}
+			<motion.line x1="0" x2={unitWidth} y1="4" y2="4" variants={bottom} transition={transition} {...lineProps} />
 		</motion.svg>
 	);
 }

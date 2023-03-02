@@ -38,7 +38,6 @@ export default function PopularServersPopover({ server }: { server: string }) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[server]
 	);
-	console.log(results);
 
 	// const onKeyDown = useCallback(
 	// 	(e: React.KeyboardEvent) => {
