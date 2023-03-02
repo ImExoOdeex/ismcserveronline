@@ -1,13 +1,18 @@
 import { CheckIcon } from "@chakra-ui/icons";
-import { Badge, Flex, Grid, HStack, Heading, Image, Text, VStack, Wrap, WrapItem, useColorMode } from "@chakra-ui/react";
+import { Badge, Box, Flex, Grid, HStack, Heading, Image, Text, VStack, Wrap, WrapItem, useColorMode } from "@chakra-ui/react";
 import { useFetcher } from "@remix-run/react";
 import { FastAverageColor } from "fast-average-color";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import ServerDetails from "./ServerDetails";
-import Pagination from "./Pagination";
 import { type Prisma } from "@prisma/client";
+import loadable from "@loadable/component";
 const Color = require("color");
+
+const Pagination = loadable(() => import("./Pagination"), {
+	ssr: true,
+	fallback: <Box minH={"40px"} h="100%" />
+});
 
 export default function ServerList({
 	servers,

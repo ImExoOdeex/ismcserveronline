@@ -9,6 +9,7 @@ import {
 	MenuButton,
 	MenuItem,
 	MenuList,
+	Skeleton,
 	Text,
 	useColorMode,
 	useEventListener
@@ -21,10 +22,17 @@ import InviteButton from "./InviteButton";
 import HamburgerMenu from "./Mobile/HamburgerMenu";
 import { ExternalLinkIcon, MoonIcon, QuestionOutlineIcon, SunIcon } from "@chakra-ui/icons";
 import { BiCode, BiHome } from "react-icons/bi";
-import ServerSearch from "./ServerSearch";
 import links from "../../config/links.json";
 import { useEffect, useState } from "react";
 import PopularServersButton from "./PopularServersButton";
+import loadable from "@loadable/component";
+import { useLocation } from "@remix-run/react";
+import { AnimatePresence, motion } from "framer-motion";
+
+const ServerSearch = loadable(() => import(/* webpackPrefetch: true */ "./ServerSearch"), {
+	ssr: true,
+	fallback: <Skeleton h="40px" w="350px" minW="100%" startColor="alpha" endColor="alpha200" rounded={"xl"} />
+});
 
 export default function Header() {
 	useEventListener("keydown", (event: any) => {
@@ -52,6 +60,8 @@ export default function Header() {
 			window.removeEventListener("scroll", handleScroll);
 		};
 	}, []);
+
+	const path = useLocation().pathname;
 
 	return (
 		<Flex
@@ -86,7 +96,29 @@ export default function Header() {
 							</HStack>
 						</Heading>
 					</Link>
-					<ServerSearch />
+					<Flex display={{ base: "none", md: "flex" }} w="350px">
+						<AnimatePresence mode="wait" initial={false}>
+							{path !== "/" && (
+								<motion.div
+									style={{ width: "100%" }}
+									initial={{ x: -40, opacity: 0, scale: 0.975 }}
+									animate={{ x: 0, opacity: 1, scale: 1 }}
+									exit={{
+										x: -40,
+										opacity: 0,
+										scale: 0.975,
+										transition: { duration: 0.2 }
+									}}
+									transition={{
+										ease: [0.25, 0.1, 0.25, 1],
+										duration: 0.33
+									}}
+								>
+									<ServerSearch />
+								</motion.div>
+							)}
+						</AnimatePresence>
+					</Flex>
 				</HStack>
 
 				<HStack spacing={3} display={{ base: "none", lg: "flex" }}>
