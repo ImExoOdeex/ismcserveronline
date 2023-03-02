@@ -1,6 +1,6 @@
 import { useLocation } from "@remix-run/react";
 import React, { createContext, useState } from "react";
-import { useLayoutEffect } from "react";
+import { useEffect } from "react";
 
 type Props = {
 	children?: React.ReactNode;
@@ -33,7 +33,7 @@ export function GlobalContext({ children }: Props) {
 		return path === "/api" ? "green.500" : path.includes("/popular-servers") ? "gold" : "brand";
 	}
 
-	useLayoutEffect(() => {
+	useEffect(() => {
 		updateData("gradientColor", getNewGradientColor());
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [path]);

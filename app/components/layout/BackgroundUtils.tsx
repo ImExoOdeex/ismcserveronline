@@ -40,6 +40,7 @@ export default function BackgroundUtils() {
 			</AnimatePresence>
 			{displayGradient && (
 				<Flex
+					transition={"all .25s"}
 					w="100%"
 					bgGradient={`linear(to-b, ${gradientColor}, transparent)`}
 					h="100%"

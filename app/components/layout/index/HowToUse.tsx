@@ -1,5 +1,5 @@
 import { Badge, Heading, Icon, Stack, Text, VStack } from "@chakra-ui/react";
-import { BiNetworkChart, BiPointer } from "react-icons/bi";
+import { BiMessageError, BiNetworkChart, BiPointer } from "react-icons/bi";
 
 export default function HowToUse() {
 	return (
@@ -59,7 +59,7 @@ export default function HowToUse() {
 						seconds and updates the message if changes occur. Stay updated on your favorite Minecraft server in
 						real-time.
 					</Text>
-					<Icon as={BiNetworkChart} boxSize={"150px"} />
+					<Icon as={BiMessageError} boxSize={"150px"} />
 				</Stack>
 			</VStack>
 		</VStack>
