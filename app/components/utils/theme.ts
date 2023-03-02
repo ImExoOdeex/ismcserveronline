@@ -37,7 +37,8 @@ const styles = {
 				backgroundColor: mode("#c4c4c4", "#39393a")(props)
 			},
 			"*::selection": {
-				backgroundColor: "#563B9F"
+				backgroundColor: "#563B9F",
+				color: "white"
 			}
 		}
 	})

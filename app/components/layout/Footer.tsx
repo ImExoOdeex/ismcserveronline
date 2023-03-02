@@ -79,7 +79,7 @@ export default function Footer() {
 
 				<Stack direction={"row"} spacing={{ base: "70px", md: 20 }}>
 					<VStack align={"start"} fontWeight="600">
-						<Text fontWeight="700">Availibility</Text>
+						<Text fontWeight="700">Availability</Text>
 						<Text
 							color={"textSec"}
 							tabIndex={0}
