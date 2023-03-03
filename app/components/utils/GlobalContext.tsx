@@ -16,9 +16,11 @@ type contextType = {
 export const context = createContext<contextType>({ updateData(key, value) {} });
 
 export function GlobalContext({ children }: Props) {
+	const path = useLocation().pathname;
+
 	const [data, setData] = useState({
 		displayGradient: true,
-		gradientColor: "rgba(86, 59, 159, 0.3)",
+		gradientColor: path === "/api" ? "green.500" : path.includes("/popular-servers") ? "gold" : "brand",
 		displayLogoInBg: false,
 		updateData
 	});
@@ -26,8 +28,6 @@ export function GlobalContext({ children }: Props) {
 	function updateData(key: "displayGradient" | "gradientColor" | "displayLogoInBg", value: any) {
 		setData((prev) => ({ ...prev, [key]: value }));
 	}
-
-	const path = useLocation().pathname;
 
 	function getNewGradientColor() {
 		return path === "/api" ? "green.500" : path.includes("/popular-servers") ? "gold" : "brand";
