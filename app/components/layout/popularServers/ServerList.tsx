@@ -30,20 +30,15 @@ export default function ServerList({
 	const fac = new FastAverageColor();
 
 	useEffect(() => {
-		// timeout, cause FastAverageColor gives error of no sizes for this images
-		setTimeout(() => {
-			Array.from(servers, (s) => {
-				let ele: any;
-				do {
-					ele = document.querySelector(`#img${s.id}`);
-					const faqColor = fac.getColor(ele);
-					const color = Color(faqColor?.rgba).alpha(0.15).string();
-					setColors((prev) => [...prev, { id: s.id, color }]);
-				} while (!ele);
+		Array.from(servers, (s) => {
+			let ele: any;
+			ele = document.querySelector(`#img${s.id}`);
+			const faqColor = fac.getColor(ele);
+			const color = Color(faqColor?.rgba).alpha(0.15).string();
+			setColors((prev) => [...prev, { id: s.id, color }]);
 
-				return null;
-			});
-		}, 1);
+			return null;
+		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
