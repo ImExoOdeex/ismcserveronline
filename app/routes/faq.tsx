@@ -1,22 +1,12 @@
-import {
-	Badge,
-	Code,
-	Divider,
-	Heading,
-	Link,
-	Text,
-	VStack
-} from "@chakra-ui/react";
+import { Badge, Code, Divider, Heading, Link, Text, VStack } from "@chakra-ui/react";
 import { json, type MetaFunction } from "@remix-run/node";
 import { useLoaderData, useRouteLoaderData } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
 import SystemInfo from "~/components/layout/faq/SystemInfo";
-import {
-	getCookie,
-	getCookieWithoutDocument
-} from "~/components/utils/func/cookiesFunc";
+import { getCookie, getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
 import os from "os";
 import links from "../components/config/links.json";
+import { Ad } from "~/components/ads/Ad";
 
 export const meta: MetaFunction = () => {
 	return {
@@ -25,8 +15,7 @@ export const meta: MetaFunction = () => {
 };
 
 export async function loader() {
-	const bytesToMegabytes = (bytes: number) =>
-		Math.round((bytes / 1024 / 1024) * 100) / 100;
+	const bytesToMegabytes = (bytes: number) => Math.round((bytes / 1024 / 1024) * 100) / 100;
 
 	const mem = bytesToMegabytes(process.memoryUsage().heapUsed);
 	const totalMem = bytesToMegabytes(os.totalmem());
@@ -68,9 +57,7 @@ export default function Faq() {
 	const cookies = data?.cookies;
 
 	const [cookieState, setCookieState] = useState<"track" | "no-track">(
-		getCookieWithoutDocument(name, cookies) == "no-track"
-			? "no-track"
-			: "track"
+		getCookieWithoutDocument(name, cookies) == "no-track" ? "no-track" : "track"
 	);
 
 	function toggleTracking() {
@@ -85,21 +72,11 @@ export default function Faq() {
 	}
 
 	useEffect(() => {
-		setCookieState(
-			getCookie(name) == "no-track" ? "no-track" : "track" ?? "track"
-		);
+		setCookieState(getCookie(name) == "no-track" ? "no-track" : "track" ?? "track");
 	}, []);
 
 	return (
-		<VStack
-			maxW={"1200px"}
-			w="100%"
-			align={"start"}
-			mx="auto"
-			px={4}
-			spacing={7}
-			mt={10}
-		>
+		<VStack maxW={"1200px"} w="100%" align={"start"} mx="auto" px={4} spacing={7} mt={10}>
 			<VStack w="100%" align={"start"}>
 				<Heading as={"h1"} fontSize="lg">
 					Frequently Asked Questions
@@ -108,58 +85,43 @@ export default function Faq() {
 			</VStack>
 
 			<VStack align={"start"}>
-				<Heading fontSize={"md"}>
-					How do I change port of server I want to check?
-				</Heading>
+				<Heading fontSize={"md"}>How do I change port of server I want to check?</Heading>
 				<Text color={"textSec"} fontWeight={500}>
-					You can use the same way as in game. Add the{" "}
-					<Badge>:</Badge> and port you want to check after the
-					domain.
+					You can use the same way as in game. Add the <Badge>:</Badge> and port you want to check after the domain.
 				</Text>
 			</VStack>
 
 			<VStack align={"start"}>
-				<Heading fontSize={"md"}>
-					How can I disable status for my server?
-				</Heading>
+				<Heading fontSize={"md"}>How can I disable status for my server?</Heading>
 				<Text color={"textSec"} fontWeight={500}>
-					To disable status of your server you need to set{" "}
-					<Code colorScheme={"purple"}>enable-status</Code> and{" "}
-					<Code colorScheme={"purple"}>enable-query</Code> to false in
-					the <Code colorScheme={"purple"}>server.properties</Code>{" "}
-					file. This will result disabling status directly in game,
-					but this won't affect connecting to server.
+					To disable status of your server you need to set <Code colorScheme={"purple"}>enable-status</Code> and{" "}
+					<Code colorScheme={"purple"}>enable-query</Code> to false in the{" "}
+					<Code colorScheme={"purple"}>server.properties</Code> file. This will result disabling status directly in
+					game, but this won't affect connecting to server.
 				</Text>
 			</VStack>
 
 			<VStack align={"start"}>
-				<Heading fontSize={"md"}>
-					How can I hide plugins on my server?
-				</Heading>
+				<Heading fontSize={"md"}>How can I hide plugins on my server?</Heading>
 				<Text color={"textSec"} fontWeight={500}>
-					If you use Spigot, Bukkit or Craftbukkit set{" "}
-					<Code colorScheme={"purple"}>query-plugins</Code> to false
-					in your <Code colorScheme={"purple"}>bukkit.yml</Code> file.
+					If you use Spigot, Bukkit or Craftbukkit set <Code colorScheme={"purple"}>query-plugins</Code> to false in
+					your <Code colorScheme={"purple"}>bukkit.yml</Code> file.
 				</Text>
 			</VStack>
 
 			<VStack align={"start"}>
-				<Heading fontSize={"md"}>
-					Why this page doesn't shows list of online players?
-				</Heading>
+				<Heading fontSize={"md"}>Why this page doesn't shows list of online players?</Heading>
 				<Text color={"textSec"} fontWeight={500}>
-					Minecraft servers only return a maximum of 12 random players
-					when requesting the status. Some servers can override it to
-					show additional information for users.
+					Minecraft servers only return a maximum of 12 random players when requesting the status. Some servers can
+					override it to show additional information for users.
 				</Text>
 			</VStack>
 
 			<VStack align={"start"}>
 				<Heading fontSize={"md"}>How ping is calculated there?</Heading>
 				<Text color={"textSec"} fontWeight={500}>
-					Ping is a latency from request to origin server. Our API is
-					located in central europe, that means ping between you and
-					server can be different.
+					Ping is a latency from request to origin server. Our API is located in central europe, that means ping between
+					you and server can be different.
 				</Text>
 			</VStack>
 
@@ -171,22 +133,14 @@ export default function Faq() {
 			</VStack>
 
 			<VStack align={"start"}>
-				<Heading fontSize={"md"}>
-					How do I disable my server checks tracking?
-				</Heading>
+				<Heading fontSize={"md"}>How do I disable my server checks tracking?</Heading>
 				<Text color={"textSec"} fontWeight={500}>
 					You can{" "}
-					<Link
-						variant={"link"}
-						onClick={toggleTracking}
-						userSelect={"none"}
-					>
+					<Link variant={"link"} onClick={toggleTracking} userSelect={"none"}>
 						Click here
 					</Link>{" "}
 					to toggle tracking. Tracking is{" "}
-					<Badge
-						colorScheme={cookieState == "track" ? "green" : "red"}
-					>
+					<Badge colorScheme={cookieState == "track" ? "green" : "red"}>
 						{cookieState == "track" ? "Enabled" : "Disabled"}
 					</Badge>
 					.
@@ -210,10 +164,7 @@ export default function Faq() {
 				<Heading fontSize={"md"}>Developer info</Heading>
 				<Text fontWeight={500}>
 					This project is{" "}
-					<Link
-						href="https://github.com/ImExoOdeex/ismcserveronline"
-						variant={"link"}
-					>
+					<Link href="https://github.com/ImExoOdeex/ismcserveronline" variant={"link"}>
 						open-source
 					</Link>
 					. It's made with{" "}
@@ -228,10 +179,7 @@ export default function Faq() {
 				</Text>
 				<Text fontWeight={500}>
 					If you found any bug, please{" "}
-					<Link
-						href="https://github.com/ImExoOdeex/ismcserveronline/issues"
-						variant={"link"}
-					>
+					<Link href="https://github.com/ImExoOdeex/ismcserveronline/issues" variant={"link"}>
 						create new issue on github
 					</Link>
 					.
@@ -241,6 +189,8 @@ export default function Faq() {
 			<Divider />
 
 			<SystemInfo system={system} />
+
+			<Ad />
 		</VStack>
 	);
 }

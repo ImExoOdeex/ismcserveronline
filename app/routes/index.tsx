@@ -10,6 +10,7 @@ import SampleServers from "~/components/layout/index/SampleServers/SampleServers
 import { db } from "~/components/utils/db.server";
 import { validateServer } from "~/components/server/validateServer";
 import ServerSearch from "~/components/layout/index/ServerSearch";
+import { Ad } from "~/components/ads/Ad";
 
 export async function action({ request }: ActionArgs) {
 	const formData = await request.formData();
@@ -126,11 +127,17 @@ export default function Index() {
 				</Flex>
 			</Stack>
 
+			<Ad />
+
 			<SampleServers setServerValue={setServerValue} setBedrock={setBedrockChecked} />
 
 			<BotInfo />
 
+			<Ad />
+
 			<HowToUse />
+
+			<Ad />
 		</Flex>
 	);
 }

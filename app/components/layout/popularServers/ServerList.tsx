@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import ServerDetails from "./ServerDetails";
 import { type Prisma } from "@prisma/client";
 import loadable from "@loadable/component";
+import { Ad } from "~/components/ads/Ad";
 const Color = require("color");
 
 const Pagination = loadable(() => import("./Pagination"), {
@@ -194,6 +195,7 @@ export default function ServerList({
 				</VStack>
 			</fetcher.Form>
 			<Pagination page={page} count={count} />
+			<Ad />
 		</VStack>
 	);
 }

@@ -24,6 +24,7 @@ import links from "../components/config/links.json";
 import DiscordIcon from "~/components/layout/icons/DiscordIcon";
 import { CheckIcon, CopyIcon } from "@chakra-ui/icons";
 import { type MinecraftServerWoQuery } from "~/components/types/minecraftServer";
+import { Ad } from "~/components/ads/Ad";
 
 export const meta: MetaFunction = () => {
 	return {
@@ -191,6 +192,8 @@ export default function Api() {
 					</VStack>
 				</Stack>
 
+				<Ad />
+
 				<VStack w="100%" align={"start"} spacing={16}>
 					<VStack w="100%" alignItems={"start"} spacing={2}>
 						<Heading fontSize={"xl"}>How to use the API?</Heading>
@@ -282,6 +285,8 @@ export default function Api() {
 							<Text>See the example below to know what should be right API response.</Text>
 						</Box>
 					</VStack>
+
+					<Ad />
 
 					<VStack w="100%" align={"start"} spacing={4}>
 						<Heading fontSize={"xl"} letterSpacing={"1px"}>

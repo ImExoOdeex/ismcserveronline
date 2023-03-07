@@ -2,6 +2,7 @@ import { VStack } from "@chakra-ui/react";
 import { type MetaFunction, json } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import { useEffect, useRef } from "react";
+import { Ad } from "~/components/ads/Ad";
 import Main from "~/components/layout/popularServers/Main";
 import { db } from "~/components/utils/db.server";
 
@@ -28,8 +29,11 @@ export default function PopularServers() {
 	}, [serverCount]);
 
 	return (
-		<VStack maxW={"1200px"} w="100%" align={"start"} mx="auto" px={4} spacing={{ base: 10, md: "125px" }} mt={10}>
+		<VStack maxW={"1200px"} w="100%" align={"start"} mx="auto" px={4} spacing={{ base: 8, md: "50px" }} mt={10}>
 			<Main count={serverCount} />
+
+			<Ad />
+
 			<Outlet />
 		</VStack>
 	);

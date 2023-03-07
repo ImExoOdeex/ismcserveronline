@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export const useAdBlock = () => {
+export function useAdBlock() {
 	const [adBlockDetected, setAdBlockDetected] = useState(false);
 
 	useEffect(() => {
@@ -14,4 +14,4 @@ export const useAdBlock = () => {
 	}, []);
 
 	return adBlockDetected;
-};
+}
