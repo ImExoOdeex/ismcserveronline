@@ -3,7 +3,6 @@ import Header from "./Header/Header";
 import BackgroundUtils from "./BackgroundUtils";
 import loadable from "@loadable/component";
 import { useAdBlock } from "../utils/func/hooks/useAdBlock";
-import { adType, Ad } from "../ads/Ad";
 
 const CookieConstent = loadable(() => import("./CookieConsent"), {
 	ssr: true
@@ -28,7 +27,6 @@ export default function Layout({ children }: { children?: React.ReactNode }) {
 			<CookieConstent />
 			<Header />
 			<Flex flexDir={"column"} w="100%" minH={"calc(100vh - 121px)"}>
-				<Ad type={adType.small} />
 				{children}
 			</Flex>
 			<Footer />

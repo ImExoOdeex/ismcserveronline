@@ -21,6 +21,7 @@ import { useLoaderData } from "@remix-run/react";
 import { useEffect, useRef, useContext } from "react";
 import { BiBug, BiInfoCircle } from "react-icons/bi";
 import { getClientIPAddress } from "remix-utils";
+import { Ad, adType } from "~/components/ads/Ad";
 import ChecksTable from "~/components/layout/server/ChecksTable";
 import { type MinecraftServerWoQuery } from "~/components/types/minecraftServer";
 import { context } from "~/components/utils/GlobalContext";
@@ -137,6 +138,7 @@ export default function $server() {
 
 	return (
 		<VStack spacing={"40px"} align="start" maxW="1000px" mx="auto" w="100%" mt={"50px"} px={4} mb={5}>
+			<Ad type={adType.small} />
 			<>
 				<Stack direction={{ base: "column", md: "row" }} spacing={5} justifyContent={"space-between"} w="100%">
 					{data.favicon && (
@@ -344,6 +346,7 @@ export default function $server() {
 					<Icon as={BiInfoCircle} />
 				</HStack>
 			</Stack>
+			<Ad />
 		</VStack>
 	);
 }

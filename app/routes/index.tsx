@@ -89,7 +89,7 @@ export default function Index() {
 	const [serverValue, setServerValue] = useState<string>("");
 
 	return (
-		<Flex flexDir={"column"} maxW="1200px" mx="auto" w="100%" mt={"75px"} px="4">
+		<VStack flexDir={"column"} maxW="1200px" mx="auto" w="100%" mt={"75px"} px="4" spacing={10}>
 			<Stack spacing={10} direction={{ base: "column", md: "row" }}>
 				<VStack spacing={"50px"} w={{ base: "100%", md: "50%" }} mt={"50px"} flexDir="column">
 					<Heading as={"h1"} fontSize="3xl">
@@ -127,9 +127,9 @@ export default function Index() {
 				</Flex>
 			</Stack>
 
-			<Ad />
-
 			<SampleServers setServerValue={setServerValue} setBedrock={setBedrockChecked} />
+
+			<Ad />
 
 			<BotInfo />
 
@@ -138,6 +138,6 @@ export default function Index() {
 			<HowToUse />
 
 			<Ad />
-		</Flex>
+		</VStack>
 	);
 }

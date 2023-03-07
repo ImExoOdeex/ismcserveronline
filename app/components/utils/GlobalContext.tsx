@@ -1,4 +1,4 @@
-import { useLocation, useRouteLoaderData } from "@remix-run/react";
+import { useLocation } from "@remix-run/react";
 import React, { createContext, useState } from "react";
 import { useEffect } from "react";
 
@@ -17,9 +17,6 @@ export const context = createContext<contextType>({ updateData(key, value) {} })
 
 export function GlobalContext({ children }: Props) {
 	const path = useLocation().pathname;
-
-	const serverRoute = useRouteLoaderData(path);
-	console.log(serverRoute);
 
 	function getNewGradientColor() {
 		return path === "/api" ? "green.500" : path.includes("/popular-servers") ? "gold" : "brand";
