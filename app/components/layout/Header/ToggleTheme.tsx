@@ -1,26 +1,12 @@
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
-import {
-	DarkMode,
-	IconButton,
-	Text,
-	Tooltip,
-	useColorMode,
-	useColorModeValue,
-	useEventListener
-} from "@chakra-ui/react";
+import { DarkMode, IconButton, Text, Tooltip, useColorMode, useColorModeValue, useEventListener } from "@chakra-ui/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useActionKey } from "~/components/utils/func/useActionKey";
+import { useActionKey } from "~/components/utils/func/hooks/useActionKey";
 
 export default function ThemeToggle() {
 	const color = useColorModeValue("purple.800", "yellow.400");
-	const bgColor = useColorModeValue(
-		"rgba(68, 51, 122, .1)",
-		"rgba(236, 201, 75,.1)"
-	);
-	const bgColorActive = useColorModeValue(
-		"rgba(68, 51, 122, .2)",
-		"rgba(236, 201, 75,.2)"
-	);
+	const bgColor = useColorModeValue("rgba(68, 51, 122, .1)", "rgba(236, 201, 75,.1)");
+	const bgColorActive = useColorModeValue("rgba(68, 51, 122, .2)", "rgba(236, 201, 75,.2)");
 	const { colorMode, toggleColorMode } = useColorMode();
 
 	useEventListener("keydown", (event: any) => {
@@ -46,8 +32,7 @@ export default function ThemeToggle() {
 				<Tooltip
 					label={
 						<Text alignItems={"center"}>
-							Toggle {colorMode == "light" ? "Dark" : "Light"}{" "}
-							<DarkMode>({actionKey} + i)</DarkMode>
+							Toggle {colorMode == "light" ? "Dark" : "Light"} <DarkMode>({actionKey} + i)</DarkMode>
 						</Text>
 					}
 					openDelay={1000}
@@ -61,11 +46,7 @@ export default function ThemeToggle() {
 						transform={"auto-gpu"}
 						icon={
 							colorMode == "light" ? (
-								<MoonIcon
-									_groupHover={{ rotate: "-100deg" }}
-									transition={"transform .4s"}
-									transform="auto"
-								/>
+								<MoonIcon _groupHover={{ rotate: "-100deg" }} transition={"transform .4s"} transform="auto" />
 							) : (
 								<SunIcon
 									_groupHover={{

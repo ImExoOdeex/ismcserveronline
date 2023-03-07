@@ -131,7 +131,7 @@ export default function Header() {
 					<Menu>
 						{({ isOpen }) => (
 							<>
-								<MenuButton aria-label="Mobile menu button" aria-labelledby="Mobile menu button">
+								<MenuButton aria-label="Mobile menu button" aria-labelledby="Mobile menu button" boxSize={"20px"}>
 									<HamburgerMenu isOpen={isOpen} />
 								</MenuButton>
 								<MenuList />

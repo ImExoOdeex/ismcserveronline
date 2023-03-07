@@ -15,7 +15,7 @@ import { useFetcher } from "@remix-run/react";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { BiSearchAlt } from "react-icons/bi";
-import { useActionKey } from "~/components/utils/func/useActionKey";
+import { useActionKey } from "~/components/utils/func/hooks/useActionKey";
 import { motion } from "framer-motion";
 
 export default function ServerSearch() {
