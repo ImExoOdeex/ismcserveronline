@@ -1,4 +1,4 @@
-import { type LoaderArgs } from "@remix-run/node";
+import { json, type LoaderArgs } from "@remix-run/node";
 import { getClientIPAddress } from "remix-utils";
 import { db } from "~/components/utils/db.server";
 import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
@@ -38,5 +38,10 @@ export async function loader({ request }: LoaderArgs) {
 		});
 	}
 
-	return { data, server };
+	return json(
+		{ data, server },
+		{
+			status: 200
+		}
+	);
 }
