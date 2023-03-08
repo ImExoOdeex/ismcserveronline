@@ -6,7 +6,8 @@ import {
 	VStack,
 	Skeleton as ChakraSkeleton,
 	type SkeletonProps,
-	Flex
+	Flex,
+	useColorMode
 } from "@chakra-ui/react";
 import { type MinecraftServerWoQuery } from "../../types/minecraftServer";
 const Color = require("color");
@@ -24,15 +25,9 @@ function Skeleton({ endColor = "alpha200", ...props }: { endColor: string } & Sk
 	);
 }
 
-export default function ServerDetails({
-	data,
-	colorMode,
-	color = ""
-}: {
-	data: MinecraftServerWoQuery;
-	colorMode: "light" | "dark";
-	color?: string;
-}) {
+export default function ServerDetails({ data, color = "" }: { data: MinecraftServerWoQuery; color?: string }) {
+	const { colorMode } = useColorMode();
+
 	return (
 		<SimpleGrid minChildWidth={"200px"} justifyContent={"space-around"} w="100%" py={8} gap={{ base: 8, md: "unset" }}>
 			<GridItem alignContent={"start"}>
