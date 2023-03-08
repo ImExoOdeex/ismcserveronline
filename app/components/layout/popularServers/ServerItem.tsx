@@ -30,6 +30,14 @@ export default function ServerItem({ server }: Props) {
 		setExpanded(!expanded);
 	}
 
+	function handleServerHover() {
+		console.log("ads");
+
+		if (!fetcher.data) {
+			fetcher.load(`/api/server/data?server=${server.server}`);
+		}
+	}
+
 	const fetcher = useFetcher();
 	useEffect(() => {
 		if (expanded && !fetcher.data) {
@@ -56,6 +64,7 @@ export default function ServerItem({ server }: Props) {
 			transition={"all .2s"}
 			alignItems={"center"}
 			onClick={handleServerClick}
+			onMouseEnter={handleServerHover}
 		>
 			<Grid
 				templateColumns={{ base: "repeat(2, 2fr)", md: "repeat(4, 1fr)" }}
