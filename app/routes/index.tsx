@@ -1,4 +1,4 @@
-import { Flex, Heading, Stack, chakra, VStack, Text, Image } from "@chakra-ui/react";
+import { VStack } from "@chakra-ui/react";
 import { type ActionArgs, redirect, type MetaFunction, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
@@ -9,8 +9,8 @@ import HowToUse from "~/components/layout/index/HowToUse";
 import SampleServers from "~/components/layout/index/SampleServers/SampleServers";
 import { db } from "~/components/utils/db.server";
 import { validateServer } from "~/components/server/validateServer";
-import ServerSearch from "~/components/layout/index/ServerSearch";
-import { Ad } from "~/components/ads/Ad";
+import { Ad, adType } from "~/components/ads/Ad";
+import Main from "~/components/layout/index/Main";
 
 export async function action({ request }: ActionArgs) {
 	const formData = await request.formData();
@@ -90,42 +90,12 @@ export default function Index() {
 
 	return (
 		<VStack flexDir={"column"} maxW="1200px" mx="auto" w="100%" mt={"75px"} px="4" spacing={10}>
-			<Stack spacing={10} direction={{ base: "column", md: "row" }}>
-				<VStack spacing={"50px"} w={{ base: "100%", md: "50%" }} mt={"50px"} flexDir="column">
-					<Heading as={"h1"} fontSize="3xl">
-						<chakra.span color={"orange"}>Real</chakra.span>
-						-time
-						<chakra.span color={"green"}> Minecraft </chakra.span>
-						server
-						<chakra.span color={"pink.400"}> status </chakra.span>
-						and
-						<chakra.span color={"purple.500"}> data </chakra.span>
-						checker
-					</Heading>
-
-					<ServerSearch
-						bedrockChecked={bedrockChecked}
-						serverValue={serverValue}
-						setBedrockChecked={setBedrockChecked}
-						setServerValue={setServerValue}
-					/>
-
-					<Text fontWeight={600} color="textSec" maxW={"423px"} alignSelf="start">
-						Get information about your favourite Minecraft server for Java or Bedrock edition!
-					</Text>
-				</VStack>
-
-				<Flex w={{ base: "100%", md: "50%" }}>
-					<Image
-						src="/webp/ismcserveronlineimg.webp"
-						display={"block"}
-						alt="image"
-						width={"100%"}
-						height={"100%"}
-						sx={{ imageRendering: "pixelated", aspectRatio: "4/3" }}
-					/>
-				</Flex>
-			</Stack>
+			<Main
+				bedrockChecked={bedrockChecked}
+				serverValue={serverValue}
+				setBedrockChecked={setBedrockChecked}
+				setServerValue={setServerValue}
+			/>
 
 			<SampleServers setServerValue={setServerValue} setBedrock={setBedrockChecked} />
 
@@ -137,7 +107,7 @@ export default function Index() {
 
 			<HowToUse />
 
-			<Ad />
+			<Ad type={adType.multiplex} />
 		</VStack>
 	);
 }

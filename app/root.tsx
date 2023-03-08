@@ -124,6 +124,7 @@ const Document = withEmotionCache(({ children }: DocumentProps, emotionCache) =>
 				{serverStyleData?.map(({ key, ids, css }) => (
 					<style key={key} data-emotion={`${key} ${ids.join(" ")}`} dangerouslySetInnerHTML={{ __html: css }} />
 				))}
+				<link rel="stylesheet" href="/style.css" />
 			</head>
 			<body>
 				{/* <!-- Google Tag Manager (noscript) --> */}

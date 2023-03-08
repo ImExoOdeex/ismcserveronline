@@ -1,0 +1,10 @@
+.resad {
+	height: 90px !important;
+	width: 100%;
+}
+
+@media (max-width: 500px) {
+	.resad {
+		height: 100px;
+	}
+}

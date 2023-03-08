@@ -30,7 +30,7 @@ export function Ad({ type = adType.responsive, ...props }: { type?: adType } & B
 	switch (type) {
 		case adType.small: {
 			return (
-				<Box w="100%" h="100%" minW={"1000px"} justifyContent={"center"} alignItems={"center"} {...props}>
+				<Box w="100%" h="100%" minW={"100%"} justifyContent={"center"} alignItems={"center"} {...props}>
 					<ins
 						className="adsbygoogle"
 						style={{ display: "inline-block", width: "1000px", height: "90px", marginInline: "auto" }}
@@ -42,10 +42,10 @@ export function Ad({ type = adType.responsive, ...props }: { type?: adType } & B
 		}
 		case adType.responsive: {
 			return (
-				<Box w="100%" h="100%" maxH={"90px"} minW={"400px"} justifyContent={"center"} alignItems={"center"}>
+				<Box w="100%" h="100%" minW={"100%"} justifyContent={"center"} alignItems={"center"}>
 					<ins
-						className="adsbygoogle"
-						style={{ display: "block" }}
+						className="adsbygoogle resad"
+						style={{ display: "block", height: "90px" }}
 						data-ad-client="ca-pub-4203392968171424"
 						data-ad-slot="7156778558"
 						data-ad-format="auto"
@@ -56,7 +56,7 @@ export function Ad({ type = adType.responsive, ...props }: { type?: adType } & B
 		}
 		case adType.multiplex: {
 			return (
-				<Box w="100%" h="100%" minH={"90px"} minW={"400px"} justifyContent={"center"} alignItems={"center"}>
+				<Box w="100%" h="100%" minH={"90px"} minW={"100%"} justifyContent={"center"} alignItems={"center"}>
 					<ins
 						className="adsbygoogle"
 						style={{ display: "block" }}
@@ -69,7 +69,7 @@ export function Ad({ type = adType.responsive, ...props }: { type?: adType } & B
 		}
 		case adType.article: {
 			return (
-				<Box w="100%" h="100%" minH={"90px"} minW={"400px"} justifyContent={"center"} alignItems={"center"}>
+				<Box w="100%" h="100%" minH={"90px"} minW={"100%"} justifyContent={"center"} alignItems={"center"}>
 					<ins
 						className="adsbygoogle"
 						style={{ display: "block", textAlign: "center" }}
