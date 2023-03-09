@@ -31,8 +31,6 @@ export default function ServerItem({ server }: Props) {
 	}
 
 	function handleServerHover() {
-		console.log("ads");
-
 		if (!fetcher.data) {
 			fetcher.load(`/api/server/data?server=${server.server}`);
 		}

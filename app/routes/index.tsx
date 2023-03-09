@@ -99,11 +99,11 @@ export default function Index() {
 
 			<SampleServers setServerValue={setServerValue} setBedrock={setBedrockChecked} />
 
-			<Ad />
+			<Ad type={adType.small} />
 
 			<BotInfo />
 
-			<Ad />
+			<Ad type={adType.small} />
 
 			<HowToUse />
 

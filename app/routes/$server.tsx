@@ -138,7 +138,7 @@ export default function $server() {
 
 	return (
 		<VStack spacing={"40px"} align="start" maxW="1000px" mx="auto" w="100%" mt={"50px"} px={4} mb={5}>
-			<Ad type={adType.small} />
+			<Ad type={adType.small} width={"968px"} />
 			<>
 				<Stack direction={{ base: "column", md: "row" }} spacing={5} justifyContent={"space-between"} w="100%">
 					{data.favicon && (

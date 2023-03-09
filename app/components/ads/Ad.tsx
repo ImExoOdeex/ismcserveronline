@@ -4,6 +4,8 @@ import { useEffect } from "react";
 export enum adType {
 	// 786 x 90 (px)
 	small,
+	// 360 x 600 (px)
+	column,
 	// fully responsive display ad
 	responsive,
 	// large multiplex ad
@@ -18,7 +20,7 @@ declare global {
 	}
 }
 
-export function Ad({ type = adType.responsive, ...props }: { type?: adType } & BoxProps) {
+export function Ad({ type = adType.responsive, width = "1168px", ...props }: { type?: adType; width?: string } & BoxProps) {
 	useEffect(() => {
 		try {
 			(window.adsbygoogle = window.adsbygoogle || []).push({});
@@ -30,10 +32,10 @@ export function Ad({ type = adType.responsive, ...props }: { type?: adType } & B
 	switch (type) {
 		case adType.small: {
 			return (
-				<Box w="100%" h="100%" minW={"100%"} justifyContent={"center"} alignItems={"center"} {...props}>
+				<Box w="100%" h="100%" minW={"100%"} {...props}>
 					<ins
 						className="adsbygoogle"
-						style={{ display: "inline-block", width: "1000px", height: "90px", marginInline: "auto" }}
+						style={{ display: "inline-block", width: width, height: "90px", marginInline: "auto" }}
 						data-ad-client="ca-pub-4203392968171424"
 						data-ad-slot="8306208692"
 					></ins>
@@ -42,7 +44,7 @@ export function Ad({ type = adType.responsive, ...props }: { type?: adType } & B
 		}
 		case adType.responsive: {
 			return (
-				<Box w="100%" h="100%" minW={"100%"} justifyContent={"center"} alignItems={"center"}>
+				<Box h="100%" w="100%" minW={"100%"} {...props}>
 					<ins
 						className="adsbygoogle resad"
 						style={{ display: "block", height: "90px" }}
@@ -54,9 +56,21 @@ export function Ad({ type = adType.responsive, ...props }: { type?: adType } & B
 				</Box>
 			);
 		}
+		case adType.column: {
+			return (
+				<Box h="100%" minH={"90px"} {...props}>
+					<ins
+						className="adsbygoogle"
+						style={{ display: "inline-block", width: width.length ? width : "360px", height: "600px" }}
+						data-ad-client="ca-pub-4203392968171424"
+						data-ad-slot="6312656088"
+					></ins>
+				</Box>
+			);
+		}
 		case adType.multiplex: {
 			return (
-				<Box w="100%" h="100%" minH={"90px"} minW={"100%"} justifyContent={"center"} alignItems={"center"}>
+				<Box w="100%" h="100%" minH={"90px"} minW={"100%"} {...props}>
 					<ins
 						className="adsbygoogle"
 						style={{ display: "block" }}
@@ -69,7 +83,7 @@ export function Ad({ type = adType.responsive, ...props }: { type?: adType } & B
 		}
 		case adType.article: {
 			return (
-				<Box w="100%" h="100%" minH={"90px"} minW={"100%"} justifyContent={"center"} alignItems={"center"}>
+				<Box w="100%" h="100%" minH={"90px"} minW={"100%"} {...props}>
 					<ins
 						className="adsbygoogle"
 						style={{ display: "block", textAlign: "center" }}
