@@ -24,7 +24,7 @@ import links from "../components/config/links.json";
 import DiscordIcon from "~/components/layout/icons/DiscordIcon";
 import { CheckIcon, CopyIcon } from "@chakra-ui/icons";
 import { type MinecraftServerWoQuery } from "~/components/types/minecraftServer";
-import { Ad } from "~/components/ads/Ad";
+import { Ad, adType } from "~/components/ads/Ad";
 
 export const meta: MetaFunction = () => {
 	return {
@@ -98,7 +98,7 @@ export default function Api() {
 
 	return (
 		<>
-			<VStack maxW={"1200px"} w="100%" align={"start"} mx="auto" px={4} spacing={{ base: 10, md: "125px" }} mt={10}>
+			<VStack maxW={"1200px"} w="100%" align={"start"} mx="auto" px={4} spacing={10} mt={10}>
 				<VStack align={"start"} w="100%">
 					<Stack direction={{ base: "column", md: "row" }} w="100%" spacing={{ base: 10, md: 20 }}>
 						{/* first column */}
@@ -192,9 +192,9 @@ export default function Api() {
 							</Icon>
 						</VStack>
 					</Stack>
-
-					<Ad />
 				</VStack>
+
+				<Ad type={adType.small} />
 
 				<VStack w="100%" align={"start"}>
 					<VStack w="100%" align={"start"} spacing={16}>
@@ -334,7 +334,7 @@ export default function Api() {
 							</Box>
 						</VStack>
 					</VStack>
-					<Ad />
+					<Ad type={adType.multiplex} />
 				</VStack>
 			</VStack>
 		</>

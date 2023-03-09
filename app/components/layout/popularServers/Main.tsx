@@ -19,7 +19,7 @@ export default function Main({ count }: { count: number }) {
 				</Heading>
 			</VStack>
 			<Flex w={{ base: "100%", md: "40%" }} alignItems={"center"} justifyContent={"center"}>
-				<Icon boxSize={"300px"} fill="currentcolor" alignItems={"cetner"}>
+				<Icon w={"300px"} h="250px" fill="currentcolor" alignItems={"cetner"}>
 					<svg version="1.1" viewBox="0 0 700 700">
 						<g>
 							<path d="m388.18 470.91h-76.363c-8.9102 0-12.727 5.0898-12.727 12.727s3.8164 12.727 12.727 12.727h76.363c8.9102 0 12.727-5.0898 12.727-12.727s-3.8203-12.727-12.727-12.727z" />

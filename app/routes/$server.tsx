@@ -292,7 +292,7 @@ export default function $server() {
 						Debug info
 					</Heading>
 
-					<Box>
+					<Flex overflowX={"auto"} w="100%" maxW={"100%"} pos={"relative"}>
 						<TableContainer>
 							<Table variant={"unstyled"} size={"sm"}>
 								<Tbody>
@@ -315,7 +315,7 @@ export default function $server() {
 								</Tbody>
 							</Table>
 						</TableContainer>
-					</Box>
+					</Flex>
 				</VStack>
 			</>
 
@@ -346,7 +346,7 @@ export default function $server() {
 					<Icon as={BiInfoCircle} />
 				</HStack>
 			</Stack>
-			<Ad />
+			<Ad type={adType.multiplex} />
 		</VStack>
 	);
 }

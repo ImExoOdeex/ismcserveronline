@@ -6,7 +6,7 @@ import SystemInfo from "~/components/layout/faq/SystemInfo";
 import { getCookie, getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
 import os from "os";
 import links from "../components/config/links.json";
-import { Ad } from "~/components/ads/Ad";
+import { Ad, adType } from "~/components/ads/Ad";
 
 export const meta: MetaFunction = () => {
 	return {
@@ -190,7 +190,7 @@ export default function Faq() {
 
 			<SystemInfo system={system} />
 
-			<Ad />
+			<Ad type={adType.multiplex} />
 		</VStack>
 	);
 }

@@ -11,6 +11,8 @@ import { db } from "~/components/utils/db.server";
 import { validateServer } from "~/components/server/validateServer";
 import { Ad, adType } from "~/components/ads/Ad";
 import Main from "~/components/layout/index/Main";
+import PopularServers from "../components/layout/index/PopularServers";
+import WARWF from "~/components/layout/index/WARWF";
 
 export async function action({ request }: ActionArgs) {
 	const formData = await request.formData();
@@ -89,7 +91,7 @@ export default function Index() {
 	const [serverValue, setServerValue] = useState<string>("");
 
 	return (
-		<VStack flexDir={"column"} maxW="1200px" mx="auto" w="100%" mt={"75px"} px="4" spacing={10}>
+		<VStack flexDir={"column"} maxW="1200px" mx="auto" w="100%" mt={"75px"} mb={10} px="4" spacing={14}>
 			<Main
 				bedrockChecked={bedrockChecked}
 				serverValue={serverValue}
@@ -99,13 +101,20 @@ export default function Index() {
 
 			<SampleServers setServerValue={setServerValue} setBedrock={setBedrockChecked} />
 
-			<Ad type={adType.small} />
-
 			<BotInfo />
 
 			<Ad type={adType.small} />
 
 			<HowToUse />
+
+			<Ad type={adType.responsive} />
+
+			<PopularServers />
+
+			<Ad type={adType.small} />
+
+			{/* What are you waiting for? */}
+			<WARWF />
 
 			<Ad type={adType.multiplex} />
 		</VStack>

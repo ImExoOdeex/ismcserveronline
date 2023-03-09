@@ -1,7 +1,7 @@
 import { Box, Flex, Heading, Text, VStack } from "@chakra-ui/react";
 import { type Prisma } from "@prisma/client";
 import loadable from "@loadable/component";
-import { Ad } from "~/components/ads/Ad";
+import { Ad, adType } from "~/components/ads/Ad";
 import ServerItem from "./ServerItem";
 
 const Pagination = loadable(() => import("./Pagination"), {
@@ -27,7 +27,7 @@ export default function ServerList({ servers, count, page = 1 }: { servers: Serv
 				})}
 			</VStack>
 			<Pagination page={page} count={count} />
-			<Ad />
+			<Ad type={adType.multiplex} />
 		</VStack>
 	);
 }

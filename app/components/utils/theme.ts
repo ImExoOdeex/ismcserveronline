@@ -13,7 +13,8 @@ const styles = {
 		body: {
 			minH: "100vh",
 			bg: mode("bg.100", "bg.900")(props),
-			overflowY: "scroll"
+			overflowY: "scroll",
+			overflowX: "hidden"
 		},
 		th: {
 			color: mode("#393942cc!important", "#dedef1be!important")(props)
@@ -46,7 +47,7 @@ const styles = {
 
 const colors = {
 	brand: {
-		100: "#563B9F",
+		100: "#aa90f0",
 		200: "#563B9F",
 		300: "#563B9F",
 		400: "#563B9F",
@@ -96,7 +97,7 @@ const theme = extendTheme({
 				_dark: "whiteAlpha.800"
 			},
 			gold: {
-				default: "yellow.400",
+				default: "orange.300",
 				_dark: "orange.200"
 			},
 			inv: {
