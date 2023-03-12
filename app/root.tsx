@@ -37,6 +37,8 @@ import { BiCode, BiHome } from "react-icons/bi";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import { GlobalContext } from "./components/utils/GlobalContext";
 
+// ----------------------------- META -----------------------------
+
 export const meta: MetaFunction = () => ({
 	title: "IsMcServer.online",
 	robots: "all",
@@ -57,9 +59,27 @@ interface DocumentErrorProps {
 	error: Error;
 }
 
+// ----------------------------- LOADER -----------------------------
+
 export const loader: LoaderFunction = async ({ request }) => {
-	return json({ cookies: request.headers.get("cookie") ?? "" });
+	const url = new URL(request.url);
+	const term = url.searchParams.get(process.env.NO_ADS_PARAM_NAME ?? "nope");
+
+	const shouldRedirect: boolean = term?.toString() === process.env.NO_ADS_PARAM_VALUE;
+	if (shouldRedirect) {
+		return redirect(url.pathname, {
+			headers: [["Set-Cookie", `no_ads=${process.env.NO_ADS_PARAM_VALUE}`]]
+		});
+	}
+
+	const showAds: boolean =
+		getCookieWithoutDocument("no_ads", request.headers.get("cookie") ?? "") !== process.env.NO_ADS_PARAM_VALUE;
+	// ^^^ code for no ads up there uwu ^^^
+
+	return json({ cookies: request.headers.get("cookie") ?? "", showAds });
 };
+
+// ----------------------------- DOCUMENT -----------------------------
 
 const Document = withEmotionCache(({ children }: DocumentProps, emotionCache) => {
 	const serverStyleData = useContext(ServerStyleContext);
@@ -80,7 +100,7 @@ const Document = withEmotionCache(({ children }: DocumentProps, emotionCache) =>
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	let { cookies } = useLoaderData<typeof loader>();
+	let { cookies, showAds } = useLoaderData<typeof loader>();
 
 	if (typeof document !== "undefined") {
 		cookies = document.cookie;
@@ -116,11 +136,13 @@ const Document = withEmotionCache(({ children }: DocumentProps, emotionCache) =>
 					}}
 				></script>
 				<Links />
-				<script
-					async
-					src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4203392968171424"
-					crossOrigin="anonymous"
-				></script>
+				{showAds && (
+					<script
+						async
+						src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4203392968171424"
+						crossOrigin="anonymous"
+					></script>
+				)}
 				{serverStyleData?.map(({ key, ids, css }) => (
 					<style key={key} data-emotion={`${key} ${ids.join(" ")}`} dangerouslySetInnerHTML={{ __html: css }} />
 				))}
@@ -147,6 +169,8 @@ const Document = withEmotionCache(({ children }: DocumentProps, emotionCache) =>
 	);
 });
 
+// ----------------------------- LINKS -----------------------------
+
 export const links: LinksFunction = () => {
 	return [
 		{ rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -161,6 +185,8 @@ export const links: LinksFunction = () => {
 		}
 	];
 };
+
+// ----------------------------- APP -----------------------------
 
 export default function App() {
 	const { cookies } = useLoaderData();
@@ -198,6 +224,8 @@ export default function App() {
 	);
 }
 
+// ----------------------------- ACTION -----------------------------
+
 export async function action({ request }: ActionArgs) {
 	const formData = await request.formData();
 	const bedrock = getCookieWithoutDocument("bedrock", request.headers.get("Cookie") ?? "");
@@ -213,6 +241,8 @@ export async function action({ request }: ActionArgs) {
 
 	return redirect(`/${bedrock == "true" ? "bedrock/" : ""}${server}`);
 }
+
+// ----------------------------- CATCH -----------------------------
 
 export const CatchBoundary = withEmotionCache(({ children }: DocumentProps, emotionCache) => {
 	const caught = useCatch();
@@ -307,6 +337,8 @@ export const CatchBoundary = withEmotionCache(({ children }: DocumentProps, emot
 		</html>
 	);
 });
+
+// ----------------------------- ERROR -----------------------------
 
 export const ErrorBoundary = withEmotionCache(({ error }: DocumentErrorProps, emotionCache) => {
 	const serverStyleData = useContext(ServerStyleContext);

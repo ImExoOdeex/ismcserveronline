@@ -1,4 +1,5 @@
 import { Box, type BoxProps } from "@chakra-ui/react";
+import { useMatches } from "@remix-run/react";
 import { useEffect } from "react";
 
 export enum adType {
@@ -28,6 +29,11 @@ export function Ad({ type = adType.responsive, width = "1168px", ...props }: { t
 			console.error(err);
 		}
 	}, []);
+
+	const { showAds } = useMatches()[0].data;
+	if (!showAds) {
+		return <></>;
+	}
 
 	switch (type) {
 		case adType.small: {
