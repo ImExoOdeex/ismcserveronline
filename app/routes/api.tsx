@@ -37,15 +37,7 @@ export async function loader() {
 
 	if (!process.env.API_TOKEN) throw new Error("API_TOKEN is not definied!");
 
-	return json(
-		{ sampleToken },
-		{
-			headers: [
-				["Cache-Control", "max-age=0"],
-				["Set-cookie", "hasSeenNew=true"]
-			]
-		}
-	);
+	return json({ sampleToken });
 }
 
 export default function Api() {

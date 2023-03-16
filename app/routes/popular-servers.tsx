@@ -16,7 +16,12 @@ export async function loader() {
 	// 1ms - 2ms to count for 2.5k servers
 	const serverCount = await db.server.count();
 
-	return json({ serverCount });
+	return json(
+		{ serverCount },
+		{
+			headers: [["Set-cookie", "hasSeenNew=true"]]
+		}
+	);
 }
 
 export default function PopularServers() {

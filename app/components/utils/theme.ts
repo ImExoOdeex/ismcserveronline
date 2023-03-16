@@ -3,9 +3,8 @@ import { mode, type StyleFunctionProps } from "@chakra-ui/theme-tools";
 import type { Dict } from "@chakra-ui/utils";
 
 const config: ThemeConfig = {
-	initialColorMode: "light",
-	useSystemColorMode: true,
-	disableTransitionOnChange: true
+	initialColorMode: "system",
+	useSystemColorMode: true
 };
 
 const styles = {
