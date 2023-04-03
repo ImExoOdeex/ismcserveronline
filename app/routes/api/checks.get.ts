@@ -1,5 +1,5 @@
 import { type LoaderArgs, json } from "@remix-run/node";
-import { db } from "~/components/utils/db.server";
+import { db } from "~/components/server/db/db.server";
 
 export async function loader({ request }: LoaderArgs) {
 	const url = new URL(request.url);

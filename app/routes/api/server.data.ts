@@ -1,6 +1,6 @@
 import { json, type LoaderArgs } from "@remix-run/node";
 import { getClientIPAddress } from "remix-utils";
-import { db } from "~/components/utils/db.server";
+import { db } from "~/components/server/db/db.server";
 import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
 
 export async function loader({ request, params, context }: LoaderArgs) {

@@ -26,7 +26,7 @@ import ChecksTable from "~/components/layout/server/ChecksTable";
 import { type MinecraftServerWoQuery } from "~/components/types/minecraftServer";
 import { context } from "~/components/utils/GlobalContext";
 import Link from "~/components/utils/Link";
-import { db } from "~/components/utils/db.server";
+import { db } from "~/components/server/db/db.server";
 import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
 
 export async function loader({ params, request, context }: LoaderArgs) {

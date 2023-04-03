@@ -1,5 +1,5 @@
 import { type ActionArgs, json } from "@remix-run/node";
-import { db } from "~/components/utils/db.server";
+import { db } from "~/components/server/db/db.server";
 
 export async function action({ request }: ActionArgs) {
 	const body: any = JSON.parse(await request.text());
@@ -8,8 +8,7 @@ export async function action({ request }: ActionArgs) {
 	if (headerToken !== process.env.SUPER_DUPER_API_ACCESS_TOKEN) {
 		return json(
 			{
-				message:
-					"Super Duper Token does not match the real 2048 bit Super Duper Token!"
+				message: "Super Duper Token does not match the real 2048 bit Super Duper Token!"
 			},
 			{
 				// not allowed status code

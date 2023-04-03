@@ -1,5 +1,5 @@
 import { type ActionArgs, json } from "@remix-run/node";
-import { db } from "~/components/utils/db.server";
+import { db } from "~/components/server/db/db.server";
 import crypto from "crypto";
 
 export async function action({ request }: ActionArgs) {

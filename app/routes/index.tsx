@@ -7,7 +7,7 @@ import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
 import BotInfo from "~/components/layout/index/BotInfo";
 import HowToUse from "~/components/layout/index/HowToUse";
 import SampleServers from "~/components/layout/index/SampleServers/SampleServers";
-import { db } from "~/components/utils/db.server";
+import { db } from "~/components/server/db/db.server";
 import { validateServer } from "~/components/server/validateServer";
 import { Ad, adType } from "~/components/ads/Ad";
 import Main from "~/components/layout/index/Main";

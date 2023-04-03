@@ -1,6 +1,6 @@
 import { json } from "@remix-run/node";
 import ServerList from "~/components/layout/popularServers/ServerList";
-import { db } from "~/components/utils/db.server";
+import { db } from "~/components/server/db/db.server";
 import { useRef, useEffect } from "react";
 import { useLoaderData } from "@remix-run/react";
 

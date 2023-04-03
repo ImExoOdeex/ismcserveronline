@@ -4,7 +4,7 @@ import { Outlet, useLoaderData } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 import { Ad, adType } from "~/components/ads/Ad";
 import Main from "~/components/layout/popularServers/Main";
-import { db } from "~/components/utils/db.server";
+import { db } from "~/components/server/db/db.server";
 
 export const meta: MetaFunction = () => {
 	return {
