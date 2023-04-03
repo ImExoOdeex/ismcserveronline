@@ -35,6 +35,8 @@
     "react-dom": "^18.2.0",
     "react-icons": "^4.7.1",
     "remix": "^1.14.0",
+    "remix-auth": "^3.4.0",
+    "remix-auth-discord": "^1.2.0",
     "remix-utils": "^5.1.0"
   },
   "devDependencies": {

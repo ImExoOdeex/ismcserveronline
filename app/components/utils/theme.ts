@@ -170,6 +170,9 @@ const theme = extendTheme({
 						bg: "#278adb"
 					}
 				}
+			},
+			baseStyle: {
+				rounded: "xl"
 			}
 		},
 		IconButton: {
