@@ -3,10 +3,20 @@ import { getClientIPAddress } from "remix-utils";
 import { db } from "~/components/utils/db.server";
 import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request, params, context }: LoaderArgs) {
 	if (!process.env.API_TOKEN) throw new Error("API_TOKEN is not definied!");
 
 	const url = new URL(request.url);
+
+	if (process.env.NODE_ENV === "production" && url.hostname !== "ismcserver.online") {
+		return json(
+			{ message: "Not allowed :). Use our FREE API for that! Thanks!" },
+			{
+				status: 405
+			}
+		);
+	}
+
 	const server = url.searchParams.get("server");
 	if (!server) {
 		return "no server given!";
