@@ -12,9 +12,10 @@ model User {
   email        String   @unique
   snowflake    String   @unique
   access_token String   @unique
-  bio          String?
   nick         String
   photo        String?
+  bio          String?
+  guilds       Json?
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
 }
