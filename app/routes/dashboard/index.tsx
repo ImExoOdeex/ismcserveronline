@@ -46,63 +46,66 @@ export default function Index() {
 		<VStack w="100%" align={"start"}>
 			<Heading fontSize={"3xl"}>Servers, that you can manage</Heading>
 			<Text>There's a list of all your servers, that you can manage. Click of any you want to configure the bot!</Text>
-			{guilds.length ? (
-				<SimpleGrid w="100%" minChildWidth={"calc(33.333333% - 20px)"} spacing={5}>
-					{guilds
-						.filter((guild: Guild) => (guild.permissions & 0x20) == 0x20)
-						.sort((a: Guild, b: Guild) => {
-							if (a.owner === true && b.owner !== true) {
-								return -1;
-							} else if (b.owner === true && a.owner !== true) {
-								return 1;
-							} else {
-								return 0;
-							}
-						})
-						.map((guild) => (
-							<VStack
-								key={guild.id}
-								as={Link}
-								to={guild.id}
-								rounded={"xl"}
-								bg="alpha"
-								w="100%"
-								align={"center"}
-								justifyContent={"center"}
-								flexDir={"column"}
-								p={5}
-								transition={"background .2s"}
-								_hover={{ bg: "alpha100", textDecor: "none" }}
-							>
-								<Image
-									rounded={"full"}
-									src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=96`}
-									alt={guild.name + "'s name"}
-									boxSize={12}
-								/>
-								<HStack>
-									<Text fontWeight={"bold"} fontSize={"xl"}>
-										{guild.name}
-									</Text>
-									{guild.owner && <Badge colorScheme="orange">Admin</Badge>}
-								</HStack>
-								{/* {(guild.permissions & 0x20) == 0x20 ? "lmaooooooooooo" : "NOP"} */}
-							</VStack>
-						))}
-				</SimpleGrid>
-			) : (
-				<Heading fontSize={"xl"} textAlign={"center"} w="100" alignSelf={"center"} py={10} color="red">
-					Sadly, you don't manage any servers :(
-				</Heading>
-			)}
-			<refreshGuildsFetcher.Form action="/api/auth/discord/reauthenticate">
-				<Button isLoading={refreshGuildsFetcher.state !== "idle"} type="submit" variant={"brand"}>
-					<HStack>
-						<Icon as={HiRefresh} />
-						<Text>Refresh guilds</Text>
-					</HStack>
-				</Button>
-			</refreshGuildsFetcher.Form>
+			<VStack w="100%" align={"start"} spacing={10}>
+				{guilds.length ? (
+					<SimpleGrid w="100%" minChildWidth={"calc(33.333333% - 20px)"} spacing={5}>
+						{guilds
+							.filter((guild: Guild) => (guild.permissions & 0x20) == 0x20)
+							.sort((a: Guild, b: Guild) => {
+								if (a.owner === true && b.owner !== true) {
+									return -1;
+								} else if (b.owner === true && a.owner !== true) {
+									return 1;
+								} else {
+									return 0;
+								}
+							})
+							.map((guild) => (
+								<VStack
+									key={guild.id}
+									as={Link}
+									to={guild.id}
+									prefetch="render"
+									rounded={"xl"}
+									bg="alpha"
+									w="100%"
+									align={"center"}
+									justifyContent={"center"}
+									flexDir={"column"}
+									p={5}
+									transition={"background .2s"}
+									_hover={{ bg: "alpha100", textDecor: "none" }}
+								>
+									<Image
+										rounded={"full"}
+										src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=96`}
+										alt={guild.name + "'s name"}
+										boxSize={12}
+									/>
+									<HStack>
+										<Text fontWeight={"bold"} fontSize={"xl"}>
+											{guild.name}
+										</Text>
+										{guild.owner && <Badge colorScheme="orange">Admin</Badge>}
+									</HStack>
+									{/* {(guild.permissions & 0x20) == 0x20 ? "lmaooooooooooo" : "NOP"} */}
+								</VStack>
+							))}
+					</SimpleGrid>
+				) : (
+					<Heading fontSize={"xl"} textAlign={"center"} w="100" alignSelf={"center"} py={10} color="red">
+						Sadly, you don't manage any servers :(
+					</Heading>
+				)}
+				<refreshGuildsFetcher.Form action="/api/auth/discord/reauthenticate">
+					<Button isLoading={refreshGuildsFetcher.state !== "idle"} type="submit" variant={"brand"}>
+						<HStack>
+							<Icon as={HiRefresh} />
+							<Text>Refresh guilds</Text>
+						</HStack>
+					</Button>
+				</refreshGuildsFetcher.Form>
+			</VStack>
 		</VStack>
 	);
 }
