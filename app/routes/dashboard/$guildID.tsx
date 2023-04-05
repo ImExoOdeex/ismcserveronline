@@ -1,4 +1,21 @@
-import { Button, FormLabel, HStack, Heading, Icon, Image, Stack, Text, VStack, Code, Input, Select, Box } from "@chakra-ui/react";
+import {
+	Button,
+	FormLabel,
+	HStack,
+	Heading,
+	Icon,
+	Image,
+	Stack,
+	Text,
+	VStack,
+	Code,
+	Input,
+	Select,
+	Box,
+	Wrap,
+	WrapItem,
+	Skeleton
+} from "@chakra-ui/react";
 import { type ActionArgs, fetch, json, type LoaderArgs } from "@remix-run/node";
 import { useFetcher, useLoaderData, useRevalidator } from "@remix-run/react";
 import { useRef, useEffect, useState } from "react";
@@ -10,23 +27,11 @@ import { HiRefresh } from "react-icons/hi";
 export async function loader({ params }: LoaderArgs) {
 	const guildID = params.guildID!;
 
-	const [guild, livecheck, channels] = await Promise.all([
+	const [guild, channels] = await Promise.all([
 		fetch(
 			`${
 				process.env.NODE_ENV === "production" ? "https://bot.ismcserver.online" : "http://localhost:3004"
 			}/guild/${guildID}`,
-			{
-				method: "get",
-				headers: {
-					Authorization: process.env.SUPER_DUPER_API_ACCESS_TOKEN ?? ""
-				}
-			}
-		).then((res) => res.json()),
-
-		fetch(
-			`${
-				process.env.NODE_ENV === "production" ? "https://bot.ismcserver.online" : "http://localhost:3004"
-			}/livecheck/${guildID}`,
 			{
 				method: "get",
 				headers: {
@@ -46,6 +51,22 @@ export async function loader({ params }: LoaderArgs) {
 			}
 		).then((res) => res.json())
 	]);
+
+	const livecheck = await (
+		await fetch(
+			`${
+				process.env.NODE_ENV === "production" ? "https://bot.ismcserver.online" : "http://localhost:3004"
+			}/livecheck/${guildID}`,
+			{
+				method: "get",
+				headers: {
+					Authorization: process.env.SUPER_DUPER_API_ACCESS_TOKEN ?? ""
+				}
+			}
+		)
+	).json();
+
+	console.log(`reloading id route at ${new Date().toLocaleTimeString()} ${new Date().getMilliseconds()}`);
 
 	return json({ guild: guild.guild, livecheck, channels });
 }
@@ -70,7 +91,7 @@ export async function action({ request, params }: ActionArgs) {
 		)
 	).json();
 
-	return res;
+	return await res;
 }
 
 export default function $guildID() {
@@ -97,6 +118,16 @@ export default function $guildID() {
 		return () => clearInterval(interval);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
+
+	const data = livecheckFetcher.data;
+	useEffect(() => {
+		if (data) {
+			setTimeout(() => {
+				revalidate();
+			}, 500);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [data]);
 
 	if (!guild?.name) {
 		return <BotNotOnServer />;
@@ -135,28 +166,80 @@ export default function $guildID() {
 								spacing={10}
 								justifyContent={"start"}
 								alignItems={"start"}
-								w="lg"
+								w={{ base: "100%", md: "lg" }}
 							>
 								<VStack w="100%" align={"start"} spacing={0}>
 									<FormLabel>Address</FormLabel>
-									<Text fontWeight={600} fontSize={"xl"}>
-										{livecheck.address}
-									</Text>
+									{isEditing ? (
+										<Input
+											rounded={"xl"}
+											variant={"filled"}
+											name="address"
+											h="30px"
+											defaultValue={livecheck.address}
+										/>
+									) : (
+										<Text fontWeight={600} fontSize={"xl"}>
+											{livecheck.address}
+										</Text>
+									)}
 								</VStack>
 
 								<VStack w="100%" align={"start"} spacing={0}>
 									<FormLabel>Edition</FormLabel>
-									<Text fontWeight={600} fontSize={"xl"}>
-										{livecheck.bedrock ? "Bedrock" : "Java"}
-									</Text>
+									{isEditing ? (
+										<Select
+											h="30px"
+											name="edition"
+											rounded={"xl"}
+											defaultValue={livecheck.bedrock ? "bedrock" : "java"}
+											variant={"filled"}
+											cursor={"pointer"}
+											sx={{
+												"& > *": {
+													bg: "bg !important"
+												}
+											}}
+										>
+											<option value={"java"}>Java</option>
+											<option value={"bedrock"}>Bedrock</option>
+										</Select>
+									) : (
+										<Text fontWeight={600} fontSize={"xl"}>
+											{livecheck.bedrock ? "Bedrock" : "Java"}
+										</Text>
+									)}
 								</VStack>
 							</Stack>
 
 							<VStack w="100%" align={"start"} spacing={0}>
 								<FormLabel>Channel Id</FormLabel>
-								<Text fontWeight={600} fontSize={"xl"}>
-									{livecheck.channel_id}
-								</Text>
+								{isEditing ? (
+									<Select
+										h="30px"
+										name="channel"
+										rounded={"xl"}
+										cursor={"pointer"}
+										variant={"filled"}
+										defaultValue={livecheck.channel_id}
+										w={{ base: "100%", md: "lg" }}
+										sx={{
+											"& > *": {
+												bg: "bg !important"
+											}
+										}}
+									>
+										{channels.map((channel: { name: string; id: string }) => (
+											<Box as="option" cursor={"pointer"} key={channel.id} value={channel.id}>
+												#{channel.name}
+											</Box>
+										))}
+									</Select>
+								) : (
+									<Text fontWeight={600} fontSize={"xl"}>
+										{livecheck.channel_id}
+									</Text>
+								)}
 							</VStack>
 
 							<Stack
@@ -169,14 +252,30 @@ export default function $guildID() {
 								<VStack w="100%" align={"start"} spacing={0}>
 									<FormLabel>Last status</FormLabel>
 									<Text fontWeight={600} fontSize={"xl"}>
-										{livecheck.last_status}
+										{livecheck.last_status ?? (
+											<Skeleton
+												h="20px"
+												w="100px"
+												rounded={"xl"}
+												startColor="transparent"
+												endColor="alpha200"
+											/>
+										)}
 									</Text>
 								</VStack>
 
 								<VStack w="100%" align={"start"} spacing={0}>
 									<FormLabel>Last players</FormLabel>
 									<Text fontWeight={600} fontSize={"xl"}>
-										{livecheck.last_players}
+										{livecheck.last_players ?? (
+											<Skeleton
+												h="20px"
+												w="100px"
+												rounded={"xl"}
+												startColor="transparent"
+												endColor="alpha200"
+											/>
+										)}
 									</Text>
 								</VStack>
 							</Stack>
@@ -185,10 +284,10 @@ export default function $guildID() {
 						<>
 							<Stack
 								direction={{ base: "column", md: "row" }}
-								spacing={10}
+								spacing={{ base: 5, md: 10 }}
 								justifyContent={"start"}
 								alignItems={"start"}
-								w="lg"
+								w={{ base: "100%", md: "lg" }}
 							>
 								<VStack w="100%" align={"start"} spacing={0}>
 									<FormLabel>Address</FormLabel>
@@ -214,7 +313,7 @@ export default function $guildID() {
 								</VStack>
 							</Stack>
 
-							<VStack align={"start"} spacing={0} w="lg">
+							<VStack align={"start"} spacing={0} w={{ base: "100%", md: "lg" }}>
 								<FormLabel>Channel</FormLabel>
 								<Select
 									name="channel"
@@ -237,40 +336,51 @@ export default function $guildID() {
 						</>
 					)}
 
-					<HStack>
-						{livecheck && (
+					<Wrap>
+						{/* {livecheck && ( */}
+						<WrapItem>
 							<Button isLoading={state === "loading"} onClick={revalidate} variant={"brand"}>
 								<HStack>
 									<Icon as={HiRefresh} />
 									<Text>Refresh data</Text>
 								</HStack>
 							</Button>
-						)}
-						<Button
-							isLoading={livecheckFetcher.state !== "idle"}
-							type="submit"
-							name="_action"
-							value={"toggle"}
-							colorScheme={livecheck ? "red" : "green"}
-							_hover={{ bg: livecheck ? "red.700" : "green.600" }}
-							_active={{ bg: livecheck ? "red.800" : "green.700" }}
-							bg={livecheck ? "red.500" : "green.500"}
-							color={livecheck ? "white" : "white"}
-						>
-							<HStack>
-								{livecheck ? <Icon as={TbTrash} /> : <AddIcon />}
-								<Text>{livecheck ? "Disable" : "Enable"} livecheck</Text>
-							</HStack>
-						</Button>
-						{livecheck && (
-							<Button onClick={() => setIsEditing(!isEditing)}>
+						</WrapItem>
+						{/* )} */}
+						<WrapItem>
+							<Button
+								isLoading={livecheckFetcher.state !== "idle"}
+								type="submit"
+								name="_action"
+								value={"toggle"}
+								colorScheme={livecheck ? "red" : "green"}
+								_hover={{ bg: livecheck ? "red.700" : "green.600" }}
+								_active={{ bg: livecheck ? "red.800" : "green.700" }}
+								bg={livecheck ? "red.500" : "green.500"}
+								color={livecheck ? "white" : "white"}
+							>
 								<HStack>
-									<EditIcon />
-									<Text>{isEditing ? "Cancel editing" : "Edit livecheck"}</Text>
+									{livecheck ? <Icon as={TbTrash} /> : <AddIcon />}
+									<Text>{livecheck ? "Disable" : "Enable"} livecheck</Text>
 								</HStack>
 							</Button>
+						</WrapItem>
+						{livecheck && (
+							<WrapItem>
+								<Button onClick={() => setIsEditing(!isEditing)}>
+									<HStack>
+										<EditIcon />
+										<Text>{isEditing ? "Cancel editing" : "Edit livecheck"}</Text>
+									</HStack>
+								</Button>
+							</WrapItem>
 						)}
-					</HStack>
+					</Wrap>
+					{data && !livecheck && (
+						<Text fontWeight={600} color={"green"}>
+							{data.message}
+						</Text>
+					)}
 					{livecheck && <Text fontSize={"xs"}>Data refreshes automatically every 15 seconds.</Text>}
 				</VStack>
 			</livecheckFetcher.Form>
