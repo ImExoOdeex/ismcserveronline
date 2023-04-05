@@ -1,5 +1,5 @@
 import { Button, FormLabel, HStack, Heading, Icon, Image, Stack, Text, VStack, Code, Input, Select, Box } from "@chakra-ui/react";
-import { fetch, json, type LoaderArgs } from "@remix-run/node";
+import { type ActionArgs, fetch, json, type LoaderArgs } from "@remix-run/node";
 import { useFetcher, useLoaderData, useRevalidator } from "@remix-run/react";
 import { useRef, useEffect, useState } from "react";
 import BotNotOnServer from "~/components/layout/dashboard/BotNotOnServer";
@@ -50,6 +50,29 @@ export async function loader({ params }: LoaderArgs) {
 	return json({ guild: guild.guild, livecheck, channels });
 }
 
+export async function action({ request, params }: ActionArgs) {
+	const formData = await request.formData();
+	const guildID = params.guildID!;
+
+	const res = await (
+		await fetch(
+			`${
+				process.env.NODE_ENV === "production" ? "https://ismcserver.online" : "http://localhost:3004"
+			}/livecheck/${guildID}/edit`,
+			{
+				method: "post",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: process.env.SUPER_DUPER_API_ACCESS_TOKEN ?? ""
+				},
+				body: JSON.stringify(Object.fromEntries(formData))
+			}
+		)
+	).json();
+
+	return res;
+}
+
 export default function $guildID() {
 	const lastGuild = useRef({});
 	const lastLivecheck = useRef(null);
@@ -65,7 +88,7 @@ export default function $guildID() {
 		if (channels) lastChannels.current = channels;
 	}, [guild, livecheck, channels]);
 
-	const liveCheckToggleFetcher = useFetcher();
+	const livecheckFetcher = useFetcher();
 	const [isEditing, setIsEditing] = useState<boolean>(false);
 	const { revalidate, state } = useRevalidator();
 
@@ -91,12 +114,7 @@ export default function $guildID() {
 				<Heading>{guild.name}</Heading>
 			</HStack>
 
-			<liveCheckToggleFetcher.Form
-				action={`${
-					process.env.NODE_ENV === "production" ? "https://bot.ismcserver.online/" : "http://localhost:3004/"
-				}livecheck/edit`}
-				style={{ width: "100%" }}
-			>
+			<livecheckFetcher.Form method="post" style={{ width: "100%" }}>
 				<VStack w="100%" align={"start"} spacing={5}>
 					<VStack align={"start"} spacing={1}>
 						<Heading as={"h3"} fontSize={"2xl"}>
@@ -174,12 +192,13 @@ export default function $guildID() {
 							>
 								<VStack w="100%" align={"start"} spacing={0}>
 									<FormLabel>Address</FormLabel>
-									<Input rounded={"xl"} variant={"filled"} />
+									<Input name="address" rounded={"xl"} variant={"filled"} />
 								</VStack>
 
 								<VStack w="100%" align={"start"} spacing={0}>
 									<FormLabel>Edition</FormLabel>
 									<Select
+										name="edition"
 										rounded={"xl"}
 										variant={"filled"}
 										cursor={"pointer"}
@@ -198,6 +217,7 @@ export default function $guildID() {
 							<VStack align={"start"} spacing={0} w="lg">
 								<FormLabel>Channel</FormLabel>
 								<Select
+									name="channel"
 									rounded={"xl"}
 									cursor={"pointer"}
 									variant={"filled"}
@@ -227,6 +247,7 @@ export default function $guildID() {
 							</Button>
 						)}
 						<Button
+							isLoading={livecheckFetcher.state !== "idle"}
 							type="submit"
 							name="_action"
 							value={"toggle"}
@@ -252,7 +273,7 @@ export default function $guildID() {
 					</HStack>
 					{livecheck && <Text fontSize={"xs"}>Data refreshes automatically every 15 seconds.</Text>}
 				</VStack>
-			</liveCheckToggleFetcher.Form>
+			</livecheckFetcher.Form>
 		</VStack>
 	);
 }
