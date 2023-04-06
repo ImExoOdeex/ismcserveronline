@@ -48,7 +48,7 @@ export default function Index() {
 			<Text>There's a list of all your servers, that you can manage. Click of any you want to configure the bot!</Text>
 			<VStack w="100%" align={"start"} spacing={10}>
 				{guilds.length ? (
-					<SimpleGrid w="100%" minChildWidth={"calc(33.333333% - 20px)"} spacing={5}>
+					<SimpleGrid w="100%" minChildWidth={{ base: "100%", md: "calc(33.333333% - 20px)" }} spacing={5}>
 						{guilds
 							.filter((guild: Guild) => (guild.permissions & 0x20) == 0x20)
 							.sort((a: Guild, b: Guild) => {

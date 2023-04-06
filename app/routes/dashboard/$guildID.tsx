@@ -23,6 +23,7 @@ import BotNotOnServer from "~/components/layout/dashboard/BotNotOnServer";
 import { TbTrash } from "react-icons/tb";
 import { AddIcon, EditIcon } from "@chakra-ui/icons";
 import { HiRefresh } from "react-icons/hi";
+import { BiSave } from "react-icons/bi";
 
 export async function loader({ params }: LoaderArgs) {
 	const guildID = params.guildID!;
@@ -122,12 +123,15 @@ export default function $guildID() {
 	const data = livecheckFetcher.data;
 	useEffect(() => {
 		if (data) {
+			setIsEditing(false);
 			setTimeout(() => {
 				revalidate();
 			}, 500);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [data]);
+
+	const [clickedAction, setClickedAction] = useState<"toggle" | "edit" | null>();
 
 	if (!guild?.name) {
 		return <BotNotOnServer />;
@@ -163,7 +167,7 @@ export default function $guildID() {
 						<>
 							<Stack
 								direction={{ base: "column", md: "row" }}
-								spacing={10}
+								spacing={{ base: 5, md: 10 }}
 								justifyContent={"start"}
 								alignItems={"start"}
 								w={{ base: "100%", md: "lg" }}
@@ -244,10 +248,10 @@ export default function $guildID() {
 
 							<Stack
 								direction={{ base: "column", md: "row" }}
-								spacing={10}
+								spacing={{ base: 5, md: 10 }}
 								justifyContent={"start"}
 								alignItems={"start"}
-								w="lg"
+								w={{ base: "100%", md: "lg" }}
 							>
 								<VStack w="100%" align={"start"} spacing={0}>
 									<FormLabel>Last status</FormLabel>
@@ -339,20 +343,42 @@ export default function $guildID() {
 					<Wrap>
 						{/* {livecheck && ( */}
 						<WrapItem>
-							<Button isLoading={state === "loading"} onClick={revalidate} variant={"brand"}>
+							<Button
+								type={isEditing ? "submit" : "button"}
+								name="_action"
+								value={"edit"}
+								isLoading={
+									isEditing
+										? clickedAction === "edit"
+											? livecheckFetcher.state !== "idle"
+											: false
+										: state === "loading"
+								}
+								onClick={
+									isEditing
+										? () => {
+												setClickedAction("edit");
+										  }
+										: revalidate
+								}
+								variant={"brand"}
+							>
 								<HStack>
-									<Icon as={HiRefresh} />
-									<Text>Refresh data</Text>
+									<Icon as={isEditing ? BiSave : HiRefresh} />
+									<Text>{isEditing ? "Save data" : "Refresh data"}</Text>
 								</HStack>
 							</Button>
 						</WrapItem>
 						{/* )} */}
 						<WrapItem>
 							<Button
-								isLoading={livecheckFetcher.state !== "idle"}
+								isLoading={clickedAction === "toggle" ? livecheckFetcher.state !== "idle" : false}
 								type="submit"
 								name="_action"
 								value={"toggle"}
+								onClick={() => {
+									setClickedAction("toggle");
+								}}
 								colorScheme={livecheck ? "red" : "green"}
 								_hover={{ bg: livecheck ? "red.700" : "green.600" }}
 								_active={{ bg: livecheck ? "red.800" : "green.700" }}
