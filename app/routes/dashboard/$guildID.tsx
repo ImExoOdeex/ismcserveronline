@@ -67,8 +67,6 @@ export async function loader({ params }: LoaderArgs) {
 		)
 	).json();
 
-	console.log(`reloading id route at ${new Date().toLocaleTimeString()} ${new Date().getMilliseconds()}`);
-
 	return json({ guild: guild.guild, livecheck, channels });
 }
 
@@ -79,7 +77,7 @@ export async function action({ request, params }: ActionArgs) {
 	const res = await (
 		await fetch(
 			`${
-				process.env.NODE_ENV === "production" ? "https://ismcserver.online" : "http://localhost:3004"
+				process.env.NODE_ENV === "production" ? "https://bot.ismcserver.online" : "http://localhost:3004"
 			}/livecheck/${guildID}/edit`,
 			{
 				method: "post",
@@ -344,6 +342,8 @@ export default function $guildID() {
 						{/* {livecheck && ( */}
 						<WrapItem>
 							<Button
+								transform={"auto-gpu"}
+								_active={{ scale: 0.9 }}
 								type={isEditing ? "submit" : "button"}
 								name="_action"
 								value={"edit"}
@@ -372,6 +372,7 @@ export default function $guildID() {
 						{/* )} */}
 						<WrapItem>
 							<Button
+								transform={"auto-gpu"}
 								isLoading={clickedAction === "toggle" ? livecheckFetcher.state !== "idle" : false}
 								type="submit"
 								name="_action"
@@ -381,7 +382,7 @@ export default function $guildID() {
 								}}
 								colorScheme={livecheck ? "red" : "green"}
 								_hover={{ bg: livecheck ? "red.700" : "green.600" }}
-								_active={{ bg: livecheck ? "red.800" : "green.700" }}
+								_active={{ bg: livecheck ? "red.800" : "green.700", scale: 0.9 }}
 								bg={livecheck ? "red.500" : "green.500"}
 								color={livecheck ? "white" : "white"}
 							>
@@ -393,7 +394,7 @@ export default function $guildID() {
 						</WrapItem>
 						{livecheck && (
 							<WrapItem>
-								<Button onClick={() => setIsEditing(!isEditing)}>
+								<Button onClick={() => setIsEditing(!isEditing)} transform={"auto-gpu"} _active={{ scale: 0.9 }}>
 									<HStack>
 										<EditIcon />
 										<Text>{isEditing ? "Cancel editing" : "Edit livecheck"}</Text>

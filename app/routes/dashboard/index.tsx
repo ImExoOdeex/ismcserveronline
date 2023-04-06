@@ -98,7 +98,13 @@ export default function Index() {
 					</Heading>
 				)}
 				<refreshGuildsFetcher.Form action="/api/auth/discord/reauthenticate">
-					<Button isLoading={refreshGuildsFetcher.state !== "idle"} type="submit" variant={"brand"}>
+					<Button
+						transform={"auto-gpu"}
+						_active={{ scale: 0.9 }}
+						isLoading={refreshGuildsFetcher.state !== "idle"}
+						type="submit"
+						variant={"brand"}
+					>
 						<HStack>
 							<Icon as={HiRefresh} />
 							<Text>Refresh guilds</Text>
