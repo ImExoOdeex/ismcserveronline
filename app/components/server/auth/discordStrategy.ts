@@ -1,18 +1,11 @@
-import { Authenticator } from "remix-auth";
 import { DiscordStrategy } from "remix-auth-discord";
-import { sessionStorage } from "../session.server";
 import { db } from "~/components/server/db/db.server";
-import { type User } from "@prisma/client";
 import { type Guild } from "~/routes/dashboard/index";
-
-export const authenticator = new Authenticator<User>(sessionStorage, {
-	throwOnError: true
-});
 
 if (!process.env.DISCORD_CLIENT_ID) throw new Error("process.env.DISCORD_CLIENT_ID is not defined!");
 if (!process.env.DISCORD_CLIENT_SECRET) throw new Error("process.env.DISCORD_CLIENT_SECRET is not defined!");
 
-const discordStrategy: any = new DiscordStrategy(
+export const discordStrategy: any = new DiscordStrategy(
 	{
 		clientID: process.env.DISCORD_CLIENT_ID,
 		clientSecret: process.env.DISCORD_CLIENT_SECRET,
@@ -46,7 +39,6 @@ const discordStrategy: any = new DiscordStrategy(
 				email: email,
 				nick: profile.displayName,
 				snowflake: profile.id,
-				access_token: accessToken,
 				guilds: guilds,
 				photo: profile?.photos?.length
 					? `https://cdn.discordapp.com/avatars/${profile.id}/${profile?.photos[0].value}.webp`
@@ -55,7 +47,6 @@ const discordStrategy: any = new DiscordStrategy(
 			update: {
 				nick: profile.displayName,
 				snowflake: profile.id,
-				access_token: accessToken,
 				guilds: guilds,
 				photo: profile?.photos?.length
 					? `https://cdn.discordapp.com/avatars/${profile.id}/${profile?.photos[0].value}.webp`
@@ -69,5 +60,3 @@ const discordStrategy: any = new DiscordStrategy(
 		};
 	}
 );
-
-authenticator.use(discordStrategy, "discord");

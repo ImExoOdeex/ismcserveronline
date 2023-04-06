@@ -2,7 +2,7 @@ import { Button, Flex, Heading, HStack, Text, VStack } from "@chakra-ui/react";
 import DiscordIcon from "~/components/layout/icons/DiscordIcon";
 import Link from "~/components/utils/Link";
 import { redirect, type LoaderArgs, json } from "@remix-run/node";
-import { authenticator } from "~/components/server/auth/auth.server";
+import { authenticator } from "~/components/server/auth/authenticator.server";
 import { useLoaderData } from "@remix-run/react";
 import { useRef, useEffect } from "react";
 
@@ -38,6 +38,7 @@ export default function Login() {
 
 				<VStack align={"start"} w="100%">
 					<Button
+						prefetch="none"
 						as={Link}
 						to={`/api/auth/discord`}
 						w="100%"

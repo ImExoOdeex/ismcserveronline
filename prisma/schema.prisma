@@ -8,16 +8,15 @@ datasource db {
 }
 
 model User {
-  id           Int      @id @unique @default(autoincrement())
-  email        String   @unique
-  snowflake    String   @unique
-  access_token String   @unique
-  nick         String
-  photo        String?
-  bio          String?
-  guilds       Json?
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
+  id         Int      @id @unique @default(autoincrement())
+  email      String   @unique
+  snowflake  String   @unique
+  nick       String
+  photo      String?
+  bio        String?
+  guilds     Json?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 enum SOURCE {

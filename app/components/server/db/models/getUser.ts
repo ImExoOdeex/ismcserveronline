@@ -1,4 +1,4 @@
-import { authenticator } from "../../auth/auth.server";
+import { authenticator } from "../../auth/authenticator.server";
 import { db } from "../db.server";
 
 export async function getUser(request: Request) {
@@ -16,7 +16,6 @@ export async function getUser(request: Request) {
 			id: true,
 			email: true,
 			snowflake: true,
-			access_token: true,
 			nick: true,
 			photo: true,
 			bio: true

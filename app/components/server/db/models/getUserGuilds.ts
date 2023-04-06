@@ -1,4 +1,4 @@
-import { authenticator } from "../../auth/auth.server";
+import { authenticator } from "../../auth/authenticator.server";
 import { db } from "../db.server";
 
 export async function getUserGuilds(request: Request) {

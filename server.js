@@ -8,8 +8,6 @@ const BUILD_DIR = path.join(process.cwd(), "build");
 
 const app = express();
 
-app.use(require('express-status-monitor')());
-
 app.use(compression());
 
 // http://expressjs.com/en/advanced/best-practice-security.html#at-a-minimum-disable-x-powered-by-header
