@@ -36,6 +36,7 @@ const styles = {
 			"&::-webkit-scrollbar-thumb:active": {
 				backgroundColor: mode("#c4c4c4", "#39393a")(props)
 			},
+			"-webkit-tap-highlight-color": "transparent",
 			"*::selection": {
 				backgroundColor: "#563B9F",
 				color: "white"

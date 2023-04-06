@@ -1,14 +1,14 @@
 import {
 	Badge,
 	Box,
+	Button,
 	Flex,
 	Heading,
 	HStack,
-	Menu,
-	MenuButton,
 	Skeleton,
 	Text,
 	useColorMode,
+	useDisclosure,
 	useEventListener
 } from "@chakra-ui/react";
 import Link from "../../utils/Link";
@@ -28,7 +28,7 @@ const ServerSearch = loadable(() => import(/* webpackPrefetch: true */ "./Server
 	fallback: <Skeleton h="40px" w="320px" minW="100%" startColor="alpha" endColor="alpha200" rounded={"xl"} />
 });
 
-const MenuList = loadable(() => import("./Mobile/MenuList"), {
+const Modal = loadable(() => import("./Mobile/Modal"), {
 	ssr: true
 });
 
@@ -49,6 +49,8 @@ export default function Header() {
 		const position = window.pageYOffset;
 		setScrollPosition(position);
 	};
+
+	const { isOpen, onOpen, onClose, onToggle } = useDisclosure();
 
 	useEffect(() => {
 		window.addEventListener("scroll", handleScroll, { passive: true });
@@ -128,16 +130,16 @@ export default function Header() {
 				</HStack>
 
 				<Box display={{ base: "flex", lg: "none" }} cursor="pointer">
-					<Menu>
-						{({ isOpen }) => (
-							<>
-								<MenuButton aria-label="Mobile menu button" aria-labelledby="Mobile menu button" boxSize={"20px"}>
-									<HamburgerMenu isOpen={isOpen} />
-								</MenuButton>
-								<MenuList />
-							</>
-						)}
-					</Menu>
+					<Button
+						variant={"unstyled"}
+						onClick={onToggle}
+						display={"flex"}
+						justifyContent={"center"}
+						alignItems={"center"}
+					>
+						<HamburgerMenu isOpen={isOpen} />
+					</Button>
+					<Modal isOpen={isOpen} onClose={onClose} onOpen={onOpen} />
 				</Box>
 			</Flex>
 		</Flex>

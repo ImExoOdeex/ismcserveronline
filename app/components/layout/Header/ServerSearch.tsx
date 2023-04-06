@@ -47,17 +47,7 @@ export default function ServerSearch() {
 		}
 	}, [fetcher.data]);
 
-	// const { isOpen, onClose, onOpen } = useDisclosure();
-
 	const submitting = fetcher.state !== "idle";
-
-	// const [submitting, setSubmitting] = useState<boolean>(fetcher.state !== "idle");
-
-	// useEffect(() => {
-	// 	setTimeout(() => {
-	// 		setSubmitting(true);
-	// 	}, 1000);
-	// }, []);
 
 	return (
 		<fetcher.Form method="post" style={{ position: "relative", minWidth: "302px", width: "100%" }}>
@@ -65,8 +55,6 @@ export default function ServerSearch() {
 				Search
 			</Box>
 
-			{/* <Popover initialFocusRef={inputRef} size={"2xl"} isLazy isOpen={isOpen}>
-								<PopoverTrigger> */}
 			<AnimatePresence initial={false} mode="wait">
 				{!submitting && (
 					<motion.div
@@ -149,10 +137,6 @@ export default function ServerSearch() {
 							left: "0",
 							bottom: "0"
 						}}
-						// initial={{ opacity: 0, y: "-25%" }}
-						// animate={{ opacity: 1, y: 0 }}
-						// exit={{ opacity: 0, y: "-25%" }}
-
 						initial={{ x: 40, opacity: 0, scale: 0.975 }}
 						animate={{ x: 0, opacity: 1, scale: 1 }}
 						exit={{
@@ -189,9 +173,6 @@ export default function ServerSearch() {
 					</motion.div>
 				)}
 			</AnimatePresence>
-			{/* </PopoverTrigger>
-								<PopularServersPopover server={server ?? ""} />
-							</Popover> */}
 		</fetcher.Form>
 	);
 }
