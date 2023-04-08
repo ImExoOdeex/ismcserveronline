@@ -9,20 +9,20 @@ export async function loader({ request }: LoaderArgs) {
 	const user = await getUser(request);
 
 	const url = new URL(request.url);
-	const session = await getSession(request.headers.get("Cookie"));
+	const cookies = request.headers.get("Cookie");
+
+	const session = await getSession(cookies);
 
 	if (!user) {
-		const redirectURL = url.searchParams.get("redirect");
-		const guildID = url.searchParams.get("guild");
+		const redirectURL = url.searchParams.get("redirect") as string;
+		const guildID = url.searchParams.get("guild") as string;
 
 		session.set("redirect", redirectURL);
 		session.set("guild", guildID);
 
-		console.log(`session redirect: ${session.get(redirectURL ?? "")}`);
-
 		return redirect("/login", {
 			headers: {
-				"set-cookie": await commitSession(session)
+				"Set-Cookie": await commitSession(session)
 			}
 		});
 	}
@@ -31,8 +31,8 @@ export async function loader({ request }: LoaderArgs) {
 	const guildID = session.get("guild");
 
 	if (redirectURL) {
-		// session.unset("redirect");
-		// session.unset("guild");
+		session.unset("redirect");
+		session.unset("guild");
 
 		return redirect(`/dashboard/${guildID}/${redirectURL}`, {
 			headers: {

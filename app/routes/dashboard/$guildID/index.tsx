@@ -75,7 +75,7 @@ export async function action({ request, params }: ActionArgs) {
 		)
 	).json();
 
-	return await res;
+	return json(res);
 }
 
 export default function Index() {

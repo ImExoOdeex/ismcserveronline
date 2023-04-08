@@ -1,24 +1,10 @@
-import {
-	Button,
-	Flex,
-	HStack,
-	Heading,
-	Icon,
-	Skeleton,
-	Stack,
-	Text,
-	VStack,
-	VisuallyHiddenInput,
-	Wrap,
-	WrapItem
-} from "@chakra-ui/react";
-import { type LoaderArgs, json, fetch as nodeFetch, ActionArgs } from "@remix-run/node";
+import { Button, HStack, Icon, Stack, Text, VStack, Wrap, WrapItem } from "@chakra-ui/react";
+import { type LoaderArgs, json, fetch as nodeFetch, type ActionArgs } from "@remix-run/node";
 import { useFetcher, useLoaderData, useRevalidator } from "@remix-run/react";
-import { useEffect, useRef, useState } from "react";
-import { BiColorFill, BiSave } from "react-icons/bi";
+import { useEffect, useRef } from "react";
+import { BiSave } from "react-icons/bi";
 import { HiRefresh } from "react-icons/hi";
 import StatusColor from "~/components/layout/dashboard/StatusColor";
-import OnlineColor from "~/components/layout/dashboard/StatusColor";
 
 export async function loader({ params }: LoaderArgs) {
 	const guildID = params.guildID!;
@@ -76,7 +62,6 @@ export default function Config() {
 	const { revalidate, state } = useRevalidator();
 
 	const data = fetcher.data;
-	console.log(data);
 
 	return (
 		<fetcher.Form method="post" style={{ width: "100%" }}>

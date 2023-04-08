@@ -33,7 +33,7 @@ export default function StatusColor({ config, type }: { config: any; type: "onli
 		<>
 			<VStack w="100%" align={"start"}>
 				<Text fontWeight={500} color={"textSec"} fontSize={"lg"}>
-					{type === "online" ? "Online" : "Offline"} Color
+					{type === "online" ? "Online" : "Offline"} Status Color
 				</Text>
 
 				<VStack w="100%" align={"start"}>
