@@ -7,9 +7,12 @@ if (!process.env.DISCORD_CLIENT_SECRET) throw new Error("process.env.DISCORD_CLI
 
 export const discordStrategy: any = new DiscordStrategy(
 	{
-		clientID: process.env.DISCORD_CLIENT_ID,
-		clientSecret: process.env.DISCORD_CLIENT_SECRET,
-		scope: ["identify", "email"],
+		clientID: process.env.NODE_ENV === "production" ? process.env.DISCORD_CLIENT_ID : process.env.DISCORD_CLIENT_ID_DEV ?? "",
+		clientSecret:
+			process.env.NODE_ENV === "production"
+				? process.env.DISCORD_CLIENT_SECRET
+				: process.env.DISCORD_CLIENT_SECRET_DEV ?? "",
+		scope: ["identify", "email", "guilds"],
 		callbackURL:
 			process.env.NODE_ENV === "production"
 				? `https://ismcserver.online/api/auth/discord/callback`

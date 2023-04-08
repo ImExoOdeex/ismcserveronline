@@ -27,9 +27,9 @@ export default function Login() {
 	}, [failed]);
 
 	return (
-		<Flex w="100%" h="100%" justifyContent={"center"} minH={"calc(100vh - 128px)"} alignItems="center">
+		<Flex w="100%" h="100%" justifyContent={"center"} minH={"calc(100vh - 128px)"} alignItems="center" px={4}>
 			<VStack spacing={5} maxW={"450px"} w="100%" mx="auto">
-				<Heading fontSize={"3xl"}>Log in into your Discord account</Heading>
+				<Heading fontSize={{ base: "2xl", md: "3xl" }}>Log in into your Discord account</Heading>
 				<Text color={failed ? "red" : "textSec"} fontWeight={failed ? 600 : 500} opacity={0.9} textAlign={"center"}>
 					{failed
 						? "Failed to login. Please try again."
@@ -57,6 +57,9 @@ export default function Login() {
 							<Text fontWeight={"semibold"}>Login with Discord</Text>
 						</HStack>
 					</Button>
+					<Text fontSize={"xs"} fontWeight={"thin"} opacity={0.9}>
+						We do not store your access token.
+					</Text>
 				</VStack>
 			</VStack>
 		</Flex>

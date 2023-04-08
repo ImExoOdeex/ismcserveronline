@@ -1,15 +1,8 @@
 import { Flex } from "@chakra-ui/react";
 import { Ad, adType } from "../ads/Ad";
-import { useState, useEffect } from "react";
 
 export default function Column() {
-	const [width, setWidth] = useState<number>(1920);
-
-	useEffect(() => {
-		setWidth(window.innerWidth);
-	}, []);
-
-	const columnWidth = (width - 1200) * 0.5 - 8;
+	const columnWidth = (1920 - 1200) * 0.5 - 8;
 
 	return (
 		<Flex
