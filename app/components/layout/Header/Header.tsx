@@ -42,7 +42,7 @@ export default function Header() {
 		}
 	});
 
-	const { toggleColorMode } = useColorMode();
+	const { toggleColorMode, colorMode } = useColorMode();
 
 	const [scrollPosition, setScrollPosition] = useState(0);
 	const handleScroll = () => {
@@ -71,6 +71,7 @@ export default function Header() {
 			pos={"sticky"}
 			top={0}
 			backdropFilter={scrollPosition < 0 ? "none" : "blur(20px)"}
+			bg={isOpen && colorMode === "light" ? "whiteAlpha.800" : "transparent"}
 			zIndex={1799}
 			borderBottom={"1px"}
 			borderBottomColor={scrollPosition > 0 ? "alpha" : "transparent"}

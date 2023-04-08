@@ -1,12 +1,16 @@
-import { json, type LoaderArgs } from "@remix-run/node";
+import { json, redirect, type LoaderArgs } from "@remix-run/node";
 import { useLoaderData, useLocation, useOutlet } from "@remix-run/react";
 import BotNotOnServer from "~/components/layout/dashboard/BotNotOnServer";
 import { useRef, useEffect } from "react";
 import { Button, Heading, HStack, Image, Stack } from "@chakra-ui/react";
 import Link from "~/components/utils/Link";
+import { getUserGuilds } from "~/components/server/db/models/getUserGuilds";
 
-export async function loader({ params }: LoaderArgs) {
+export async function loader({ params, request }: LoaderArgs) {
 	const guildID = params.guildID!;
+	const userGuilds: any = await getUserGuilds(request);
+
+	if (!userGuilds) return redirect("/dashboard");
 
 	const guild = await (
 		await fetch(
@@ -22,7 +26,9 @@ export async function loader({ params }: LoaderArgs) {
 		)
 	).json();
 
-	return json({ guild });
+	const userContainsGuild = userGuilds.find((g: any) => g?.id === guild?.id) ? true : false;
+
+	return json({ guild: userContainsGuild ? guild : null });
 }
 
 export default function $guildID() {

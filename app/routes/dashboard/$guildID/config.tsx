@@ -1,4 +1,4 @@
-import { Button, HStack, Icon, Stack, Text, VStack, Wrap, WrapItem } from "@chakra-ui/react";
+import { Button, Divider, HStack, Icon, Stack, Text, VStack, Wrap, WrapItem } from "@chakra-ui/react";
 import { type LoaderArgs, json, fetch as nodeFetch, type ActionArgs } from "@remix-run/node";
 import { useFetcher, useLoaderData, useRevalidator } from "@remix-run/react";
 import { useEffect, useRef } from "react";
@@ -113,6 +113,13 @@ export default function Config() {
 					)}
 				</VStack>
 			</VStack>
+
+			<Divider my={10} />
+
+			<Text color={"textSec"}>
+				To edit status colors for the bot's embed responses, click on the "Color Fill" icon located on the bottom right
+				corner of the color box. This will open up the color picker. To save your changes, click on the "Update" button.
+			</Text>
 		</fetcher.Form>
 	);
 }

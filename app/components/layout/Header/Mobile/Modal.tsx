@@ -15,7 +15,8 @@ import {
 	Icon,
 	Box,
 	Spinner,
-	useColorModeValue
+	useColorModeValue,
+	ModalOverlay
 } from "@chakra-ui/react";
 import Link from "~/components/utils/Link";
 import DiscordIcon from "../../icons/DiscordIcon";
@@ -40,11 +41,12 @@ export default function Modal({ isOpen, onOpen, onClose }: { isOpen: boolean; on
 
 	useEffect(() => {
 		if (location.pathname !== lastPath.current) {
-			console.log("closing modal");
 			onClose();
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [location.pathname]);
+
+	const darkAlpha = useColorModeValue("whiteAlpha.600", "blackAlpha.700");
 
 	return (
 		<>
@@ -55,10 +57,20 @@ export default function Modal({ isOpen, onOpen, onClose }: { isOpen: boolean; on
 				isOpen={isOpen}
 				onClose={onClose}
 			>
-				{/* <ModalOverlay /> */}
-				<ModalContent mx={4} rounded={"xl"} mt={"60px"} bg="bg" h="calc(100% - 64px)" mb={4}>
+				<ModalOverlay backdropFilter={"blur(4px)"} transition={".2s"} />
+				<ModalContent
+					border={"1px solid"}
+					borderColor={"alpha100"}
+					zIndex={"999999 !important"}
+					mx={4}
+					rounded={"xl"}
+					mt={16}
+					bg={darkAlpha}
+					backdropFilter={"blur(50px) brightness(200%)"}
+					mb={4}
+				>
 					<ModalHeader>Menu</ModalHeader>
-					<ModalBody overflowY={"hidden"}>
+					<ModalBody overflowY={"hidden"} pb={0} zIndex={99999999999}>
 						<fetcher.Form method="post" style={{ position: "relative", minWidth: "302px", width: "100%" }}>
 							<Box as="label" srOnly htmlFor="search">
 								Search
@@ -133,22 +145,26 @@ export default function Modal({ isOpen, onOpen, onClose }: { isOpen: boolean; on
 								</AnimatePresence>
 							</Flex>
 						</fetcher.Form>
-						<VStack fontWeight={600} spacing={10} h="100%" alignItems={"center"} justifyContent={"center"}>
-							<Link to="/" onClick={onClose}>
-								Homepage
-							</Link>
-							<Link to="/popular-servers" onClick={onClose}>
-								Popular servers
-							</Link>
-							<Link to="/faq" onClick={onClose}>
-								FAQ
-							</Link>
-							<Link to="/api" onClick={onClose}>
-								API
-							</Link>
+						<AnimatePresence initial={false}>
+							<motion.div
+								animate={
+									server.length >= 1 && server.includes(".")
+										? { height: "36px" }
+										: {
+												height: 0
+										  }
+								}
+								transition={{ ease: [0.25, 0.1, 0.25, 1] }}
+							></motion.div>
+						</AnimatePresence>
+						<VStack mt={7} fontWeight={600} spacing={10} h="100%" alignItems={"center"} justifyContent={"center"}>
+							<Link to="/">Homepage</Link>
+							<Link to="/popular-servers">Popular servers</Link>
+							<Link to="/faq">FAQ</Link>
+							<Link to="/api">API</Link>
 						</VStack>
 					</ModalBody>
-					<ModalFooter>
+					<ModalFooter pt={7}>
 						<VStack w="100%">
 							<Button w="100%" onClick={toggleColorMode} colorScheme="pink">
 								<HStack>

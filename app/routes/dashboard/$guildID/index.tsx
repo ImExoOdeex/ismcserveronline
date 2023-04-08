@@ -14,7 +14,8 @@ import {
 	Box,
 	Wrap,
 	WrapItem,
-	Skeleton
+	Skeleton,
+	Divider
 } from "@chakra-ui/react";
 import { fetch } from "@remix-run/node";
 import { useFetcher, useLoaderData, useRevalidator } from "@remix-run/react";
@@ -58,6 +59,20 @@ export async function loader({ params }: LoaderArgs) {
 export async function action({ request, params }: ActionArgs) {
 	const formData = await request.formData();
 	const guildID = params.guildID!;
+
+	const edition = formData.get("edition");
+	if (edition) {
+		if (
+			formData.get("address")!?.length < 3 ||
+			formData.get("address")!?.length > 100 ||
+			!formData.get("address")!.toString().includes(".")
+		) {
+			return json(
+				{ message: "Address must be between 3 and 100 characters and must be valid domain/IP address.", success: false },
+				{ status: 400 }
+			);
+		}
+	}
 
 	const res = await (
 		await fetch(
@@ -142,6 +157,8 @@ export default function Index() {
 									<FormLabel>Address</FormLabel>
 									{isEditing ? (
 										<Input
+											minLength={3}
+											maxLength={100}
 											rounded={"xl"}
 											variant={"filled"}
 											name="address"
@@ -261,7 +278,7 @@ export default function Index() {
 							>
 								<VStack w="100%" align={"start"} spacing={0}>
 									<FormLabel>Address</FormLabel>
-									<Input name="address" rounded={"xl"} variant={"filled"} />
+									<Input name="address" rounded={"xl"} variant={"filled"} min={3} max={100} />
 								</VStack>
 
 								<VStack w="100%" align={"start"} spacing={0}>
@@ -372,12 +389,20 @@ export default function Index() {
 						)}
 					</Wrap>
 					{data && !livecheck && (
-						<Text fontWeight={600} color={"green"}>
+						<Text fontWeight={600} color={data.success ? "green" : "red"}>
 							{data.message}
 						</Text>
 					)}
 					{livecheck && <Text fontSize={"xs"}>Data refreshes automatically every 15 seconds.</Text>}
 				</VStack>
+
+				<Divider my={10} />
+
+				<Text color={"textSec"}>
+					Livecheck checks Minecraft's server status every 15 seconds and updates the message in real-time if there are
+					any changes to the player count or server status. To set it up, enter the server address, select the correct
+					Minecraft edition, and choose the appropriate channel to display the server status.
+				</Text>
 			</livecheckFetcher.Form>
 		</VStack>
 	);
