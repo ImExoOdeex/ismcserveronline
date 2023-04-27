@@ -17,6 +17,8 @@ model User {
   guilds     Json?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  @@index([email])
 }
 
 enum SOURCE {
@@ -53,6 +55,8 @@ model Check {
   checked_at DateTime @default(now())
   Token      Token?   @relation(fields: [token_id], references: [id])
   token_id   Int
+
+  @@index([server])
 }
 
 model Token {
