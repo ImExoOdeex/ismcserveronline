@@ -173,7 +173,10 @@ const theme = extendTheme({
 				}
 			},
 			baseStyle: {
-				rounded: "xl"
+				rounded: "xl",
+				_hover: {
+					textDecor: "none"
+				}
 			}
 		},
 		IconButton: {

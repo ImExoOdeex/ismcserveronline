@@ -3,7 +3,6 @@ import { useLocation } from "@remix-run/react";
 import { useContext } from "react";
 import { context } from "../utils/GlobalContext";
 import { AnimatePresence, motion } from "framer-motion";
-// import { context } from "~/root";
 
 export default function BackgroundUtils() {
 	const { displayGradient, displayLogoInBg, gradientColor } = useContext(context);

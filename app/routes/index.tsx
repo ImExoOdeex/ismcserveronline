@@ -1,4 +1,4 @@
-import { VStack } from "@chakra-ui/react";
+import { Divider, VStack } from "@chakra-ui/react";
 import { type ActionArgs, redirect, type MetaFunction, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
@@ -101,20 +101,24 @@ export default function Index() {
 
 			<SampleServers setServerValue={setServerValue} setBedrock={setBedrockChecked} />
 
+			<Divider />
 			<BotInfo />
+			<Divider />
 
 			<Ad type={adType.small} />
 
-			<HowToUse />
+			<VStack spacing={"28"} w="100%" align={"start"}>
+				<HowToUse />
 
-			<Ad type={adType.responsive} />
+				<Ad type={adType.responsive} />
 
-			<PopularServers />
+				<PopularServers />
 
-			<Ad type={adType.small} />
+				<Ad type={adType.small} />
 
-			{/* What are you waiting for? */}
-			<WARWF />
+				{/* What are you waiting for? */}
+				<WARWF />
+			</VStack>
 
 			<Ad type={adType.multiplex} />
 		</VStack>

@@ -10,7 +10,6 @@ export async function action({ request }: ActionArgs) {
 
 	if (!headerToken)
 		return new Response("Super Duper Token does not match the real 2048 bit Super Duper Token!", {
-			// not allowed status code
 			status: 405
 		});
 
@@ -30,6 +29,9 @@ export async function action({ request }: ActionArgs) {
 					await db.token.findUnique({
 						where: {
 							token: body.token
+						},
+						select: {
+							id: true
 						}
 					})
 			  )?.id;

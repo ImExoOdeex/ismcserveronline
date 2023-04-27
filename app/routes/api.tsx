@@ -193,7 +193,7 @@ export default function Api() {
 						<VStack w="100%" alignItems={"start"} spacing={2}>
 							<Heading fontSize={"xl"}>How to use the API?</Heading>
 							<Text>
-								To use the api, enter your generated token into <Badge>Autorization</Badge> header, like shown on
+								To use the api, enter your generated token into <Badge>Authorization</Badge> header, like shown on
 								example below. It is important to note that API tokens should be kept secure and not shared with
 								unauthorized users.
 							</Text>

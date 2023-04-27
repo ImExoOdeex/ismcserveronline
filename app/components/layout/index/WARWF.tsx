@@ -44,7 +44,7 @@ export default function WARWF() {
 	return (
 		<VStack w="100%" spacing={10}>
 			<VStack w="100%" textAlign={"center"}>
-				<Badge bg={"orange.200"} color={"orange.600"} rounded={"full"} px={3} py={1} variant={"solid"}>
+				<Badge bg={"orange.100"} color={"orange.700"} rounded={"full"} px={3} py={1} variant={"solid"}>
 					<HStack>
 						<Icon as={TbBulb} boxSize="18px" />
 						<Text fontSize={"xs"}>Go explore!</Text>
