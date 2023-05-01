@@ -24,15 +24,19 @@ import { TbTrash } from "react-icons/tb";
 import { AddIcon, EditIcon } from "@chakra-ui/icons";
 import { HiRefresh } from "react-icons/hi";
 import { BiSave } from "react-icons/bi";
+import LivecheckNumbers from "~/components/layout/dashboard/LivecheckNumbers";
 
-export async function loader({ params }: LoaderArgs) {
+export async function loader({ params, request }: LoaderArgs) {
 	const guildID = params.guildID!;
+
+	const url = new URL(request.url);
+	const number = url.searchParams.get("number") ?? "1";
 
 	const [livecheck, channels] = await Promise.all([
 		fetch(
 			`${
 				process.env.NODE_ENV === "production" ? "https://bot.ismcserver.online" : "http://localhost:3004"
-			}/${guildID}/livecheck`,
+			}/${guildID}/livecheck/${number}`,
 			{
 				method: "get",
 				headers: {
@@ -59,6 +63,8 @@ export async function loader({ params }: LoaderArgs) {
 export async function action({ request, params }: ActionArgs) {
 	const formData = await request.formData();
 	const guildID = params.guildID!;
+	const url = new URL(request.url);
+	const number = url.searchParams.get("number") ?? "1";
 
 	const edition = formData.get("edition");
 	if (edition) {
@@ -78,7 +84,7 @@ export async function action({ request, params }: ActionArgs) {
 		await fetch(
 			`${
 				process.env.NODE_ENV === "production" ? "https://bot.ismcserver.online" : "http://localhost:3004"
-			}/${guildID}/livecheck/edit`,
+			}/${guildID}/livecheck/edit/${number}`,
 			{
 				method: "post",
 				headers: {
@@ -130,6 +136,10 @@ export default function Index() {
 
 	return (
 		<VStack w="100%" align={"start"} spacing={10}>
+			<LivecheckNumbers />
+
+			<Divider />
+
 			<livecheckFetcher.Form method="post" style={{ width: "100%" }}>
 				<VStack w="100%" align={"start"} spacing={5}>
 					<VStack align={"start"} spacing={1}>
@@ -388,7 +398,7 @@ export default function Index() {
 							</WrapItem>
 						)}
 					</Wrap>
-					{data && !livecheck && (
+					{data && (
 						<Text fontWeight={600} color={data.success ? "green" : "red"}>
 							{data.message}
 						</Text>
