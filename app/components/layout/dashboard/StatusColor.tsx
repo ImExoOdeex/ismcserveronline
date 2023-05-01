@@ -1,6 +1,7 @@
 import { Flex, Heading, Icon, Skeleton, Text, VStack, VisuallyHiddenInput } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { BiColorFill } from "react-icons/bi";
+import { context } from "~/components/utils/GlobalContext";
 
 export default function StatusColor({ config, type }: { config: any; type: "online" | "offline" }) {
 	const configColorDecimal: number = config[type === "online" ? "online_color" : "offline_color"];
@@ -29,6 +30,15 @@ export default function StatusColor({ config, type }: { config: any; type: "onli
 		return () => clearTimeout(getData);
 	}, [color]);
 
+	const { updateData } = useContext(context);
+
+	function handleColorChange(e: React.ChangeEvent<HTMLInputElement>) {
+		const value = e.currentTarget.value;
+
+		setColor(value);
+		updateData("gradientColor", value);
+	}
+
 	return (
 		<>
 			<VStack w="100%" align={"start"}>
@@ -51,7 +61,7 @@ export default function StatusColor({ config, type }: { config: any; type: "onli
 							name={`${type}Color`}
 							type="color"
 							value={color}
-							onChange={(e) => setColor(e.currentTarget.value)}
+							onChange={handleColorChange}
 							position={"absolute"}
 							right={0}
 							bottom={0}

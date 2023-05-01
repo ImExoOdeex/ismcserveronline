@@ -1,4 +1,4 @@
-import { Flex, Image, useColorMode } from "@chakra-ui/react";
+import { Flex, Image, useColorMode, useToken } from "@chakra-ui/react";
 import { useLocation } from "@remix-run/react";
 import { useContext } from "react";
 import { context } from "../utils/GlobalContext";
@@ -9,6 +9,7 @@ export default function BackgroundUtils() {
 
 	const { colorMode } = useColorMode();
 	const path = useLocation().pathname;
+	const [rawColor] = useToken("colors", [gradientColor ?? ""]);
 
 	return (
 		<Flex pos={"absolute"} zIndex={-1} maxH={"100vh"} w="100%" h="100%">
@@ -38,12 +39,15 @@ export default function BackgroundUtils() {
 				)}
 			</AnimatePresence>
 			{displayGradient && (
-				<Flex
-					w="100%"
-					h="100%"
-					bgGradient={`linear(to-b, ${gradientColor}, transparent)`}
-					opacity={colorMode === "light" ? (gradientColor === "gold" ? 0.2 : 0.15) : 0.075}
-				/>
+				<svg style={{ width: "100%", opacity: colorMode === "light" ? (gradientColor === "gold" ? 0.2 : 0.2) : 0.15 }}>
+					<defs>
+						<linearGradient id="background-gradient" gradientTransform="rotate(90)">
+							<stop offset="0%" stop-color={rawColor} style={{ transition: "stop-color 0.4s ease 0s" }}></stop>
+							<stop offset="100%" stop-color="transparent"></stop>
+						</linearGradient>
+					</defs>
+					<rect fill="url('#background-gradient')" width="100%" height="100%"></rect>
+				</svg>
 			)}
 		</Flex>
 	);
