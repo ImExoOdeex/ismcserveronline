@@ -6,7 +6,7 @@ import { context } from "~/components/utils/GlobalContext";
 export default function StatusColor({ config, type }: { config: any; type: "online" | "offline" }) {
 	const configColorDecimal: number = config[type === "online" ? "online_color" : "offline_color"];
 
-	const [color, setColor] = useState<string>(`#${configColorDecimal.toString(16)}`);
+	const [color, setColor] = useState<string>(`#${configColorDecimal === 0 ? "000000" : configColorDecimal.toString(16)}`);
 	const [colorName, setColorName] = useState<string>("");
 	const [colorFetching, setColorFetching] = useState<boolean>(false);
 

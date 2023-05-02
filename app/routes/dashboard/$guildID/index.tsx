@@ -17,7 +17,6 @@ import {
 	Skeleton,
 	Divider
 } from "@chakra-ui/react";
-import { fetch } from "@remix-run/node";
 import { useFetcher, useLoaderData, useRevalidator } from "@remix-run/react";
 import { useRef, useEffect, useState } from "react";
 import { TbTrash } from "react-icons/tb";

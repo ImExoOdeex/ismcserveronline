@@ -1,5 +1,5 @@
 import { Button, Divider, HStack, Icon, Stack, Text, VStack, Wrap, WrapItem } from "@chakra-ui/react";
-import { type LoaderArgs, json, fetch as nodeFetch, type ActionArgs } from "@remix-run/node";
+import { type LoaderArgs, json, type ActionArgs } from "@remix-run/node";
 import { useFetcher, useLoaderData, useRevalidator } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 import { BiSave } from "react-icons/bi";
@@ -10,7 +10,7 @@ export async function loader({ params }: LoaderArgs) {
 	const guildID = params.guildID!;
 
 	const config = await (
-		await nodeFetch(
+		await fetch(
 			`${
 				process.env.NODE_ENV === "production" ? "https://bot.ismcserver.online" : "http://localhost:3004"
 			}/${guildID}/config`,
@@ -31,7 +31,7 @@ export async function action({ request, params }: ActionArgs) {
 	const guildID = params.guildID!;
 
 	const res = await (
-		await nodeFetch(
+		await fetch(
 			`${
 				process.env.NODE_ENV === "production" ? "https://bot.ismcserver.online" : "http://localhost:3004"
 			}/${guildID}/config/edit`,
