@@ -5,7 +5,6 @@ import { redirect, type LoaderArgs, json } from "@remix-run/node";
 import { authenticator } from "~/components/server/auth/authenticator.server";
 import { useLoaderData } from "@remix-run/react";
 import { useRef, useEffect } from "react";
-import { getSession } from "~/components/server/session.server";
 
 export async function loader({ request }: LoaderArgs) {
 	const auth = await authenticator.isAuthenticated(request);
@@ -13,10 +12,6 @@ export async function loader({ request }: LoaderArgs) {
 	if (auth) {
 		return redirect(`/dashboard`);
 	}
-
-	const session = await getSession(request.headers.get("Cookie"));
-	const redirectURL = await session.get("redirect");
-	console.log(redirectURL);
 
 	const url = new URL(request.url);
 	const failed = url.searchParams.get("message") === "fail";

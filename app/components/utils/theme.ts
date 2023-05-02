@@ -1,4 +1,10 @@
-import { extendTheme, type ThemeOverride, type ThemeConfig } from "@chakra-ui/react";
+import {
+	type ThemeOverride,
+	type ThemeConfig,
+	theme as chakraTheme,
+	extendBaseTheme,
+	mergeThemeOverride
+} from "@chakra-ui/react";
 import { mode, type StyleFunctionProps } from "@chakra-ui/theme-tools";
 import type { Dict } from "@chakra-ui/utils";
 
@@ -70,7 +76,28 @@ const colors = {
 		900: "#6A5ACD"
 	}
 };
-const theme = extendTheme({
+
+const {
+	Badge,
+	Button,
+	Code,
+	Divider,
+	FormLabel,
+	Heading,
+	Input,
+	Popover,
+	Link,
+	Skeleton,
+	Modal,
+	Spinner,
+	Textarea,
+	Tooltip,
+	Table,
+	Select,
+	List
+} = chakraTheme.components;
+
+const theme = extendBaseTheme({
 	colors,
 	config,
 	styles,
@@ -132,6 +159,34 @@ const theme = extendTheme({
 				default: "blackAlpha.200",
 				_dark: "whiteAlpha.200"
 			},
+			alpha300: {
+				default: "blackAlpha.300",
+				_dark: "whiteAlpha.300"
+			},
+			alpha400: {
+				default: "blackAlpha.400",
+				_dark: "whiteAlpha.400"
+			},
+			alpha500: {
+				default: "blackAlpha.500",
+				_dark: "whiteAlpha.500"
+			},
+			alpha600: {
+				default: "blackAlpha.600",
+				_dark: "whiteAlpha.600"
+			},
+			alpha700: {
+				default: "blackAlpha.700",
+				_dark: "whiteAlpha.700"
+			},
+			alpha800: {
+				default: "blackAlpha.800",
+				_dark: "whiteAlpha.800"
+			},
+			alpha900: {
+				default: "blackAlpha.900",
+				_dark: "whiteAlpha.900"
+			},
 			raisedBg: {
 				default: "#f6f6ff",
 				_dark: "#18181b"
@@ -139,7 +194,25 @@ const theme = extendTheme({
 		}
 	},
 	components: {
-		Tooltip: {
+		Badge,
+		Code,
+		FormLabel,
+		Heading,
+		Input,
+		Popover,
+		Skeleton,
+		Modal,
+		Spinner,
+		Textarea,
+		Table,
+		Select,
+		List,
+		Divider: mergeThemeOverride(Divider, {
+			baseStyle: {
+				borderColor: "alpha300"
+			}
+		}),
+		Tooltip: mergeThemeOverride(Tooltip, {
 			baseStyle: {
 				bg: "#1d1d22",
 				"--tooltip-bg": "#1d1d22",
@@ -148,8 +221,8 @@ const theme = extendTheme({
 					bg: "bg.100"
 				}
 			}
-		},
-		Button: {
+		}),
+		Button: mergeThemeOverride(Button, {
 			variants: {
 				brand: {
 					bg: "brand.900",
@@ -178,7 +251,7 @@ const theme = extendTheme({
 					textDecor: "none"
 				}
 			}
-		},
+		}),
 		IconButton: {
 			variants: {
 				brand: {
@@ -193,7 +266,7 @@ const theme = extendTheme({
 				}
 			}
 		},
-		Link: {
+		Link: mergeThemeOverride(Link, {
 			variants: {
 				link: {
 					color: "sec",
@@ -210,7 +283,7 @@ const theme = extendTheme({
 					fontWeight: 600
 				}
 			}
-		}
+		})
 	}
 }) as ThemeOverride;
 

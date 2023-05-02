@@ -6,6 +6,7 @@ import { Badge, Button, HStack, Heading, Icon, Image, SimpleGrid, Text, VStack }
 import Link from "~/components/utils/Link";
 import { getUserGuilds } from "~/components/server/db/models/getUserGuilds";
 import { HiRefresh } from "react-icons/hi";
+import { FiLogOut } from "react-icons/fi";
 
 export type Guild = {
 	id: string;
@@ -97,20 +98,36 @@ export default function Index() {
 						Sadly, you don't manage any servers :(
 					</Heading>
 				)}
-				<refreshGuildsFetcher.Form action="/api/auth/discord/reauthenticate">
+				<HStack>
+					<refreshGuildsFetcher.Form action="/api/auth/discord/reauthenticate">
+						<Button
+							transform={"auto-gpu"}
+							_active={{ scale: 0.9 }}
+							isLoading={refreshGuildsFetcher.state !== "idle"}
+							type="submit"
+							variant={"brand"}
+						>
+							<HStack>
+								<Icon as={HiRefresh} />
+								<Text>Refresh guilds</Text>
+							</HStack>
+						</Button>
+					</refreshGuildsFetcher.Form>
 					<Button
+						as={Link}
+						prefetch="none"
+						to={"/api/auth/logout"}
 						transform={"auto-gpu"}
 						_active={{ scale: 0.9 }}
-						isLoading={refreshGuildsFetcher.state !== "idle"}
-						type="submit"
-						variant={"brand"}
+						variant={"ghost"}
+						color={"red"}
 					>
 						<HStack>
-							<Icon as={HiRefresh} />
-							<Text>Refresh guilds</Text>
+							<Icon as={FiLogOut} />
+							<Text>Logout</Text>
 						</HStack>
 					</Button>
-				</refreshGuildsFetcher.Form>
+				</HStack>
 			</VStack>
 		</VStack>
 	);
