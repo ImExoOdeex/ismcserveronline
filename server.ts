@@ -3,6 +3,7 @@ import compression from "compression";
 import morgan from "morgan";
 import { createRequestHandler } from "@remix-run/express";
 import path from "path";
+import { broadcastDevReady } from "@remix-run/node";
 
 const BUILD_DIR = path.join(process.cwd(), "build");
 
@@ -37,6 +38,11 @@ const port = process.env.PORT || process.env.NODE_ENV === "development" ? 3000 :
 
 app.listen(port, () => {
 	console.log(`Express server listening on port ${port}`);
+
+	if (process.env.NODE_ENV === "development") {
+		const build = require(BUILD_DIR);
+		broadcastDevReady(build);
+	}
 });
 
 function purgeRequireCache() {

@@ -31,7 +31,7 @@ import { type LinksFunction } from "@remix-run/react/dist/routeModules";
 import { getCookieWithoutDocument } from "./components/utils/func/cookiesFunc";
 import { withEmotionCache } from "@emotion/react";
 import { ClientStyleContext, ServerStyleContext } from "./context";
-import { validateServer } from "./components/server/validateServer";
+import { validateServer } from "./components/server/functions/validateServer";
 import Link from "./components/utils/Link";
 import { BiCode, BiHome } from "react-icons/bi";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";

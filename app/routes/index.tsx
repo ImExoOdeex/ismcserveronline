@@ -8,7 +8,7 @@ import BotInfo from "~/components/layout/index/BotInfo";
 import HowToUse from "~/components/layout/index/HowToUse";
 import SampleServers from "~/components/layout/index/SampleServers/SampleServers";
 import { db } from "~/components/server/db/db.server";
-import { validateServer } from "~/components/server/validateServer";
+import { validateServer } from "~/components/server/functions/validateServer";
 import { Ad, adType } from "~/components/ads/Ad";
 import Main from "~/components/layout/index/Main";
 import PopularServers from "../components/layout/index/PopularServers";
