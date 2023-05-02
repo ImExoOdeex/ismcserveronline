@@ -5,9 +5,11 @@ import { useEffect, useRef } from "react";
 import { BiSave } from "react-icons/bi";
 import { HiRefresh } from "react-icons/hi";
 import StatusColor from "~/components/layout/dashboard/StatusColor";
+import { requireUserGuild } from "~/components/server/functions/secureDashboard";
 
-export async function loader({ params }: LoaderArgs) {
+export async function loader({ params, request }: LoaderArgs) {
 	const guildID = params.guildID!;
+	await requireUserGuild(request, guildID);
 
 	const config = await (
 		await fetch(
@@ -27,8 +29,10 @@ export async function loader({ params }: LoaderArgs) {
 }
 
 export async function action({ request, params }: ActionArgs) {
-	const formData = await request.formData();
 	const guildID = params.guildID!;
+	await requireUserGuild(request, guildID);
+
+	const formData = await request.formData();
 
 	const res = await (
 		await fetch(

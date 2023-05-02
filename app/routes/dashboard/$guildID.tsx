@@ -5,12 +5,15 @@ import { useRef, useEffect } from "react";
 import { Button, Heading, HStack, Image, Stack } from "@chakra-ui/react";
 import Link from "~/components/utils/Link";
 import { getUserGuilds } from "~/components/server/db/models/getUserGuilds";
+import { requireUserGuild } from "~/components/server/functions/secureDashboard";
 
 export async function loader({ params, request }: LoaderArgs) {
 	const guildID = params.guildID!;
 	const userGuilds: any = await getUserGuilds(request);
 
 	if (!userGuilds) return redirect("/dashboard");
+
+	await requireUserGuild(request, guildID);
 
 	const guild = await (
 		await fetch(

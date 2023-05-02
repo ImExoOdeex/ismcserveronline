@@ -24,9 +24,11 @@ import { AddIcon, EditIcon } from "@chakra-ui/icons";
 import { HiRefresh } from "react-icons/hi";
 import { BiSave } from "react-icons/bi";
 import LivecheckNumbers from "~/components/layout/dashboard/LivecheckNumbers";
+import { requireUserGuild } from "~/components/server/functions/secureDashboard";
 
 export async function loader({ params, request }: LoaderArgs) {
 	const guildID = params.guildID!;
+	await requireUserGuild(request, guildID);
 
 	const url = new URL(request.url);
 	const number = url.searchParams.get("number") ?? "1";
@@ -60,8 +62,10 @@ export async function loader({ params, request }: LoaderArgs) {
 }
 
 export async function action({ request, params }: ActionArgs) {
-	const formData = await request.formData();
 	const guildID = params.guildID!;
+	await requireUserGuild(request, guildID);
+
+	const formData = await request.formData();
 	const url = new URL(request.url);
 	const number = url.searchParams.get("number") ?? "1";
 

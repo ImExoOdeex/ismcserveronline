@@ -14,12 +14,14 @@ export default function LivecheckNumbers() {
 			{numbers.map((item) => (
 				<Button
 					as={Link}
+					prefetch="render"
 					to={item === 1 ? `` : `?number=${item}`}
 					variant={"ghost"}
 					key={item}
 					p={3}
 					pos={"relative"}
 					_hover={{ borderBottomRadius: item === number ? "none" : "", bg: "alpha", textDecoration: "none" }}
+					transition={"border-bottom-left-radius 0.2s ease-in-out, border-bottom-right-radius 0.2s ease-in-out"}
 				>
 					<Text fontWeight={500} fontSize={"xl"}>
 						{item}
