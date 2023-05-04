@@ -1,10 +1,10 @@
 import { Box, Flex } from "@chakra-ui/react";
-import Header from "./Header/Header";
-import BackgroundUtils from "./BackgroundUtils";
 import loadable from "@loadable/component";
-import { useAdBlock } from "../utils/func/hooks/useAdBlock";
-import Column from "./Column";
 import { Component, type ReactNode } from "react";
+import AdblockDetected from "../ads/AdblockDetected";
+import BackgroundUtils from "./BackgroundUtils";
+import Column from "./Column";
+import Header from "./Header/Header";
 
 const CookieConstent = loadable(() => import("./CookieConsent"), {
 	ssr: false
@@ -15,9 +15,9 @@ const Footer = loadable(() => import("./Footer"), {
 	fallback: <Box minH={"172px"} h="100%" />
 });
 
-const AdblockDetected = loadable(() => import("../ads/AdblockDetected"), {
-	ssr: true
-});
+// const AdblockDetected = loadable(() => import("../ads/AdblockDetected"), {
+// 	ssr: true
+// });
 
 interface ErrorBoundaryProps {
 	children: ReactNode;
@@ -57,12 +57,11 @@ function isLazyLoadError(error: Error): boolean {
 }
 
 export default function Layout({ children }: { children?: React.ReactNode }) {
-	const adBlockDetected = useAdBlock();
-
 	return (
 		<>
 			<BackgroundUtils />
-			{adBlockDetected && <AdblockDetected />}
+			<AdblockDetected />
+
 			<ErrorBoundary>
 				<CookieConstent />
 			</ErrorBoundary>
