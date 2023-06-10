@@ -1,18 +1,18 @@
 import { Divider, VStack } from "@chakra-ui/react";
-import { type ActionArgs, redirect, type MetaFunction, json } from "@remix-run/node";
+import type { LoaderArgs } from "@remix-run/node";
+import { json, redirect, type ActionArgs, type MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
-import type { LoaderArgs } from "@remix-run/node";
-import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
+import { Ad, adType } from "~/components/ads/Ad";
 import BotInfo from "~/components/layout/index/BotInfo";
 import HowToUse from "~/components/layout/index/HowToUse";
+import Main from "~/components/layout/index/Main";
 import SampleServers from "~/components/layout/index/SampleServers/SampleServers";
+import WARWF from "~/components/layout/index/WARWF";
 import { db } from "~/components/server/db/db.server";
 import { validateServer } from "~/components/server/functions/validateServer";
-import { Ad, adType } from "~/components/ads/Ad";
-import Main from "~/components/layout/index/Main";
+import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
 import PopularServers from "../components/layout/index/PopularServers";
-import WARWF from "~/components/layout/index/WARWF";
 
 export async function action({ request }: ActionArgs) {
 	const formData = await request.formData();
@@ -50,13 +50,12 @@ export async function loader({ request }: LoaderArgs) {
 				orderBy: {
 					add_date: "desc"
 				},
-				// get only servers that end dates are below current date or that doesnt have end date
+				// get only servers that end dates are greater than now or null
 				where: {
 					OR: [
 						{
 							end_date: {
-								lt: new Date(),
-								equals: null
+								gte: new Date()
 							}
 						},
 						{
