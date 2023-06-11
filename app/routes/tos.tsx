@@ -24,7 +24,7 @@ export default function Tos() {
 
 	return (
 		<VStack align={"start"} spacing={16} flexDir={"column"} maxW="1200px" mx="auto" w="100%" mt={"75px"} px="4" mb={16}>
-			<Heading as="h1" size="2xl">
+			<Heading as="h2" size="2xl">
 				Terms of Service
 			</Heading>
 			<OrderedList spacing={10} listStylePos={"inside"} marginInlineStart={0}>

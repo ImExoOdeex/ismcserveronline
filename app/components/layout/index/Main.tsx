@@ -1,4 +1,4 @@
-import { Stack, VStack, Heading, chakra, Flex, Text, Image } from "@chakra-ui/react";
+import { Flex, Heading, Image, Stack, Text, VStack, chakra } from "@chakra-ui/react";
 import ServerSearch from "./ServerSearch";
 
 export default function Main({
@@ -15,7 +15,7 @@ export default function Main({
 	return (
 		<Stack spacing={10} direction={{ base: "column", md: "row" }}>
 			<VStack spacing={"50px"} w={{ base: "100%", md: "50%" }} mt={"50px"} flexDir="column">
-				<Heading as={"h1"} fontSize="3xl">
+				<Heading as={"h2"} fontSize="3xl">
 					<chakra.span color={"orange"}>Real</chakra.span>
 					-time
 					<chakra.span color={"green"}> Minecraft </chakra.span>
@@ -24,6 +24,10 @@ export default function Main({
 					and
 					<chakra.span color={"purple.500"}> data </chakra.span>
 					checker
+				</Heading>
+				<Heading hidden as="h1">
+					Real-time Minecraft server status and data checker. Minecraft server status. Minecraft server data. Popular
+					servers
 				</Heading>
 
 				<ServerSearch

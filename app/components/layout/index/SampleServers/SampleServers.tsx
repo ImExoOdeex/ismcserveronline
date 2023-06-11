@@ -1,12 +1,4 @@
-import {
-	Flex,
-	Grid,
-	GridItem,
-	HStack,
-	Heading,
-	Image,
-	Text
-} from "@chakra-ui/react";
+import { Flex, Grid, GridItem, HStack, Heading, Image, Text } from "@chakra-ui/react";
 import { useLoaderData } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 import AddServerPopover from "./AddServerPopover";
@@ -29,15 +21,8 @@ export default function SampleServers({
 	}, [sampleServers]);
 
 	return (
-		<Flex
-			p={5}
-			rounded={"2xl"}
-			bg={"alpha"}
-			w="100%"
-			flexDir={"column"}
-			mt={20}
-		>
-			<Heading as="h1" fontSize={"lg"}>
+		<Flex p={5} rounded={"2xl"} bg={"alpha"} w="100%" flexDir={"column"} mt={20}>
+			<Heading as="h2" fontSize={"lg"}>
 				Just looking? Try out these sample servers!
 			</Heading>
 

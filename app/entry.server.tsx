@@ -30,6 +30,7 @@ export default async function handleRequest(
 		const otherRouteResponse = await handler(request, remixContext);
 		if (otherRouteResponse) return otherRouteResponse;
 	}
+
 	const markup = renderToString(
 		<ServerStyleContext.Provider value={chunks.styles}>
 			<CacheProvider value={cache}>

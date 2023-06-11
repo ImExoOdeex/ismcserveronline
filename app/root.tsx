@@ -1,31 +1,33 @@
 import { ChakraBaseProvider, cookieStorageManagerSSR, localStorageManager, useConst } from "@chakra-ui/react";
-import { type ActionArgs, json, redirect, type LoaderFunction, type MetaFunction } from "@remix-run/node";
+import type { LoaderArgs } from "@remix-run/node";
+import { json, redirect, type ActionArgs } from "@remix-run/node";
 import { useLoaderData, useLocation, useOutlet } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import Layout from "./components/layout/Layout";
-import theme from "./components/utils/theme";
-import { type LinksFunction } from "@remix-run/react/dist/routeModules";
-import { getCookieWithoutDocument } from "./components/utils/func/cookiesFunc";
 import { validateServer } from "./components/server/functions/validateServer";
 import { GlobalContext } from "./components/utils/GlobalContext";
+import { getCookieWithoutDocument } from "./components/utils/func/cookiesFunc";
+import theme from "./components/utils/theme";
 import { Document } from "./document";
 
 // ----------------------------- META -----------------------------
 
-export const meta: MetaFunction = () => ({
-	title: "IsMcServer.online",
-	robots: "all",
-	description: "Check Minecraft server status and data by real-time.",
-	keywords:
-		"Minecraft server check, Server status check, Minecraft server status, Online server status, Minecraft server monitor, Server checker tool, Minecraft server checker, Real-time server status, Minecraft server status checker, Server uptime checker, Minecraft server monitor tool, Minecraft server status monitor, Real-time server monitoring, Server availability checker, Minecraft server uptime checker",
-	charset: "utf-8",
-	viewport: "width=device-width,initial-scale=1",
-	author: ".imexoodeex#0528"
-});
+export function meta() {
+	return {
+		title: "IsMcServer.online",
+		robots: "all",
+		description: "Check Minecraft server status and data by real-time.",
+		keywords:
+			"Minecraft server check, Server status check, Minecraft server status, Online server status, Minecraft server monitor, Server checker tool, Minecraft server checker, Real-time server status, Minecraft server status checker, Server uptime checker, Minecraft server monitor tool, Minecraft server status monitor, Real-time server monitoring, Server availability checker, Minecraft server uptime checker",
+		charset: "utf-8",
+		viewport: "width=device-width,initial-scale=1",
+		author: ".imexoodeex#0528"
+	};
+}
 
 // ----------------------------- LINKS -----------------------------
 
-export const links: LinksFunction = () => {
+export function links() {
 	return [
 		{ rel: "preconnect", href: "https://fonts.googleapis.com" },
 		{
@@ -38,7 +40,7 @@ export const links: LinksFunction = () => {
 			href: "https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&&family=Outfit:wght@700;800;900&display=swap"
 		}
 	];
-};
+}
 
 // ----------------------------- APP -----------------------------
 
@@ -65,7 +67,7 @@ export default function App() {
 								exit={{ opacity: 0 }}
 								transition={{
 									ease: [0.25, 0.1, 0.25, 1],
-									duration: 0.1125
+									duration: 0.1
 								}}
 							>
 								{outlet}
@@ -80,7 +82,7 @@ export default function App() {
 
 // ----------------------------- LOADER -----------------------------
 
-export const loader: LoaderFunction = async ({ request }) => {
+export async function loader({ request }: LoaderArgs) {
 	const url = new URL(request.url);
 	const term = url.searchParams.get(process.env.NO_ADS_PARAM_NAME ?? "nope");
 
@@ -96,7 +98,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 	// ^^^ code for no ads up there uwu ^^^
 
 	return json({ cookies: request.headers.get("cookie") ?? "", showAds });
-};
+}
 
 // ----------------------------- ACTION -----------------------------
 

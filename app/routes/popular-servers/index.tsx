@@ -1,8 +1,8 @@
 import { json } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
+import { useEffect, useRef } from "react";
 import ServerList from "~/components/layout/popularServers/ServerList";
 import { db } from "~/components/server/db/db.server";
-import { useRef, useEffect } from "react";
-import { useLoaderData } from "@remix-run/react";
 
 export async function loader() {
 	const servers = await db.server.findMany({

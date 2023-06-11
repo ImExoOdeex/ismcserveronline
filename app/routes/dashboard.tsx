@@ -1,4 +1,3 @@
-import type { SEOHandle } from "@balavishnuvj/remix-seo";
 import { Divider, Heading, VStack } from "@chakra-ui/react";
 import { redirect, type LoaderArgs } from "@remix-run/node";
 import { useOutlet } from "@remix-run/react";
@@ -47,10 +46,6 @@ export async function loader({ request }: LoaderArgs) {
 
 	return null;
 }
-
-export const handle: SEOHandle = {
-	getSitemapEntries: () => null
-};
 
 export default function Dashboard() {
 	const outlet = useOutlet();

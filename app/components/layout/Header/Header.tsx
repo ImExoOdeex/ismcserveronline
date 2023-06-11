@@ -11,17 +11,17 @@ import {
 	useDisclosure,
 	useEventListener
 } from "@chakra-ui/react";
-import Link from "../../utils/Link";
-import APIButton from "./APIButton";
-import ThemeToggle from "./ToggleTheme";
-import FAQButton from "./FAQButton";
-import InviteButton from "./InviteButton";
-import HamburgerMenu from "./Mobile/HamburgerMenu";
-import { useEffect, useState } from "react";
-import PopularServersButton from "./PopularServersButton";
 import loadable from "@loadable/component";
 import { useLocation } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import Link from "../../utils/Link";
+import APIButton from "./APIButton";
+import FAQButton from "./FAQButton";
+import InviteButton from "./InviteButton";
+import HamburgerMenu from "./Mobile/HamburgerMenu";
+import PopularServersButton from "./PopularServersButton";
+import ThemeToggle from "./ToggleTheme";
 
 const ServerSearch = loadable(() => import(/* webpackPrefetch: true */ "./ServerSearch"), {
 	ssr: true,
@@ -80,7 +80,7 @@ export default function Header() {
 			<Flex w="100%" maxW={"1500px"} px={4} alignItems="center" h="100%" mx="auto" justifyContent={"space-between"}>
 				<HStack spacing={5}>
 					<Link to="/" alignItems={"center"} _hover={{ textDecor: "none" }}>
-						<Heading as={"h1"} fontSize="2xl" transition={"all .2s"} transform={"auto-gpu"} _active={{ scale: 0.95 }}>
+						<Heading fontSize="2xl" transition={"all .2s"} transform={"auto-gpu"} _active={{ scale: 0.95 }}>
 							<HStack spacing={1} alignItems={"baseline"}>
 								<Text>IsMcServer</Text>
 								<Badge

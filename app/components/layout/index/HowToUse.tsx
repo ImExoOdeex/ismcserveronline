@@ -6,7 +6,7 @@ export default function HowToUse() {
 		<VStack spacing={28} width={"100%"} align={"start"} mb={10}>
 			{/* how to use */}
 			<VStack spacing={5} width={"100%"} align={"start"}>
-				<Heading as={"h1"} fontSize={{ base: "3xl", md: "5xl" }} fontWeight={"black"} letterSpacing={"3px"}>
+				<Heading as={"h2"} fontSize={{ base: "3xl", md: "5xl" }} fontWeight={"black"} letterSpacing={"3px"}>
 					How to use this tool?
 				</Heading>
 				<Stack direction={{ base: "column", md: "row" }} spacing={{ base: 5, md: 20 }} alignItems={"center"}>
@@ -25,7 +25,7 @@ export default function HowToUse() {
 			{/* how it works */}
 			<VStack spacing={5} width={"100%"} align={{ base: "start", md: "end" }}>
 				<Heading
-					as={"h1"}
+					as={"h2"}
 					fontSize={{ base: "3xl", md: "5xl" }}
 					fontWeight={"black"}
 					textAlign={{ base: "start", md: "end" }}
@@ -50,7 +50,7 @@ export default function HowToUse() {
 			{/* bot */}
 			<VStack spacing={5} width={"100%"} align={"start"}>
 				<Heading
-					as={"h1"}
+					as={"h2"}
 					fontSize={{ base: "3xl", md: "5xl" }}
 					fontWeight={"black"}
 					textAlign={{ base: "start", md: "end" }}

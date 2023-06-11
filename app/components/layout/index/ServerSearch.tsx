@@ -1,9 +1,9 @@
-import { Flex, FormLabel, HStack, Button, Tooltip, VStack, Spinner, Text, Box } from "@chakra-ui/react";
-import { AnimatePresence, motion } from "framer-motion";
-import { ChakraInput, ChakraBox } from "../MotionComponents";
-import { VersionChangeComp } from "./VersionChangeComp";
-import { useState, useEffect } from "react";
+import { Box, Button, Flex, FormLabel, HStack, Spinner, Text, Tooltip, VStack } from "@chakra-ui/react";
 import { useFetcher } from "@remix-run/react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { ChakraBox, ChakraInput } from "../MotionComponents";
+import { VersionChangeComp } from "./VersionChangeComp";
 
 type Props = {
 	bedrockChecked: boolean;
@@ -36,8 +36,8 @@ export default function ServerSearch({ bedrockChecked, serverValue, setBedrockCh
 		<>
 			<fetcher.Form style={{ width: "100%" }} method="post">
 				<Flex w="100%" flexDir={"column"} minH="104px" h="100%" minW={"100%"}>
-					<FormLabel ml="14px" fontSize={"12px"} color={fetcher?.data ? "red" : "textSec"} fontWeight={400} mb={1.5}>
-						{fetcher?.data ? fetcher.data?.error : "Which server do you want to check?"}
+					<FormLabel ml="14px" fontSize={"14px"} color={fetcher?.data ? "red" : "textSec"} fontWeight={400} mb={1.5}>
+						{fetcher?.data ? fetcher.data?.error : "Which server do you wanna check?"}
 					</FormLabel>
 
 					<Flex pos={"relative"} w={{ base: "100%", sm: "75%" }} flexDir="row" minH={"80px"} h="100%">

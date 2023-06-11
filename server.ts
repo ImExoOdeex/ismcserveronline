@@ -1,16 +1,15 @@
-import express, { type NextFunction, type Request, type Response } from "express";
-import compression from "compression";
-import morgan from "morgan";
 import { createRequestHandler } from "@remix-run/express";
-import path from "path";
 import { broadcastDevReady } from "@remix-run/node";
+import compression from "compression";
+import express from "express";
+import morgan from "morgan";
+import path from "path";
 
 const BUILD_DIR = path.join(process.cwd(), "build");
 
 const app = express();
 app.use(compression());
 
-// http://expressjs.com/en/advanced/best-practice-security.html#at-a-minimum-disable-x-powered-by-header
 app.disable("x-powered-by");
 app.use("/build", express.static("public/build", { immutable: true, maxAge: "1y" }));
 
@@ -21,9 +20,8 @@ app.use(morgan(":req[x-forwarded-for] :method :url :status | :response-time ms")
 app.all(
 	"*",
 	process.env.NODE_ENV === "development"
-		? (req: Request, res: Response, next: NextFunction) => {
+		? (req, res, next) => {
 				purgeRequireCache();
-
 				return createRequestHandler({
 					build: require(BUILD_DIR),
 					mode: process.env.NODE_ENV
@@ -40,8 +38,7 @@ app.listen(port, () => {
 	console.log(`Express server listening on port ${port}`);
 
 	if (process.env.NODE_ENV === "development") {
-		const build = require(BUILD_DIR);
-		broadcastDevReady(build);
+		broadcastDevReady(require(BUILD_DIR));
 	}
 });
 

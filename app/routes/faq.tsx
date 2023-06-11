@@ -1,12 +1,12 @@
 import { Badge, Code, Divider, Heading, Link, Text, VStack } from "@chakra-ui/react";
 import { json, type MetaFunction } from "@remix-run/node";
 import { useLoaderData, useRouteLoaderData } from "@remix-run/react";
+import os from "os";
 import { useEffect, useRef, useState } from "react";
+import { Ad, adType } from "~/components/ads/Ad";
 import SystemInfo from "~/components/layout/faq/SystemInfo";
 import { getCookie, getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
-import os from "os";
 import links from "../components/config/links.json";
-import { Ad, adType } from "~/components/ads/Ad";
 
 export const meta: MetaFunction = () => {
 	return {
@@ -78,7 +78,7 @@ export default function Faq() {
 	return (
 		<VStack maxW={"1200px"} w="100%" align={"start"} mx="auto" px={4} spacing={7} mt={10}>
 			<VStack w="100%" align={"start"}>
-				<Heading as={"h1"} fontSize="lg">
+				<Heading as={"h2"} fontSize="lg">
 					Frequently Asked Questions
 				</Heading>
 				<Divider />

@@ -39,7 +39,7 @@ export default function BotInfo() {
 				align={{ base: "start", md: "center" }}
 			>
 				<VStack align={"start"}>
-					<Heading as={"h1"} fontSize={"4xl"}>
+					<Heading as={"h2"} fontSize={"4xl"}>
 						Discord bot
 					</Heading>
 					<Heading as={"h2"} fontSize={"2xl"}>

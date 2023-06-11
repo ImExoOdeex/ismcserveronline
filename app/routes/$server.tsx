@@ -1,4 +1,3 @@
-import type { SEOHandle } from "@balavishnuvj/remix-seo";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
 	Box,
@@ -29,22 +28,6 @@ import { type MinecraftServerWoQuery } from "~/components/types/minecraftServer"
 import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
 import { context } from "~/components/utils/GlobalContext";
 import Link from "~/components/utils/Link";
-
-export const handle: SEOHandle = {
-	getSitemapEntries: async (request) => {
-		const servers = await db.server.findMany({
-			select: {
-				server: true
-			},
-			take: 200
-		});
-		console.log(servers);
-
-		return servers.map((server) => {
-			return { route: `/${server.server}`, priority: 0.7 };
-		});
-	}
-};
 
 export async function loader({ params, request }: LoaderArgs) {
 	const server = params.server?.toString().toLowerCase();
@@ -134,7 +117,7 @@ export default function $server() {
 	const lastServer = useRef({});
 	const lastData = useRef({});
 	const lastChecks = useRef({});
-	const { server, data, checks } = useLoaderData<typeof loader>() || {
+	const { server, data, checks }: any = useLoaderData<typeof loader>() || {
 		server: lastServer.current,
 		data: lastData.current,
 		checks: lastChecks.current
@@ -249,7 +232,7 @@ export default function $server() {
 				<Divider />
 
 				<VStack spacing={"20px"} align="start" fontWeight={600} w="100%" maxW={"100%"}>
-					<Heading as={"h1"} fontSize="lg">
+					<Heading as={"h2"} fontSize="lg">
 						General info
 					</Heading>
 
@@ -305,7 +288,7 @@ export default function $server() {
 						</TableContainer>
 					</Flex>
 
-					<Heading as={"h1"} fontSize="lg">
+					<Heading as={"h2"} fontSize="lg">
 						Debug info
 					</Heading>
 
@@ -339,7 +322,7 @@ export default function $server() {
 			<Divider />
 
 			<VStack align={"start"} w="100%">
-				<Heading as={"h1"} fontSize="lg">
+				<Heading as={"h2"} fontSize="lg">
 					Last checks
 				</Heading>
 

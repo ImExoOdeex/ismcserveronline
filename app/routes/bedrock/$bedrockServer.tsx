@@ -15,17 +15,17 @@ import {
 	Tr,
 	VStack
 } from "@chakra-ui/react";
-import { fetch, json, type MetaFunction, type LoaderArgs } from "@remix-run/node";
+import { fetch, json, type LoaderArgs, type MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { useEffect, useRef, useContext } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { BiBug, BiInfoCircle } from "react-icons/bi";
 import { getClientIPAddress } from "remix-utils";
 import ChecksTable from "~/components/layout/server/ChecksTable";
+import { db } from "~/components/server/db/db.server";
 import { type BedrockServer } from "~/components/types/minecraftServer";
+import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
 import { context } from "~/components/utils/GlobalContext";
 import Link from "~/components/utils/Link";
-import { db } from "~/components/server/db/db.server";
-import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
 
 export async function loader({ params, request }: LoaderArgs) {
 	const server = params.bedrockServer?.toString().toLowerCase();
@@ -106,7 +106,7 @@ export default function $server() {
 	const lastServer = useRef({});
 	const lastData = useRef({});
 	const lastChecks = useRef({});
-	const { server, data, checks } = useLoaderData<typeof loader>() || {
+	const { server, data, checks }: any = useLoaderData<typeof loader>() || {
 		server: lastServer.current,
 		data: lastData.current,
 		checks: lastChecks.current
@@ -202,7 +202,7 @@ export default function $server() {
 			<Divider />
 
 			<VStack spacing={"30px"} align="start" fontWeight={600} w="100%" maxW={"100%"}>
-				<Heading as={"h1"} fontSize="lg">
+				<Heading as={"h2"} fontSize="lg">
 					General info
 				</Heading>
 
@@ -233,7 +233,7 @@ export default function $server() {
 					</TableContainer>
 				</Flex>
 
-				<Heading as={"h1"} fontSize="lg">
+				<Heading as={"h2"} fontSize="lg">
 					Debug info
 				</Heading>
 
@@ -266,7 +266,7 @@ export default function $server() {
 			<Divider />
 
 			<VStack align={"start"} w="100%">
-				<Heading as={"h1"} fontSize="lg">
+				<Heading as={"h2"} fontSize="lg">
 					Last checks
 				</Heading>
 
