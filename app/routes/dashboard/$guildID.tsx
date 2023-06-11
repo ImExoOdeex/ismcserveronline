@@ -1,11 +1,11 @@
+import { Button, HStack, Heading, Image, Stack } from "@chakra-ui/react";
 import { json, redirect, type LoaderArgs } from "@remix-run/node";
 import { useLoaderData, useLocation, useOutlet } from "@remix-run/react";
+import { useEffect, useRef } from "react";
 import BotNotOnServer from "~/components/layout/dashboard/BotNotOnServer";
-import { useRef, useEffect } from "react";
-import { Button, Heading, HStack, Image, Stack } from "@chakra-ui/react";
-import Link from "~/components/utils/Link";
 import { getUserGuilds } from "~/components/server/db/models/getUserGuilds";
 import { requireUserGuild } from "~/components/server/functions/secureDashboard";
+import Link from "~/components/utils/Link";
 
 export async function loader({ params, request }: LoaderArgs) {
 	const guildID = params.guildID!;
@@ -51,6 +51,17 @@ export default function $guildID() {
 		return <BotNotOnServer />;
 	}
 
+	const links = [
+		{
+			name: "Livecheck",
+			path: `/dashboard/${guild.id}`
+		},
+		{
+			name: "Config",
+			path: `/dashboard/${guild.id}/config`
+		}
+	];
+
 	return (
 		<>
 			<Stack direction={{ base: "column", md: "row" }} spacing={10}>
@@ -65,24 +76,23 @@ export default function $guildID() {
 				</HStack>
 
 				<HStack>
-					<Button
-						_hover={{ textDecoration: "none", bg: "alpha100" }}
-						prefetch="render"
-						as={Link}
-						variant={pathname === `/dashboard/${guild.id}` ? "solid" : "ghost"}
-						to={`/dashboard/${guild.id}`}
-					>
-						Livecheck
-					</Button>
-					<Button
-						_hover={{ textDecoration: "none", bg: "alpha100" }}
-						prefetch="render"
-						as={Link}
-						variant={pathname === `/dashboard/${guild.id}/config` ? "solid" : "ghost"}
-						to={`/dashboard/${guild.id}/config`}
-					>
-						Config
-					</Button>
+					{links.map((link) => (
+						<Button
+							key={link.name}
+							bg={pathname === link.path ? "alpha100" : "transparent"}
+							_hover={{ textDecoration: "none", bg: "alpha" }}
+							_active={{
+								scale: 0.9
+							}}
+							transform={"auto-gpu"}
+							prefetch="render"
+							as={Link}
+							variant={pathname === link.path ? "solid" : "ghost"}
+							to={link.path}
+						>
+							{link.name}
+						</Button>
+					))}
 				</HStack>
 			</Stack>
 			{outlet}

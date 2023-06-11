@@ -1,28 +1,28 @@
-import { type LoaderArgs, json, type ActionArgs } from "@remix-run/node";
+import { AddIcon, EditIcon } from "@chakra-ui/icons";
 import {
+	Box,
 	Button,
+	Code,
+	Divider,
 	FormLabel,
 	HStack,
 	Heading,
 	Icon,
+	Input,
+	Select,
+	Skeleton,
 	Stack,
 	Text,
 	VStack,
-	Code,
-	Input,
-	Select,
-	Box,
 	Wrap,
-	WrapItem,
-	Skeleton,
-	Divider
+	WrapItem
 } from "@chakra-ui/react";
+import { json, type ActionArgs, type LoaderArgs } from "@remix-run/node";
 import { useFetcher, useLoaderData, useRevalidator } from "@remix-run/react";
-import { useRef, useEffect, useState } from "react";
-import { TbTrash } from "react-icons/tb";
-import { AddIcon, EditIcon } from "@chakra-ui/icons";
-import { HiRefresh } from "react-icons/hi";
+import { useEffect, useRef, useState } from "react";
 import { BiSave } from "react-icons/bi";
+import { HiRefresh } from "react-icons/hi";
+import { TbTrash } from "react-icons/tb";
 import LivecheckNumbers from "~/components/layout/dashboard/LivecheckNumbers";
 import { requireUserGuild } from "~/components/server/functions/secureDashboard";
 
@@ -170,6 +170,7 @@ export default function Index() {
 									<FormLabel>Address</FormLabel>
 									{isEditing ? (
 										<Input
+											bg="alpha"
 											minLength={3}
 											maxLength={100}
 											rounded={"xl"}
@@ -189,6 +190,7 @@ export default function Index() {
 									<FormLabel>Edition</FormLabel>
 									{isEditing ? (
 										<Select
+											bg="alpha"
 											h="30px"
 											name="edition"
 											rounded={"xl"}
@@ -217,6 +219,7 @@ export default function Index() {
 								{isEditing ? (
 									<Select
 										h="30px"
+										bg="alpha"
 										name="channel"
 										rounded={"xl"}
 										cursor={"pointer"}
@@ -291,12 +294,13 @@ export default function Index() {
 							>
 								<VStack w="100%" align={"start"} spacing={0}>
 									<FormLabel>Address</FormLabel>
-									<Input name="address" rounded={"xl"} variant={"filled"} min={3} max={100} />
+									<Input bg="alpha" name="address" rounded={"xl"} variant={"filled"} min={3} max={100} />
 								</VStack>
 
 								<VStack w="100%" align={"start"} spacing={0}>
 									<FormLabel>Edition</FormLabel>
 									<Select
+										bg="alpha"
 										name="edition"
 										rounded={"xl"}
 										variant={"filled"}
@@ -316,6 +320,7 @@ export default function Index() {
 							<VStack align={"start"} spacing={0} w={{ base: "100%", md: "lg" }}>
 								<FormLabel>Channel</FormLabel>
 								<Select
+									bg="alpha"
 									name="channel"
 									rounded={"xl"}
 									cursor={"pointer"}
@@ -392,7 +397,13 @@ export default function Index() {
 						</WrapItem>
 						{livecheck && (
 							<WrapItem>
-								<Button onClick={() => setIsEditing(!isEditing)} transform={"auto-gpu"} _active={{ scale: 0.9 }}>
+								<Button
+									onClick={() => setIsEditing(!isEditing)}
+									transform={"auto-gpu"}
+									_active={{ scale: 0.9 }}
+									_hover={{ bg: "alpha200" }}
+									bg="alpha100"
+								>
 									<HStack>
 										<EditIcon />
 										<Text>{isEditing ? "Cancel editing" : "Edit livecheck"}</Text>

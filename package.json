@@ -13,6 +13,7 @@
 		"theme:watch": "chakra-cli tokens app/components/utils/theme.ts --watch"
 	},
 	"dependencies": {
+		"@balavishnuvj/remix-seo": "^1.0.2",
 		"@chakra-ui/icons": "^2.0.13",
 		"@chakra-ui/react": "^2.6.0",
 		"@chakra-ui/react-use-size": "^2.0.9",

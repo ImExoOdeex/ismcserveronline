@@ -1,24 +1,24 @@
 import {
 	Button,
+	Link as ChakraLink,
 	Flex,
+	HStack,
 	Heading,
+	Icon,
+	Image,
+	Stack,
 	Text,
 	VStack,
-	Link as ChakraLink,
-	HStack,
-	Icon,
-	Stack,
-	Image,
 	Wrap,
 	WrapItem
 } from "@chakra-ui/react";
 import { useContext } from "react";
-import { context } from "~/components/utils/GlobalContext";
-import DiscordIcon from "../icons/DiscordIcon";
-import Link from "~/components/utils/Link";
-import links from "../../config/links.json";
 import { AiOutlineDashboard } from "react-icons/ai";
 import { BsFillPeopleFill } from "react-icons/bs";
+import { context } from "~/components/utils/GlobalContext";
+import Link from "~/components/utils/Link";
+import links from "../../config/links.json";
+import DiscordIcon from "../icons/DiscordIcon";
 
 export default function BotInfo() {
 	// const [opened, setOpened] = useState<boolean>(false);
@@ -52,11 +52,13 @@ export default function BotInfo() {
 						<Button
 							as={ChakraLink}
 							href={links.discordServerInvite}
+							target="_blank"
+							bg="alpha100"
 							fontWeight={500}
 							rounded={"xl"}
 							alignItems={"center"}
 							transform={"auto-gpu"}
-							_hover={{ textDecoration: "none", bg: "alpha100" }}
+							_hover={{ textDecoration: "none", bg: "alpha200" }}
 							_active={{ scale: 0.9, bg: "alpha200" }}
 							variant={"solid"}
 						>
@@ -70,6 +72,7 @@ export default function BotInfo() {
 						<Button
 							as={ChakraLink}
 							href={links.discordBotInvite}
+							target="_blank"
 							fontWeight={500}
 							bg="discord.100"
 							rounded={"xl"}
@@ -97,6 +100,7 @@ export default function BotInfo() {
 						<Button
 							as={ChakraLink}
 							href={"https://top.gg/bot/1043569248427061380/vote"}
+							target="_blank"
 							fontWeight={500}
 							rounded={"xl"}
 							alignItems={"center"}

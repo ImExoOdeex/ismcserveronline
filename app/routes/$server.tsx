@@ -1,3 +1,4 @@
+import type { SEOHandle } from "@balavishnuvj/remix-seo";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
 	Box,
@@ -16,20 +17,36 @@ import {
 	Tr,
 	VStack
 } from "@chakra-ui/react";
-import { fetch, type MetaFunction, type LoaderArgs, json } from "@remix-run/node";
+import { fetch, json, type LoaderArgs, type MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { useEffect, useRef, useContext } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { BiBug, BiInfoCircle } from "react-icons/bi";
 import { getClientIPAddress } from "remix-utils";
 import { Ad, adType } from "~/components/ads/Ad";
 import ChecksTable from "~/components/layout/server/ChecksTable";
+import { db } from "~/components/server/db/db.server";
 import { type MinecraftServerWoQuery } from "~/components/types/minecraftServer";
+import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
 import { context } from "~/components/utils/GlobalContext";
 import Link from "~/components/utils/Link";
-import { db } from "~/components/server/db/db.server";
-import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
 
-export async function loader({ params, request, context }: LoaderArgs) {
+export const handle: SEOHandle = {
+	getSitemapEntries: async (request) => {
+		const servers = await db.server.findMany({
+			select: {
+				server: true
+			},
+			take: 200
+		});
+		console.log(servers);
+
+		return servers.map((server) => {
+			return { route: `/${server.server}`, priority: 0.7 };
+		});
+	}
+};
+
+export async function loader({ params, request }: LoaderArgs) {
 	const server = params.server?.toString().toLowerCase();
 	if (!server?.includes("."))
 		throw new Response("Not found", {

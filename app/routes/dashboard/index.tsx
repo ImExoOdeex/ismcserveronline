@@ -1,12 +1,12 @@
-import { redirect, type LoaderArgs, json } from "@remix-run/node";
-import { useFetcher, useLoaderData } from "@remix-run/react";
-import { useRef, useEffect } from "react";
-import { getUser } from "~/components/server/db/models/getUser";
 import { Badge, Button, HStack, Heading, Icon, Image, SimpleGrid, Text, VStack } from "@chakra-ui/react";
-import Link from "~/components/utils/Link";
-import { getUserGuilds } from "~/components/server/db/models/getUserGuilds";
-import { HiRefresh } from "react-icons/hi";
+import { json, redirect, type LoaderArgs } from "@remix-run/node";
+import { useFetcher, useLoaderData } from "@remix-run/react";
+import { useEffect, useRef } from "react";
 import { FiLogOut } from "react-icons/fi";
+import { HiRefresh } from "react-icons/hi";
+import { getUser } from "~/components/server/db/models/getUser";
+import { getUserGuilds } from "~/components/server/db/models/getUserGuilds";
+import Link from "~/components/utils/Link";
 
 export type Guild = {
 	id: string;
@@ -118,6 +118,10 @@ export default function Index() {
 						prefetch="none"
 						to={"/api/auth/logout"}
 						transform={"auto-gpu"}
+						_hover={{
+							bg: "alpha",
+							textDecor: "none"
+						}}
 						_active={{ scale: 0.9 }}
 						variant={"ghost"}
 						color={"red"}

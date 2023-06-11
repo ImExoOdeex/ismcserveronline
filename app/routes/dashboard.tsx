@@ -1,9 +1,10 @@
+import type { SEOHandle } from "@balavishnuvj/remix-seo";
+import { Divider, Heading, VStack } from "@chakra-ui/react";
 import { redirect, type LoaderArgs } from "@remix-run/node";
 import { useOutlet } from "@remix-run/react";
 import { getUser } from "~/components/server/db/models/getUser";
-import { Divider, Heading, VStack } from "@chakra-ui/react";
-import Link from "~/components/utils/Link";
 import { commitSession, getSession } from "~/components/server/session.server";
+import Link from "~/components/utils/Link";
 
 export async function loader({ request }: LoaderArgs) {
 	const user = await getUser(request);
@@ -46,6 +47,10 @@ export async function loader({ request }: LoaderArgs) {
 
 	return null;
 }
+
+export const handle: SEOHandle = {
+	getSitemapEntries: () => null
+};
 
 export default function Dashboard() {
 	const outlet = useOutlet();
