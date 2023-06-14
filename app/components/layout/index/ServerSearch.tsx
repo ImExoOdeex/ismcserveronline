@@ -1,8 +1,7 @@
-import { Box, Button, Flex, FormLabel, HStack, Spinner, Text, Tooltip, VStack } from "@chakra-ui/react";
+import { Button, Flex, FormLabel, HStack, Input, Spinner, Text, Tooltip, VisuallyHiddenInput, VStack } from "@chakra-ui/react";
 import { useFetcher } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { ChakraBox, ChakraInput } from "../MotionComponents";
+import { useEffect, useRef, useState } from "react";
 import { VersionChangeComp } from "./VersionChangeComp";
 
 type Props = {
@@ -10,32 +9,38 @@ type Props = {
 	setBedrockChecked: (v: boolean) => void;
 	serverValue: string;
 	setServerValue: (v: string) => void;
+	loaderQuery: boolean;
 };
 
-export default function ServerSearch({ bedrockChecked, serverValue, setBedrockChecked, setServerValue }: Props) {
+export default function ServerSearch({ bedrockChecked, serverValue, setBedrockChecked, setServerValue, loaderQuery }: Props) {
 	const fetcher = useFetcher();
 
-	const [searching, setSearching] = useState<boolean>(false);
+	const [query, setQuery] = useState<boolean>(loaderQuery);
+
+	const initial = useRef(true);
 
 	useEffect(() => {
+		if (initial.current) {
+			initial.current = false;
+			return;
+		}
 		document.cookie = `bedrock=${bedrockChecked}`;
 	}, [bedrockChecked]);
 
-	const variants = {
-		closed: {
-			width: "100%"
-		},
-		open: {
-			width: "70%"
+	useEffect(() => {
+		if (initial.current) {
+			initial.current = false;
+			return;
 		}
-	};
+		document.cookie = `query=${query ? "true" : "false"}`;
+	}, [query]);
 
 	const submitting = fetcher.state !== "idle";
 
 	return (
 		<>
 			<fetcher.Form style={{ width: "100%" }} method="post">
-				<Flex w="100%" flexDir={"column"} minH="104px" h="100%" minW={"100%"}>
+				<Flex w="100%" flexDir={"column"} minH="115px" h="100%" minW={"100%"}>
 					<FormLabel ml="14px" fontSize={"14px"} color={fetcher?.data ? "red" : "textSec"} fontWeight={400} mb={1.5}>
 						{fetcher?.data ? fetcher.data?.error : "Which server do you wanna check?"}
 					</FormLabel>
@@ -53,55 +58,60 @@ export default function ServerSearch({ bedrockChecked, serverValue, setBedrockCh
 									animate={{ opacity: 1, y: 0 }}
 									exit={{ opacity: 0, y: "25%" }}
 								>
-									<Flex flexDir={"column"} w="100%">
-										<ChakraInput
-											rounded={"2xl"}
-											placeholder="Hypixel.net"
-											name="server"
-											pl="14px"
-											w="100%"
-											onFocus={() => setSearching(true)}
-											onBlur={() => setSearching(false)}
-											onChange={(e) => setServerValue(e.currentTarget.value)}
-											value={serverValue}
-											bg="alpha100"
-											color="textSec"
-											fontWeight={500}
-											borderBottomRadius={0}
-											_focus={{
-												outlineWidth: "2px",
-												outlineColor: "text",
-												outlineOffset: "-2px"
-											}}
-											outline={"none"}
-											h={"40px"}
-											variants={variants}
-											animate={searching || serverValue?.length ? "open" : "closed"}
-											// @ts-ignore
-											transition={{
-												duration: 0.2,
-												ease: [0.25, 0.1, 0.25, 1]
-											}}
-										/>
+									<Flex flexDir={"column"} w="100%" gap={2}>
+										<Flex alignItems={"center"} flexDir={"row"} gap={2} borderBottomRadius={"2xl"} w="100%">
+											<Input
+												variant={"filled"}
+												placeholder="Hypixel.net"
+												name="server"
+												pl="14px"
+												w="100%"
+												border={"none"}
+												rounded={"xl"}
+												maxW={"340px"}
+												onChange={(e) => setServerValue(e.currentTarget.value)}
+												value={serverValue}
+												bg="alpha"
+												color="textSec"
+												fontWeight={500}
+												_focus={{
+													outlineWidth: "2px",
+													outlineColor: "text",
+													outlineOffset: "-2px",
+													border: 0
+												}}
+												outline={"none"}
+												h={"40px"}
+											/>
 
-										<ChakraBox
+											<Tooltip
+												hasArrow
+												label={`Please Enter valid server address`}
+												isDisabled={serverValue?.includes(".")}
+											>
+												<Button
+													variant="brand"
+													type="submit"
+													w="35%"
+													isDisabled={!serverValue?.includes(".")}
+													minW="115px"
+												>
+													<Text px={2}>Search</Text>
+												</Button>
+											</Tooltip>
+										</Flex>
+
+										<Flex
+											alignItems={"center"}
+											flexDir={"row"}
+											gap={2}
 											borderBottomRadius={"2xl"}
 											h="40px"
-											bg="alpha"
 											outlineOffset={"2px"}
 											outlineColor={"inv"}
 											w="100%"
-											pos={"relative"}
-											variants={variants}
-											zIndex={0}
-											animate={searching || serverValue?.length ? "open" : "closed"}
-											// @ts-ignore
-											transition={{
-												duration: 0.2,
-												ease: [0.25, 0.1, 0.25, 1]
-											}}
 										>
-											<HStack w="100%" h="100%">
+											<HStack w="100%" maxW={"340px"} h="100%" bg="alpha" rounded={"2xl"}>
 												<Button
 													w="50%"
 													variant={"unstyled"}
@@ -135,50 +145,32 @@ export default function ServerSearch({ bedrockChecked, serverValue, setBedrockCh
 													{bedrockChecked && <VersionChangeComp />}
 												</Button>
 											</HStack>
-										</ChakraBox>
+
+											<Button
+												variant={"solid"}
+												h="100%"
+												onClick={() => setQuery(!query)}
+												bg={query ? "green.600" : "alpha"}
+												color={query ? "white" : "text"}
+												w="35%"
+												_hover={{
+													bg: query ? "green.700" : "alpha100"
+												}}
+												_active={{
+													bg: query ? "green.800" : "alpha200"
+												}}
+												minW="115px"
+												isDisabled={bedrockChecked}
+											>
+												Use Query
+											</Button>
+
+											<VisuallyHiddenInput name="query" value={query ? "true" : "false"} />
+										</Flex>
 									</Flex>
 								</motion.div>
 							)}
 						</AnimatePresence>
-
-						<Box pos={"absolute"} right={{ base: -1, md: 2 }} top={0} bottom={0}>
-							<AnimatePresence mode="wait">
-								{(searching || serverValue?.length) && !submitting && (
-									<motion.div
-										style={{ width: "100%" }}
-										transition={{
-											duration: 0.3,
-											ease: [0.25, 0.1, 0.25, 1]
-										}}
-										initial={{ opacity: 0, x: 80 }}
-										animate={{ opacity: 1, x: 0 }}
-										exit={{
-											opacity: 0,
-											x: !submitting ? 0 : 80,
-											transition: {
-												duration: 0.15
-											}
-										}}
-									>
-										<Tooltip
-											hasArrow
-											label={`Please Enter valid server address`}
-											isDisabled={serverValue?.includes(".")}
-										>
-											<Button
-												rounded={"2xl"}
-												variant="brand"
-												type="submit"
-												w="100%"
-												disabled={!serverValue?.includes(".")}
-											>
-												<Text px={2}>Search</Text>
-											</Button>
-										</Tooltip>
-									</motion.div>
-								)}
-							</AnimatePresence>
-						</Box>
 
 						<AnimatePresence mode="wait">
 							{submitting && (

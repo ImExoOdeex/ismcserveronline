@@ -1,12 +1,14 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
 	Box,
+	Button,
 	Divider,
 	Flex,
 	Heading,
 	HStack,
 	Icon,
 	Image,
+	Spinner,
 	Stack,
 	Table,
 	TableContainer,
@@ -16,8 +18,9 @@ import {
 	Tr,
 	VStack
 } from "@chakra-ui/react";
-import { fetch, json, type LoaderArgs, type MetaFunction } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import type { ActionArgs } from "@remix-run/node";
+import { fetch, json, redirect, type LoaderArgs, type MetaFunction } from "@remix-run/node";
+import { useFetcher, useLoaderData } from "@remix-run/react";
 import { useContext, useEffect, useRef } from "react";
 import { BiBug, BiInfoCircle } from "react-icons/bi";
 import { getClientIPAddress } from "remix-utils";
@@ -28,6 +31,10 @@ import { type MinecraftServerWoQuery } from "~/components/types/minecraftServer"
 import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
 import { context } from "~/components/utils/GlobalContext";
 import Link from "~/components/utils/Link";
+
+export async function action(_: ActionArgs) {
+	return redirect(`?query`);
+}
 
 export async function loader({ params, request }: LoaderArgs) {
 	const server = params.server?.toString().toLowerCase();
@@ -44,8 +51,12 @@ export async function loader({ params, request }: LoaderArgs) {
 
 	if (!process.env.API_TOKEN) throw new Error("API_TOKEN is not definied!");
 
+	const url = new URL(request.url);
+	const c = url.searchParams.get("page") || 0;
+	const query = url.searchParams.get("query") === "";
+
 	const data: any = await (
-		await fetch(`https://api.ismcserver.online/${server}`, {
+		await fetch(`http://localhost:3004/${query ? "query/" : ""}${server}`, {
 			method: "get",
 			headers: [["Authorization", process.env.API_TOKEN]]
 		})
@@ -79,9 +90,6 @@ export async function loader({ params, request }: LoaderArgs) {
 		});
 	}
 
-	const url = new URL(request.url);
-	const c = url.searchParams.get("page") || 0;
-
 	const checks = await db.check.findMany({
 		where: {
 			server: {
@@ -104,7 +112,7 @@ export async function loader({ params, request }: LoaderArgs) {
 		skip: Number(c) || 0
 	});
 
-	return json({ server, data, checks });
+	return json({ server, data, checks, query });
 }
 
 export const meta: MetaFunction = ({ data }: { data: { server: string; data: MinecraftServerWoQuery } }) => {
@@ -117,16 +125,19 @@ export default function $server() {
 	const lastServer = useRef({});
 	const lastData = useRef({});
 	const lastChecks = useRef({});
-	const { server, data, checks }: any = useLoaderData<typeof loader>() || {
+	const lastQuery = useRef({});
+	const { server, data, checks, query }: any = useLoaderData<typeof loader>() || {
 		server: lastServer.current,
 		data: lastData.current,
-		checks: lastChecks.current
+		checks: lastChecks.current,
+		query: lastQuery.current
 	};
 	useEffect(() => {
 		if (server) lastServer.current = server;
 		if (data) lastData.current = data;
 		if (checks) lastChecks.current = checks;
-	}, [server, data, checks]);
+		if (query) lastQuery.current = query;
+	}, [server, data, checks, query]);
 
 	const bgImageColor = "rgba(0,0,0,.7)";
 
@@ -135,6 +146,9 @@ export default function $server() {
 		updateData("gradientColor", data.online ? "green" : "red");
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
+
+	const fetcher = useFetcher();
+	const busy = fetcher.state !== "idle";
 
 	return (
 		<VStack spacing={"40px"} align="start" maxW="1000px" mx="auto" w="100%" mt={"50px"} px={4} mb={5}>
@@ -250,6 +264,14 @@ export default function $server() {
 										<Td>Version</Td>
 										<Td fontWeight={"normal"}>{data.version?.string}</Td>
 									</Tr>
+									{query && (
+										<Tr>
+											<Td>Map</Td>
+											<Td fontWeight={"normal"} color={data?.map ? "text" : "textSec"}>
+												{data?.map ? data.map : "Unable to get"}
+											</Td>
+										</Tr>
+									)}
 									<Tr>
 										<Td>Ping</Td>
 										<Td fontWeight={"normal"} fontFamily={"mono"}>
@@ -283,6 +305,26 @@ export default function $server() {
 											</Td>
 										)}
 									</Tr>
+									{query && (
+										<Tr>
+											<Td>Plugins</Td>
+											{data.plugins?.length ? (
+												<>
+													{data.plugins.map((p: string) => {
+														return (
+															<Td fontWeight={"normal"} key={p}>
+																{p}
+															</Td>
+														);
+													})}
+												</>
+											) : (
+												<Td fontWeight={"normal"} color={"textSec"}>
+													Unable to get
+												</Td>
+											)}
+										</Tr>
+									)}
 								</Tbody>
 							</Table>
 						</TableContainer>
@@ -300,6 +342,14 @@ export default function $server() {
 										<Td>Host</Td>
 										<Td fontWeight={"normal"}>{data.host}</Td>
 									</Tr>
+									{query && (
+										<Tr>
+											<Td>IP</Td>
+											<Td fontWeight={"normal"} color={data?.ip ? "text" : "textSec"}>
+												{data?.ip ? data.ip : "Unable to get"}
+											</Td>
+										</Tr>
+									)}
 									<Tr>
 										<Td>Port</Td>
 										<Td fontWeight={"normal"}>{data.port}</Td>
@@ -316,6 +366,25 @@ export default function $server() {
 							</Table>
 						</TableContainer>
 					</Flex>
+
+					{!query && (
+						<fetcher.Form method="post">
+							<Text color="textSec" fontWeight={400}>
+								Misleading information?{" "}
+								<Button
+									variant={"unstyled"}
+									type="submit"
+									fontWeight={500}
+									textDecor="underline"
+									color={"sec"}
+									h="min-content"
+								>
+									Try searching with Query!
+								</Button>
+								{busy && <Spinner color="sec" size={"xs"} ml={2} />}
+							</Text>
+						</fetcher.Form>
+					)}
 				</VStack>
 			</>
 

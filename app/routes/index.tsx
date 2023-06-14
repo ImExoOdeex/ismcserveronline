@@ -16,7 +16,8 @@ import PopularServers from "../components/layout/index/PopularServers";
 
 export async function action({ request }: ActionArgs) {
 	const formData = await request.formData();
-	const bedrock = getCookieWithoutDocument("bedrock", request.headers.get("cookie") ?? "") === "true" ? true : false;
+	const bedrock = getCookieWithoutDocument("bedrock", request.headers.get("cookie") ?? "") === "true";
+	const query = getCookieWithoutDocument("query", request.headers.get("cookie") ?? "") === "true";
 	const server = formData.get("server")?.toString().toLowerCase();
 
 	if (!server) {
@@ -26,7 +27,7 @@ export async function action({ request }: ActionArgs) {
 	const error = validateServer(server);
 	if (error) return json({ error });
 
-	return redirect(`/${bedrock ? "bedrock/" : ""}${server}`);
+	return redirect(`/${bedrock ? "bedrock/" : ""}${server}${query && !bedrock ? "?query" : ""}`);
 }
 
 export const meta: MetaFunction = () => {
@@ -37,7 +38,8 @@ export const meta: MetaFunction = () => {
 
 export async function loader({ request }: LoaderArgs) {
 	const cookies = request.headers.get("Cookie");
-	const bedrock = getCookieWithoutDocument("bedrock", cookies ?? "");
+	const bedrock = getCookieWithoutDocument("bedrock", cookies ?? "") === "true";
+	const query = getCookieWithoutDocument("query", cookies ?? "") === "true";
 
 	const sampleServers = await new Promise((resolve) => {
 		resolve(
@@ -69,22 +71,25 @@ export async function loader({ request }: LoaderArgs) {
 		);
 	});
 
-	return json({ bedrock: bedrock == "true" ? true : false, sampleServers });
+	return json({ bedrock, query, sampleServers });
 }
 
 export default function Index() {
 	const lastBedrock = useRef({});
 	const lastSampleServers = useRef({});
+	const lastQuery = useRef({});
 
-	const { bedrock, sampleServers } = useLoaderData() ?? {
+	const { bedrock, sampleServers, query } = useLoaderData() ?? {
 		bedrock: lastBedrock.current,
-		sampleServers: lastSampleServers.current
+		sampleServers: lastSampleServers.current,
+		query: lastQuery.current
 	};
 
 	useEffect(() => {
 		if (bedrock) lastBedrock.current = bedrock;
 		if (sampleServers) lastSampleServers.current = sampleServers;
-	}, [bedrock, sampleServers]);
+		if (query) lastQuery.current = query;
+	}, [bedrock, sampleServers, query]);
 
 	const [bedrockChecked, setBedrockChecked] = useState<boolean>(bedrock ? bedrock : false);
 	const [serverValue, setServerValue] = useState<string>("");
@@ -93,6 +98,7 @@ export default function Index() {
 		<VStack flexDir={"column"} maxW="1200px" mx="auto" w="100%" mt={"75px"} mb={10} px="4" spacing={14}>
 			<Main
 				bedrockChecked={bedrockChecked}
+				query={query}
 				serverValue={serverValue}
 				setBedrockChecked={setBedrockChecked}
 				setServerValue={setServerValue}

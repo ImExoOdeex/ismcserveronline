@@ -1,6 +1,6 @@
 import { Box, Flex, Heading, Text, VStack } from "@chakra-ui/react";
-import { type Prisma } from "@prisma/client";
 import loadable from "@loadable/component";
+import { type Prisma } from "@prisma/client";
 import { Ad, adType } from "~/components/ads/Ad";
 import ServerItem from "./ServerItem";
 
@@ -14,7 +14,7 @@ export type ServerItemData = { id: number; server: string; icon: string | null; 
 export default function ServerList({ servers, count, page = 1 }: { servers: ServerItemData[]; count: number; page?: number }) {
 	return (
 		<VStack spacing={5} w="100%" align={"start"} pb={5}>
-			<Text fontSize={"xs"}>Click on any server to view details!</Text>
+			<Text fontSize={"sm"}>Click on any server to view details!</Text>
 			<Flex flexDir={"row"} justifyContent={"space-between"} alignItems={"center"} w="100%">
 				<Heading fontSize={"sm"}>Page {page}</Heading>
 				<Heading fontSize={"sm"}>

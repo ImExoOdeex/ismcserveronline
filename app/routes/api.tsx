@@ -1,10 +1,11 @@
+import { CheckIcon, CopyIcon } from "@chakra-ui/icons";
 import {
 	Badge,
 	Box,
 	Code,
 	Flex,
-	HStack,
 	Heading,
+	HStack,
 	Icon,
 	Link,
 	ListItem,
@@ -12,19 +13,18 @@ import {
 	Stack,
 	Text,
 	Tooltip,
-	VStack,
 	useClipboard,
-	useColorModeValue
+	useColorModeValue,
+	VStack
 } from "@chakra-ui/react";
-import { type MetaFunction, json } from "@remix-run/node";
+import { json, type MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import crypto from "crypto";
 import { useEffect, useRef } from "react";
-import links from "../components/config/links.json";
-import DiscordIcon from "~/components/layout/icons/DiscordIcon";
-import { CheckIcon, CopyIcon } from "@chakra-ui/icons";
-import { type MinecraftServerWoQuery } from "~/components/types/minecraftServer";
 import { Ad, adType } from "~/components/ads/Ad";
+import DiscordIcon from "~/components/layout/icons/DiscordIcon";
+import { type MinecraftServerWoQuery } from "~/components/types/minecraftServer";
+import links from "../components/config/links.json";
 
 export const meta: MetaFunction = () => {
 	return {
@@ -134,7 +134,7 @@ export default function Api() {
 											</Text>
 										</Flex>
 									</Tooltip>
-									<Text fontSize={"10px"} opacity={0.7} fontWeight={100}>
+									<Text fontSize={"12px"} opacity={0.7} fontWeight={100}>
 										Sample token*
 									</Text>
 								</Flex>

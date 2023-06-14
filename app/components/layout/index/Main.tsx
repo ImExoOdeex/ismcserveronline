@@ -1,20 +1,22 @@
-import { Flex, Heading, Image, Stack, Text, VStack, chakra } from "@chakra-ui/react";
+import { chakra, Flex, Heading, Image, Stack, Text, VStack } from "@chakra-ui/react";
 import ServerSearch from "./ServerSearch";
 
 export default function Main({
 	bedrockChecked,
 	serverValue,
 	setBedrockChecked,
+	query,
 	setServerValue
 }: {
 	bedrockChecked: boolean;
 	serverValue: string;
+	query: boolean;
 	setBedrockChecked: (e: boolean) => void;
 	setServerValue: (e: string) => void;
 }) {
 	return (
 		<Stack spacing={10} direction={{ base: "column", md: "row" }}>
-			<VStack spacing={"50px"} w={{ base: "100%", md: "50%" }} mt={"50px"} flexDir="column">
+			<VStack spacing={"50px"} w={{ base: "100%", md: "50%" }} mt={"50px"}>
 				<Heading as={"h2"} fontSize="3xl">
 					<chakra.span color={"orange"}>Real</chakra.span>
 					-time
@@ -35,6 +37,7 @@ export default function Main({
 					serverValue={serverValue}
 					setBedrockChecked={setBedrockChecked}
 					setServerValue={setServerValue}
+					loaderQuery={query}
 				/>
 
 				<Text fontWeight={600} color="textSec" maxW={"423px"} alignSelf="start">

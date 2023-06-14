@@ -15,7 +15,6 @@ export function VersionChangeComp() {
 			display="inline-flex"
 			// @ts-ignore
 			transition={{ ease: [0.25, 0.1, 0.25, 1] }}
-			borderTopRadius={0}
 			bottom={0}
 			bg="invNormal"
 		></ChakraBox>
