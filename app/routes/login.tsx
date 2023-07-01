@@ -1,10 +1,9 @@
 import { Button, Flex, Heading, HStack, Text, VStack } from "@chakra-ui/react";
+import { json, redirect, type LoaderArgs } from "@remix-run/node";
+import { useFetcher, useLoaderData } from "@remix-run/react";
+import { useEffect, useRef } from "react";
 import DiscordIcon from "~/components/layout/icons/DiscordIcon";
-import Link from "~/components/utils/Link";
-import { redirect, type LoaderArgs, json } from "@remix-run/node";
 import { authenticator } from "~/components/server/auth/authenticator.server";
-import { useLoaderData } from "@remix-run/react";
-import { useRef, useEffect } from "react";
 
 export async function loader({ request }: LoaderArgs) {
 	const auth = await authenticator.isAuthenticated(request);
@@ -26,6 +25,8 @@ export default function Login() {
 		if (failed) lastFailed.current = failed;
 	}, [failed]);
 
+	const fetcher = useFetcher();
+
 	return (
 		<Flex w="100%" h="100%" justifyContent={"center"} minH={"calc(100vh - 128px)"} alignItems="center" px={4}>
 			<VStack spacing={5} maxW={"450px"} w="100%" mx="auto">
@@ -37,26 +38,27 @@ export default function Login() {
 				</Text>
 
 				<VStack align={"start"} w="100%">
-					<Button
-						prefetch="none"
-						as={Link}
-						to={`/api/auth/discord`}
-						w="100%"
-						bg={"#5865F2"}
-						color={"white"}
-						border=".5px solid"
-						colorScheme="brand"
-						borderColor={"alpha200"}
-						_hover={{
-							bg: "#6a58f2",
-							textDecor: "none"
-						}}
-					>
-						<HStack spacing={3} alignItems="center">
-							<DiscordIcon />
-							<Text fontWeight={"semibold"}>Login with Discord</Text>
-						</HStack>
-					</Button>
+					<fetcher.Form method="post" action="/api/auth/discord" style={{ width: "100%" }}>
+						<Button
+							type="submit"
+							isLoading={fetcher.state !== "idle"}
+							w="100%"
+							bg={"#5865F2"}
+							color={"white"}
+							border=".5px solid"
+							colorScheme="brand"
+							borderColor={"alpha200"}
+							_hover={{
+								bg: "#6a58f2",
+								textDecor: "none"
+							}}
+						>
+							<HStack spacing={3} alignItems="center">
+								<DiscordIcon />
+								<Text fontWeight={"semibold"}>Login with Discord</Text>
+							</HStack>
+						</Button>
+					</fetcher.Form>
 					<Text fontSize={"xs"} fontWeight={"thin"} opacity={0.9}>
 						We do not store your access token.
 					</Text>

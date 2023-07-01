@@ -65,7 +65,7 @@ export default function Dashboard() {
 			photo: string | null;
 			bio: string | null;
 		};
-	} = useTypedLoaderData<any>();
+	} = useTypedLoaderData<any>() || { user: lastUser.current };
 	useEffect(() => {
 		if (user) lastUser.current = user;
 	}, [user]);
