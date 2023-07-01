@@ -8,6 +8,6 @@ module.exports = {
 	future: {
 		v2_routeConvention: false,
 		v2_meta: false,
-		unstable_dev: true
+		v2_dev: true
 	}
 };

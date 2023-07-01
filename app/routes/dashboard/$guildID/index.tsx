@@ -5,11 +5,10 @@ import {
 	Code,
 	Divider,
 	FormLabel,
-	HStack,
 	Heading,
+	HStack,
 	Icon,
 	Input,
-	Select,
 	Skeleton,
 	Stack,
 	Text,
@@ -18,11 +17,14 @@ import {
 	WrapItem
 } from "@chakra-ui/react";
 import { json, type ActionArgs, type LoaderArgs } from "@remix-run/node";
-import { useFetcher, useLoaderData, useRevalidator } from "@remix-run/react";
+import { useFetcher, useRevalidator } from "@remix-run/react";
+import { Select } from "chakra-react-select";
 import { useEffect, useRef, useState } from "react";
 import { BiSave } from "react-icons/bi";
 import { HiRefresh } from "react-icons/hi";
 import { TbTrash } from "react-icons/tb";
+import { typedjson } from "remix-typedjson";
+import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import LivecheckNumbers from "~/components/layout/dashboard/LivecheckNumbers";
 import { requireUserGuild } from "~/components/server/functions/secureDashboard";
 
@@ -58,7 +60,7 @@ export async function loader({ params, request }: LoaderArgs) {
 		).then((res) => res.json())
 	]);
 
-	return json({ livecheck, channels });
+	return typedjson({ livecheck, channels });
 }
 
 export async function action({ request, params }: ActionArgs) {
@@ -72,8 +74,8 @@ export async function action({ request, params }: ActionArgs) {
 	const edition = formData.get("edition");
 	if (edition) {
 		if (
-			formData.get("address")!?.length < 3 ||
-			formData.get("address")!?.length > 100 ||
+			formData.get("address")!.toString()!.length < 3 ||
+			formData.get("address")!.toString()!.length > 100 ||
 			!formData.get("address")!.toString().includes(".")
 		) {
 			return json(
@@ -105,7 +107,7 @@ export async function action({ request, params }: ActionArgs) {
 export default function Index() {
 	const lastLivecheck = useRef(null);
 	const lastChannels = useRef([]);
-	const { livecheck, channels } = useLoaderData<typeof loader>() || {
+	const { livecheck, channels } = useTypedLoaderData<typeof loader>() || {
 		livecheck: lastLivecheck.current,
 		channels: lastChannels.current
 	};
@@ -168,44 +170,97 @@ export default function Index() {
 							>
 								<VStack w="100%" align={"start"} spacing={0}>
 									<FormLabel>Address</FormLabel>
-									{isEditing ? (
-										<Input
-											bg="alpha"
-											minLength={3}
-											maxLength={100}
-											rounded={"xl"}
-											variant={"filled"}
-											name="address"
-											h="30px"
-											defaultValue={livecheck.address}
-										/>
-									) : (
-										<Text fontWeight={600} fontSize={"xl"}>
-											{livecheck.address}
-										</Text>
-									)}
+									<Box pos="relative" h="100%" w="100%">
+										{isEditing ? (
+											<Input
+												pos={"absolute"}
+												borderColor={"alpha200"}
+												top={0}
+												left={0}
+												w={"100%"}
+												minLength={3}
+												maxLength={100}
+												variant={"flushed"}
+												name="address"
+												defaultValue={livecheck.address}
+											/>
+										) : (
+											<Text fontWeight={600} fontSize={"xl"}>
+												{livecheck.address}
+											</Text>
+										)}
+									</Box>
 								</VStack>
 
 								<VStack w="100%" align={"start"} spacing={0}>
 									<FormLabel>Edition</FormLabel>
 									{isEditing ? (
 										<Select
-											bg="alpha"
-											h="30px"
 											name="edition"
-											rounded={"xl"}
-											defaultValue={livecheck.bedrock ? "bedrock" : "java"}
-											variant={"filled"}
-											cursor={"pointer"}
-											sx={{
-												"& > *": {
-													bg: "bg !important"
-												}
+											variant={"flushed"}
+											defaultValue={{
+												label: livecheck.bedrock ? "Bedrock" : "Java",
+												value: livecheck.bedrock ? "bedrock" : "java"
 											}}
-										>
-											<option value={"java"}>Java</option>
-											<option value={"bedrock"}>Bedrock</option>
-										</Select>
+											chakraStyles={{
+												control: (provided) => ({
+													...provided,
+													borderRadius: "none",
+													w: "100%",
+													cursor: "pointer",
+													alignItems: "center",
+													h: "30px",
+													borderColor: "alpha100",
+													display: "flex"
+												}),
+												dropdownIndicator: (provided, { selectProps: { menuIsOpen } }) => ({
+													...provided,
+													"> svg": {
+														transitionDuration: "normal",
+														transform: `rotate(${menuIsOpen ? -180 : 0}deg)`
+													},
+													background: "transparent",
+													padding: "0 5px"
+												}),
+												container: (provided) => ({
+													...provided,
+													h: "30px",
+													w: "100%",
+													bg: "transparent"
+												}),
+												input: (provided) => ({
+													...provided,
+													h: "30px",
+													bg: "transparent"
+												}),
+												menuList: (provided) => ({
+													...provided,
+													mt: 2,
+													rounded: "lg",
+													bg: "bg"
+												}),
+												option: (provided) => ({
+													...provided,
+													bg: "bg",
+													color: "text",
+													_hover: {
+														bg: "alpha100"
+													}
+												})
+											}}
+											options={
+												[
+													{
+														label: "Java",
+														value: "java"
+													},
+													{
+														label: "Bedrock",
+														value: "bedrock"
+													}
+												] as any[]
+											}
+										/>
 									) : (
 										<Text fontWeight={600} fontSize={"xl"}>
 											{livecheck.bedrock ? "Bedrock" : "Java"}
@@ -218,29 +273,72 @@ export default function Index() {
 								<FormLabel>Channel Id</FormLabel>
 								{isEditing ? (
 									<Select
-										h="30px"
-										bg="alpha"
 										name="channel"
-										rounded={"xl"}
-										cursor={"pointer"}
-										variant={"filled"}
-										defaultValue={livecheck.channel_id}
-										w={{ base: "100%", md: "lg" }}
-										sx={{
-											"& > *": {
-												bg: "bg !important"
-											}
+										variant={"flushed"}
+										defaultValue={{
+											label: `#${
+												channels.find((c: { name: string; id: string }) => c.id === livecheck.channel_id)
+													?.name
+											}`,
+											value: livecheck.channel_id
 										}}
-									>
-										{channels.map((channel: { name: string; id: string }) => (
-											<Box as="option" cursor={"pointer"} key={channel.id} value={channel.id}>
-												#{channel.name}
-											</Box>
-										))}
-									</Select>
+										chakraStyles={{
+											control: (provided) => ({
+												...provided,
+												borderRadius: "none",
+												cursor: "pointer",
+												alignItems: "center",
+												h: "30px",
+												w: "512px",
+												borderColor: "alpha100",
+												display: "flex"
+											}),
+											dropdownIndicator: (provided, { selectProps: { menuIsOpen } }) => ({
+												...provided,
+												"> svg": {
+													transitionDuration: "normal",
+													transform: `rotate(${menuIsOpen ? -180 : 0}deg)`
+												},
+												background: "transparent",
+												padding: "0 5px"
+											}),
+											container: (provided) => ({
+												...provided,
+												h: "30px",
+												w: "100%",
+												bg: "transparent"
+											}),
+											input: (provided) => ({
+												...provided,
+												h: "30px",
+												bg: "transparent"
+											}),
+											menuList: (provided) => ({
+												...provided,
+												mt: 2,
+												rounded: "lg",
+												bg: "bg"
+											}),
+											option: (provided) => ({
+												...provided,
+												bg: "bg",
+												color: "text",
+												_hover: {
+													bg: "alpha100"
+												}
+											})
+										}}
+										options={channels.map((channel: { name: string; id: string }) => ({
+											label: `#${channel.name}`,
+											value: channel.id
+										}))}
+									/>
 								) : (
 									<Text fontWeight={600} fontSize={"xl"}>
-										{livecheck.channel_id}
+										{`#${
+											channels.find((c: { name: string; id: string }) => c.id === livecheck.channel_id)
+												?.name
+										}`}
 									</Text>
 								)}
 							</VStack>
@@ -294,49 +392,137 @@ export default function Index() {
 							>
 								<VStack w="100%" align={"start"} spacing={0}>
 									<FormLabel>Address</FormLabel>
-									<Input bg="alpha" name="address" rounded={"xl"} variant={"filled"} min={3} max={100} />
+									<Input
+										bg="alpha"
+										name="address"
+										rounded={"xl"}
+										variant={"filled"}
+										min={3}
+										max={100}
+										_hover={{
+											bg: "alpha100"
+										}}
+									/>
 								</VStack>
 
 								<VStack w="100%" align={"start"} spacing={0}>
 									<FormLabel>Edition</FormLabel>
 									<Select
-										bg="alpha"
 										name="edition"
-										rounded={"xl"}
 										variant={"filled"}
-										cursor={"pointer"}
-										sx={{
-											"& > *": {
-												bg: "bg !important"
-											}
+										chakraStyles={{
+											control: (provided) => ({
+												...provided,
+												borderRadius: "xl",
+												w: "100%",
+												cursor: "pointer",
+												bg: "alpha",
+												_hover: {
+													bg: "alpha200"
+												}
+											}),
+											dropdownIndicator: (provided, { selectProps: { menuIsOpen } }) => ({
+												...provided,
+												"> svg": {
+													transitionDuration: "normal",
+													transform: `rotate(${menuIsOpen ? -180 : 0}deg)`
+												},
+												background: "transparent",
+												padding: "0 5px"
+											}),
+											container: (provided) => ({
+												...provided,
+												borderRadius: "xl",
+												w: "100%",
+												bg: "transparent"
+											}),
+											input: (provided) => ({
+												...provided,
+												rounded: "xl",
+												bg: "transparent"
+											}),
+											menuList: (provided) => ({
+												...provided,
+												bg: "bg"
+											}),
+											option: (provided) => ({
+												...provided,
+												bg: "bg",
+												color: "text",
+												_hover: {
+													bg: "alpha100"
+												}
+											})
 										}}
-									>
-										<option value={"java"}>Java</option>
-										<option value={"bedrock"}>Bedrock</option>
-									</Select>
+										options={[
+											{
+												label: "Java",
+												value: "java"
+											},
+											{
+												label: "Bedrock",
+												value: "bedrock"
+											}
+										]}
+									/>
 								</VStack>
 							</Stack>
 
 							<VStack align={"start"} spacing={0} w={{ base: "100%", md: "lg" }}>
 								<FormLabel>Channel</FormLabel>
 								<Select
-									bg="alpha"
 									name="channel"
-									rounded={"xl"}
-									cursor={"pointer"}
 									variant={"filled"}
-									sx={{
-										"& > *": {
-											bg: "bg !important"
-										}
+									options={channels.map((channel: { name: string; id: string }) => ({
+										label: `#${channel.name}`,
+										value: channel.id
+									}))}
+									chakraStyles={{
+										control: (provided) => ({
+											...provided,
+											borderRadius: "xl",
+											cursor: "pointer",
+											w: "100%",
+											bg: "alpha",
+											_hover: {
+												bg: "alpha200"
+											}
+										}),
+										dropdownIndicator: (provided, { selectProps: { menuIsOpen } }) => ({
+											...provided,
+											"> svg": {
+												transitionDuration: "normal",
+												transform: `rotate(${menuIsOpen ? -180 : 0}deg)`
+											},
+											background: "transparent",
+											padding: "0 5px"
+										}),
+										container: (provided) => ({
+											...provided,
+											borderRadius: "xl",
+											w: "100%",
+											bg: "transparent"
+										}),
+										input: (provided) => ({
+											...provided,
+											rounded: "xl",
+											w: "100%",
+											bg: "transparent"
+										}),
+										menuList: (provided) => ({
+											...provided,
+											bg: "bg"
+										}),
+										option: (provided) => ({
+											...provided,
+											bg: "bg",
+											color: "text",
+											_hover: {
+												bg: "alpha100"
+											}
+										})
 									}}
-								>
-									{channels.map((channel: { name: string; id: string }) => (
-										<Box as="option" cursor={"pointer"} key={channel.id} value={channel.id}>
-											#{channel.name}
-										</Box>
-									))}
-								</Select>
+								/>
 							</VStack>
 						</>
 					)}

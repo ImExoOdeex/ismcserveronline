@@ -1,9 +1,9 @@
 import {
-	type ThemeOverride,
-	type ThemeConfig,
-	theme as chakraTheme,
 	extendBaseTheme,
-	mergeThemeOverride
+	mergeThemeOverride,
+	theme as chakraTheme,
+	type ThemeConfig,
+	type ThemeOverride
 } from "@chakra-ui/react";
 import { mode, type StyleFunctionProps } from "@chakra-ui/theme-tools";
 import type { Dict } from "@chakra-ui/utils";
@@ -92,6 +92,7 @@ const {
 	Spinner,
 	Textarea,
 	Tooltip,
+	Menu,
 	Table,
 	Select,
 	List
@@ -198,6 +199,7 @@ const theme = extendBaseTheme({
 		Code,
 		FormLabel,
 		Heading,
+		Menu,
 		Input,
 		Popover,
 		Skeleton,
