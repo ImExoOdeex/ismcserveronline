@@ -38,6 +38,17 @@ export const otherRootRoutes: Record<string, Handler> = {
 
 		const filtered = new Set(filteredServers.concat(filteredChecks));
 
+		// remove long urls from filtered
+		const longUrls = new Set<{ server: string }>();
+		for (const check of filtered) {
+			if (check.server.length > 50) {
+				longUrls.add(check);
+			}
+		}
+		for (const longUrl of longUrls) {
+			filtered.delete(longUrl);
+		}
+
 		return new Response(
 			`<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 		<url>
