@@ -1,4 +1,4 @@
-import { Button, HStack, Heading, Image, Stack } from "@chakra-ui/react";
+import { Button, Heading, HStack, Image, Stack } from "@chakra-ui/react";
 import { json, redirect, type LoaderArgs } from "@remix-run/node";
 import { useLoaderData, useLocation, useOutlet } from "@remix-run/react";
 import { useEffect, useRef } from "react";
@@ -68,7 +68,11 @@ export default function $guildID() {
 				<HStack spacing={5}>
 					<Image
 						rounded={"full"}
-						src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=256`}
+						src={
+							guild?.icon
+								? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=256`
+								: "https://notibot.app/discordLogo.png"
+						}
 						alt={guild.name + "'s icon"}
 						boxSize={"16"}
 					/>

@@ -1,5 +1,5 @@
 import { Flex } from "@chakra-ui/react";
-import { Ad, adType } from "../ads/Ad";
+import { Ad, adType } from "../ads/Yes";
 
 export default function Column() {
 	const columnWidth = (1920 - 1200) * 0.5 - 8;

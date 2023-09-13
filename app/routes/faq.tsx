@@ -3,7 +3,7 @@ import { json, type MetaFunction } from "@remix-run/node";
 import { useLoaderData, useRouteLoaderData } from "@remix-run/react";
 import os from "os";
 import { useEffect, useRef, useState } from "react";
-import { Ad, adType } from "~/components/ads/Ad";
+import { Ad, adType } from "~/components/ads/Yes";
 import SystemInfo from "~/components/layout/faq/SystemInfo";
 import { getCookie, getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
 import links from "../components/config/links.json";

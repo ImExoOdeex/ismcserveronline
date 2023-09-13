@@ -1,7 +1,7 @@
 import { Box, Flex, Heading, Text, VStack } from "@chakra-ui/react";
 import loadable from "@loadable/component";
 import { type Prisma } from "@prisma/client";
-import { Ad, adType } from "~/components/ads/Ad";
+import { Ad, adType } from "~/components/ads/Yes";
 import ServerItem from "./ServerItem";
 
 const Pagination = loadable(() => import("./Pagination"), {

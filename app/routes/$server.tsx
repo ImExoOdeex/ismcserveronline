@@ -24,7 +24,7 @@ import { useFetcher, useLoaderData } from "@remix-run/react";
 import { useContext, useEffect, useRef } from "react";
 import { BiBug, BiInfoCircle } from "react-icons/bi";
 import { getClientIPAddress } from "remix-utils";
-import { Ad, adType } from "~/components/ads/Ad";
+import { Ad, adType } from "~/components/ads/Yes";
 import ChecksTable from "~/components/layout/server/ChecksTable";
 import { db } from "~/components/server/db/db.server";
 import { type MinecraftServerWoQuery } from "~/components/types/minecraftServer";

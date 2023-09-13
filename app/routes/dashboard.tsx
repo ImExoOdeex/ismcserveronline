@@ -1,4 +1,4 @@
-import { Divider, Flex, Heading, HStack, Text, VStack } from "@chakra-ui/react";
+import { Divider, Flex, Heading, HStack, Image, Text, VStack } from "@chakra-ui/react";
 import { redirect, type LoaderArgs } from "@remix-run/node";
 import { useOutlet } from "@remix-run/react";
 import { useEffect, useRef } from "react";
@@ -72,6 +72,23 @@ export default function Dashboard() {
 
 	return (
 		<VStack w="100%" maxW={"1200px"} mx="auto" align={"start"} mt={5} spacing={10} px={4}>
+			<Image
+				pos={"absolute"}
+				top={0}
+				left={0}
+				opacity={0.1}
+				src={user?.photo ?? ""}
+				w={"100%"}
+				h={"100vh"}
+				zIndex={-1}
+				objectFit={"cover"}
+				objectPosition={"center"}
+				sx={{
+					WebkitMaskImage: `linear-gradient(to top, transparent 2%, black 50%)`
+				}}
+				// filter="blur(10px)"
+			/>
+
 			<VStack w="100%" align={"start"}>
 				<Flex
 					w="100%"

@@ -7,7 +7,7 @@ module.exports = {
 	// publicPath: "/build/",
 	future: {
 		v2_routeConvention: false,
-		v2_meta: false,
-		v2_dev: true
+		v2_meta: false
+		// v2_dev: true
 	}
 };

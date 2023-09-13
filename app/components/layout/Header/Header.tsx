@@ -1,16 +1,4 @@
-import {
-	Badge,
-	Box,
-	Button,
-	Flex,
-	Heading,
-	HStack,
-	Skeleton,
-	Text,
-	useColorMode,
-	useDisclosure,
-	useEventListener
-} from "@chakra-ui/react";
+import { Badge, Box, Button, Flex, Heading, HStack, Skeleton, Text, useColorMode, useEventListener } from "@chakra-ui/react";
 import loadable from "@loadable/component";
 import { useLocation } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -32,7 +20,12 @@ const Modal = loadable(() => import("./Mobile/Modal"), {
 	ssr: true
 });
 
-export default function Header() {
+type Props = {
+	isMenuOpen: boolean;
+	setIsMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 	useEventListener("keydown", (event: any) => {
 		const isMac = /(Mac|iPhone|iPod|iPad)/i.test(navigator?.platform);
 		const hotkey = isMac ? "metaKey" : "ctrlKey";
@@ -49,8 +42,6 @@ export default function Header() {
 		const position = window.pageYOffset;
 		setScrollPosition(position);
 	};
-
-	const { isOpen, onOpen, onClose, onToggle } = useDisclosure();
 
 	useEffect(() => {
 		window.addEventListener("scroll", handleScroll, { passive: true });
@@ -70,8 +61,7 @@ export default function Header() {
 			h={{ base: "60px", md: "80px" }}
 			pos={"sticky"}
 			top={0}
-			backdropFilter={scrollPosition < 0 ? "none" : "blur(20px)"}
-			bg={isOpen && colorMode === "light" ? "whiteAlpha.800" : "transparent"}
+			backdropFilter={scrollPosition < 1 ? "none" : "blur(20px)"}
 			zIndex={1799}
 			borderBottom={"1px"}
 			borderBottomColor={scrollPosition > 0 ? "alpha" : "transparent"}
@@ -133,14 +123,13 @@ export default function Header() {
 				<Box display={{ base: "flex", lg: "none" }} cursor="pointer">
 					<Button
 						variant={"unstyled"}
-						onClick={onToggle}
+						onClick={() => setIsMenuOpen(!isMenuOpen)}
 						display={"flex"}
 						justifyContent={"center"}
 						alignItems={"center"}
 					>
-						<HamburgerMenu isOpen={isOpen} />
+						<HamburgerMenu isOpen={isMenuOpen} />
 					</Button>
-					<Modal isOpen={isOpen} onClose={onClose} onOpen={onOpen} />
 				</Box>
 			</Flex>
 		</Flex>

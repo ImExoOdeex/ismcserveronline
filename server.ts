@@ -1,5 +1,4 @@
 import { createRequestHandler } from "@remix-run/express";
-import { broadcastDevReady } from "@remix-run/node";
 import compression from "compression";
 import express from "express";
 import morgan from "morgan";
@@ -27,7 +26,7 @@ const port = process.env.PORT || process.env.NODE_ENV === "development" ? 3000 :
 
 app.listen(port, () => {
 	console.log(`Express server listening on port ${port}`);
-	if (process.env.NODE_ENV === "development") {
-		broadcastDevReady(require(BUILD_DIR));
-	}
+	// if (process.env.NODE_ENV === "development") {
+	// 	broadcastDevReady(require(BUILD_DIR));
+	// }
 });

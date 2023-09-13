@@ -1,6 +1,6 @@
 import { ChakraBaseProvider, cookieStorageManagerSSR, localStorageManager, useConst } from "@chakra-ui/react";
-import type { LoaderArgs } from "@remix-run/node";
-import { json, redirect, type ActionArgs } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { useLoaderData, useLocation, useOutlet } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import Layout from "./components/layout/Layout";
@@ -67,7 +67,7 @@ export default function App() {
 								exit={{ opacity: 0 }}
 								transition={{
 									ease: [0.25, 0.1, 0.25, 1],
-									duration: 0.1
+									duration: 0.15
 								}}
 							>
 								{outlet}

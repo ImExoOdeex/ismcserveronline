@@ -1,13 +1,13 @@
-import { withEmotionCache } from "@emotion/react";
-import { useLoaderData, Meta, Links, ScrollRestoration, Scripts, LiveReload, useRouteError } from "@remix-run/react";
-import { useContext, useEffect } from "react";
-import { getCookieWithoutDocument } from "./components/utils/func/cookiesFunc";
-import { ServerStyleContext, ClientStyleContext } from "./context";
-import { type loader } from "./root";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
-import { ChakraBaseProvider, theme, Flex, VStack, Heading, Stack, Icon, Text, Box } from "@chakra-ui/react";
-import { BiHome, BiCode } from "react-icons/bi";
+import { Box, ChakraBaseProvider, Flex, Heading, Icon, Stack, Text, theme, VStack } from "@chakra-ui/react";
+import { withEmotionCache } from "@emotion/react";
+import { Links, LiveReload, Meta, Scripts, ScrollRestoration, useLoaderData, useRouteError } from "@remix-run/react";
+import { useContext, useEffect, useMemo } from "react";
+import { BiCode, BiHome } from "react-icons/bi";
+import { getCookieWithoutDocument } from "./components/utils/func/cookiesFunc";
 import Link from "./components/utils/Link";
+import { ClientStyleContext, ServerStyleContext } from "./context";
+import { type loader } from "./root";
 
 interface DocumentProps {
 	children: React.ReactNode;
@@ -38,7 +38,9 @@ const Document = withEmotionCache(({ children }: DocumentProps, emotionCache) =>
 		cookies = document.cookie;
 	}
 
-	const themeValue = getCookieWithoutDocument("chakra-ui-color-mode", cookies) ?? "dark";
+	const themeValue = useMemo(() => {
+		return getCookieWithoutDocument("chakra-ui-color-mode", cookies) ?? "dark";
+	}, [cookies]);
 
 	return (
 		<html lang="en" style={{ colorScheme: themeValue, scrollBehavior: "smooth" }} data-theme={themeValue}>

@@ -3,7 +3,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { BiCheckShield } from "react-icons/bi";
 import { useAdBlock } from "../utils/func/hooks/useAdBlock";
 
-export default function AdblockDetected() {
+// cuz of browsers to not block this file, cuz then infinite reload
+export default function AAA() {
 	const adBlockDetected = useAdBlock();
 
 	return (

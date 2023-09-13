@@ -3,7 +3,7 @@ import type { LoaderArgs } from "@remix-run/node";
 import { json, redirect, type ActionArgs, type MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
-import { Ad, adType } from "~/components/ads/Ad";
+import { Ad, adType } from "~/components/ads/Yes";
 import BotInfo from "~/components/layout/index/BotInfo";
 import HowToUse from "~/components/layout/index/HowToUse";
 import Main from "~/components/layout/index/Main";

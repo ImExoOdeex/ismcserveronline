@@ -1,4 +1,4 @@
-import { type SVGMotionProps, type Transition, motion } from "framer-motion";
+import { motion, type SVGMotionProps, type Transition } from "framer-motion";
 
 interface Props extends SVGMotionProps<Props> {
 	isOpen?: boolean;
@@ -10,9 +10,9 @@ interface Props extends SVGMotionProps<Props> {
 
 function HamburgerMenu({
 	isOpen = false,
-	width = 20,
-	height = 10,
-	strokeWidth = 1,
+	width = 24,
+	height = 16,
+	strokeWidth = 1.5,
 	color = "currentColor",
 	lineProps = null,
 	...props
@@ -78,15 +78,7 @@ function HamburgerMenu({
 			{...props}
 		>
 			<motion.line x1="0" x2={unitWidth} y1="0" y2="0" variants={top} transition={transition} {...lineProps} />
-			{/* <motion.line
-				x1="0"
-				x2={unitWidth}
-				y1="2"
-				y2="2"
-				variants={center}
-				transition={transition}
-				{...lineProps}
-			/> */}
+			<motion.line x1="1" x2={unitWidth} y1="2" y2="2" variants={center} transition={transition} {...lineProps} />
 			<motion.line x1="0" x2={unitWidth} y1="4" y2="4" variants={bottom} transition={transition} {...lineProps} />
 		</motion.svg>
 	);

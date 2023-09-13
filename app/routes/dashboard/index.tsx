@@ -1,4 +1,4 @@
-import { Badge, Button, HStack, Heading, Icon, Image, SimpleGrid, Text, VStack } from "@chakra-ui/react";
+import { Badge, Button, Heading, HStack, Icon, Image, SimpleGrid, Text, VStack } from "@chakra-ui/react";
 import { json, redirect, type LoaderArgs } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { useEffect, useRef } from "react";
@@ -11,7 +11,7 @@ import Link from "~/components/utils/Link";
 export type Guild = {
 	id: string;
 	name: string;
-	icon: string;
+	icon?: string;
 	owner: boolean;
 	permissions: number;
 	features: string[];
@@ -44,9 +44,12 @@ export default function Index() {
 	const refreshGuildsFetcher = useFetcher();
 
 	return (
-		<VStack w="100%" align={"start"}>
-			<Heading fontSize={"3xl"}>Servers, that you can manage</Heading>
-			<Text>There's a list of all your servers, that you can manage. Click of any you want to configure the bot!</Text>
+		<VStack w="100%" align={"start"} spacing={4}>
+			<VStack align="start">
+				<Heading fontSize={"3xl"}>Servers, that you can manage</Heading>
+				<Text>There's a list of all your servers, that you can manage. Click of any you want to configure the bot!</Text>
+			</VStack>
+
 			<VStack w="100%" align={"start"} spacing={10}>
 				{guilds.length ? (
 					<SimpleGrid w="100%" minChildWidth={{ base: "100%", md: "calc(33.333333% - 20px)" }} spacing={5}>
@@ -68,23 +71,63 @@ export default function Index() {
 									to={guild.id}
 									prefetch="render"
 									rounded={"xl"}
-									bg="alpha"
+									transform={"auto-gpu"}
+									_hover={{
+										scale: 1.05,
+										textDecor: "none"
+									}}
+									_active={{
+										scale: 0.95
+									}}
 									w="100%"
 									align={"center"}
 									justifyContent={"center"}
 									flexDir={"column"}
 									p={5}
-									transition={"background .2s"}
-									_hover={{ bg: "alpha100", textDecor: "none" }}
+									transition={"background .2s, transform .2s"}
+									pos="relative"
+									overflow={"hidden"}
 								>
 									<Image
+										pos={"absolute"}
+										top={0}
+										right={0}
+										left={0}
+										bottom={0}
+										w="100%"
+										h="100%"
+										objectFit="cover"
+										filter={"blur(10px)"}
+										alt="background"
+										zIndex={-1}
+										src={
+											guild?.icon
+												? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=96`
+												: "https://notibot.app/banner.jpg"
+										}
+									/>
+
+									<Image
+										border={"2px solid white"}
 										rounded={"full"}
-										src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=96`}
+										src={
+											guild?.icon
+												? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=96`
+												: "https://notibot.app/discordLogo.png"
+										}
 										alt={guild.name + "'s name"}
-										boxSize={12}
+										boxSize={16}
 									/>
 									<HStack>
-										<Text fontWeight={"bold"} fontSize={"xl"}>
+										<Text
+											fontWeight={"black"}
+											fontSize={"xl"}
+											color={"white"}
+											noOfLines={1}
+											sx={{
+												"-webkit-text-stroke": "0.5px #1a1a1a"
+											}}
+										>
 											{guild.name}
 										</Text>
 										{guild.owner && <Badge colorScheme="orange">Admin</Badge>}

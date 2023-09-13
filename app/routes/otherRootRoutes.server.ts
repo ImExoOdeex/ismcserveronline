@@ -6,11 +6,37 @@ type Handler = (request: Request, remixContext: EntryContext) => Promise<Respons
 
 export const otherRootRoutes: Record<string, Handler> = {
 	"/sitemap.xml": async (request, remixContext) => {
-		const servers = await db.server.findMany({
-			select: {
-				server: true
-			}
+		const [servers, checks] = await Promise.all([
+			db.server.findMany({
+				select: {
+					server: true
+				}
+			}),
+			db.check.findMany({
+				select: {
+					server: true
+				}
+			})
+		]);
+
+		// delete duplicate servers
+		const seen = new Set();
+		const filteredServers = servers.filter((server: any) => {
+			const duplicate = seen.has(server.server);
+			seen.add(server.server);
+			return !duplicate;
 		});
+		const filteredChecks = checks.filter((check: any) => {
+			const duplicate = seen.has(check.server);
+			seen.add(check.server);
+
+			// filter only addresses that are not ips, but valid domains
+			const isValidAddress = check.server.match(/^(?!:\/\/)([a-zA-Z0-9-_]+\.)*[a-zA-Z0-9][a-zA-Z0-9-_]+\.[a-zA-Z]{2,11}?$/);
+
+			return !duplicate && isValidAddress;
+		});
+
+		const filtered = new Set(filteredServers.concat(filteredChecks));
 
 		return new Response(
 			`<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
@@ -42,9 +68,10 @@ export const otherRootRoutes: Record<string, Handler> = {
 		<loc>https://ismcserver.online/tos</loc>
 		<priority>0.7</priority>
 		</url>
-		${servers.map((server) => {
+	
+		${[...filtered].map((check) => {
 			return `		<url>
-			<loc>https://ismcserver.online/${server.server.toLowerCase()}</loc>
+			<loc>https://ismcserver.online/${check.server.toLowerCase()}</loc>
 			<priority>0.5</priority>
 			</url>`;
 		})}

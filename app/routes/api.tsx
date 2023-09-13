@@ -21,7 +21,7 @@ import { json, type MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import crypto from "crypto";
 import { useEffect, useRef } from "react";
-import { Ad, adType } from "~/components/ads/Ad";
+import { Ad, adType } from "~/components/ads/Yes";
 import DiscordIcon from "~/components/layout/icons/DiscordIcon";
 import { type MinecraftServerWoQuery } from "~/components/types/minecraftServer";
 import links from "../components/config/links.json";

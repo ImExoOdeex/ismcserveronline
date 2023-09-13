@@ -1,8 +1,8 @@
 import { VStack } from "@chakra-ui/react";
-import { type MetaFunction, json } from "@remix-run/node";
+import { json, type MetaFunction } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import { useEffect, useRef } from "react";
-import { Ad, adType } from "~/components/ads/Ad";
+import { Ad, adType } from "~/components/ads/Yes";
 import Main from "~/components/layout/popularServers/Main";
 import { db } from "~/components/server/db/db.server";
 
