@@ -34,7 +34,7 @@
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
 		"react-icons": "^4.7.1",
-		"remix": "1.19.3",
+		"remix": "2.0.0",
 		"remix-auth-discord": "^1.2.1",
 		"remix-typedjson": "^0.1.7",
 		"remix-utils": "^5.1.0"

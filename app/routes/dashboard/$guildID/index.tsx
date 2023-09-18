@@ -26,6 +26,8 @@ import { TbTrash } from "react-icons/tb";
 import { typedjson } from "remix-typedjson";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import LivecheckNumbers from "~/components/layout/dashboard/LivecheckNumbers";
+import { Info, sendActionWebhook } from "~/components/server/auth/webhooks";
+import { getUser } from "~/components/server/db/models/getUser";
 import { requireUserGuild } from "~/components/server/functions/secureDashboard";
 
 export async function loader({ params, request }: LoaderArgs) {
@@ -100,6 +102,16 @@ export async function action({ request, params }: ActionArgs) {
 			}
 		)
 	).json();
+
+	getUser(request).then((user) => {
+		if (user) {
+			sendActionWebhook(
+				user,
+				`toggle livecheck for ${formData.get("address")} on ${formData.get("edition")}`,
+				new Info(request.headers)
+			);
+		}
+	});
 
 	return json(res);
 }

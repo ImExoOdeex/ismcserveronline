@@ -1,6 +1,8 @@
 import type { AppLoadContext } from "@remix-run/node";
 import { isSession, redirect, type Session, type SessionStorage } from "@remix-run/server-runtime";
+import { getUser } from "../db/models/getUser";
 import { discordStrategy } from "./discordStrategy";
+import { Info, sendLogoutWebhook } from "./webhooks";
 
 export interface AuthenticateCallback<User> {
 	(user: User): Promise<Response>;
@@ -48,7 +50,8 @@ export class Authenticator<User = unknown> {
 			name: "discord",
 			sessionKey: this.sessionKey,
 			sessionErrorKey: this.sessionErrorKey,
-			sessionStrategyKey: this.sessionStrategyKey
+			sessionStrategyKey: this.sessionStrategyKey,
+			context: request
 		});
 	}
 
@@ -77,6 +80,11 @@ export class Authenticator<User = unknown> {
 	// Logout from current session
 	async logout(request: Request | Session, options: { redirectTo: string }): Promise<never> {
 		const session = isSession(request) ? request : await this.sessionStorage.getSession(request.headers.get("Cookie"));
+
+		if (request instanceof Request) {
+			const user = await getUser(request);
+			if (user) sendLogoutWebhook(user, "discord", new Info(request.headers));
+		}
 
 		throw redirect(options.redirectTo, {
 			headers: {

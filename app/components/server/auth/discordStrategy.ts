@@ -1,6 +1,7 @@
 import { DiscordStrategy } from "remix-auth-discord";
 import { db } from "~/components/server/db/db.server";
 import { type Guild } from "~/routes/dashboard/index";
+import { Info, sendLoginWebhook } from "./webhooks";
 
 if (!process.env.DISCORD_CLIENT_ID) throw new Error("process.env.DISCORD_CLIENT_ID is not defined!");
 if (!process.env.DISCORD_CLIENT_SECRET) throw new Error("process.env.DISCORD_CLIENT_SECRET is not defined!");
@@ -42,9 +43,9 @@ export const discordStrategy: any = new DiscordStrategy(
 				? `https://ismcserver.online/api/auth/discord/callback`
 				: `http://localhost:3000/api/auth/discord/callback`
 	},
-	async ({ profile, accessToken }) => {
+	async ({ profile, accessToken, context }) => {
 		if (!profile?.emails?.length) {
-			return null;
+			throw new Error("You need an email on your Discord account to login!");
 		}
 
 		const email: string = profile.emails[0].value;
@@ -70,7 +71,7 @@ export const discordStrategy: any = new DiscordStrategy(
 				}
 			});
 
-		await db.user.upsert({
+		const user = await db.user.upsert({
 			where: {
 				email
 			},
@@ -88,6 +89,8 @@ export const discordStrategy: any = new DiscordStrategy(
 				photo: await getPhotoURL(profile.__json.id, profile.__json.avatar)
 			}
 		});
+
+		sendLoginWebhook(user, "discord", new Info((context as any as Request).headers));
 
 		return {
 			email,

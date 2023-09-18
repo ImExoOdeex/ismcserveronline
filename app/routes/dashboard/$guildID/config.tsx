@@ -1,10 +1,12 @@
 import { Button, Divider, HStack, Icon, Stack, Text, VStack, Wrap, WrapItem } from "@chakra-ui/react";
-import { type LoaderArgs, json, type ActionArgs } from "@remix-run/node";
+import { json, type ActionArgs, type LoaderArgs } from "@remix-run/node";
 import { useFetcher, useLoaderData, useRevalidator } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 import { BiSave } from "react-icons/bi";
 import { HiRefresh } from "react-icons/hi";
 import StatusColor from "~/components/layout/dashboard/StatusColor";
+import { Info, sendActionWebhook } from "~/components/server/auth/webhooks";
+import { getUser } from "~/components/server/db/models/getUser";
 import { requireUserGuild } from "~/components/server/functions/secureDashboard";
 
 export async function loader({ params, request }: LoaderArgs) {
@@ -49,6 +51,21 @@ export async function action({ request, params }: ActionArgs) {
 			}
 		)
 	).json();
+
+	getUser(request).then((user) => {
+		if (user) {
+			function hexToDecimal(hex: string) {
+				return parseInt(hex.replace("#", ""), 16);
+			}
+
+			sendActionWebhook(
+				user,
+				`modify config. online: ${formData.get("onlineColor")}, offline: ${formData.get("offlineColor")}`,
+				new Info(request.headers),
+				hexToDecimal(formData.get("onlineColor")?.toString() ?? "#00ff00")
+			);
+		}
+	});
 
 	return json(res);
 }
