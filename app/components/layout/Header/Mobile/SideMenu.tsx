@@ -2,12 +2,12 @@ import { ArrowForwardIcon, Icon } from "@chakra-ui/icons";
 import {
 	Box,
 	Button,
+	Link as ChakraLink,
 	Divider,
 	Flex,
 	Heading,
 	IconButton,
 	Input,
-	Link as ChakraLink,
 	Spinner,
 	Text,
 	useColorMode,
@@ -97,7 +97,7 @@ export default function SideMenu({ isOpen, setIsOpen, mobileMenuTransition }: Pr
 					</Flex>
 
 					<Flex w="100%" flexDir={"column"} gap={4}>
-						<fetcher.Form method="post" style={{ position: "relative", width: "100%" }}>
+						<fetcher.Form method="POST" style={{ position: "relative", width: "100%" }}>
 							<Box as="label" srOnly htmlFor="search">
 								Search
 							</Box>

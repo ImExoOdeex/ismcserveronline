@@ -7,16 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// do not the fuck ask why this is via email, not id ok?
 model User {
-  id         Int      @id @unique @default(autoincrement())
-  email      String   @unique
-  snowflake  String   @unique
+  id         Int       @id @unique @default(autoincrement())
+  email      String    @unique
+  snowflake  String    @unique
   nick       String
   photo      String?
   bio        String?
   guilds     Json?
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  Comment    Comment[]
 
   @@index([email])
 }
@@ -25,6 +27,18 @@ enum SOURCE {
   WEB
   DISCORD
   API
+}
+
+// comments are not related to any of server of check, cuz there is no server creating when someone checks it. it's determinated via address and port
+model Comment {
+  id         Int      @id @unique @default(autoincrement())
+  user_id    Int
+  user       User     @relation(fields: [user_id], references: [id])
+  server     String
+  bedrock    Boolean  @default(false)
+  content    String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
 }
 
 model SampleServer {
@@ -36,6 +50,7 @@ model SampleServer {
   end_date DateTime?
 }
 
+// this server is for popular servers
 model Server {
   id         Int      @id @unique @default(autoincrement())
   server     String

@@ -19,7 +19,7 @@ import { fetch, json, type LoaderArgs, type MetaFunction } from "@remix-run/node
 import { useLoaderData } from "@remix-run/react";
 import { useContext, useEffect, useRef } from "react";
 import { BiBug, BiInfoCircle } from "react-icons/bi";
-import { getClientIPAddress } from "remix-utils";
+import { getClientIPAddress } from "remix-utils/build/server/get-client-ip-address";
 import ChecksTable from "~/components/layout/server/ChecksTable";
 import { db } from "~/components/server/db/db.server";
 import { type BedrockServer } from "~/components/types/minecraftServer";

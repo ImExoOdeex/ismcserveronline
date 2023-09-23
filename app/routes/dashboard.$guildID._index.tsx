@@ -5,8 +5,8 @@ import {
 	Code,
 	Divider,
 	FormLabel,
-	Heading,
 	HStack,
+	Heading,
 	Icon,
 	Input,
 	Skeleton,
@@ -157,7 +157,7 @@ export default function Index() {
 
 			<Divider />
 
-			<livecheckFetcher.Form method="post" style={{ width: "100%" }}>
+			<livecheckFetcher.Form method="POST" style={{ width: "100%" }}>
 				<VStack w="100%" align={"start"} spacing={5}>
 					<VStack align={"start"} spacing={1}>
 						<Heading as={"h3"} fontSize={"2xl"}>

@@ -38,7 +38,7 @@ export default function Login() {
 				</Text>
 
 				<VStack align={"start"} w="100%">
-					<fetcher.Form method="post" action="/api/auth/discord" style={{ width: "100%" }}>
+					<fetcher.Form method="POST" action="/api/auth/discord" style={{ width: "100%" }}>
 						<Button
 							type="submit"
 							isLoading={fetcher.state !== "idle"}

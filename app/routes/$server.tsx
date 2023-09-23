@@ -18,22 +18,226 @@ import {
 	Tr,
 	VStack
 } from "@chakra-ui/react";
-import type { ActionArgs } from "@remix-run/node";
-import { fetch, json, redirect, type LoaderArgs, type MetaFunction } from "@remix-run/node";
-import { useFetcher, useLoaderData } from "@remix-run/react";
-import { useContext, useEffect, useRef } from "react";
+import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
+import { fetch, redirect } from "@remix-run/node";
+import type { ShouldRevalidateFunction } from "@remix-run/react";
+import { useFetcher } from "@remix-run/react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { BiBug, BiInfoCircle } from "react-icons/bi";
-import { getClientIPAddress } from "remix-utils";
+import { typedjson } from "remix-typedjson";
+import { useTypedLoaderData } from "remix-typedjson/dist/remix";
+import { getClientIPAddress } from "remix-utils/build/server/get-client-ip-address";
 import { Ad, adType } from "~/components/ads/Yes";
 import ChecksTable from "~/components/layout/server/ChecksTable";
+import Comments from "~/components/layout/server/Comments";
+import { Info, sendCommentWebhook, sendReportWebhook } from "~/components/server/auth/webhooks";
 import { db } from "~/components/server/db/db.server";
+import { getUser } from "~/components/server/db/models/getUser";
 import { type MinecraftServerWoQuery } from "~/components/types/minecraftServer";
 import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
 import { context } from "~/components/utils/GlobalContext";
 import Link from "~/components/utils/Link";
 
-export async function action(_: ActionArgs) {
-	return redirect(`?query`);
+export async function action({ request, params }: ActionArgs) {
+	const form = await request.formData();
+	const action = form.get("action");
+
+	switch (action) {
+		case "query":
+			return redirect(`?query`);
+		case "comment": {
+			const content = form.get("content")?.toString();
+			const server = params.server!.toString().toLowerCase();
+
+			const user = await getUser(request);
+			if (!user) throw new Error("User is not logged!");
+
+			try {
+				if (!content) throw new Error("Content is not definied!");
+				if (content.length < 5) throw new Error("Content is too short!");
+				if (content.length > 250) throw new Error("Content is too long!");
+
+				const hasCommented = await db.comment.findFirst({
+					where: {
+						user_id: user.id,
+						server: server,
+						bedrock: false
+					}
+				});
+				if (hasCommented) throw new Error("You have already commented on this server!");
+
+				// allow user to comment only 10 times per day.
+				const comments = await db.comment.findMany({
+					where: {
+						user_id: user.id,
+						created_at: {
+							gte: new Date(new Date().getTime() - 24 * 60 * 60 * 1000)
+						}
+					}
+				});
+				if (comments.length >= 10) throw new Error("You have reached the limit of comments per day!");
+			} catch (e: any) {
+				return typedjson({
+					error: e.message
+				});
+			}
+
+			const newComment = await db.comment.create({
+				data: {
+					content,
+					server,
+					bedrock: false,
+					user_id: user.id
+				}
+			});
+
+			sendCommentWebhook(user, content, server, new Info(request.headers));
+
+			return typedjson({
+				success: true,
+				comment: {
+					id: newComment.id,
+					content,
+					created_at: newComment.created_at,
+					updated_at: newComment.updated_at,
+					user: {
+						nick: user.nick,
+						photo: user.photo,
+						id: user.id
+					}
+				}
+			});
+		}
+		case "edit": {
+			const content = form.get("content")?.toString();
+			const id = form.get("id")?.toString();
+			const server = params.server!.toString().toLowerCase();
+
+			const user = await getUser(request);
+			if (!user) throw new Error("User is not logged!");
+
+			try {
+				if (!content) throw new Error("Content is not definied!");
+				if (content.length < 5) throw new Error("Content is too short!");
+				if (content.length > 250) throw new Error("Content is too long!");
+				if (!id) throw new Error("ID is not definied!");
+
+				const comment = await db.comment.findFirst({
+					where: {
+						id: Number(id),
+						server: server,
+						bedrock: false
+					}
+				});
+				if (!comment) throw new Error("Comment is not found!");
+
+				if (comment.user_id !== user.id) throw new Error("You are not owner of this comment!");
+			} catch (e: any) {
+				return typedjson({
+					error: e.message
+				});
+			}
+
+			const newComment = await db.comment.update({
+				where: {
+					id: Number(id)
+				},
+				data: {
+					content: content
+				}
+			});
+
+			return typedjson({
+				success: true,
+				comment: {
+					id: newComment.id,
+					content,
+					created_at: newComment.created_at,
+					updated_at: newComment.updated_at,
+					user: {
+						nick: user.nick,
+						photo: user.photo,
+						id: user.id
+					}
+				}
+			});
+		}
+		case "delete": {
+			const id = form.get("id")?.toString();
+			const server = params.server!.toString().toLowerCase();
+
+			const user = await getUser(request);
+			if (!user) throw new Error("User is not logged!");
+
+			try {
+				if (!id) throw new Error("ID is not definied!");
+
+				const comment = await db.comment.findFirst({
+					where: {
+						id: Number(id),
+						server: server,
+						bedrock: false
+					}
+				});
+				if (!comment) throw new Error("Comment is not found!");
+
+				if (comment.user_id !== user.id) throw new Error("You are not owner of this comment!");
+			} catch (e: any) {
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				return typedjson({
+					error: e.message,
+					success: false
+				});
+			}
+
+			await db.comment.delete({
+				where: {
+					id: Number(id)
+				}
+			});
+
+			return typedjson({
+				success: true
+			});
+		}
+		case "report": {
+			const id = form.get("id")?.toString();
+			const server = params.server!.toString().toLowerCase();
+
+			const user = await getUser(request);
+			if (!user) throw new Error("User is not logged!");
+
+			try {
+				if (!id) throw new Error("ID is not definied!");
+
+				const comment = await db.comment.findFirst({
+					where: {
+						id: Number(id),
+						server: server,
+						bedrock: false
+					}
+				});
+				if (!comment) throw new Error("Comment is not found!");
+
+				if (comment.user_id === user.id) throw new Error("You can't report your own comment!");
+
+				await sendReportWebhook(user, comment, server, new Info(request.headers));
+			} catch (e: any) {
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				return typedjson({
+					error: e.message,
+					success: false
+				});
+			}
+
+			return typedjson({
+				success: true
+			});
+		}
+		default: {
+			throw new Error("Action is not definied!");
+		}
+	}
 }
 
 export async function loader({ params, request }: LoaderArgs) {
@@ -90,29 +294,55 @@ export async function loader({ params, request }: LoaderArgs) {
 		});
 	}
 
-	const checks = await db.check.findMany({
-		where: {
-			server: {
-				contains: server
+	const [checks, comments] = await Promise.all([
+		db.check.findMany({
+			where: {
+				server: {
+					contains: server
+				},
+				bedrock: false
 			},
-			bedrock: false
-		},
-		select: {
-			id: true,
-			server: false,
-			online: true,
-			players: true,
-			source: true,
-			checked_at: true
-		},
-		orderBy: {
-			id: "desc"
-		},
-		take: 20,
-		skip: Number(c) || 0
-	});
+			select: {
+				id: true,
+				server: false,
+				online: true,
+				players: true,
+				source: true,
+				checked_at: true
+			},
+			orderBy: {
+				id: "desc"
+			},
+			take: 20,
+			skip: Number(c) || 0
+		}),
+		db.comment.findMany({
+			where: {
+				server: {
+					contains: server
+				},
+				bedrock: false
+			},
+			select: {
+				id: true,
+				content: true,
+				created_at: true,
+				updated_at: true,
+				user: {
+					select: {
+						nick: true,
+						photo: true,
+						id: true
+					}
+				}
+			},
+			orderBy: {
+				created_at: "desc"
+			}
+		})
+	]);
 
-	return json({ server, data, checks, query });
+	return typedjson({ server, data, checks, query, comments });
 }
 
 export const meta: MetaFunction = ({ data }: { data: { server: string; data: MinecraftServerWoQuery } }) => {
@@ -121,23 +351,40 @@ export const meta: MetaFunction = ({ data }: { data: { server: string; data: Min
 	};
 };
 
+export const shouldRevalidate: ShouldRevalidateFunction = ({ formData, currentParams, nextParams }) => {
+	if (!formData) return false;
+	if (formData.get("action") === "query" || currentParams.server !== nextParams.server) return true;
+
+	return false;
+};
+
 export default function $server() {
 	const lastServer = useRef({});
 	const lastData = useRef({});
 	const lastChecks = useRef({});
 	const lastQuery = useRef({});
-	const { server, data, checks, query }: any = useLoaderData<typeof loader>() || {
+	const lastComments = useRef({});
+
+	const {
+		server,
+		data,
+		checks,
+		query,
+		comments: dbComments
+	} = useTypedLoaderData<typeof loader>() || {
 		server: lastServer.current,
 		data: lastData.current,
 		checks: lastChecks.current,
-		query: lastQuery.current
+		query: lastQuery.current,
+		comments: lastComments.current
 	};
 	useEffect(() => {
 		if (server) lastServer.current = server;
 		if (data) lastData.current = data;
 		if (checks) lastChecks.current = checks;
 		if (query) lastQuery.current = query;
-	}, [server, data, checks, query]);
+		if (dbComments) lastComments.current = dbComments;
+	}, [server, data, checks, query, dbComments]);
 
 	const bgImageColor = "rgba(0,0,0,.7)";
 
@@ -149,6 +396,21 @@ export default function $server() {
 
 	const fetcher = useFetcher();
 	const busy = fetcher.state !== "idle";
+
+	const tabs = [
+		{
+			name: "Checks",
+			value: "checks"
+		},
+		{
+			name: "Comments",
+			value: "comments"
+		}
+	] as const;
+
+	const [tab, setTab] = useState<typeof tabs[number]["value"]>("comments");
+
+	const [comments, setComments] = useState(dbComments);
 
 	return (
 		<VStack spacing={"40px"} align="start" maxW="1000px" mx="auto" w="100%" mt={"50px"} px={4} mb={5}>
@@ -368,7 +630,7 @@ export default function $server() {
 					</Flex>
 
 					{!query && (
-						<fetcher.Form method="post">
+						<fetcher.Form method="POST">
 							<Text color="textSec" fontWeight={400}>
 								Misleading information?{" "}
 								<Button
@@ -378,6 +640,8 @@ export default function $server() {
 									textDecor="underline"
 									color={"sec"}
 									h="min-content"
+									name="action"
+									value="query"
 								>
 									Try searching with Query!
 								</Button>
@@ -390,14 +654,42 @@ export default function $server() {
 
 			<Divider />
 
-			<VStack align={"start"} w="100%">
-				<Heading as={"h2"} fontSize="lg">
-					Last checks
-				</Heading>
+			<Flex gap={2}>
+				{tabs.map((t) => (
+					<Button
+						boxShadow={"sm"}
+						key={t.value}
+						onClick={() => setTab(t.value)}
+						size={"sm"}
+						rounded={"xl"}
+						bg={tab === t.value ? "brand.500" : "transparent"}
+						color={tab === t.value ? "white" : "text"}
+						fontWeight={500}
+						border="1px solid"
+						borderColor={tab === t.value ? "transparent" : "alpha300"}
+						px={4}
+						py={2}
+						_hover={{
+							bg: tab === t.value ? "brand.600" : "alpha100"
+						}}
+					>
+						{t.name}
+					</Button>
+				))}
+			</Flex>
 
-				{/* @ts-ignore, idk this fucking serialize object does not work */}
-				<ChecksTable checks={checks} server={server} />
-			</VStack>
+			{tab === "checks" ? (
+				<VStack align={"start"} w="100%">
+					<Heading as={"h2"} fontSize="lg">
+						Last checks
+					</Heading>
+
+					{/* @ts-ignore, idk this fucking serialize object does not work */}
+					<ChecksTable checks={checks} server={server} />
+				</VStack>
+			) : (
+				<Comments comments={comments} setComments={setComments} />
+			)}
 
 			<Stack direction={{ base: "column", md: "row" }} spacing={{ base: "auto", md: 7 }}>
 				<HStack
@@ -415,6 +707,7 @@ export default function $server() {
 					<Icon as={BiInfoCircle} />
 				</HStack>
 			</Stack>
+
 			<Ad type={adType.multiplex} />
 		</VStack>
 	);

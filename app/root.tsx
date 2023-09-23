@@ -1,12 +1,14 @@
 import { ChakraBaseProvider, cookieStorageManagerSSR, localStorageManager, useConst } from "@chakra-ui/react";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
+import type { ShouldRevalidateFunction } from "@remix-run/react";
 import { useLoaderData, useLocation, useOutlet } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import Layout from "./components/layout/Layout";
+import { getUser } from "./components/server/db/models/getUser";
 import { validateServer } from "./components/server/functions/validateServer";
-import { getCookieWithoutDocument } from "./components/utils/func/cookiesFunc";
 import { GlobalContext } from "./components/utils/GlobalContext";
+import { getCookieWithoutDocument } from "./components/utils/func/cookiesFunc";
 import theme from "./components/utils/theme";
 import { Document } from "./document";
 
@@ -97,8 +99,27 @@ export async function loader({ request }: LoaderArgs) {
 		getCookieWithoutDocument("no_ads", request.headers.get("cookie") ?? "") !== process.env.NO_ADS_PARAM_VALUE;
 	// ^^^ code for no ads up there uwu ^^^
 
-	return json({ cookies: request.headers.get("cookie") ?? "", showAds });
+	const user = await getUser(request);
+
+	return json({
+		cookies: request.headers.get("cookie") ?? "",
+		showAds,
+		user
+	});
 }
+
+export const shouldRevalidate: ShouldRevalidateFunction = (data) => {
+	console.log(data);
+
+	// if (formAction === "/api/auth/logout") {
+	// 	console.log("revalidate");
+	// 	return true;
+	// }
+
+	console.log("not");
+
+	return false;
+};
 
 // ----------------------------- ACTION -----------------------------
 

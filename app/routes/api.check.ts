@@ -1,5 +1,5 @@
 import type { ActionArgs } from "@remix-run/node";
-import { getClientIPAddress } from "remix-utils";
+import { getClientIPAddress } from "remix-utils/build/server/get-client-ip-address";
 import { db } from "~/components/server/db/db.server";
 
 // This is typically POST request to this route. I use it for adding discord server checks. You can't make this request, cuz you dont have super duper 2048 bit access token hah

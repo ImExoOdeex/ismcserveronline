@@ -1,30 +1,30 @@
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import {
+	Box,
 	Button,
+	Modal as ChakraModal,
+	Flex,
+	HStack,
+	Icon,
+	Input,
 	ModalBody,
 	ModalContent,
 	ModalFooter,
 	ModalHeader,
-	Modal as ChakraModal,
+	ModalOverlay,
+	Spinner,
+	Text,
 	VStack,
 	useColorMode,
-	HStack,
-	Text,
-	Input,
-	Flex,
-	Icon,
-	Box,
-	Spinner,
-	useColorModeValue,
-	ModalOverlay
+	useColorModeValue
 } from "@chakra-ui/react";
-import Link from "~/components/utils/Link";
-import DiscordIcon from "../../icons/DiscordIcon";
-import links from "../../../config/links.json";
 import { useFetcher, useLocation } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { BiSearchAlt } from "react-icons/bi";
-import { useState, useRef, useEffect } from "react";
+import Link from "~/components/utils/Link";
+import links from "../../../config/links.json";
+import DiscordIcon from "../../icons/DiscordIcon";
 
 export default function Modal({ isOpen, onOpen, onClose }: { isOpen: boolean; onOpen: () => void; onClose: () => void }) {
 	const { colorMode, toggleColorMode } = useColorMode();
@@ -71,7 +71,7 @@ export default function Modal({ isOpen, onOpen, onClose }: { isOpen: boolean; on
 				>
 					<ModalHeader>Menu</ModalHeader>
 					<ModalBody overflowY={"hidden"} pb={0} zIndex={99999999999}>
-						<fetcher.Form method="post" style={{ position: "relative", minWidth: "302px", width: "100%" }}>
+						<fetcher.Form method="POST" style={{ position: "relative", minWidth: "302px", width: "100%" }}>
 							<Box as="label" srOnly htmlFor="search">
 								Search
 							</Box>

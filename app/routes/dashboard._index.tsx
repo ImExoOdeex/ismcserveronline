@@ -42,6 +42,7 @@ export default function Index() {
 	}, [guilds]);
 
 	const refreshGuildsFetcher = useFetcher();
+	const logoutFetcher = useFetcher();
 
 	return (
 		<VStack w="100%" align={"start"} spacing={4}>
@@ -103,7 +104,7 @@ export default function Index() {
 										src={
 											guild?.icon
 												? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=96`
-												: "https://notibot.app/banner.jpg"
+												: "/banner.jpg"
 										}
 									/>
 
@@ -113,7 +114,7 @@ export default function Index() {
 										src={
 											guild?.icon
 												? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=96`
-												: "https://notibot.app/discordLogo.png"
+												: "/discordLogo.png"
 										}
 										alt={guild.name + "'s name"}
 										boxSize={16}
@@ -156,24 +157,23 @@ export default function Index() {
 							</HStack>
 						</Button>
 					</refreshGuildsFetcher.Form>
-					<Button
-						as={Link}
-						prefetch="none"
-						to={"/api/auth/logout"}
-						transform={"auto-gpu"}
-						_hover={{
-							bg: "alpha",
-							textDecor: "none"
-						}}
-						_active={{ scale: 0.9 }}
-						variant={"ghost"}
-						color={"red"}
-					>
-						<HStack>
-							<Icon as={FiLogOut} />
-							<Text>Logout</Text>
-						</HStack>
-					</Button>
+					<logoutFetcher.Form action="/api/auth/logout">
+						<Button
+							transform={"auto-gpu"}
+							_hover={{
+								bg: "alpha",
+								textDecor: "none"
+							}}
+							_active={{ scale: 0.9 }}
+							type="submit"
+							variant={"ghost"}
+							color={"red"}
+							leftIcon={<Icon as={FiLogOut} />}
+							isLoading={logoutFetcher.state !== "idle"}
+						>
+							Logout
+						</Button>
+					</logoutFetcher.Form>
 				</HStack>
 			</VStack>
 		</VStack>

@@ -1,5 +1,5 @@
 import { json, type LoaderArgs } from "@remix-run/node";
-import { getClientIPAddress } from "remix-utils";
+import { getClientIPAddress } from "remix-utils/build/server/get-client-ip-address";
 import { db } from "~/components/server/db/db.server";
 import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
 

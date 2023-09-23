@@ -1,6 +1,6 @@
 import { Divider, VStack } from "@chakra-ui/react";
-import type { LoaderArgs } from "@remix-run/node";
-import { json, redirect, type ActionArgs, type MetaFunction } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
 import { Ad, adType } from "~/components/ads/Yes";
@@ -41,55 +41,57 @@ export async function loader({ request }: LoaderArgs) {
 	const bedrock = getCookieWithoutDocument("bedrock", cookies ?? "") === "true";
 	const query = getCookieWithoutDocument("query", cookies ?? "") === "true";
 
-	const sampleServers = await new Promise((resolve) => {
-		resolve(
-			db.sampleServer.findMany({
-				select: {
-					bedrock: true,
-					server: true,
-					favicon: true
-				},
-				orderBy: {
-					add_date: "desc"
-				},
-				// get only servers that end dates are greater than now or null
-				where: {
-					OR: [
-						{
-							end_date: {
-								gte: new Date()
-							}
-						},
-						{
-							end_date: {
-								equals: null
-							}
+	const [sampleServers, count] = await Promise.all([
+		db.sampleServer.findMany({
+			select: {
+				bedrock: true,
+				server: true,
+				favicon: true
+			},
+			orderBy: {
+				add_date: "desc"
+			},
+			// get only servers that end dates are greater than now or null
+			where: {
+				OR: [
+					{
+						end_date: {
+							gte: new Date()
 						}
-					]
-				}
-			})
-		);
-	});
+					},
+					{
+						end_date: {
+							equals: null
+						}
+					}
+				]
+			}
+		}),
+		db.check.count()
+	]);
 
-	return json({ bedrock, query, sampleServers });
+	return json({ bedrock, query, sampleServers, count });
 }
 
 export default function Index() {
 	const lastBedrock = useRef({});
 	const lastSampleServers = useRef({});
 	const lastQuery = useRef({});
+	const lastCount = useRef(0);
 
-	const { bedrock, sampleServers, query } = useLoaderData() ?? {
+	const { bedrock, sampleServers, query, count } = useLoaderData() ?? {
 		bedrock: lastBedrock.current,
 		sampleServers: lastSampleServers.current,
-		query: lastQuery.current
+		query: lastQuery.current,
+		count: lastCount.current
 	};
 
 	useEffect(() => {
 		if (bedrock) lastBedrock.current = bedrock;
 		if (sampleServers) lastSampleServers.current = sampleServers;
 		if (query) lastQuery.current = query;
-	}, [bedrock, sampleServers, query]);
+		if (count) lastCount.current = count;
+	}, [bedrock, sampleServers, query, count]);
 
 	const [bedrockChecked, setBedrockChecked] = useState<boolean>(bedrock ? bedrock : false);
 	const [serverValue, setServerValue] = useState<string>("");
@@ -102,6 +104,7 @@ export default function Index() {
 				serverValue={serverValue}
 				setBedrockChecked={setBedrockChecked}
 				setServerValue={setServerValue}
+				count={count}
 			/>
 
 			<SampleServers setServerValue={setServerValue} setBedrock={setBedrockChecked} />

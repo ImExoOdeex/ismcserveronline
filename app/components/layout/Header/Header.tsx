@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import Link from "../../utils/Link";
 import APIButton from "./APIButton";
 import FAQButton from "./FAQButton";
-import InviteButton from "./InviteButton";
+import LoginButton from "./LoginButton";
 import HamburgerMenu from "./Mobile/HamburgerMenu";
 import PopularServersButton from "./PopularServersButton";
 import ThemeToggle from "./ToggleTheme";
@@ -117,7 +117,7 @@ export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 					<FAQButton />
 					<APIButton />
 					<ThemeToggle />
-					<InviteButton />
+					<LoginButton />
 				</HStack>
 
 				<Box display={{ base: "flex", lg: "none" }} cursor="pointer">

@@ -39,7 +39,7 @@ export default function ServerSearch({ bedrockChecked, serverValue, setBedrockCh
 
 	return (
 		<>
-			<fetcher.Form style={{ width: "100%" }} method="post">
+			<fetcher.Form style={{ width: "100%" }} method="POST">
 				<Flex w="100%" flexDir={"column"} minH="115px" h="100%" minW={"100%"}>
 					<FormLabel ml="14px" fontSize={"14px"} color={fetcher?.data ? "red" : "textSec"} fontWeight={400} mb={1.5}>
 						{fetcher?.data ? fetcher.data?.error : "Which server do you wanna check?"}

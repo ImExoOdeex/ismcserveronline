@@ -6,13 +6,15 @@ export default function Main({
 	serverValue,
 	setBedrockChecked,
 	query,
-	setServerValue
+	setServerValue,
+	count
 }: {
 	bedrockChecked: boolean;
 	serverValue: string;
 	query: boolean;
 	setBedrockChecked: (e: boolean) => void;
 	setServerValue: (e: string) => void;
+	count: number;
 }) {
 	return (
 		<Stack spacing={10} direction={{ base: "column", md: "row" }}>
@@ -41,7 +43,8 @@ export default function Main({
 				/>
 
 				<Text fontWeight={600} color="textSec" maxW={"423px"} alignSelf="start">
-					Get information about your favourite Minecraft server for Java or Bedrock edition!
+					Get information about your favourite Minecraft server for Java or Bedrock edition! Over {count} servers has
+					been checked!
 				</Text>
 			</VStack>
 

@@ -85,7 +85,7 @@ export default function Config() {
 	const data = fetcher.data;
 
 	return (
-		<fetcher.Form method="post" style={{ width: "100%" }}>
+		<fetcher.Form method="POST" style={{ width: "100%" }}>
 			<VStack w="100%" align={"start"} spacing={7}>
 				<Stack direction={{ base: "column", md: "row" }} spacing={10} w={{ base: "100%", md: "lg" }}>
 					<StatusColor config={config} type="online" />

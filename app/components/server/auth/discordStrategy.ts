@@ -1,6 +1,6 @@
 import { DiscordStrategy } from "remix-auth-discord";
 import { db } from "~/components/server/db/db.server";
-import { type Guild } from "~/routes/dashboard/index";
+import { type Guild } from "~/routes/dashboard._index";
 import { Info, sendLoginWebhook } from "./webhooks";
 
 if (!process.env.DISCORD_CLIENT_ID) throw new Error("process.env.DISCORD_CLIENT_ID is not defined!");

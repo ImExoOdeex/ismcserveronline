@@ -12,11 +12,10 @@ import {
 	useEventListener
 } from "@chakra-ui/react";
 import { useFetcher } from "@remix-run/react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { BiSearchAlt } from "react-icons/bi";
 import { useActionKey } from "~/components/utils/func/hooks/useActionKey";
-import { motion } from "framer-motion";
 
 export default function ServerSearch() {
 	const actionKey = useActionKey();
@@ -50,7 +49,7 @@ export default function ServerSearch() {
 	const submitting = fetcher.state !== "idle";
 
 	return (
-		<fetcher.Form method="post" style={{ position: "relative", minWidth: "302px", width: "100%" }}>
+		<fetcher.Form method="POST" style={{ position: "relative", minWidth: "302px", width: "100%" }}>
 			<Box as="label" srOnly htmlFor="search">
 				Search
 			</Box>

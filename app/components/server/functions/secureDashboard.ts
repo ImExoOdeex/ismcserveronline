@@ -1,4 +1,4 @@
-import { type Guild } from "~/routes/dashboard/index";
+import { type Guild } from "~/routes/dashboard._index";
 import { getUserGuilds } from "../db/models/getUserGuilds";
 
 export async function requireUserGuild(request: Request, guildID: string) {

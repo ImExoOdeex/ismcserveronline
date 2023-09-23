@@ -6,4 +6,4 @@ export async function loader({ request }: LoaderArgs) {
 		redirectTo: "/login"
 	});
 }
-export { loader as action } from "./discord";
+export { loader as action } from "./api.auth.discord";

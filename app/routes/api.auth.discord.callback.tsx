@@ -14,4 +14,4 @@ export async function loader({ request }: LoaderArgs) {
 	});
 }
 // post to this route
-export { loader as action } from "./discord";
+export { loader as action } from "./api.auth.discord";

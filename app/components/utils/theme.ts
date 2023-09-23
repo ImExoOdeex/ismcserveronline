@@ -94,7 +94,9 @@ const {
 	Tooltip,
 	Menu,
 	Table,
+	Alert,
 	Select,
+	CloseButton,
 	List
 } = chakraTheme.components;
 
@@ -201,8 +203,10 @@ const theme = extendBaseTheme({
 		Heading,
 		Menu,
 		Input,
+		Alert,
 		Popover,
 		Skeleton,
+		CloseButton,
 		Modal,
 		Spinner,
 		Textarea,
