@@ -1,12 +1,15 @@
-import { Badge, Button, Heading, HStack, Icon, Image, SimpleGrid, Text, VStack } from "@chakra-ui/react";
-import { json, redirect, type LoaderArgs } from "@remix-run/node";
-import { useFetcher, useLoaderData } from "@remix-run/react";
+import { Icon } from "@chakra-ui/icons";
+import { Button, Flex, Heading, SimpleGrid, Text, VStack } from "@chakra-ui/react";
+import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
+import { useFetcher } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 import { FiLogOut } from "react-icons/fi";
-import { HiRefresh } from "react-icons/hi";
-import { getUser } from "~/components/server/db/models/getUser";
-import { getUserGuilds } from "~/components/server/db/models/getUserGuilds";
-import Link from "~/components/utils/Link";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import invariant from "tiny-invariant";
+import SavedServer from "~/components/layout/dashboard/SavedServer";
+import { db } from "~/components/server/db/db.server";
+import { getUser, getUserId } from "~/components/server/db/models/user";
 
 export type Guild = {
 	id: string;
@@ -18,6 +21,87 @@ export type Guild = {
 	permissions_new: string;
 };
 
+export async function action({ request }: ActionArgs) {
+	const formData = await request.formData();
+	const action = formData.get("action")?.toString() as string;
+
+	switch (action) {
+		case "delete": {
+			const server = formData.get("server")?.toString() as string;
+			const bedrock = formData.get("bedrock")?.toString() === "true";
+
+			const userId = await getUserId(request);
+			invariant(userId, "User is not logged in");
+
+			const serverId = await db.savedServer.findFirst({
+				where: {
+					server,
+					bedrock,
+					user_id: userId
+				}
+			});
+
+			invariant(serverId, "Server not found");
+
+			await db.savedServer.delete({
+				where: {
+					id: serverId.id
+				}
+			});
+
+			return typedjson({
+				success: true
+			});
+		}
+		case "refresh": {
+			const server = formData.get("server")?.toString() as string;
+			const bedrock = formData.get("bedrock")?.toString() === "true";
+			const userId = await getUserId(request);
+			invariant(userId, "User is not logged in");
+
+			const updatedServerId = await db.savedServer.findFirst({
+				where: {
+					server,
+					bedrock,
+					user_id: userId
+				}
+			});
+
+			invariant(updatedServerId, "Server not found");
+
+			const data = await fetch(`https://api.ismcserver.online/${bedrock ? "bedrock/" : ""}${server}`, {
+				headers: {
+					Authorization: process.env.API_TOKEN ?? ""
+				}
+			}).then((res) => res.json());
+
+			await db.savedServer.update({
+				where: {
+					id: updatedServerId.id
+				},
+				data: {
+					icon: data?.icon || undefined,
+					online: data?.online,
+					players: data?.players?.online
+				}
+			});
+
+			return typedjson({
+				success: true
+			});
+		}
+		case "go": {
+			const server = formData.get("server")?.toString() as string;
+			const bedrock = formData.get("bedrock")?.toString() === "true";
+
+			return redirect(`/${bedrock ? "bedrock/" : ""}${server}`);
+		}
+		default: {
+			throw new Error("Invalid action");
+		}
+	}
+}
+
 export async function loader({ request }: LoaderArgs) {
 	const user = await getUser(request);
 
@@ -25,157 +109,94 @@ export async function loader({ request }: LoaderArgs) {
 		return redirect("/login");
 	}
 
-	const guilds = (await getUserGuilds(request))!;
+	const servers = await db.savedServer.findMany({
+		where: {
+			user_id: user.id
+		},
+		select: {
+			id: true,
+			bedrock: true,
+			server: true,
+			icon: true,
+			online: true,
+			players: true,
+			created_at: true
+		},
+		orderBy: {
+			server: "asc"
+		}
+	});
 
-	if (typeof guilds !== "object") {
-		throw new Error("'Guilds' is not an object!");
-	}
+	return typedjson({ servers });
+}
 
-	return json({ guilds });
+export interface DisplaySavedServer {
+	id: number;
+	created_at: Date;
+	bedrock: boolean;
+	server: string;
+	online: boolean;
+	players: number;
+	icon: string | null;
 }
 
 export default function Index() {
-	const lastGuilds = useRef({});
-	const { guilds }: { guilds: Guild[] } = useLoaderData() || { guilds: lastGuilds.current };
+	const lastServers = useRef({});
+	const { servers }: any = useTypedLoaderData<typeof loader>() || { servers: lastServers.current };
 	useEffect(() => {
-		if (guilds) lastGuilds.current = guilds;
-	}, [guilds]);
+		if (servers) lastServers.current = servers;
+	}, [servers]);
 
-	const refreshGuildsFetcher = useFetcher();
 	const logoutFetcher = useFetcher();
 
 	return (
 		<VStack w="100%" align={"start"} spacing={4}>
 			<VStack align="start">
-				<Heading fontSize={"3xl"}>Servers, that you can manage</Heading>
-				<Text>There's a list of all your servers, that you can manage. Click of any you want to configure the bot!</Text>
+				<Heading fontSize={"3xl"}>Servers, you have saved for later</Heading>
+				<Text>
+					Here you can see all servers you have saved for later. You can also add new servers by clicking on the button
+					below.
+				</Text>
 			</VStack>
 
-			<VStack w="100%" align={"start"} spacing={10}>
-				{guilds.length ? (
-					<SimpleGrid w="100%" minChildWidth={{ base: "100%", md: "calc(33.333333% - 20px)" }} spacing={5}>
-						{guilds
-							.filter((guild: Guild) => (guild.permissions & 0x20) == 0x20)
-							.sort((a: Guild, b: Guild) => {
-								if (a.owner === true && b.owner !== true) {
-									return -1;
-								} else if (b.owner === true && a.owner !== true) {
-									return 1;
-								} else {
-									return 0;
-								}
-							})
-							.map((guild) => (
-								<VStack
-									key={guild.id}
-									as={Link}
-									to={guild.id}
-									prefetch="render"
-									rounded={"xl"}
-									transform={"auto-gpu"}
-									_hover={{
-										scale: 1.05,
-										textDecor: "none"
-									}}
-									_active={{
-										scale: 0.95
-									}}
-									w="100%"
-									align={"center"}
-									justifyContent={"center"}
-									flexDir={"column"}
-									p={5}
-									transition={"background .2s, transform .2s"}
-									pos="relative"
-									overflow={"hidden"}
-								>
-									<Image
-										pos={"absolute"}
-										top={0}
-										right={0}
-										left={0}
-										bottom={0}
-										w="100%"
-										h="100%"
-										objectFit="cover"
-										filter={"blur(10px)"}
-										alt="background"
-										zIndex={-1}
-										src={
-											guild?.icon
-												? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=96`
-												: "/banner.jpg"
-										}
-									/>
+			{servers.length ? (
+				<SimpleGrid w="100%" minChildWidth={{ base: "100%", md: "calc(50% - 20px)" }} spacing={5}>
+					{servers.map((server: DisplaySavedServer) => (
+						<SavedServer key={server.id} server={server} />
+					))}
+				</SimpleGrid>
+			) : (
+				<Flex
+					bg="alpha"
+					rounded={"xl"}
+					w="100%"
+					maxW="600px"
+					p={5}
+					mx="auto"
+					alignItems={"center"}
+					justifyContent="center"
+				>
+					<Text fontWeight={600}>You don't have any servers saved for later.</Text>
+				</Flex>
+			)}
 
-									<Image
-										border={"2px solid white"}
-										rounded={"full"}
-										src={
-											guild?.icon
-												? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=96`
-												: "/discordLogo.png"
-										}
-										alt={guild.name + "'s name"}
-										boxSize={16}
-									/>
-									<HStack>
-										<Text
-											fontWeight={"black"}
-											fontSize={"xl"}
-											color={"white"}
-											noOfLines={1}
-											sx={{
-												"-webkit-text-stroke": "0.5px #1a1a1a"
-											}}
-										>
-											{guild.name}
-										</Text>
-										{guild.owner && <Badge colorScheme="orange">Admin</Badge>}
-									</HStack>
-									{/* {(guild.permissions & 0x20) == 0x20 ? "lmaooooooooooo" : "NOP"} */}
-								</VStack>
-							))}
-					</SimpleGrid>
-				) : (
-					<Heading fontSize={"xl"} textAlign={"center"} w="100" alignSelf={"center"} py={10} color="red">
-						Sadly, you don't manage any servers :(
-					</Heading>
-				)}
-				<HStack>
-					<refreshGuildsFetcher.Form action="/api/auth/discord/reauthenticate">
-						<Button
-							transform={"auto-gpu"}
-							_active={{ scale: 0.9 }}
-							isLoading={refreshGuildsFetcher.state !== "idle"}
-							type="submit"
-							variant={"brand"}
-						>
-							<HStack>
-								<Icon as={HiRefresh} />
-								<Text>Refresh guilds</Text>
-							</HStack>
-						</Button>
-					</refreshGuildsFetcher.Form>
-					<logoutFetcher.Form action="/api/auth/logout">
-						<Button
-							transform={"auto-gpu"}
-							_hover={{
-								bg: "alpha",
-								textDecor: "none"
-							}}
-							_active={{ scale: 0.9 }}
-							type="submit"
-							variant={"ghost"}
-							color={"red"}
-							leftIcon={<Icon as={FiLogOut} />}
-							isLoading={logoutFetcher.state !== "idle"}
-						>
-							Logout
-						</Button>
-					</logoutFetcher.Form>
-				</HStack>
-			</VStack>
+			<logoutFetcher.Form action="/api/auth/logout">
+				<Button
+					transform={"auto-gpu"}
+					_hover={{
+						bg: "alpha",
+						textDecor: "none"
+					}}
+					_active={{ scale: 0.9 }}
+					type="submit"
+					variant={"ghost"}
+					color={"red"}
+					leftIcon={<Icon as={FiLogOut} />}
+					isLoading={logoutFetcher.state !== "idle"}
+				>
+					Logout
+				</Button>
+			</logoutFetcher.Form>
 		</VStack>
 	);
 }

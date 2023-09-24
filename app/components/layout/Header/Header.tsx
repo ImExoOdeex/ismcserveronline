@@ -71,7 +71,7 @@ export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 				<HStack spacing={5}>
 					<Link to="/" alignItems={"center"} _hover={{ textDecor: "none" }}>
 						<Heading fontSize="2xl" transition={"all .2s"} transform={"auto-gpu"} _active={{ scale: 0.95 }}>
-							<HStack spacing={1} alignItems={"baseline"}>
+							<HStack spacing={0} alignItems={"baseline"}>
 								<Text>IsMcServer</Text>
 								<Badge
 									fontSize={"md"}

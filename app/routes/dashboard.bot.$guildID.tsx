@@ -3,7 +3,7 @@ import { json, redirect, type LoaderArgs } from "@remix-run/node";
 import { useLoaderData, useLocation, useOutlet } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 import BotNotOnServer from "~/components/layout/dashboard/BotNotOnServer";
-import { getUserGuilds } from "~/components/server/db/models/getUserGuilds";
+import { getUserGuilds } from "~/components/server/db/models/user";
 import { requireUserGuild } from "~/components/server/functions/secureDashboard";
 import Link from "~/components/utils/Link";
 

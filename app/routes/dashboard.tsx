@@ -1,10 +1,11 @@
-import { Divider, Flex, Heading, HStack, Image, Text, VStack } from "@chakra-ui/react";
+import { Divider, Flex, Heading, HStack, Text, useConst, VStack } from "@chakra-ui/react";
 import { redirect, type LoaderArgs } from "@remix-run/node";
-import { useOutlet } from "@remix-run/react";
+import { useLocation, useOutlet } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import AdaptiveAvatar from "~/components/layout/dashboard/AdaptiveAvatar";
-import { getUser } from "~/components/server/db/models/getUser";
+import { ChakraBox } from "~/components/layout/MotionComponents";
+import { getUser } from "~/components/server/db/models/user";
 import { commitSession, getSession } from "~/components/server/session.server";
 import Link from "~/components/utils/Link";
 
@@ -70,25 +71,21 @@ export default function Dashboard() {
 		if (user) lastUser.current = user;
 	}, [user]);
 
+	const path = useLocation().pathname;
+
+	const buttons = useConst([
+		{
+			name: "Saved Servers",
+			to: "/dashboard"
+		},
+		{
+			name: "Managae Discord Bot",
+			to: "/dashboard/bot"
+		}
+	]);
+
 	return (
 		<VStack w="100%" maxW={"1200px"} mx="auto" align={"start"} mt={5} spacing={10} px={4}>
-			<Image
-				pos={"absolute"}
-				top={0}
-				left={0}
-				opacity={0.1}
-				src={user?.photo ?? ""}
-				w={"100%"}
-				h={"100vh"}
-				zIndex={-1}
-				objectFit={"cover"}
-				objectPosition={"center"}
-				sx={{
-					WebkitMaskImage: `linear-gradient(to top, transparent 2%, black 50%)`
-				}}
-				// filter="blur(10px)"
-			/>
-
 			<VStack w="100%" align={"start"}>
 				<Flex
 					w="100%"
@@ -100,7 +97,7 @@ export default function Dashboard() {
 					}}
 					gap={4}
 				>
-					<Heading fontSize={"5xl"} as={Link} to="/dashboard">
+					<Heading fontSize={"4xl"} as={Link} to="/dashboard">
 						Dashboard
 					</Heading>
 
@@ -114,7 +111,40 @@ export default function Dashboard() {
 				</Flex>
 				<Divider />
 			</VStack>
-			{outlet}
+
+			<Flex flexDir={"column"} gap={4} w="100%">
+				<Flex gap={4}>
+					{buttons.map((button, i) => (
+						<Link
+							key={i}
+							to={button.to}
+							pos="relative"
+							_hover={{
+								textDecoration: "none",
+								opacity: 1
+							}}
+							opacity={path === button.to ? 1 : 0.8}
+							fontWeight={500}
+						>
+							{button.name}
+							{path === button.to && (
+								<ChakraBox
+									pos="absolute"
+									bottom={0}
+									left={0}
+									w="100%"
+									h="2px"
+									bg="brand"
+									layout
+									layoutId="dashunderline"
+								/>
+							)}
+						</Link>
+					))}
+				</Flex>
+
+				{outlet}
+			</Flex>
 		</VStack>
 	);
 }

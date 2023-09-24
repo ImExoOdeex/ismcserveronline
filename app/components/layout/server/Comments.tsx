@@ -40,7 +40,6 @@ export default function Comments({ comments, setComments }: Props) {
 			setNewComment("");
 			toast({
 				title: "Comment added.",
-				description: "Your comment has been added.",
 				status: "success",
 				duration: 9000,
 				position: "bottom-right",

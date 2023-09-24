@@ -9,18 +9,33 @@ datasource db {
 
 // do not the fuck ask why this is via email, not id ok?
 model User {
-  id         Int       @id @unique @default(autoincrement())
-  email      String    @unique
-  snowflake  String    @unique
-  nick       String
-  photo      String?
-  bio        String?
-  guilds     Json?
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
-  Comment    Comment[]
+  id          Int           @id @unique @default(autoincrement())
+  email       String        @unique
+  snowflake   String        @unique
+  nick        String
+  photo       String?
+  bio         String?
+  guilds      Json?
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
+  Comment     Comment[]
+  SavedServer SavedServer[]
 
   @@index([email])
+}
+
+model SavedServer {
+  id      Int     @id @unique @default(autoincrement())
+  server  String
+  icon    String?
+  online  Boolean @default(true)
+  players Int     @default(0)
+  bedrock Boolean @default(false)
+
+  user_id Int
+  User    User @relation(fields: [user_id], references: [id])
+
+  created_at DateTime @default(now())
 }
 
 enum SOURCE {

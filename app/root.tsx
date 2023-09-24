@@ -5,10 +5,10 @@ import type { ShouldRevalidateFunction } from "@remix-run/react";
 import { useLoaderData, useLocation, useOutlet } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import Layout from "./components/layout/Layout";
-import { getUser } from "./components/server/db/models/getUser";
+import { getUser } from "./components/server/db/models/user";
 import { validateServer } from "./components/server/functions/validateServer";
-import { GlobalContext } from "./components/utils/GlobalContext";
 import { getCookieWithoutDocument } from "./components/utils/func/cookiesFunc";
+import { GlobalContext } from "./components/utils/GlobalContext";
 import theme from "./components/utils/theme";
 import { Document } from "./document";
 

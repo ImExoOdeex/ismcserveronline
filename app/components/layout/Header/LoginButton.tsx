@@ -10,6 +10,7 @@ export default function LoginButton() {
 		return (
 			<Flex
 				as={Link}
+				px={2}
 				rounded={"xl"}
 				_hover={{ textDecoration: "none" }}
 				_active={{ scale: 0.9 }}

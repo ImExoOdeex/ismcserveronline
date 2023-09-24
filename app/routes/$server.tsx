@@ -16,25 +16,28 @@ import {
 	Td,
 	Text,
 	Tr,
+	useToast,
 	VStack
 } from "@chakra-ui/react";
 import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
 import { fetch, redirect } from "@remix-run/node";
 import type { ShouldRevalidateFunction } from "@remix-run/react";
-import { useFetcher } from "@remix-run/react";
+import { useFetcher, useNavigate } from "@remix-run/react";
 import { useContext, useEffect, useRef, useState } from "react";
-import { BiBug, BiInfoCircle } from "react-icons/bi";
+import { BiBookmark, BiBug, BiInfoCircle } from "react-icons/bi";
 import { typedjson } from "remix-typedjson";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { getClientIPAddress } from "remix-utils/build/server/get-client-ip-address";
 import { Ad, adType } from "~/components/ads/Yes";
 import ChecksTable from "~/components/layout/server/ChecksTable";
 import Comments from "~/components/layout/server/Comments";
+import { authenticator } from "~/components/server/auth/authenticator.server";
 import { Info, sendCommentWebhook, sendReportWebhook } from "~/components/server/auth/webhooks";
 import { db } from "~/components/server/db/db.server";
-import { getUser } from "~/components/server/db/models/getUser";
+import { getUser, getUserId } from "~/components/server/db/models/user";
 import { type MinecraftServerWoQuery } from "~/components/types/minecraftServer";
 import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
+import useUser from "~/components/utils/func/hooks/useUser";
 import { context } from "~/components/utils/GlobalContext";
 import Link from "~/components/utils/Link";
 
@@ -54,8 +57,8 @@ export async function action({ request, params }: ActionArgs) {
 
 			try {
 				if (!content) throw new Error("Content is not definied!");
-				if (content.length < 5) throw new Error("Content is too short!");
-				if (content.length > 250) throw new Error("Content is too long!");
+				if (content.trim().length < 5) throw new Error("Content is too short!");
+				if (content.trim().length > 250) throw new Error("Content is too long!");
 
 				const hasCommented = await db.comment.findFirst({
 					where: {
@@ -118,8 +121,8 @@ export async function action({ request, params }: ActionArgs) {
 
 			try {
 				if (!content) throw new Error("Content is not definied!");
-				if (content.length < 5) throw new Error("Content is too short!");
-				if (content.length > 250) throw new Error("Content is too long!");
+				if (content.trim().length < 5) throw new Error("Content is too short!");
+				if (content.trim().length > 250) throw new Error("Content is too long!");
 				if (!id) throw new Error("ID is not definied!");
 
 				const comment = await db.comment.findFirst({
@@ -234,6 +237,52 @@ export async function action({ request, params }: ActionArgs) {
 				success: true
 			});
 		}
+		case "save": {
+			const server = params.server!.toString().toLowerCase();
+
+			const user = await getUser(request);
+			if (!user) throw new Error("User is not logged!");
+
+			try {
+				const favicon = form.get("favicon")?.toString();
+				const players = Number(form.get("players")?.toString());
+				const online = Boolean(form.get("online")?.toString());
+
+				const hasSaved = await db.savedServer.findFirst({
+					where: {
+						user_id: user.id,
+						server: server,
+						bedrock: false
+					}
+				});
+				if (hasSaved) {
+					await db.savedServer.delete({
+						where: {
+							id: hasSaved.id
+						}
+					});
+				} else {
+					await db.savedServer.create({
+						data: {
+							server: server,
+							user_id: user.id,
+							icon: favicon,
+							players,
+							online,
+							bedrock: false
+						}
+					});
+				}
+			} catch (e: any) {
+				return typedjson({
+					error: e.message
+				});
+			}
+
+			return typedjson({
+				success: true
+			});
+		}
 		default: {
 			throw new Error("Action is not definied!");
 		}
@@ -294,7 +343,8 @@ export async function loader({ params, request }: LoaderArgs) {
 		});
 	}
 
-	const [checks, comments] = await Promise.all([
+	const isAuth = await authenticator.isAuthenticated(request);
+	const [checks, comments, isSaved] = await Promise.all([
 		db.check.findMany({
 			where: {
 				server: {
@@ -339,10 +389,21 @@ export async function loader({ params, request }: LoaderArgs) {
 			orderBy: {
 				created_at: "desc"
 			}
-		})
+		}),
+		isAuth
+			? db.savedServer
+					.findFirst({
+						where: {
+							server: server,
+							user_id: (await getUserId(request))!,
+							bedrock: false
+						}
+					})
+					.then((s) => (s ? true : false))
+			: false
 	]);
 
-	return typedjson({ server, data, checks, query, comments });
+	return typedjson({ server, data, checks, query, comments, isSaved });
 }
 
 export const meta: MetaFunction = ({ data }: { data: { server: string; data: MinecraftServerWoQuery } }) => {
@@ -364,18 +425,21 @@ export default function $server() {
 	const lastChecks = useRef({});
 	const lastQuery = useRef({});
 	const lastComments = useRef({});
+	const lastIsSaved = useRef({});
 
 	const {
 		server,
 		data,
 		checks,
 		query,
+		isSaved,
 		comments: dbComments
 	} = useTypedLoaderData<typeof loader>() || {
 		server: lastServer.current,
 		data: lastData.current,
 		checks: lastChecks.current,
 		query: lastQuery.current,
+		isSaved: lastIsSaved.current,
 		comments: lastComments.current
 	};
 	useEffect(() => {
@@ -384,7 +448,8 @@ export default function $server() {
 		if (checks) lastChecks.current = checks;
 		if (query) lastQuery.current = query;
 		if (dbComments) lastComments.current = dbComments;
-	}, [server, data, checks, query, dbComments]);
+		if (isSaved) lastIsSaved.current = isSaved;
+	}, [server, data, checks, query, dbComments, isSaved]);
 
 	const bgImageColor = "rgba(0,0,0,.7)";
 
@@ -411,6 +476,46 @@ export default function $server() {
 	const [tab, setTab] = useState<typeof tabs[number]["value"]>("comments");
 
 	const [comments, setComments] = useState(dbComments);
+
+	const [saved, setSaved] = useState(isSaved);
+
+	const saveFetcher = useFetcher();
+	const user = useUser();
+	const navigate = useNavigate();
+
+	const toast = useToast();
+	useEffect(() => {
+		if (saveFetcher.data?.success) {
+			toast({
+				title: "Successfully saved server!",
+				duration: 9000,
+				variant: "subtle",
+				isClosable: true,
+				status: "success",
+				position: "bottom-right"
+			});
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [saveFetcher.data]);
+
+	function handleSave() {
+		if (user) {
+			setSaved((prev) => !prev);
+			saveFetcher.submit(
+				{
+					action: "save",
+					favicon: data?.favicon,
+					players: data?.players?.online,
+					online: data?.online
+				},
+				{
+					method: "PATCH"
+				}
+			);
+		} else {
+			navigate("/login");
+		}
+	}
 
 	return (
 		<VStack spacing={"40px"} align="start" maxW="1000px" mx="auto" w="100%" mt={"50px"} px={4} mb={5}>
@@ -654,28 +759,46 @@ export default function $server() {
 
 			<Divider />
 
-			<Flex gap={2}>
-				{tabs.map((t) => (
-					<Button
-						boxShadow={"sm"}
-						key={t.value}
-						onClick={() => setTab(t.value)}
-						size={"sm"}
-						rounded={"xl"}
-						bg={tab === t.value ? "brand.500" : "transparent"}
-						color={tab === t.value ? "white" : "text"}
-						fontWeight={500}
-						border="1px solid"
-						borderColor={tab === t.value ? "transparent" : "alpha300"}
-						px={4}
-						py={2}
-						_hover={{
-							bg: tab === t.value ? "brand.600" : "alpha100"
-						}}
-					>
-						{t.name}
-					</Button>
-				))}
+			<Flex justifyContent={"space-between"} w="100%" alignItems={"center"}>
+				<Flex gap={2}>
+					{tabs.map((t) => (
+						<Button
+							boxShadow={"sm"}
+							key={t.value}
+							onClick={() => setTab(t.value)}
+							size={"sm"}
+							rounded={"xl"}
+							bg={tab === t.value ? "brand.500" : "transparent"}
+							color={tab === t.value ? "white" : "text"}
+							fontWeight={500}
+							border="1px solid"
+							borderColor={tab === t.value ? "transparent" : "alpha300"}
+							px={4}
+							py={4}
+							_hover={{
+								bg: tab === t.value ? "brand.600" : "alpha100"
+							}}
+						>
+							{t.name}
+						</Button>
+					))}
+				</Flex>
+
+				<Button
+					size={"sm"}
+					py={4}
+					variant={saved ? "solid" : "outline"}
+					borderColor={"yellow.500"}
+					bg={saved ? "yellow.500" : "transparent"}
+					rightIcon={<Icon as={BiBookmark} color={saved ? "white" : "yellow.500"} boxSize={5} />}
+					color={saved ? "white" : "text"}
+					onClick={handleSave}
+					_hover={{
+						bg: saved ? "yellow.600" : "alpha100"
+					}}
+				>
+					{saved ? "Saved" : "Save"}
+				</Button>
 			</Flex>
 
 			{tab === "checks" ? (

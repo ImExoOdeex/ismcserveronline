@@ -1,20 +1,20 @@
 import { Flex, Image, useColorMode, useToken } from "@chakra-ui/react";
-import { useLocation } from "@remix-run/react";
-import { useContext } from "react";
-import { context } from "../utils/GlobalContext";
 import { AnimatePresence, motion } from "framer-motion";
+import { useContext } from "react";
+import useUser from "../utils/func/hooks/useUser";
+import { context } from "../utils/GlobalContext";
 
 export default function BackgroundUtils() {
 	const { displayGradient, displayLogoInBg, gradientColor } = useContext(context);
 
 	const { colorMode } = useColorMode();
-	const path = useLocation().pathname;
+	const user = useUser();
 	const [rawColor] = useToken("colors", [gradientColor ?? ""]);
 
 	return (
 		<Flex pos={"absolute"} zIndex={-1} maxH={"100vh"} w="100%" h="100%">
-			<AnimatePresence mode="sync">
-				{displayLogoInBg && path === "/" && (
+			<AnimatePresence mode="sync" initial={false}>
+				{displayLogoInBg && (
 					<motion.div
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
@@ -22,18 +22,19 @@ export default function BackgroundUtils() {
 						transition={{ ease: [0.25, 0.1, 0.25, 1] }}
 					>
 						<Image
-							pos={"fixed"}
+							pos={"absolute"}
 							top={0}
-							right={0}
 							left={0}
-							bottom={0}
-							w="100%"
-							h="100%"
+							opacity={0.1}
+							src={user?.photo ?? "/discordLogo.png"}
+							w={"100%"}
+							h={"100vh"}
+							zIndex={-1}
 							objectFit={"cover"}
 							objectPosition={"center"}
-							opacity={0.1}
-							sx={{ WebkitMaskImage: "linear-gradient(to right, transparent 2%, black 100%)" }}
-							src="https://cdn.ismcserver.online/statuswallpaper-trans-720.webp"
+							sx={{
+								WebkitMaskImage: `linear-gradient(to top, transparent 2%, black 50%)`
+							}}
 						/>
 					</motion.div>
 				)}

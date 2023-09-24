@@ -94,7 +94,8 @@ export const discordStrategy: any = new DiscordStrategy(
 
 		return {
 			email,
-			snowflake: profile.id
+			snowflake: profile.id,
+			id: user.id
 		};
 	}
 );

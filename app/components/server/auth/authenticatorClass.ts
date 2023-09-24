@@ -1,6 +1,6 @@
 import type { AppLoadContext } from "@remix-run/node";
 import { isSession, redirect, type Session, type SessionStorage } from "@remix-run/server-runtime";
-import { getUser } from "../db/models/getUser";
+import { getUser } from "../db/models/user";
 import { discordStrategy } from "./discordStrategy";
 import { Info, sendLogoutWebhook } from "./webhooks";
 

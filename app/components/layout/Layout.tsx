@@ -73,9 +73,7 @@ export default function Layout({ children }: { children?: React.ReactNode }) {
 				animate={{
 					x: isMenuOpen ? "-80vw" : 0
 				}}
-				// hehe stupid chakra + framer motion, but at least it works/ this is in official docs so ¯\_(ツ)_/¯
-				// it's detecting the chakra `transition` type, not framer's one
-				transition={mobileMenuTransition as any}
+				transition={mobileMenuTransition as Transition as any}
 				flexDir={"column"}
 				h="100%"
 				w="100%"

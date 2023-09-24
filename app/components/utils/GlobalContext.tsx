@@ -1,6 +1,5 @@
 import { useLocation } from "@remix-run/react";
-import React, { createContext, useState } from "react";
-import { useEffect } from "react";
+import React, { createContext, useEffect, useState } from "react";
 
 type Props = {
 	children?: React.ReactNode;
@@ -22,10 +21,12 @@ export function GlobalContext({ children }: Props) {
 		return path === "/api" ? "green.500" : path.includes("/popular-servers") ? "gold" : "brand";
 	}
 
+	console.log(' path.startsWith("/dashboard")', path.startsWith("/dashboard"));
+
 	const [data, setData] = useState({
 		displayGradient: true,
 		gradientColor: getNewGradientColor(),
-		displayLogoInBg: false,
+		displayLogoInBg: path.startsWith("/dashboard"),
 		updateData
 	});
 
@@ -35,6 +36,7 @@ export function GlobalContext({ children }: Props) {
 
 	useEffect(() => {
 		updateData("gradientColor", getNewGradientColor());
+		updateData("displayLogoInBg", path.startsWith("/dashboard"));
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [path]);
 

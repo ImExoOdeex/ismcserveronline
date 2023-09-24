@@ -6,7 +6,7 @@ import { BiSave } from "react-icons/bi";
 import { HiRefresh } from "react-icons/hi";
 import StatusColor from "~/components/layout/dashboard/StatusColor";
 import { Info, sendActionWebhook } from "~/components/server/auth/webhooks";
-import { getUser } from "~/components/server/db/models/getUser";
+import { getUser } from "~/components/server/db/models/user";
 import { requireUserGuild } from "~/components/server/functions/secureDashboard";
 
 export async function loader({ params, request }: LoaderArgs) {
