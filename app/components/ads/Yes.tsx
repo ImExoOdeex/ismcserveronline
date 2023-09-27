@@ -1,6 +1,9 @@
-import { Box, type BoxProps } from "@chakra-ui/react";
+import { Icon } from "@chakra-ui/icons";
+import { Box, Flex, Text, type BoxProps } from "@chakra-ui/react";
 import { useMatches } from "@remix-run/react";
 import { useEffect } from "react";
+import { PiShieldWarningDuotone } from "react-icons/pi";
+import useGlobalContext from "../utils/func/hooks/useGlobalContext";
 
 export enum adType {
 	// 786 x 90 (px)
@@ -30,9 +33,14 @@ export function Ad({ type = adType.responsive, width = "1168px", ...props }: { t
 		}
 	}, []);
 
+	const { hasAdblock } = useGlobalContext();
+
 	const { showAds } = useMatches()[0].data;
-	if (!showAds) {
+	if (!showAds || (hasAdblock && type !== adType.column)) {
 		return <></>;
+	}
+	if (hasAdblock && type === adType.column) {
+		return <AdBlockAd />;
 	}
 
 	switch (type) {
@@ -102,4 +110,26 @@ export function Ad({ type = adType.responsive, width = "1168px", ...props }: { t
 			);
 		}
 	}
+}
+
+function AdBlockAd() {
+	return (
+		<Flex
+			w="100%"
+			p={3}
+			rounded="xl"
+			bg="rgba(255,0,0,0.05)"
+			boxShadow={"sm"}
+			border={"2px solid"}
+			borderColor="red"
+			flexDir={"column"}
+			gap={3}
+			alignItems={"center"}
+		>
+			<Icon as={PiShieldWarningDuotone} boxSize={16} color="red" />
+			<Text fontSize={"sm"} fontWeight={500}>
+				You have adblock enabled. Please consider disabling it, to support us for free. Thanks!
+			</Text>
+		</Flex>
+	);
 }

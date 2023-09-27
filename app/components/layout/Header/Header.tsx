@@ -1,5 +1,4 @@
-import { Badge, Box, Button, Flex, Heading, HStack, Skeleton, Text, useColorMode, useEventListener } from "@chakra-ui/react";
-import loadable from "@loadable/component";
+import { Badge, Box, Button, Flex, Heading, HStack, Text } from "@chakra-ui/react";
 import { useLocation } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -9,16 +8,8 @@ import FAQButton from "./FAQButton";
 import LoginButton from "./LoginButton";
 import HamburgerMenu from "./Mobile/HamburgerMenu";
 import PopularServersButton from "./PopularServersButton";
+import ServerSearch from "./ServerSearch";
 import ThemeToggle from "./ToggleTheme";
-
-const ServerSearch = loadable(() => import(/* webpackPrefetch: true */ "./ServerSearch"), {
-	ssr: true,
-	fallback: <Skeleton h="40px" w="320px" minW="100%" startColor="alpha" endColor="alpha200" rounded={"xl"} />
-});
-
-const Modal = loadable(() => import("./Mobile/Modal"), {
-	ssr: true
-});
 
 type Props = {
 	isMenuOpen: boolean;
@@ -26,17 +17,6 @@ type Props = {
 };
 
 export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
-	useEventListener("keydown", (event: any) => {
-		const isMac = /(Mac|iPhone|iPod|iPad)/i.test(navigator?.platform);
-		const hotkey = isMac ? "metaKey" : "ctrlKey";
-		if (event?.key?.toLowerCase() === "i" && event[hotkey]) {
-			event.preventDefault();
-			toggleColorMode();
-		}
-	});
-
-	const { toggleColorMode, colorMode } = useColorMode();
-
 	const [scrollPosition, setScrollPosition] = useState(0);
 	const handleScroll = () => {
 		const position = window.pageYOffset;

@@ -54,11 +54,11 @@ export default function $guildID() {
 	const links = [
 		{
 			name: "Livecheck",
-			path: `/dashboard/${guild.id}`
+			path: `/dashboard/bot/${guild.id}`
 		},
 		{
 			name: "Config",
-			path: `/dashboard/${guild.id}/config`
+			path: `/dashboard/bot/${guild.id}/config`
 		}
 	];
 

@@ -108,15 +108,8 @@ export async function loader({ request }: LoaderArgs) {
 	});
 }
 
-export const shouldRevalidate: ShouldRevalidateFunction = (data) => {
-	console.log(data);
-
-	// if (formAction === "/api/auth/logout") {
-	// 	console.log("revalidate");
-	// 	return true;
-	// }
-
-	console.log("not");
+export const shouldRevalidate: ShouldRevalidateFunction = ({ nextUrl }) => {
+	if (nextUrl.pathname === "/login") return true;
 
 	return false;
 };

@@ -2,12 +2,12 @@ import { ArrowForwardIcon, Icon } from "@chakra-ui/icons";
 import {
 	Box,
 	Button,
-	Link as ChakraLink,
 	Divider,
 	Flex,
 	Heading,
 	IconButton,
 	Input,
+	Link as ChakraLink,
 	Spinner,
 	Text,
 	useColorMode,
@@ -18,6 +18,7 @@ import type { Transition } from "framer-motion";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { BiSearchAlt } from "react-icons/bi";
+import useUser from "~/components/utils/func/hooks/useUser";
 import Link from "~/components/utils/Link";
 import links from "../../../config/links.json";
 
@@ -56,6 +57,8 @@ export default function SideMenu({ isOpen, setIsOpen, mobileMenuTransition }: Pr
 			link: "/api"
 		}
 	];
+
+	const user = useUser();
 
 	return (
 		<AnimatePresence>
@@ -216,7 +219,7 @@ export default function SideMenu({ isOpen, setIsOpen, mobileMenuTransition }: Pr
 								color: "brand"
 							}}
 						>
-							Login
+							{user ? "Dashboard" : "Login"}
 						</Link>
 
 						<ChakraLink

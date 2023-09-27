@@ -12,36 +12,21 @@ import Link from "~/components/utils/Link";
 export async function loader({ request }: LoaderArgs) {
 	const user = await getUser(request);
 
-	const url = new URL(request.url);
 	const cookies = request.headers.get("Cookie");
 	const session = await getSession(cookies);
 
-	const redirectURLParam = url.searchParams.get("redirect") as string;
-	const guildIDParam = url.searchParams.get("guild") as string;
-
 	if (!user) {
-		session.set("redirect", redirectURLParam);
-		session.set("guild", guildIDParam);
-
-		return redirect("/login", {
-			headers: {
-				"Set-Cookie": await commitSession(session)
-			}
-		});
+		return redirect("/login");
 	}
 
-	if (redirectURLParam && guildIDParam) {
-		return redirect(url.pathname);
-	}
-
-	const redirectURL = session.get("redirect");
-	const guildID = session.get("guild");
+	const redirectURL = await session.get("redirect");
+	const guildID = await session.get("guild");
 
 	if (redirectURL) {
 		session.unset("redirect");
 		session.unset("guild");
 
-		return redirect(`/dashboard/${guildID}${redirectURL === "index" ? "" : "/" + redirectURL}`, {
+		return redirect(`/dashboard/bot/${guildID}${redirectURL === "index" ? "" : "/" + redirectURL}`, {
 			headers: {
 				"Set-Cookie": await commitSession(session)
 			}
@@ -112,7 +97,7 @@ export default function Dashboard() {
 				<Divider />
 			</VStack>
 
-			<Flex flexDir={"column"} gap={4} w="100%">
+			<Flex flexDir={"column"} gap={6} w="100%">
 				<Flex gap={4}>
 					{buttons.map((button, i) => (
 						<Link

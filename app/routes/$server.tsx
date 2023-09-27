@@ -32,7 +32,7 @@ import { Ad, adType } from "~/components/ads/Yes";
 import ChecksTable from "~/components/layout/server/ChecksTable";
 import Comments from "~/components/layout/server/Comments";
 import { authenticator } from "~/components/server/auth/authenticator.server";
-import { Info, sendCommentWebhook, sendReportWebhook } from "~/components/server/auth/webhooks";
+import { Info, sendCommentWebhook, sendDeleteCommentWebhook, sendReportWebhook } from "~/components/server/auth/webhooks";
 import { db } from "~/components/server/db/db.server";
 import { getUser, getUserId } from "~/components/server/db/models/user";
 import { type MinecraftServerWoQuery } from "~/components/types/minecraftServer";
@@ -193,11 +193,13 @@ export async function action({ request, params }: ActionArgs) {
 				});
 			}
 
-			await db.comment.delete({
+			const deletedComment = await db.comment.delete({
 				where: {
 					id: Number(id)
 				}
 			});
+
+			sendDeleteCommentWebhook(user, deletedComment.content, server, new Info(request.headers));
 
 			return typedjson({
 				success: true
@@ -473,7 +475,7 @@ export default function $server() {
 		}
 	] as const;
 
-	const [tab, setTab] = useState<typeof tabs[number]["value"]>("comments");
+	const [tab, setTab] = useState<typeof tabs[number]["value"]>("checks");
 
 	const [comments, setComments] = useState(dbComments);
 
@@ -807,7 +809,6 @@ export default function $server() {
 						Last checks
 					</Heading>
 
-					{/* @ts-ignore, idk this fucking serialize object does not work */}
 					<ChecksTable checks={checks} server={server} />
 				</VStack>
 			) : (

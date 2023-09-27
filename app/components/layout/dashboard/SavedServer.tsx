@@ -50,16 +50,18 @@ export default function SavedServer({ server }: Props) {
 	return (
 		<Flex key={server.id} w="100%" p={4} borderRadius={8} gap={4} bg="alpha" rounded={"xl"}>
 			<Flex w="100%" justifyContent={"space-between"}>
-				<Flex gap={4}>
+				<Flex gap={4} w="100%">
 					<Image
-						src={server?.icon ?? ""}
+						src={
+							server?.icon && server?.icon !== "null" && server?.icon !== "undefined" ? server.icon : "/mc-icon.png"
+						}
 						boxSize={20}
 						sx={{
 							imageRendering: "pixelated"
 						}}
 					/>
 					<Flex flexDir="column" gap={1}>
-						<Text fontWeight={600} fontSize="sm">
+						<Text fontWeight={600} fontSize="sm" whiteSpace={"nowrap"}>
 							{server.server}
 						</Text>
 
@@ -72,7 +74,13 @@ export default function SavedServer({ server }: Props) {
 					</Flex>
 				</Flex>
 
-				<Flex gap={2}>
+				<Flex
+					gap={2}
+					alignSelf={{
+						base: "flex-end",
+						sm: "flex-start"
+					}}
+				>
 					<deleteFetcher.Form method="DELETE">
 						<VisuallyHiddenInput name="server" value={server.server} />
 						<VisuallyHiddenInput name="bedrock" value={server.bedrock ? "true" : "false"} />

@@ -1,19 +1,33 @@
 import { Button, Flex, Heading, HStack, Text, VStack } from "@chakra-ui/react";
-import { json, redirect, type LoaderArgs } from "@remix-run/node";
+import { json, type LoaderArgs } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { useEffect, useRef } from "react";
+import { redirect } from "remix-typedjson";
 import DiscordIcon from "~/components/layout/icons/DiscordIcon";
 import { authenticator } from "~/components/server/auth/authenticator.server";
+import { getSession } from "~/components/server/session.server";
 
 export async function loader({ request }: LoaderArgs) {
 	const auth = await authenticator.isAuthenticated(request);
 
 	if (auth) {
-		return redirect(`/dashboard`);
+		throw redirect(`/dashboard`);
 	}
 
 	const url = new URL(request.url);
 	const failed = url.searchParams.get("message") === "fail";
+	const redirectParam = url.searchParams.get("redirect");
+
+	if (redirectParam === "") {
+		const session = await getSession(request.headers.get("Cookie"));
+		console.log("login");
+		console.table({
+			redirect: await session.get("redirect"),
+			guild: await session.get("guild")
+		});
+
+		throw redirect(`/api/auth/discord`);
+	}
 
 	return json({ failed });
 }

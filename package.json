@@ -1,7 +1,7 @@
 {
 	"private": true,
 	"sideEffects": false,
-	"version": "1.5.0",
+	"version": "1.6.0",
 	"scripts": {
 		"build": "cross-env NODE_ENV=production tsc --skipLibCheck server.ts --outDir ./build --esModuleInterop && remix build",
 		"dev:build-server": "cross-env NODE_ENV=development tsc --skipLibCheck ./server.ts --outDir ./build --esModuleInterop",
@@ -37,7 +37,7 @@
 		"morgan": "^1.10.0",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
-		"react-icons": "^4.7.1",
+		"react-icons": "^4.11.0",
 		"react-time-ago": "^7.2.1",
 		"remix": "1.19.3",
 		"remix-auth-discord": "^1.2.1",

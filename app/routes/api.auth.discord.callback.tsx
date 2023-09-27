@@ -8,6 +8,11 @@ export async function loader({ request }: LoaderArgs) {
 	const redirectURL = session.get("redirect");
 	const guildID = session.get("guild");
 
+	console.table({
+		redirectURL,
+		guildID
+	});
+
 	return await authenticator.authenticate(request, {
 		successRedirect: `/dashboard?guild=${guildID}&redirect=${redirectURL}`,
 		failureRedirect: "/login?message=fail"

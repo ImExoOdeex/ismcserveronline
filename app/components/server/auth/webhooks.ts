@@ -158,6 +158,45 @@ export async function sendCommentWebhook(user: User, comment: string, server: st
 	}
 }
 
+export async function sendDeleteCommentWebhook(user: User, comment: string, server: string, info: IInfo) {
+	try {
+		if (userDisabledLogging(user)) return;
+		await fetch(process.env.DISCORD_WEBHOOK_LOGIN!, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({
+				content: null,
+				embeds: [
+					{
+						title: `User \`${user.nick}\` deleted their comment`,
+						description: `**Email**: ${user.email}\n**IP**: ${info.ip}\n**Platform**: ${info.platform}\n**Agent**: ${info.agent}`,
+						fields: [
+							{
+								name: "Comment",
+								value: comment
+							},
+							{
+								name: "Server",
+								value: server
+							}
+						],
+						author: {
+							name: user.nick,
+							url: `https://discord.com/users/${user.id}`,
+							icon_url: user.photo || `https://cdn.discordapp.com/embed/avatars/${Number(user.id) % 5}.png`
+						}
+					}
+				],
+				attachments: []
+			})
+		});
+	} catch (e) {
+		console.error(e);
+	}
+}
+
 export async function sendReportWebhook(user: User, comment: object, server: string, info: IInfo) {
 	try {
 		const res = await fetch(process.env.DISCORD_WEBHOOK_REPORT!, {

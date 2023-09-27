@@ -1,5 +1,6 @@
 import { useLocation } from "@remix-run/react";
 import React, { createContext, useEffect, useState } from "react";
+import { useAdBlock } from "./func/hooks/useAdBlock";
 
 type Props = {
 	children?: React.ReactNode;
@@ -9,6 +10,7 @@ type contextType = {
 	displayGradient?: boolean;
 	gradientColor?: string;
 	displayLogoInBg?: boolean;
+	hasAdblock?: boolean;
 	updateData: (key: "displayGradient" | "gradientColor" | "displayLogoInBg", value: any) => void;
 };
 
@@ -22,6 +24,8 @@ export function GlobalContext({ children }: Props) {
 	}
 
 	console.log(' path.startsWith("/dashboard")', path.startsWith("/dashboard"));
+
+	const hasAdblock = useAdBlock();
 
 	const [data, setData] = useState({
 		displayGradient: true,
@@ -40,5 +44,14 @@ export function GlobalContext({ children }: Props) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [path]);
 
-	return <context.Provider value={data}>{children}</context.Provider>;
+	return (
+		<context.Provider
+			value={{
+				...data,
+				hasAdblock
+			}}
+		>
+			{children}
+		</context.Provider>
+	);
 }

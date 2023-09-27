@@ -144,7 +144,7 @@ export default function Index() {
 			setIsEditing(false);
 			setTimeout(() => {
 				revalidate();
-			}, 500);
+			}, 7000);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [data]);
@@ -615,13 +615,13 @@ export default function Index() {
 							{data.message}
 						</Text>
 					)}
-					{livecheck && <Text fontSize={"xs"}>Data refreshes automatically every 15 seconds.</Text>}
+					{livecheck && <Text fontSize={"xs"}>Data refreshes automatically every 30 seconds.</Text>}
 				</VStack>
 
 				<Divider my={10} />
 
 				<Text color={"textSec"}>
-					Livecheck checks Minecraft's server status every 15 seconds and updates the message in real-time if there are
+					Livecheck checks Minecraft's server status every 30 seconds and updates the message in real-time if there are
 					any changes to the player count or server status. To set it up, enter the server address, select the correct
 					Minecraft edition, and choose the appropriate channel to display the server status.
 				</Text>

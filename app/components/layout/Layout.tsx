@@ -2,25 +2,17 @@ import { Box, Flex } from "@chakra-ui/react";
 import loadable from "@loadable/component";
 import type { Transition } from "framer-motion";
 import { Component, useState, type ReactNode } from "react";
-import AAA from "../ads/AAA";
 import BackgroundUtils from "./BackgroundUtils";
 import Column from "./Column";
+import CookieConstent from "./CookieConsent";
 import Header from "./Header/Header";
 import SideMenu from "./Header/Mobile/SideMenu";
 import { ChakraBox } from "./MotionComponents";
-
-const CookieConstent = loadable(() => import("./CookieConsent"), {
-	ssr: false
-});
 
 const Footer = loadable(() => import("./Footer"), {
 	ssr: true,
 	fallback: <Box minH={"172px"} h="100%" />
 });
-
-// const AdblockDetected = loadable(() => import("../ads/AdblockDetected"), {
-// 	ssr: true
-// });
 
 interface ErrorBoundaryProps {
 	children: ReactNode;
@@ -79,7 +71,6 @@ export default function Layout({ children }: { children?: React.ReactNode }) {
 				w="100%"
 			>
 				<BackgroundUtils />
-				<AAA />
 
 				<ErrorBoundary>
 					<CookieConstent />

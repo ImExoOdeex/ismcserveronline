@@ -1,5 +1,5 @@
-import { Flex, Heading, Icon, Skeleton, Text, VStack, VisuallyHiddenInput } from "@chakra-ui/react";
-import { useEffect, useState, useContext } from "react";
+import { Flex, Heading, Icon, Skeleton, Text, VisuallyHiddenInput, VStack } from "@chakra-ui/react";
+import { useContext, useEffect, useState } from "react";
 import { BiColorFill } from "react-icons/bi";
 import { context } from "~/components/utils/GlobalContext";
 
@@ -55,7 +55,7 @@ export default function StatusColor({ config, type }: { config: any; type: "onli
 						)}
 					</Heading>
 
-					<Flex rounded={"xl"} bg={color} h={"32"} w={{ base: "100%", md: "60" }} pos={"relative"}>
+					<Flex rounded={"xl"} bg={color} h={"32"} w={{ base: "100%", md: "100%" }} pos={"relative"}>
 						<VisuallyHiddenInput
 							id={`${type}Color`}
 							name={`${type}Color`}

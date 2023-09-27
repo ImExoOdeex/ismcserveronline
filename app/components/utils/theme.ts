@@ -10,7 +10,8 @@ import type { Dict } from "@chakra-ui/utils";
 
 const config: ThemeConfig = {
 	initialColorMode: "system",
-	useSystemColorMode: true
+	useSystemColorMode: true,
+	disableTransitionOnChange: true
 };
 
 const styles = {

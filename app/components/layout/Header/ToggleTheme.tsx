@@ -9,10 +9,10 @@ export default function ThemeToggle() {
 	const bgColorActive = useColorModeValue("rgba(68, 51, 122, .2)", "rgba(236, 201, 75,.2)");
 	const { colorMode, toggleColorMode } = useColorMode();
 
-	useEventListener("keydown", (event: any) => {
+	useEventListener("keydown", (event) => {
 		const isMac = /(Mac|iPhone|iPod|iPad)/i.test(navigator?.platform);
 		const hotkey = isMac ? "metaKey" : "ctrlKey";
-		if (event?.key?.toLowerCase() === "i" && event[hotkey]) {
+		if (event?.key?.toLowerCase() === "i" && event[hotkey] && !event.shiftKey) {
 			event.preventDefault();
 			toggleColorMode();
 		}

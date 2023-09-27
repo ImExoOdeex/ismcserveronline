@@ -38,6 +38,7 @@ export const discordStrategy: any = new DiscordStrategy(
 				? process.env.DISCORD_CLIENT_SECRET
 				: process.env.DISCORD_CLIENT_SECRET_DEV ?? "",
 		scope: ["identify", "email", "guilds"],
+		prompt: "none",
 		callbackURL:
 			process.env.NODE_ENV === "production"
 				? `https://ismcserver.online/api/auth/discord/callback`
