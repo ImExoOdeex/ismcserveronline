@@ -1,3 +1,4 @@
+import { redirect } from "remix-typedjson";
 import { authenticator } from "../../auth/authenticator.server";
 import { db } from "../db.server";
 
@@ -16,6 +17,9 @@ export async function getUser(request: Request) {
 
 	if (!auth) {
 		return null;
+	}
+	if (!auth.id || !auth.email) {
+		throw redirect("/relog");
 	}
 
 	const user = await db.user.findUnique({

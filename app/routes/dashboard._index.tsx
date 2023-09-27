@@ -150,7 +150,7 @@ export default function Index() {
 	const logoutFetcher = useFetcher();
 
 	return (
-		<VStack w="100%" align={"start"} spacing={4}>
+		<VStack display={"flex"} w="100%" align={"start"} spacing={4}>
 			<VStack align="start">
 				<Heading fontSize={"3xl"}>Servers, you have saved for later</Heading>
 				<Text>
@@ -173,6 +173,7 @@ export default function Index() {
 					maxW="600px"
 					p={5}
 					mx="auto"
+					alignSelf={"center"}
 					alignItems={"center"}
 					justifyContent="center"
 				>

@@ -4,15 +4,14 @@ import { useFetcher, useLoaderData } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 import { redirect } from "remix-typedjson";
 import DiscordIcon from "~/components/layout/icons/DiscordIcon";
-import { authenticator } from "~/components/server/auth/authenticator.server";
 import { getSession } from "~/components/server/session.server";
 
 export async function loader({ request }: LoaderArgs) {
-	const auth = await authenticator.isAuthenticated(request);
+	// const auth = await authenticator.isAuthenticated(request);
 
-	if (auth) {
-		throw redirect(`/dashboard`);
-	}
+	// if (auth && auth.id) {
+	// 	throw redirect(`/dashboard`);
+	// }
 
 	const url = new URL(request.url);
 	const failed = url.searchParams.get("message") === "fail";

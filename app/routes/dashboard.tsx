@@ -64,7 +64,7 @@ export default function Dashboard() {
 			to: "/dashboard"
 		},
 		{
-			name: "Managae Discord Bot",
+			name: "Manage Discord Bot",
 			to: "/dashboard/bot"
 		}
 	]);

@@ -99,6 +99,7 @@ export async function loader({ request }: LoaderArgs) {
 		getCookieWithoutDocument("no_ads", request.headers.get("cookie") ?? "") !== process.env.NO_ADS_PARAM_VALUE;
 	// ^^^ code for no ads up there uwu ^^^
 
+	console.log("calling root loader");
 	const user = await getUser(request);
 
 	return json({

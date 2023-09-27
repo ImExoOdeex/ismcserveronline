@@ -78,10 +78,10 @@ export class Authenticator<User = unknown> {
 	}
 
 	// Logout from current session
-	async logout(request: Request | Session, options: { redirectTo: string }) {
+	async logout(request: Request | Session, options: { redirectTo: string; doNotLog?: boolean }) {
 		const session = isSession(request) ? request : await this.sessionStorage.getSession(request.headers.get("Cookie"));
 
-		if (request instanceof Request) {
+		if (request instanceof Request && !options.doNotLog) {
 			const user = await getUser(request);
 			if (user) sendLogoutWebhook(user, "discord", new Info(request.headers));
 		}
