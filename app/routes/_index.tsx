@@ -41,7 +41,8 @@ export async function loader({ request }: LoaderArgs) {
 	const bedrock = getCookieWithoutDocument("bedrock", cookies ?? "") === "true";
 	const query = getCookieWithoutDocument("query", cookies ?? "") === "true";
 
-	const [sampleServers, count] = await Promise.all([
+	const start = Date.now();
+	let [sampleServers, count] = await Promise.all([
 		db.sampleServer.findMany({
 			select: {
 				bedrock: true,
@@ -69,6 +70,8 @@ export async function loader({ request }: LoaderArgs) {
 		}),
 		db.check.count()
 	]);
+
+	console.log(`[Loader] Sample servers and count took ${Date.now() - start}ms`);
 
 	return json({ bedrock, query, sampleServers, count });
 }

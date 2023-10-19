@@ -1,4 +1,5 @@
 import { chakra, Flex, Heading, Image, Stack, Text, VStack } from "@chakra-ui/react";
+import { formatBigNumbers } from "~/components/utils/func/numbers";
 import ServerSearch from "./ServerSearch";
 
 export default function Main({
@@ -43,8 +44,8 @@ export default function Main({
 				/>
 
 				<Text fontWeight={600} color="textSec" maxW={"423px"} alignSelf="start">
-					Get information about your favourite Minecraft server for Java or Bedrock edition! Over {count} servers has
-					been checked!
+					Get information about your favourite Minecraft server for Java or Bedrock edition! Over{" "}
+					{formatBigNumbers(count)} checks have been checked!
 				</Text>
 			</VStack>
 
