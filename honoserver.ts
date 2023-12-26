@@ -19,6 +19,7 @@ app.use(async (ctx, next) => {
 	ctx.res.headers.delete("x-powered-by");
 	await next();
 });
+
 app.use("*", logger());
 
 // app.use(
@@ -28,6 +29,8 @@ app.use("*", logger());
 // 		cacheControl: "public, max-age=31536000, immutable"
 // 	})
 // );
+
+app.use("*", cacheBuild());
 
 app.use(
 	"/*",
@@ -138,7 +141,7 @@ function log(
 	fn(out);
 }
 
-export function logger(fn: PrintFunc = console.log): MiddlewareHandler {
+function logger(fn: PrintFunc = console.log): MiddlewareHandler {
 	return async (c, next) => {
 		const path = new URL(c.req.url).pathname;
 		const isBuild = path.startsWith("/build");
@@ -156,5 +159,18 @@ export function logger(fn: PrintFunc = console.log): MiddlewareHandler {
 		await next();
 
 		log(fn, LogPrefix.Outgoing, method, path, ip, c.res.status, time(start));
+	};
+}
+
+function cacheBuild(): MiddlewareHandler {
+	return async (c, next) => {
+		const path = new URL(c.req.url).pathname;
+		const isBuild = path.startsWith("/build");
+		if (isBuild) {
+			const time = 60 * 60 * 24 * 365; // 1 year
+			c.res.headers.set("cache-control", `public, max-age=${time}, immutable`);
+		}
+
+		await next();
 	};
 }

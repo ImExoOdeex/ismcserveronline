@@ -6,6 +6,7 @@ import morgan from "morgan";
 import path from "path";
 
 const BUILD_DIR = path.join(process.cwd(), "build");
+console.log("BUILD_DIR", BUILD_DIR);
 const build = require(BUILD_DIR);
 
 const app = express();
