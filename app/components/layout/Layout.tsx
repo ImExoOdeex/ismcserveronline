@@ -1,7 +1,8 @@
-import { Box, Flex } from "@chakra-ui/react";
+import { Box, Flex, useColorMode, useToken } from "@chakra-ui/react";
 import loadable from "@loadable/component";
 import type { Transition } from "framer-motion";
 import { Component, useState, type ReactNode } from "react";
+import Snowfall from "react-snowfall";
 import BackgroundUtils from "./BackgroundUtils";
 import Column from "./Column";
 import CookieConstent from "./CookieConsent";
@@ -59,6 +60,10 @@ export default function Layout({ children }: { children?: React.ReactNode }) {
 
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+	const { colorMode } = useColorMode();
+
+	const [brand] = useToken("colors", ["brand.500"]);
+
 	return (
 		<>
 			<ChakraBox
@@ -88,6 +93,7 @@ export default function Layout({ children }: { children?: React.ReactNode }) {
 				<Footer />
 			</ChakraBox>
 			<SideMenu mobileMenuTransition={mobileMenuTransition} isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} />
+			<Snowfall snowflakeCount={100} color={colorMode === "dark" ? "#fff" : brand} radius={[2, 3]} />
 		</>
 	);
 }

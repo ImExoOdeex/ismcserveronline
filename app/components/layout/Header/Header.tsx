@@ -51,17 +51,9 @@ export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 				<HStack spacing={5}>
 					<Link to="/" alignItems={"center"} _hover={{ textDecor: "none" }}>
 						<Heading fontSize="2xl" transition={"all .2s"} transform={"auto-gpu"} _active={{ scale: 0.95 }}>
-							<HStack spacing={0} alignItems={"baseline"}>
+							<HStack spacing={1} alignItems={"baseline"}>
 								<Text>IsMcServer</Text>
-								<Badge
-									fontSize={"md"}
-									rounded={"md"}
-									ml={1}
-									py={0.5}
-									px={1.5}
-									colorScheme="green"
-									h="fit-content"
-								>
+								<Badge fontSize={"md"} rounded={"md"} py={0.5} px={1.5} colorScheme="green" h="fit-content">
 									.online
 								</Badge>
 							</HStack>
