@@ -1,12 +1,12 @@
 import { CheckIcon } from "@chakra-ui/icons";
-import { Flex, Grid, Wrap, WrapItem, Badge, HStack, Image, Text } from "@chakra-ui/react";
-import { AnimatePresence, motion } from "framer-motion";
-import ServerDetails from "./ServerDetails";
-import { useState, useEffect } from "react";
-import { FastAverageColor } from "fast-average-color";
-import { type ServerItemData } from "./ServerList";
+import { Badge, Flex, Grid, HStack, Image, Text, Wrap, WrapItem } from "@chakra-ui/react";
 import { useFetcher } from "@remix-run/react";
-const Color = require("color");
+import Color from "color";
+import { FastAverageColor } from "fast-average-color";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import ServerDetails from "./ServerDetails";
+import { type ServerItemData } from "./ServerList";
 
 type Props = {
 	server: ServerItemData;
@@ -16,7 +16,7 @@ export default function ServerItem({ server }: Props) {
 	const fac = new FastAverageColor();
 
 	const [expanded, setExpanded] = useState<boolean>(false);
-	const [color, setColor] = useState();
+	const [color, setColor] = useState("");
 
 	useEffect(() => {
 		const ele: any = document.querySelector(`#img${server.id}`);
@@ -141,7 +141,7 @@ export default function ServerItem({ server }: Props) {
 							width: "100%"
 						}}
 					>
-						<ServerDetails data={fetcher.data?.data} color={color} />
+						<ServerDetails data={(fetcher.data as any)?.data} color={color} />
 					</motion.div>
 				)}
 			</AnimatePresence>

@@ -1,27 +1,16 @@
+import { Box, Button, Flex, Image, LightMode, Stack, Text } from "@chakra-ui/react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import {
-	Button,
-	Flex,
-	Text,
-	Image,
-	LightMode,
-	Stack,
-	Box
-} from "@chakra-ui/react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useLoaderData } from "@remix-run/react";
-import { getCookieWithoutDocument } from "../utils/func/cookiesFunc";
-import { type loader } from "~/root";
+import { getCookieWithoutDocument } from "../utils/functions/cookies";
+import useRootData from "../utils/hooks/useRootData";
 
 function CookieConsent() {
-	const { cookies } = useLoaderData<typeof loader>();
+	const { cookies } = useRootData();
 
 	const name = "cookie-consent";
 	const loaderConsent = getCookieWithoutDocument(name, cookies);
 
-	const [isCookieConsent, setIsCookieConsent] = useState(
-		loaderConsent ? true : false
-	);
+	const [isCookieConsent, setIsCookieConsent] = useState(loaderConsent ? true : false);
 
 	function accept() {
 		document.cookie = `${name}=true`;
@@ -49,20 +38,11 @@ function CookieConsent() {
 						alignItems="center"
 					>
 						<LightMode>
-							<Stack
-								direction={{ base: "column", md: "row" }}
-								spacing={[3, 5, 10]}
-								alignItems={"center"}
-							>
-								<Image
-									src={"/cookies.png"}
-									w={"70px"}
-									alt="cookies"
-								/>
+							<Stack direction={{ base: "column", md: "row" }} spacing={[3, 5, 10]} alignItems={"center"}>
+								<Image src={"/cookies.png"} w={"70px"} alt="cookies" />
 								<Text alignItems={"center"}>
-									This site uses third-party cookies. If you
-									don't agree using them, you should close
-									this page now.
+									This site uses third-party cookies. If you don't agree using them, you should close this page
+									now.
 								</Text>
 							</Stack>
 

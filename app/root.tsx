@@ -1,30 +1,32 @@
 import { ChakraBaseProvider, cookieStorageManagerSSR, localStorageManager, useConst } from "@chakra-ui/react";
-import type { ActionArgs, LoaderArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect } from "@remix-run/node";
 import type { ShouldRevalidateFunction } from "@remix-run/react";
-import { useLoaderData, useLocation, useOutlet } from "@remix-run/react";
+import { useLocation, useOutlet } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import Layout from "./components/layout/Layout";
 import { getUser } from "./components/server/db/models/user";
 import { validateServer } from "./components/server/functions/validateServer";
-import { getCookieWithoutDocument } from "./components/utils/func/cookiesFunc";
 import { GlobalContext } from "./components/utils/GlobalContext";
+import { getCookieWithoutDocument } from "./components/utils/functions/cookies";
 import theme from "./components/utils/theme";
 import { Document } from "./document";
 
 // ----------------------------- META -----------------------------
 
 export function meta() {
-	return {
-		title: "IsMcServer.online",
-		robots: "all",
-		description: "Check Minecraft server status and data by real-time.",
-		keywords:
-			"Minecraft server check, Server status check, Minecraft server status, Online server status, Minecraft server monitor, Server checker tool, Minecraft server checker, Real-time server status, Minecraft server status checker, Server uptime checker, Minecraft server monitor tool, Minecraft server status monitor, Real-time server monitoring, Server availability checker, Minecraft server uptime checker",
-		charset: "utf-8",
-		viewport: "width=device-width,initial-scale=1",
-		author: ".imexoodeex#0528"
-	};
+	return [
+		{
+			title: "IsMcServer.online",
+			robots: "all",
+			description: "Check Minecraft server status and data by real-time.",
+			keywords:
+				"Minecraft server check, Server status check, Minecraft server status, Online server status, Minecraft server monitor, Server checker tool, Minecraft server checker, Real-time server status, Minecraft server status checker, Server uptime checker, Minecraft server monitor tool, Minecraft server status monitor, Real-time server monitoring, Server availability checker, Minecraft server uptime checker",
+			charset: "utf-8",
+			viewport: "width=device-width,initial-scale=1",
+			author: ".imexoodeex#0528"
+		}
+	];
 }
 
 // ----------------------------- LINKS -----------------------------
@@ -47,7 +49,7 @@ export function links() {
 // ----------------------------- APP -----------------------------
 
 export default function App() {
-	const { cookies } = useLoaderData();
+	const { cookies } = useTypedLoaderData<typeof loader>();
 	const cookieManager = useConst(cookieStorageManagerSSR(cookies));
 	const location = useLocation();
 	const outlet = useOutlet();
@@ -84,25 +86,23 @@ export default function App() {
 
 // ----------------------------- LOADER -----------------------------
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
 	const url = new URL(request.url);
 	const term = url.searchParams.get(process.env.NO_ADS_PARAM_NAME ?? "nope");
 
 	const shouldRedirect: boolean = term?.toString() === process.env.NO_ADS_PARAM_VALUE;
 	if (shouldRedirect) {
-		return redirect(url.pathname, {
+		throw redirect(url.pathname, {
 			headers: [["Set-Cookie", `no_ads=${process.env.NO_ADS_PARAM_VALUE}`]]
 		});
 	}
 
-	const showAds: boolean =
-		getCookieWithoutDocument("no_ads", request.headers.get("cookie") ?? "") !== process.env.NO_ADS_PARAM_VALUE;
+	const showAds = getCookieWithoutDocument("no_ads", request.headers.get("cookie") ?? "") !== process.env.NO_ADS_PARAM_VALUE;
 	// ^^^ code for no ads up there uwu ^^^
 
-	console.log("calling root loader");
 	const user = await getUser(request);
 
-	return json({
+	return typedjson({
 		cookies: request.headers.get("cookie") ?? "",
 		showAds,
 		user
@@ -117,7 +117,7 @@ export const shouldRevalidate: ShouldRevalidateFunction = ({ nextUrl }) => {
 
 // ----------------------------- ACTION -----------------------------
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
 	const formData = await request.formData();
 	const bedrock = getCookieWithoutDocument("bedrock", request.headers.get("Cookie") ?? "");
 

@@ -1,5 +1,5 @@
 import { Button, Flex, Image, Text } from "@chakra-ui/react";
-import useUser from "~/components/utils/func/hooks/useUser";
+import useUser from "~/components/utils/hooks/useUser";
 import Link from "~/components/utils/Link";
 import DiscordIcon from "../icons/DiscordIcon";
 

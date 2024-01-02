@@ -7,6 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  USER
+}
+
 // do not the fuck ask why this is via email, not id ok?
 model User {
   id          Int           @id @unique @default(autoincrement())
@@ -14,7 +19,7 @@ model User {
   snowflake   String        @unique
   nick        String
   photo       String?
-  bio         String?
+  role        Role          @default(USER)
   guilds      Json?
   created_at  DateTime      @default(now())
   updated_at  DateTime      @updatedAt

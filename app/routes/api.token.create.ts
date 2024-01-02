@@ -1,8 +1,9 @@
-import { type ActionArgs, json } from "@remix-run/node";
-import { db } from "~/components/server/db/db.server";
+import type { ActionFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import crypto from "crypto";
+import { db } from "~/components/server/db/db.server";
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
 	/* 
         body: 
         {

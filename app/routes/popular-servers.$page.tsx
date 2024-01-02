@@ -1,43 +1,41 @@
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
+import { useEffect, useRef } from "react";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import ServerList from "~/components/layout/popularServers/ServerList";
 import { db } from "~/components/server/db/db.server";
-import { type LoaderArgs, json, redirect } from "@remix-run/node";
-import { useRef, useEffect } from "react";
-import { useLoaderData } from "@remix-run/react";
 
-export async function loader({ params }: LoaderArgs) {
+export async function loader({ params }: LoaderFunctionArgs) {
 	const page = Number(params.page);
 	if (page === 1) {
-		return redirect("/popular-servers");
+		throw redirect("/popular-servers");
 	}
 
 	const count = await db.server.count();
 
-	const servers = await db.server
-		.findMany({
-			take: 10,
-			skip: (page - 1) * 10,
-			select: {
-				id: true,
-				server: true,
-				icon: true,
-				tags: true
-			}
-		})
-		.catch(() => null);
+	const servers = await db.server.findMany({
+		take: 10,
+		skip: (page - 1) * 10,
+		select: {
+			id: true,
+			server: true,
+			icon: true,
+			tags: true
+		}
+	});
 
-	// @ts-ignore
-	if (!servers?.length) {
+	if (!servers.length) {
 		const lastPage = Number((count / 10).toFixed(0));
-		return redirect(`/popular-servers/${lastPage}`);
+		throw redirect(`/popular-servers/${lastPage}`);
 	}
 
-	return json({ servers, page, count });
+	return typedjson({ servers, page, count });
 }
 
 export default function $page() {
 	const lastServers = useRef({});
 	const lastPage = useRef({});
-	const { servers, page, count } = useLoaderData<typeof loader>() || {
+	const { servers, page, count } = useTypedLoaderData<typeof loader>() || {
 		servers: lastServers.current,
 		page: lastPage.current
 	};

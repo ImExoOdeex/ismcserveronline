@@ -1,8 +1,8 @@
 import { Badge, Flex, Grid, GridItem, HStack, Heading, Icon, Text, VStack } from "@chakra-ui/react";
-import { TbBulb, TbChecks } from "react-icons/tb";
-import { HiStatusOnline } from "react-icons/hi";
-import { IoReturnDownForwardOutline } from "react-icons/io5";
-import { BiCode, BiLineChart } from "react-icons/bi";
+import { BiCode, BiLineChart } from "react-icons/bi/index.js";
+import { HiStatusOnline } from "react-icons/hi/index.js";
+import { IoReturnDownForwardOutline } from "react-icons/io5/index.js";
+import { TbBulb, TbChecks } from "react-icons/tb/index.js";
 import Link from "~/components/utils/Link";
 
 export default function WARWF() {

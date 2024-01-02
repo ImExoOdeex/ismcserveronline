@@ -2,8 +2,8 @@ import { CheckIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import {
 	Badge,
 	Flex,
-	Heading,
 	HStack,
+	Heading,
 	Skeleton,
 	Table,
 	TableCaption,
@@ -19,8 +19,10 @@ import {
 } from "@chakra-ui/react";
 import { type SOURCE } from "@prisma/client";
 import { ScrollRestoration, useFetcher } from "@remix-run/react";
-import { debounce } from "lodash";
+import yes from "lodash";
 import { useEffect, useMemo, useRef, useState } from "react";
+
+const debounce = yes.debounce;
 
 type Check = {
 	id: number;
@@ -107,14 +109,14 @@ export default function ChecksTable({ server, checks }: Props) {
 
 	useEffect(() => {
 		// discontinue API calls if the last page has been reached
-		if (fetcher.data && fetcher.data.checks.length === 0) {
+		if (fetcher.data && (fetcher.data as any).checks.length === 0) {
 			setShouldFetch(false);
 			return;
 		}
 
 		// if our fetcher is not empty, we add items to state
-		if (fetcher.data?.checks) {
-			setChecksState((prev) => [...prev, ...fetcher?.data?.checks]);
+		if ((fetcher.data as any)?.checks) {
+			setChecksState((prev) => [...prev, ...(fetcher?.data as any)?.checks]);
 			setSkip((skip: number) => skip + 20);
 			setShouldFetch(true);
 		}

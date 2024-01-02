@@ -1,9 +1,10 @@
-import { json, type LoaderArgs } from "@remix-run/node";
-import { getClientIPAddress } from "remix-utils/build/server/get-client-ip-address";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { getClientIPAddress } from "remix-utils/get-client-ip-address";
 import { db } from "~/components/server/db/db.server";
-import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
+import { getCookieWithoutDocument } from "~/components/utils/functions/cookies";
 
-export async function loader({ request, params, context }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
 	if (!process.env.API_TOKEN) throw new Error("API_TOKEN is not definied!");
 
 	const url = new URL(request.url);

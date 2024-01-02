@@ -21,7 +21,7 @@ import {
 import { useFetcher, useLocation } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { BiSearchAlt } from "react-icons/bi";
+import { BiSearchAlt } from "react-icons/bi/index.js";
 import Link from "~/components/utils/Link";
 import links from "../../../config/links.json";
 import DiscordIcon from "../../icons/DiscordIcon";
@@ -112,7 +112,7 @@ export default function Modal({ isOpen, onOpen, onClose }: { isOpen: boolean; on
 									name="server"
 									onChange={(e) => setServer(e.currentTarget.value)}
 									value={server}
-									placeholder={fetcher.data ? fetcher.data?.error : "Server address"}
+									placeholder={fetcher.data ? (fetcher.data as any)?.error : "Server address"}
 								/>
 								<Flex pos={"absolute"} insetY={"0"} left={0} alignItems={"center"} pl={4}>
 									{submitting ? (

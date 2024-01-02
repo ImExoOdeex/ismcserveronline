@@ -1,5 +1,5 @@
 import { chakra, Flex, Heading, Image, Stack, Text, VStack } from "@chakra-ui/react";
-import { formatBigNumbers } from "~/components/utils/func/numbers";
+import { formatBigNumbers } from "~/components/utils/functions/numbers";
 import ServerSearch from "./ServerSearch";
 
 export default function Main({

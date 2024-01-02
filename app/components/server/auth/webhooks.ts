@@ -1,4 +1,4 @@
-import { getClientIPAddress } from "remix-utils/build/server/get-client-ip-address";
+import { getClientIPAddress } from "remix-utils/get-client-ip-address";
 
 type User = {
 	id: number;

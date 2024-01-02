@@ -1,12 +1,14 @@
 import { Button, Flex, Heading, HStack, Text, VStack } from "@chakra-ui/react";
-import { json, type LoaderArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
+
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 import { redirect } from "remix-typedjson";
 import DiscordIcon from "~/components/layout/icons/DiscordIcon";
 import { getSession } from "~/components/server/session.server";
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
 	// const auth = await authenticator.isAuthenticated(request);
 
 	// if (auth && auth.id) {

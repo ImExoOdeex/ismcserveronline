@@ -1,5 +1,5 @@
 import { Badge, Heading, Icon, Stack, Text, VStack } from "@chakra-ui/react";
-import { BiMessageError, BiNetworkChart, BiPointer } from "react-icons/bi";
+import { BiMessageError, BiNetworkChart, BiPointer } from "react-icons/bi/index.js";
 
 export default function HowToUse() {
 	return (

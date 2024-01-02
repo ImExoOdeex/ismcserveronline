@@ -2,9 +2,9 @@ import { Icon } from "@chakra-ui/icons";
 import { Badge, Flex, IconButton, Image, Text, Tooltip, useToast, VisuallyHiddenInput } from "@chakra-ui/react";
 import { useFetcher } from "@remix-run/react";
 import { useEffect } from "react";
-import { BiRefresh } from "react-icons/bi";
-import { FiTrash2 } from "react-icons/fi";
-import { IoReturnDownForwardOutline } from "react-icons/io5";
+import { BiRefresh } from "react-icons/bi/index.js";
+import { FiTrash2 } from "react-icons/fi/index.js";
+import { IoReturnDownForwardOutline } from "react-icons/io5/index.js";
 import type { DisplaySavedServer } from "~/routes/dashboard._index";
 
 interface Props {
@@ -19,7 +19,7 @@ export default function SavedServer({ server }: Props) {
 	const toast = useToast();
 
 	useEffect(() => {
-		const data = refreshFetcher.data;
+		const data = refreshFetcher.data as any;
 		if (data) {
 			toast({
 				title: data?.success ? "Server refreshed!" : "Server not refreshed!",
@@ -33,7 +33,7 @@ export default function SavedServer({ server }: Props) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [refreshFetcher.data]);
 	useEffect(() => {
-		const data = deleteFetcher.data;
+		const data = deleteFetcher.data as any;
 		if (data) {
 			toast({
 				title: data?.success ? "Server deleted!" : "Server not deleted!",

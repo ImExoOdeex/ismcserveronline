@@ -1,10 +1,11 @@
 import { ChatIcon, EditIcon } from "@chakra-ui/icons";
 import { Button, Flex, Icon, IconButton, Image, Text, Textarea, VisuallyHiddenInput, useToast } from "@chakra-ui/react";
-import { useFetcher, useRouteLoaderData } from "@remix-run/react";
+import { useFetcher } from "@remix-run/react";
 import { useEffect, useState } from "react";
-import { FiTrash2 } from "react-icons/fi";
-import { TbMessageReport } from "react-icons/tb";
+import { FiTrash2 } from "react-icons/fi/index.js";
+import { TbMessageReport } from "react-icons/tb/index.js";
 import ReactTimeAgo from "react-time-ago";
+import useRootData from "~/components/utils/hooks/useRootData";
 import type { CustomComment } from "./Comments";
 
 export default function Comment({
@@ -14,7 +15,7 @@ export default function Comment({
 	comment: CustomComment;
 	setComments: React.Dispatch<React.SetStateAction<CustomComment[]>>;
 }) {
-	const { user } = useRouteLoaderData("root");
+	const { user } = useRootData();
 
 	const isOwner = user?.id === comment.user.id;
 	const fetcher = useFetcher();
@@ -24,9 +25,9 @@ export default function Comment({
 	const toast = useToast();
 	useEffect(() => {
 		if (fetcher.data) {
-			const success = fetcher.data.success;
+			const success = (fetcher.data as any).success;
 			toast({
-				title: success ? "Your comment has been deleted." : fetcher.data.error,
+				title: success ? "Your comment has been deleted." : (fetcher.data as any).error,
 				status: success ? "success" : "error",
 				duration: 9000,
 				position: "bottom-right",
@@ -41,9 +42,9 @@ export default function Comment({
 	}, [fetcher.data]);
 	useEffect(() => {
 		if (reportFetcher.data) {
-			const success = reportFetcher.data.success;
+			const success = (reportFetcher.data as any).success;
 			toast({
-				title: success ? "Comment has been reported." : reportFetcher.data.error,
+				title: success ? "Comment has been reported." : (reportFetcher.data as any).error,
 				status: success ? "success" : "error",
 				duration: 9000,
 				position: "bottom-right",
@@ -55,9 +56,9 @@ export default function Comment({
 	}, [reportFetcher.data]);
 	useEffect(() => {
 		if (editFetcher.data) {
-			const success = editFetcher.data.success;
+			const success = (editFetcher.data as any).success;
 			toast({
-				title: success ? "Comment has been edited." : editFetcher.data.error,
+				title: success ? "Comment has been edited." : (editFetcher.data as any).error,
 				status: success ? "success" : "error",
 				duration: 9000,
 				position: "bottom-right",
@@ -65,7 +66,7 @@ export default function Comment({
 				isClosable: true
 			});
 			if (success) {
-				setComments((comments) => comments.map((c) => (c.id === comment.id ? editFetcher.data.comment : c)));
+				setComments((comments) => comments.map((c) => (c.id === comment.id ? (editFetcher.data as any).comment : c)));
 			}
 			setEditingData((prev) => ({
 				...prev,

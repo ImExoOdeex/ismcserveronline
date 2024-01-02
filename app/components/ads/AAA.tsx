@@ -1,7 +1,7 @@
 import { Icon, Stack, Text } from "@chakra-ui/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { BiCheckShield } from "react-icons/bi";
-import { useAdBlock } from "../utils/func/hooks/useAdBlock";
+import { BiCheckShield } from "react-icons/bi/index.js";
+import { useAdBlock } from "../utils/hooks/useAdBlock";
 
 // cuz of browsers to not block this file, cuz then infinite reload
 export default function AAA() {

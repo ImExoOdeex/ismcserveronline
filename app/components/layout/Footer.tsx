@@ -1,9 +1,9 @@
-import { Stack, Text, Link as ChakraLink, Box, VStack, Flex } from "@chakra-ui/react";
-import pack from "../../../package.json";
-import Link from "../utils/Link";
-import { getCookie, getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
-import { useState } from "react";
+import { Box, Flex, Link as ChakraLink, Stack, Text, VStack } from "@chakra-ui/react";
 import { useRouteLoaderData } from "@remix-run/react";
+import { useState } from "react";
+import pack from "../../../package.json";
+import { getCookie, getCookieWithoutDocument } from "../utils/functions/cookies";
+import Link from "../utils/Link";
 
 export default function Footer() {
 	const name = "tracking";

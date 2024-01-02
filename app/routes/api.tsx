@@ -4,8 +4,8 @@ import {
 	Box,
 	Code,
 	Flex,
-	Heading,
 	HStack,
+	Heading,
 	Icon,
 	Link,
 	ListItem,
@@ -13,9 +13,9 @@ import {
 	Stack,
 	Text,
 	Tooltip,
+	VStack,
 	useClipboard,
-	useColorModeValue,
-	VStack
+	useColorModeValue
 } from "@chakra-ui/react";
 import { json, type MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
@@ -27,9 +27,11 @@ import { type MinecraftServerWoQuery } from "~/components/types/minecraftServer"
 import links from "../components/config/links.json";
 
 export const meta: MetaFunction = () => {
-	return {
-		title: "API | IsMcServer.online"
-	};
+	return [
+		{
+			title: "API | IsMcServer.online"
+		}
+	];
 };
 
 export async function loader() {

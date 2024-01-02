@@ -1,7 +1,8 @@
-import { type ActionArgs, json } from "@remix-run/node";
+import type { ActionFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { db } from "~/components/server/db/db.server";
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
 	const body: any = JSON.parse(await request.text());
 	if (!body.userId) {
 		return json(

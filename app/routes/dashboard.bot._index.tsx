@@ -1,8 +1,9 @@
 import { Badge, Button, Heading, HStack, Icon, Image, SimpleGrid, Text, VStack } from "@chakra-ui/react";
-import { json, redirect, type LoaderArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { useFetcher, useLoaderData, useOutlet } from "@remix-run/react";
 import { useEffect, useRef } from "react";
-import { HiRefresh } from "react-icons/hi";
+import { HiRefresh } from "react-icons/hi/index.js";
 import { getUser, getUserGuilds } from "~/components/server/db/models/user";
 import Link from "~/components/utils/Link";
 
@@ -16,7 +17,7 @@ export type Guild = {
 	permissions_new: string;
 };
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
 	const user = await getUser(request);
 
 	if (!user) {

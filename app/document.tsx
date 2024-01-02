@@ -3,8 +3,8 @@ import { Box, ChakraBaseProvider, Flex, Heading, Icon, Stack, Text, theme, VStac
 import { withEmotionCache } from "@emotion/react";
 import { Links, LiveReload, Meta, Scripts, ScrollRestoration, useLoaderData, useRouteError } from "@remix-run/react";
 import { useContext, useEffect, useMemo } from "react";
-import { BiCode, BiHome } from "react-icons/bi";
-import { getCookieWithoutDocument } from "./components/utils/func/cookiesFunc";
+import { BiCode, BiHome } from "react-icons/bi/index.js";
+import { getCookieWithoutDocument } from "./components/utils/functions/cookies";
 import Link from "./components/utils/Link";
 import { ClientStyleContext, ServerStyleContext } from "./context";
 import { type loader } from "./root";

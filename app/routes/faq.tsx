@@ -1,17 +1,20 @@
 import { Badge, Code, Divider, Heading, Link, Text, VStack } from "@chakra-ui/react";
-import { json, type MetaFunction } from "@remix-run/node";
-import { useLoaderData, useRouteLoaderData } from "@remix-run/react";
+import { type MetaFunction } from "@remix-run/node";
+import { useRouteLoaderData } from "@remix-run/react";
 import os from "os";
 import { useEffect, useRef, useState } from "react";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { Ad, adType } from "~/components/ads/Yes";
 import SystemInfo from "~/components/layout/faq/SystemInfo";
-import { getCookie, getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
+import { getCookie, getCookieWithoutDocument } from "~/components/utils/functions/cookies";
 import links from "../components/config/links.json";
 
 export const meta: MetaFunction = () => {
-	return {
-		title: "FAQ | IsMcServer.online"
-	};
+	return [
+		{
+			title: "FAQ | IsMcServer.online"
+		}
+	];
 };
 
 export async function loader() {
@@ -28,25 +31,32 @@ export async function loader() {
 	const v8Version = process.versions.v8;
 	const mode = process.env.NODE_ENV;
 
-	return json({
-		system: {
-			mem,
-			totalMem,
-			usedMem,
-			platform,
-			cpu,
-			processUptimeDays,
-			nodeVersion,
-			v8Version,
-			arch,
-			mode
+	return typedjson(
+		{
+			system: {
+				mem,
+				totalMem,
+				usedMem,
+				platform,
+				cpu,
+				processUptimeDays,
+				nodeVersion,
+				v8Version,
+				arch,
+				mode
+			}
+		},
+		{
+			headers: {
+				"Cache-Control": "public, max-age=60"
+			}
 		}
-	});
+	);
 }
 
 export default function Faq() {
 	const lastSystem = useRef({});
-	const { system } = useLoaderData() || { system: lastSystem.current };
+	const { system } = useTypedLoaderData<typeof loader>() || { system: lastSystem.current };
 
 	useEffect(() => {
 		if (system) lastSystem.current = system;

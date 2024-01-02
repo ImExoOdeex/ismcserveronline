@@ -1,22 +1,23 @@
-import { Divider, Flex, Heading, HStack, Text, useConst, VStack } from "@chakra-ui/react";
-import { redirect, type LoaderArgs } from "@remix-run/node";
+import { Divider, Flex, Heading, HStack, Text, VStack } from "@chakra-ui/react";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { useLocation, useOutlet } from "@remix-run/react";
-import { useEffect, useRef } from "react";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { useMemo } from "react";
 import AdaptiveAvatar from "~/components/layout/dashboard/AdaptiveAvatar";
 import { ChakraBox } from "~/components/layout/MotionComponents";
-import { getUser } from "~/components/server/db/models/user";
+import { getUserId } from "~/components/server/db/models/user";
 import { commitSession, getSession } from "~/components/server/session.server";
 import Link from "~/components/utils/Link";
+import useUser from "../components/utils/hooks/useUser";
 
-export async function loader({ request }: LoaderArgs) {
-	const user = await getUser(request);
+export async function loader({ request }: LoaderFunctionArgs) {
+	const userId = await getUserId(request);
 
 	const cookies = request.headers.get("Cookie");
 	const session = await getSession(cookies);
 
-	if (!user) {
-		return redirect("/login");
+	if (!userId) {
+		throw redirect("/login");
 	}
 
 	const redirectURL = await session.get("redirect");
@@ -26,48 +27,44 @@ export async function loader({ request }: LoaderArgs) {
 		session.unset("redirect");
 		session.unset("guild");
 
-		return redirect(`/dashboard/bot/${guildID}${redirectURL === "index" ? "" : "/" + redirectURL}`, {
+		throw redirect(`/dashboard/bot/${guildID}${redirectURL === "index" ? "" : "/" + redirectURL}`, {
 			headers: {
 				"Set-Cookie": await commitSession(session)
 			}
 		});
 	}
 
-	return typedjson({ user });
+	return null;
 }
 
 export default function Dashboard() {
 	const outlet = useOutlet();
 
-	const lastUser = useRef(null) as any;
-	const {
-		user
-	}: {
-		user: {
-			id: number;
-			email: string;
-			snowflake: string;
-			nick: string;
-			photo: string | null;
-			bio: string | null;
-		};
-	} = useTypedLoaderData<any>() || { user: lastUser.current };
-	useEffect(() => {
-		if (user) lastUser.current = user;
-	}, [user]);
+	const user = useUser(true);
 
 	const path = useLocation().pathname;
 
-	const buttons = useConst([
-		{
-			name: "Saved Servers",
-			to: "/dashboard"
-		},
-		{
-			name: "Manage Discord Bot",
-			to: "/dashboard/bot"
+	const buttons = useMemo(() => {
+		const yes = [
+			{
+				name: "Saved Servers",
+				to: "/dashboard"
+			},
+			{
+				name: "Manage Discord Bot",
+				to: "/dashboard/bot"
+			}
+		];
+
+		if (user.role === "ADMIN") {
+			yes.push({
+				name: "Admin",
+				to: "/dashboard/admin"
+			});
 		}
-	]);
+
+		return yes;
+	}, [user.role]);
 
 	return (
 		<VStack w="100%" maxW={"1200px"} mx="auto" align={"start"} mt={5} spacing={10} px={4}>

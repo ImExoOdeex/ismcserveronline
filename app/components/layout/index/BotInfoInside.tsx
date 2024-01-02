@@ -1,10 +1,10 @@
-import { VStack, Badge, Link, HStack, Flex, Stack, Icon, Text, Image, Box } from "@chakra-ui/react";
+import { Badge, Box, Flex, HStack, Icon, Image, Link, Stack, Text, VStack } from "@chakra-ui/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { MdPeople } from "react-icons/md";
+import { useState } from "react";
+import { MdPeople } from "react-icons/md/index.js";
+import links from "../../config/links.json";
 import { ChakraBox } from "../MotionComponents";
 import DiscordIcon from "../icons/DiscordIcon";
-import links from "../../config/links.json";
-import { useState } from "react";
 
 export default function BotInfoInside({ opened }: { opened: boolean }) {
 	const [activeBlock, setActiveBlock] = useState<number | null>();

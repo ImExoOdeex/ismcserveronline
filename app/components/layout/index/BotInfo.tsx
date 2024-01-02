@@ -13,8 +13,8 @@ import {
 	WrapItem
 } from "@chakra-ui/react";
 import { useContext } from "react";
-import { AiOutlineDashboard } from "react-icons/ai";
-import { BsFillPeopleFill } from "react-icons/bs";
+import { AiOutlineDashboard } from "react-icons/ai/index.js";
+import { BsFillPeopleFill } from "react-icons/bs/index.js";
 import { context } from "~/components/utils/GlobalContext";
 import Link from "~/components/utils/Link";
 import links from "../../config/links.json";

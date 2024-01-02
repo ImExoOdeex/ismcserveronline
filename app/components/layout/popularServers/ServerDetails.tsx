@@ -1,16 +1,16 @@
 import {
+	Skeleton as ChakraSkeleton,
+	Flex,
 	GridItem,
 	HStack,
 	SimpleGrid,
 	Text,
 	VStack,
-	Skeleton as ChakraSkeleton,
-	type SkeletonProps,
-	Flex,
-	useColorMode
+	useColorMode,
+	type SkeletonProps
 } from "@chakra-ui/react";
+import Color from "color";
 import { type MinecraftServerWoQuery } from "../../types/minecraftServer";
-const Color = require("color");
 
 function Skeleton({ endColor = "alpha200", ...props }: { endColor: string } & SkeletonProps) {
 	return (

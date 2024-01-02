@@ -5,13 +5,13 @@ type Props = {
 		mem: number;
 		totalMem: number;
 		usedMem: number;
-		platform: string;
+		platform: NodeJS.Platform;
 		cpu: string;
-		processUptimeDays: number;
+		processUptimeDays: string;
 		nodeVersion: string;
 		v8Version: string;
 		arch: string;
-		mode: string;
+		mode: "production" | "development" | "test";
 	};
 };
 
@@ -20,15 +20,10 @@ export default function SystemInfo({ system }: Props) {
 		<VStack align={"start"}>
 			<Heading fontSize={"md"}>System info</Heading>
 			<Text fontWeight={500}>Mode: {system.mode}</Text>
+			<Text fontWeight={500}>Process uptime: {system.processUptimeDays} days</Text>
+			<Text fontWeight={500}>Process memory usage: {system.mem.toFixed(0)}MB</Text>
 			<Text fontWeight={500}>
-				Process uptime: {system.processUptimeDays} days
-			</Text>
-			<Text fontWeight={500}>
-				Process memory usage: {system.mem.toFixed(0)}MB
-			</Text>
-			<Text fontWeight={500}>
-				System memory: {system.usedMem.toFixed(0)}/
-				{system.totalMem.toFixed(0)}
+				System memory: {system.usedMem.toFixed(0)}/{system.totalMem.toFixed(0)}
 				MB
 			</Text>
 			<Text fontWeight={500}>

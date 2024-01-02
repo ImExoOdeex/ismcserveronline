@@ -1,6 +1,5 @@
-import { json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
 import { useEffect, useRef } from "react";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import ServerList from "~/components/layout/popularServers/ServerList";
 import { db } from "~/components/server/db/db.server";
 
@@ -16,11 +15,12 @@ export async function loader() {
 	});
 	const count = await db.server.count();
 
-	return json({ servers, count });
+	return typedjson({ servers, count });
 }
+
 export default function Index() {
 	const lastServers = useRef({});
-	const { servers, count } = useLoaderData<typeof loader>() || {
+	const { servers, count } = useTypedLoaderData<typeof loader>() || {
 		servers: lastServers.current
 	};
 	useEffect(() => {

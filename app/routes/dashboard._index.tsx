@@ -1,10 +1,10 @@
 import { Icon } from "@chakra-ui/icons";
 import { Button, Flex, Heading, SimpleGrid, Text, VStack } from "@chakra-ui/react";
-import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { useEffect, useRef } from "react";
-import { FiLogOut } from "react-icons/fi";
+import { FiLogOut } from "react-icons/fi/index.js";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import invariant from "tiny-invariant";
 import SavedServer from "~/components/layout/dashboard/SavedServer";
@@ -21,7 +21,7 @@ export type Guild = {
 	permissions_new: string;
 };
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
 	const formData = await request.formData();
 	const action = formData.get("action")?.toString() as string;
 
@@ -102,7 +102,7 @@ export async function action({ request }: ActionArgs) {
 	}
 }
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
 	const user = await getUser(request);
 
 	if (!user) {

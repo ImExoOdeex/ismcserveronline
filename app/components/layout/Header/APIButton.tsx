@@ -1,5 +1,5 @@
 import { Button, Flex, HStack, Icon, Text } from "@chakra-ui/react";
-import { BiCode } from "react-icons/bi";
+import { BiCode } from "react-icons/bi/index.js";
 import Link from "~/components/utils/Link";
 
 export default function APIButton() {

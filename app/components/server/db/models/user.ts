@@ -32,7 +32,7 @@ export async function getUser(request: Request) {
 			snowflake: true,
 			nick: true,
 			photo: true,
-			bio: true
+			role: true
 		}
 	});
 

@@ -1,7 +1,7 @@
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { DarkMode, IconButton, Text, Tooltip, useColorMode, useColorModeValue, useEventListener } from "@chakra-ui/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useActionKey } from "~/components/utils/func/hooks/useActionKey";
+import { useActionKey } from "~/components/utils/hooks/useActionKey";
 
 export default function ThemeToggle() {
 	const color = useColorModeValue("purple.800", "yellow.400");

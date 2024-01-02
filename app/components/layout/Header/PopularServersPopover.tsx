@@ -1,17 +1,5 @@
-import {
-	Heading,
-	PopoverArrow,
-	PopoverBody,
-	PopoverCloseButton,
-	PopoverContent,
-	HStack,
-	Text,
-	Spinner,
-	Image,
-	VStack
-} from "@chakra-ui/react";
+import { HStack, Heading, Image, PopoverArrow, PopoverBody, PopoverContent, Spinner, Text, VStack } from "@chakra-ui/react";
 import { useFetcher } from "@remix-run/react";
-import { debounce } from "lodash";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "~/components/utils/Link";
 
@@ -33,7 +21,7 @@ export default function PopularServersPopover({ server }: { server: string }) {
 		() => {
 			if (server.length < 2) return [];
 			fetcher.load(`/api/autocomplete/${server}`);
-			return fetcher.data?.complete;
+			return (fetcher.data as any)?.complete;
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[server]

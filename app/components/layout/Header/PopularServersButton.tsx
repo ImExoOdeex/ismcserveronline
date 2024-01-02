@@ -1,5 +1,5 @@
 import { Button, Flex, HStack, Icon, Text } from "@chakra-ui/react";
-import { BiLineChart } from "react-icons/bi";
+import { BiLineChart } from "react-icons/bi/index.js";
 import Link from "~/components/utils/Link";
 
 export default function PopularServersButton() {

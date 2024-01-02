@@ -7,25 +7,25 @@ import {
 	Kbd,
 	Spinner,
 	Text,
-	VStack,
 	useColorModeValue,
-	useEventListener
+	useEventListener,
+	VStack
 } from "@chakra-ui/react";
 import { useFetcher } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { BiSearchAlt } from "react-icons/bi";
-import { useActionKey } from "~/components/utils/func/hooks/useActionKey";
+import { BiSearchAlt } from "react-icons/bi/index.js";
+import { useActionKey } from "~/components/utils/hooks/useActionKey";
 
 export default function ServerSearch() {
 	const actionKey = useActionKey();
 
-	const inputRef: any = useRef();
+	const inputRef = useRef<HTMLInputElement>(null);
 
 	useEventListener("keydown", (event: any) => {
 		const isMac = /(Mac|iPhone|iPod|iPad)/i.test(navigator?.platform);
 		const hotkey = isMac ? "metaKey" : "ctrlKey";
-		if (event?.key?.toLowerCase() === "k" && event[hotkey]) {
+		if (event?.key?.toLowerCase() === "k" && event[hotkey] && inputRef.current) {
 			event.preventDefault();
 			if (inputRef.current === document.activeElement) {
 				inputRef.current.blur();
@@ -41,7 +41,7 @@ export default function ServerSearch() {
 	const borderInputAutoFill = useColorModeValue("#dfe4e8", "#262626");
 
 	useEffect(() => {
-		if (fetcher.data?.error) {
+		if ((fetcher.data as any)?.error) {
 			setServer("");
 		}
 	}, [fetcher.data]);
@@ -111,7 +111,7 @@ export default function ServerSearch() {
 								name="server"
 								onChange={(e) => setServer(e.currentTarget.value)}
 								value={server}
-								placeholder={fetcher.data ? fetcher.data?.error : "Server address"}
+								placeholder={fetcher.data ? (fetcher.data as any)?.error : "Server address"}
 							/>
 							<Flex pos={"absolute"} insetY={"0"} left={0} alignItems={"center"} pl={4}>
 								<Icon as={BiSearchAlt} boxSize={5} color={"text"} fill={"text"} />

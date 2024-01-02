@@ -1,11 +1,10 @@
-import { generateRobotsTxt } from "@balavishnuvj/remix-seo";
 import { type EntryContext } from "@remix-run/node";
 import { db } from "~/components/server/db/db.server";
 
 type Handler = (request: Request, remixContext: EntryContext) => Promise<Response | null> | null;
 
 export const otherRootRoutes: Record<string, Handler> = {
-	"/sitemap.xml": async (request, remixContext) => {
+	"/sitemap.xml": async () => {
 		const [servers, checks] = await Promise.all([
 			db.server.findMany({
 				select: {
@@ -96,11 +95,21 @@ export const otherRootRoutes: Record<string, Handler> = {
 		);
 	},
 	"/robots.txt": async () => {
-		return generateRobotsTxt([{ type: "sitemap", value: "https://ismcserver.online/sitemap.xml" }]);
+		return new Response(
+			`User-agent: *
+			Allow: /
+			Sitemap: https://ismcserver.online/sitemap.xml`,
+			{
+				headers: {
+					"Content-Type": "text/plain",
+					"Cache-Control": "public, max-age=86400"
+				}
+			}
+		);
 	}
 };
 
-export const otherRootRouteHandlers: Array<Handler> = [
+export const otherRootRouteHandlers: Handler[] = [
 	...Object.entries(otherRootRoutes).map(([path, handler]) => {
 		return (request: Request, remixContext: EntryContext) => {
 			if (new URL(request.url).pathname !== path) return null;

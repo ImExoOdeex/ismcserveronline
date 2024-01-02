@@ -5,8 +5,8 @@ import {
 	Code,
 	Divider,
 	FormLabel,
-	Heading,
 	HStack,
+	Heading,
 	Icon,
 	Input,
 	Skeleton,
@@ -16,21 +16,21 @@ import {
 	Wrap,
 	WrapItem
 } from "@chakra-ui/react";
-import { json, type ActionArgs, type LoaderArgs } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { useFetcher, useRevalidator } from "@remix-run/react";
 import { Select } from "chakra-react-select";
 import { useEffect, useRef, useState } from "react";
-import { BiSave } from "react-icons/bi";
-import { HiRefresh } from "react-icons/hi";
-import { TbTrash } from "react-icons/tb";
-import { typedjson } from "remix-typedjson";
-import { useTypedLoaderData } from "remix-typedjson/dist/remix";
+import { BiSave } from "react-icons/bi/index.js";
+import { HiRefresh } from "react-icons/hi/index.js";
+import { TbTrash } from "react-icons/tb/index.js";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import LivecheckNumbers from "~/components/layout/dashboard/LivecheckNumbers";
 import { Info, sendActionWebhook } from "~/components/server/auth/webhooks";
 import { getUser } from "~/components/server/db/models/user";
-import { requireUserGuild } from "~/components/server/functions/secureDashboard";
+import { requireUserGuild } from "~/components/server/functions/secureDashboard.server";
 
-export async function loader({ params, request }: LoaderArgs) {
+export async function loader({ params, request }: LoaderFunctionArgs) {
 	const guildID = params.guildID!;
 	await requireUserGuild(request, guildID);
 
@@ -65,7 +65,7 @@ export async function loader({ params, request }: LoaderArgs) {
 	return typedjson({ livecheck, channels });
 }
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
 	const guildID = params.guildID!;
 	await requireUserGuild(request, guildID);
 
@@ -138,7 +138,7 @@ export default function Index() {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	const data = livecheckFetcher.data;
+	const data = livecheckFetcher.data as any;
 	useEffect(() => {
 		if (data) {
 			setIsEditing(false);

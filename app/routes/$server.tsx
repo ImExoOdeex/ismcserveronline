@@ -19,15 +19,14 @@ import {
 	useToast,
 	VStack
 } from "@chakra-ui/react";
-import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
-import { fetch, redirect } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import type { ShouldRevalidateFunction } from "@remix-run/react";
 import { useFetcher, useNavigate } from "@remix-run/react";
 import { useContext, useEffect, useRef, useState } from "react";
-import { BiBookmark, BiBug, BiInfoCircle } from "react-icons/bi";
-import { typedjson } from "remix-typedjson";
-import { useTypedLoaderData } from "remix-typedjson/dist/remix";
-import { getClientIPAddress } from "remix-utils/build/server/get-client-ip-address";
+import { BiBookmark, BiBug, BiInfoCircle } from "react-icons/bi/index.js";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { getClientIPAddress } from "remix-utils/get-client-ip-address";
 import { Ad, adType } from "~/components/ads/Yes";
 import ChecksTable from "~/components/layout/server/ChecksTable";
 import Comments from "~/components/layout/server/Comments";
@@ -35,13 +34,12 @@ import { authenticator } from "~/components/server/auth/authenticator.server";
 import { Info, sendCommentWebhook, sendDeleteCommentWebhook, sendReportWebhook } from "~/components/server/auth/webhooks";
 import { db } from "~/components/server/db/db.server";
 import { getUser, getUserId } from "~/components/server/db/models/user";
-import { type MinecraftServerWoQuery } from "~/components/types/minecraftServer";
-import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
-import useUser from "~/components/utils/func/hooks/useUser";
+import { getCookieWithoutDocument } from "~/components/utils/functions/cookies";
 import { context } from "~/components/utils/GlobalContext";
+import useUser from "~/components/utils/hooks/useUser";
 import Link from "~/components/utils/Link";
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
 	const form = await request.formData();
 	const action = form.get("action");
 
@@ -291,7 +289,7 @@ export async function action({ request, params }: ActionArgs) {
 	}
 }
 
-export async function loader({ params, request }: LoaderArgs) {
+export async function loader({ params, request }: LoaderFunctionArgs) {
 	const server = params.server?.toString().toLowerCase();
 	if (!server?.includes("."))
 		throw new Response("Not found", {
@@ -408,10 +406,12 @@ export async function loader({ params, request }: LoaderArgs) {
 	return typedjson({ server, data, checks, query, comments, isSaved });
 }
 
-export const meta: MetaFunction = ({ data }: { data: { server: string; data: MinecraftServerWoQuery } }) => {
-	return {
-		title: data.server + "'s status | IsMcServer.online"
-	};
+export const meta: MetaFunction = ({ data }) => {
+	return [
+		{
+			title: (data as any).server + "'s status | IsMcServer.online"
+		}
+	];
 };
 
 export const shouldRevalidate: ShouldRevalidateFunction = ({ formData, currentParams, nextParams }) => {
@@ -487,7 +487,7 @@ export default function $server() {
 
 	const toast = useToast();
 	useEffect(() => {
-		if (saveFetcher.data?.success) {
+		if ((saveFetcher.data as any)?.success) {
 			toast({
 				title: "Successfully saved server!",
 				duration: 9000,

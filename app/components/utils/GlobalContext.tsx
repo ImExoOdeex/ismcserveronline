@@ -1,6 +1,6 @@
 import { useLocation } from "@remix-run/react";
 import React, { createContext, useEffect, useState } from "react";
-import { useAdBlock } from "./func/hooks/useAdBlock";
+import { useAdBlock } from "./hooks/useAdBlock";
 
 type Props = {
 	children?: React.ReactNode;

@@ -2,12 +2,12 @@ import { ArrowForwardIcon, Icon } from "@chakra-ui/icons";
 import {
 	Box,
 	Button,
+	Link as ChakraLink,
 	Divider,
 	Flex,
 	Heading,
 	IconButton,
 	Input,
-	Link as ChakraLink,
 	Spinner,
 	Text,
 	useColorMode,
@@ -17,9 +17,9 @@ import { useFetcher } from "@remix-run/react";
 import type { Transition } from "framer-motion";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import { BiSearchAlt } from "react-icons/bi";
-import useUser from "~/components/utils/func/hooks/useUser";
+import { BiSearchAlt } from "react-icons/bi/index.js";
 import Link from "~/components/utils/Link";
+import useUser from "~/components/utils/hooks/useUser";
 import links from "../../../config/links.json";
 
 type Props = {
@@ -141,7 +141,7 @@ export default function SideMenu({ isOpen, setIsOpen, mobileMenuTransition }: Pr
 									name="server"
 									onChange={(e) => setServer(e.currentTarget.value)}
 									value={server}
-									placeholder={fetcher.data ? fetcher.data?.error : "Server address"}
+									placeholder={fetcher.data ? (fetcher.data as any)?.error : "Server address"}
 								/>
 								<Flex pos={"absolute"} top={3} left={0} alignItems={"center"} pl={4}>
 									{submitting ? (

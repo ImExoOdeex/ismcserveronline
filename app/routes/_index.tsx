@@ -1,8 +1,8 @@
 import { Divider, VStack } from "@chakra-ui/react";
-import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { Ad, adType } from "~/components/ads/Yes";
 import BotInfo from "~/components/layout/index/BotInfo";
 import HowToUse from "~/components/layout/index/HowToUse";
@@ -11,10 +11,10 @@ import SampleServers from "~/components/layout/index/SampleServers/SampleServers
 import WARWF from "~/components/layout/index/WARWF";
 import { db } from "~/components/server/db/db.server";
 import { validateServer } from "~/components/server/functions/validateServer";
-import { getCookieWithoutDocument } from "~/components/utils/func/cookiesFunc";
+import { getCookieWithoutDocument } from "~/components/utils/functions/cookies";
 import PopularServers from "../components/layout/index/PopularServers";
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
 	const formData = await request.formData();
 	const bedrock = getCookieWithoutDocument("bedrock", request.headers.get("cookie") ?? "") === "true";
 	const query = getCookieWithoutDocument("query", request.headers.get("cookie") ?? "") === "true";
@@ -31,12 +31,14 @@ export async function action({ request }: ActionArgs) {
 }
 
 export const meta: MetaFunction = () => {
-	return {
-		title: "Minecraft server status | IsMcServer.online"
-	};
+	return [
+		{
+			title: "Minecraft server status | IsMcServer.online"
+		}
+	];
 };
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
 	const cookies = request.headers.get("Cookie");
 	const bedrock = getCookieWithoutDocument("bedrock", cookies ?? "") === "true";
 	const query = getCookieWithoutDocument("query", cookies ?? "") === "true";
@@ -73,7 +75,7 @@ export async function loader({ request }: LoaderArgs) {
 
 	console.log(`[Loader] Sample servers and count took ${Date.now() - start}ms`);
 
-	return json({ bedrock, query, sampleServers, count });
+	return typedjson({ bedrock, query, sampleServers, count });
 }
 
 export default function Index() {
@@ -82,7 +84,7 @@ export default function Index() {
 	const lastQuery = useRef({});
 	const lastCount = useRef(0);
 
-	const { bedrock, sampleServers, query, count } = useLoaderData() ?? {
+	const { bedrock, sampleServers, query, count } = useTypedLoaderData<typeof loader>() ?? {
 		bedrock: lastBedrock.current,
 		sampleServers: lastSampleServers.current,
 		query: lastQuery.current,

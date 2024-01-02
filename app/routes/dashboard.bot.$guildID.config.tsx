@@ -1,15 +1,16 @@
 import { Button, Divider, HStack, Icon, Stack, Text, VStack, Wrap, WrapItem } from "@chakra-ui/react";
-import { json, type ActionArgs, type LoaderArgs } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { useFetcher, useLoaderData, useRevalidator } from "@remix-run/react";
 import { useEffect, useRef } from "react";
-import { BiSave } from "react-icons/bi";
-import { HiRefresh } from "react-icons/hi";
+import { BiSave } from "react-icons/bi/index.js";
+import { HiRefresh } from "react-icons/hi/index.js";
 import StatusColor from "~/components/layout/dashboard/StatusColor";
 import { Info, sendActionWebhook } from "~/components/server/auth/webhooks";
 import { getUser } from "~/components/server/db/models/user";
-import { requireUserGuild } from "~/components/server/functions/secureDashboard";
+import { requireUserGuild } from "~/components/server/functions/secureDashboard.server";
 
-export async function loader({ params, request }: LoaderArgs) {
+export async function loader({ params, request }: LoaderFunctionArgs) {
 	const guildID = params.guildID!;
 	await requireUserGuild(request, guildID);
 
@@ -30,7 +31,7 @@ export async function loader({ params, request }: LoaderArgs) {
 	return json({ config });
 }
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
 	const guildID = params.guildID!;
 	await requireUserGuild(request, guildID);
 
@@ -82,7 +83,7 @@ export default function Config() {
 	const fetcher = useFetcher();
 	const { revalidate, state } = useRevalidator();
 
-	const data = fetcher.data;
+	const data = fetcher.data as any;
 
 	return (
 		<fetcher.Form method="POST" style={{ width: "100%" }}>

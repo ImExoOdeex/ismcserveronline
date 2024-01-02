@@ -1,9 +1,9 @@
 import { Icon } from "@chakra-ui/icons";
 import { Box, Flex, Text, type BoxProps } from "@chakra-ui/react";
-import { useMatches } from "@remix-run/react";
 import { useEffect } from "react";
-import { PiShieldWarningDuotone } from "react-icons/pi";
-import useGlobalContext from "../utils/func/hooks/useGlobalContext";
+import { PiShieldWarningDuotone } from "react-icons/pi/index.js";
+import useGlobalContext from "../utils/hooks/useGlobalContext";
+import useRootData from "../utils/hooks/useRootData";
 
 export enum adType {
 	// 786 x 90 (px)
@@ -35,7 +35,7 @@ export function Ad({ type = adType.responsive, width = "1168px", ...props }: { t
 
 	const { hasAdblock } = useGlobalContext();
 
-	const { showAds } = useMatches()[0].data;
+	const { showAds } = useRootData();
 	if (!showAds || (hasAdblock && type !== adType.column)) {
 		return <></>;
 	}

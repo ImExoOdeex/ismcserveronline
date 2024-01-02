@@ -1,8 +1,8 @@
 import { Flex, Image, useColorMode, useToken } from "@chakra-ui/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useContext } from "react";
-import useUser from "../utils/func/hooks/useUser";
 import { context } from "../utils/GlobalContext";
+import useUser from "../utils/hooks/useUser";
 
 export default function BackgroundUtils() {
 	const { displayGradient, displayLogoInBg, gradientColor } = useContext(context);

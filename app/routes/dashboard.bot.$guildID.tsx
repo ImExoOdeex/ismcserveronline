@@ -1,13 +1,14 @@
 import { Button, Heading, HStack, Image, Stack } from "@chakra-ui/react";
-import { json, redirect, type LoaderArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { useLoaderData, useLocation, useOutlet } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 import BotNotOnServer from "~/components/layout/dashboard/BotNotOnServer";
 import { getUserGuilds } from "~/components/server/db/models/user";
-import { requireUserGuild } from "~/components/server/functions/secureDashboard";
+import { requireUserGuild } from "~/components/server/functions/secureDashboard.server";
 import Link from "~/components/utils/Link";
 
-export async function loader({ params, request }: LoaderArgs) {
+export async function loader({ params, request }: LoaderFunctionArgs) {
 	const guildID = params.guildID!;
 	const userGuilds: any = await getUserGuilds(request);
 
