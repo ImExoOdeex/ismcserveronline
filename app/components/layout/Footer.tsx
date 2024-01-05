@@ -1,14 +1,13 @@
-import { Box, Flex, Link as ChakraLink, Stack, Text, VStack } from "@chakra-ui/react";
-import { useRouteLoaderData } from "@remix-run/react";
+import { Box, Link as ChakraLink, Flex, Stack, Text, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 import pack from "../../../package.json";
-import { getCookie, getCookieWithoutDocument } from "../utils/functions/cookies";
 import Link from "../utils/Link";
+import { getCookie, getCookieWithoutDocument } from "../utils/functions/cookies";
+import useRootData from "../utils/hooks/useRootData";
 
 export default function Footer() {
 	const name = "tracking";
-	const data: any = useRouteLoaderData("root");
-	const cookies = data?.cookies;
+	const { cookies } = useRootData();
 
 	const [cookieState, setCookieState] = useState<"track" | "no-track">(
 		getCookieWithoutDocument(name, cookies) == "no-track" ? "no-track" : "track"

@@ -10,8 +10,18 @@ import {
 	VStack,
 	type ListItemProps
 } from "@chakra-ui/react";
+import { MetaArgs, MetaFunction } from "@remix-run/node";
 import Link from "~/components/utils/Link";
-import links from "../components/config/links.json";
+import links from "../components/config/config";
+
+export function meta({ matches }: MetaArgs) {
+	return [
+		{
+			title: "Terms of Service | IsMcServer.online"
+		},
+		...matches[0].meta
+	] as ReturnType<MetaFunction>;
+}
 
 export default function Tos() {
 	function ListItemTitle({ children, ...props }: ListItemProps) {
@@ -144,6 +154,26 @@ export default function Tos() {
 					<Text>
 						Please <b>do not</b> ddos the API to keep fair user experience. Thanks!
 					</Text>
+				</VStack>
+
+				<VStack w="100%" spacing={5} align={"start"} fontSize={"sm"}>
+					<ListItemTitle>Adding Server Terms</ListItemTitle>
+
+					<VStack align={"start"}>
+						<Text>By adding server you agree to the following terms. If you don't agree, don't add your server.</Text>
+
+						<Text>- You are not allowed to add servers that are not yours.</Text>
+						<Text>- Your server should be online and contain favicon.</Text>
+						<Text>- Your server should not contain any content that is not allowed by Mojang.</Text>
+						<Text>- Make sure you add valid server, because we don't refund any payments.</Text>
+						<Text>- Your server will be added to the list after the payment is successful.</Text>
+						<Text>- We reserve the right to remove your server from the list without any reason.</Text>
+						<Text>- Your server will be removed if it will be offline for so long.</Text>
+						<Text>
+							- You agree for placing your server on this website's homepage for the time you bought. If you want to
+							remove your server from the homepage before the end of end date, contact us on discord.
+						</Text>
+					</VStack>
 				</VStack>
 			</OrderedList>
 

@@ -1,12 +1,13 @@
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { db } from "~/components/server/db/db.server";
+import { requireSuperDuperToken } from "~/components/server/functions/env.server";
 
 export async function action({ request }: ActionFunctionArgs) {
 	const body: any = JSON.parse(await request.text());
 
 	const headerToken = request.headers.get("Authorization");
-	if (headerToken !== process.env.SUPER_DUPER_API_ACCESS_TOKEN) {
+	if (headerToken !== requireSuperDuperToken()) {
 		return json(
 			{
 				message: "Super Duper Token does not match the real 2048 bit Super Duper Token!"

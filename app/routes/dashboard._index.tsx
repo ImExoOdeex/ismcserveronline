@@ -1,15 +1,12 @@
-import { Icon } from "@chakra-ui/icons";
-import { Button, Flex, Heading, SimpleGrid, Text, VStack } from "@chakra-ui/react";
+import { Flex, Heading, SimpleGrid, Text, VStack } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { useFetcher } from "@remix-run/react";
 import { useEffect, useRef } from "react";
-import { FiLogOut } from "react-icons/fi/index.js";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import invariant from "tiny-invariant";
 import SavedServer from "~/components/layout/dashboard/SavedServer";
 import { db } from "~/components/server/db/db.server";
-import { getUser, getUserId } from "~/components/server/db/models/user";
+import { getUserId } from "~/components/server/db/models/user";
 
 export type Guild = {
 	id: string;
@@ -103,15 +100,15 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-	const user = await getUser(request);
+	const userId = await getUserId(request);
 
-	if (!user) {
-		return redirect("/login");
+	if (!userId) {
+		throw redirect("/login");
 	}
 
 	const servers = await db.savedServer.findMany({
 		where: {
-			user_id: user.id
+			user_id: userId
 		},
 		select: {
 			id: true,
@@ -142,20 +139,18 @@ export interface DisplaySavedServer {
 
 export default function Index() {
 	const lastServers = useRef({});
-	const { servers }: any = useTypedLoaderData<typeof loader>() || { servers: lastServers.current };
+	const { servers } = useTypedLoaderData<typeof loader>() || { servers: lastServers.current };
 	useEffect(() => {
 		if (servers) lastServers.current = servers;
 	}, [servers]);
 
-	const logoutFetcher = useFetcher();
-
 	return (
 		<VStack display={"flex"} w="100%" align={"start"} spacing={4}>
 			<VStack align="start">
-				<Heading fontSize={"3xl"}>Servers, you have saved for later</Heading>
+				<Heading fontSize={"2xl"}>Servers, you have saved for later</Heading>
 				<Text>
-					Here you can see all servers you have saved for later. You can also add new servers by clicking on the button
-					below.
+					Here you can see all servers you have saved for later. You can save server for later by clicking the "Save"
+					button on server's page.
 				</Text>
 			</VStack>
 
@@ -180,24 +175,6 @@ export default function Index() {
 					<Text fontWeight={600}>You don't have any servers saved for later.</Text>
 				</Flex>
 			)}
-
-			<logoutFetcher.Form action="/api/auth/logout">
-				<Button
-					transform={"auto-gpu"}
-					_hover={{
-						bg: "alpha",
-						textDecor: "none"
-					}}
-					_active={{ scale: 0.9 }}
-					type="submit"
-					variant={"ghost"}
-					color={"red"}
-					leftIcon={<Icon as={FiLogOut} />}
-					isLoading={logoutFetcher.state !== "idle"}
-				>
-					Logout
-				</Button>
-			</logoutFetcher.Form>
 		</VStack>
 	);
 }

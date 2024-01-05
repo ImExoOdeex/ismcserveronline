@@ -1,9 +1,9 @@
-import { useMatches } from "@remix-run/react";
 import { useEffect, useState } from "react";
+import useRootData from "./useRootData";
 
 export function useAdBlock() {
 	const [adBlockDetected, setAdBlockDetected] = useState(false);
-	const { showAds }: { showAds: boolean } = useMatches()[0].data;
+	const { showAds } = useRootData();
 
 	useEffect(() => {
 		if (!showAds) return;

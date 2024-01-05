@@ -2,7 +2,6 @@ import { Box, Flex } from "@chakra-ui/react";
 import loadable from "@loadable/component";
 import type { Transition } from "framer-motion";
 import { Component, useState, type ReactNode } from "react";
-import useFireworks from "../utils/hooks/useFireworks";
 import BackgroundUtils from "./BackgroundUtils";
 import Column from "./Column";
 import CookieConstent from "./CookieConsent";
@@ -59,8 +58,6 @@ export default function Layout({ children }: { children?: React.ReactNode }) {
 	} as Transition;
 
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-	useFireworks();
 
 	return (
 		<>

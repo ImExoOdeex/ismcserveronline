@@ -7,7 +7,6 @@ import {
 	HStack,
 	Heading,
 	Icon,
-	Link,
 	ListItem,
 	OrderedList,
 	Stack,
@@ -17,35 +16,34 @@ import {
 	useClipboard,
 	useColorModeValue
 } from "@chakra-ui/react";
-import { json, type MetaFunction } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { MetaArgs, type MetaFunction } from "@remix-run/node";
 import crypto from "crypto";
 import { useEffect, useRef } from "react";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { Ad, adType } from "~/components/ads/Yes";
 import DiscordIcon from "~/components/layout/icons/DiscordIcon";
 import { type MinecraftServerWoQuery } from "~/components/types/minecraftServer";
-import links from "../components/config/links.json";
+import Link from "~/components/utils/Link";
 
-export const meta: MetaFunction = () => {
+export function meta({ matches }: MetaArgs) {
 	return [
 		{
 			title: "API | IsMcServer.online"
-		}
-	];
-};
+		},
+		...matches[0].meta
+	] as ReturnType<MetaFunction>;
+}
 
 export async function loader() {
 	const sampleToken = crypto.randomUUID();
 
-	if (!process.env.API_TOKEN) throw new Error("API_TOKEN is not definied!");
-
-	return json({ sampleToken });
+	return typedjson({ sampleToken });
 }
 
 export default function Api() {
 	// that much code, cuz data will go on page transition. (framer motion full page transition)
 	const lastSampleToken = useRef({});
-	const { sampleToken } = useLoaderData<{ sampleToken: string }>() || {
+	const { sampleToken } = useTypedLoaderData<typeof loader>() || {
 		sampleToken: lastSampleToken.current
 	};
 	useEffect(() => {
@@ -157,11 +155,11 @@ export default function Api() {
 									userSelect={"none"}
 									transform={"auto-gpu"}
 									_active={{ scale: 0.9 }}
-									href={links.discordServerInvite}
+									to="/dashboard/token"
 								>
 									<HStack h={"100%"} alignItems={"center"} justifyContent={"center"} mx="auto">
 										<DiscordIcon />
-										<Text>Join server to generate private token!</Text>
+										<Text>Log in to generate private token!</Text>
 									</HStack>
 								</Link>
 							</VStack>

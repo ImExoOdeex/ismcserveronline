@@ -1,6 +1,9 @@
 import { useLocation } from "@remix-run/react";
 import React, { createContext, useEffect, useState } from "react";
+import { useTypedRouteLoaderData } from "remix-typedjson";
+import { loader } from "~/routes/$server";
 import { useAdBlock } from "./hooks/useAdBlock";
+import useUser from "./hooks/useUser";
 
 type Props = {
 	children?: React.ReactNode;
@@ -18,17 +21,21 @@ export const context = createContext<contextType>({ updateData(key, value) {} })
 
 export function GlobalContext({ children }: Props) {
 	const path = useLocation().pathname;
+	const loaderData = useTypedRouteLoaderData<typeof loader>("routes/$server");
 
 	function getNewGradientColor() {
-		return path === "/api" ? "green.500" : path.includes("/popular-servers") ? "gold" : "brand";
+		if (loaderData?.data?.online === true || loaderData?.data?.online === false) {
+			return loaderData.data.online ? "green" : "red";
+		}
+		return path === "/api" ? "green.500" : path.includes("/popular-servers") ? "gold" : "brand.900";
 	}
-
-	console.log(' path.startsWith("/dashboard")', path.startsWith("/dashboard"));
 
 	const hasAdblock = useAdBlock();
 
+	const user = useUser();
+
 	const [data, setData] = useState({
-		displayGradient: true,
+		displayGradient: user?.everPurchased ? false : true,
 		gradientColor: getNewGradientColor(),
 		displayLogoInBg: path.startsWith("/dashboard"),
 		updateData

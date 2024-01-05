@@ -3,8 +3,7 @@ import createEmotionServer from "@emotion/server/create-instance";
 import type { EntryContext } from "@remix-run/node"; // Depends on the runtime you choose
 import { RemixServer } from "@remix-run/react";
 import { renderToString } from "react-dom/server";
-import { ServerStyleContext } from "./context";
-import createEmotionCache from "./createEmotionCache";
+import { ServerStyleContext, createEmotionCache } from "./context";
 import { otherRootRouteHandlers } from "./routes/otherRootRoutes.server";
 
 export default async function handleRequest(

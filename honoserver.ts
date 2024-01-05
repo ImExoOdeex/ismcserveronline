@@ -6,12 +6,17 @@ import { createRequestHandler } from "@remix-run/server-runtime";
 import type { Context, Env, Input, MiddlewareHandler } from "hono";
 import { Hono } from "hono";
 import { compress } from "hono/compress";
+import { isIP } from "is-ip";
+import * as fs from "node:fs";
+import * as url from "node:url";
 import path from "path";
-import { getClientIPAddress } from "remix-utils";
-// import { cache } from "hono/cache";
+import sourceMapSupport from "source-map-support";
 
-const BUILD_DIR = path.join(process.cwd(), "build");
-const build = require(BUILD_DIR);
+sourceMapSupport.install();
+
+const BUILD_PATH = path.resolve("build/index.js");
+
+const build = await reimportServer();
 
 const app = new Hono();
 
@@ -21,14 +26,6 @@ app.use(async (ctx, next) => {
 });
 
 app.use("*", logger());
-
-// app.use(
-// 	"/build/*",
-// 	cache({
-// 		cacheName: "build",
-// 		cacheControl: "public, max-age=31536000, immutable"
-// 	})
-// );
 
 app.use("*", cacheBuild());
 
@@ -173,4 +170,58 @@ function cacheBuild(): MiddlewareHandler {
 
 		await next();
 	};
+}
+
+const headerNames = Object.freeze([
+	"X-Client-IP",
+	"X-Forwarded-For",
+	"HTTP-X-Forwarded-For",
+	"Fly-Client-IP",
+	"CF-Connecting-IP",
+	"Fastly-Client-Ip",
+	"True-Client-Ip",
+	"X-Real-IP",
+	"X-Cluster-Client-IP",
+	"X-Forwarded",
+	"Forwarded-For",
+	"Forwarded",
+	"DO-Connecting-IP",
+	"oxygen-buyer-ip"
+] as const);
+
+export function getClientIPAddress(headers: Headers): string | null {
+	let ipAddress = headerNames
+		.flatMap((headerName) => {
+			let value = headers.get(headerName);
+			if (headerName === "Forwarded") {
+				return parseForwardedHeader(value);
+			}
+			if (!value?.includes(",")) return value;
+			return value.split(",").map((ip) => ip.trim());
+		})
+		.find((ip) => {
+			if (ip === null) return false;
+			return isIP(ip);
+		});
+
+	return ipAddress ?? null;
+}
+
+function parseForwardedHeader(value: string | null): string | null {
+	if (!value) return null;
+	for (let part of value.split(";")) {
+		if (part.startsWith("for=")) return part.slice(4);
+		continue;
+	}
+	return null;
+}
+
+async function reimportServer() {
+	const stat = fs.statSync(BUILD_PATH);
+
+	// convert build path to URL for Windows compatibility with dynamic `import`
+	const BUILD_URL = url.pathToFileURL(BUILD_PATH).href;
+
+	// use a timestamp query parameter to bust the import cache
+	return await import(BUILD_URL + "?t=" + stat.mtimeMs);
 }

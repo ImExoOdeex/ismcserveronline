@@ -1,5 +1,5 @@
 import { CheckIcon } from "@chakra-ui/icons";
-import { Badge, Flex, Grid, HStack, Image, Text, Wrap, WrapItem } from "@chakra-ui/react";
+import { Badge, Flex, Grid, HStack, Image, Text, Wrap, WrapItem, useConst } from "@chakra-ui/react";
 import { useFetcher } from "@remix-run/react";
 import Color from "color";
 import { FastAverageColor } from "fast-average-color";
@@ -13,16 +13,17 @@ type Props = {
 };
 
 export default function ServerItem({ server }: Props) {
-	const fac = new FastAverageColor();
-
 	const [expanded, setExpanded] = useState<boolean>(false);
 	const [color, setColor] = useState("");
+	const fac = useConst(new FastAverageColor());
 
 	useEffect(() => {
-		const ele: any = document.querySelector(`#img${server.id}`);
-		const faqColor = fac.getColor(ele);
-		const color = Color(faqColor?.rgba).alpha(0.15).string();
-		setColor(color);
+		setTimeout(() => {
+			const ele: any = document.querySelector(`#img${server.id}`);
+			const faqColor = fac.getColor(ele);
+			const color = Color(faqColor?.rgba).alpha(0.15).string();
+			setColor(color);
+		}, 10);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
@@ -133,7 +134,8 @@ export default function ServerItem({ server }: Props) {
 						animate={{ height: "auto", opacity: 1 }}
 						exit={{ height: 0, opacity: 0 }}
 						transition={{
-							ease: [0.25, 0.1, 0.25, 1]
+							ease: [0.25, 0.1, 0.25, 1],
+							duration: 0.2
 						}}
 						style={{
 							overflow: "hidden",

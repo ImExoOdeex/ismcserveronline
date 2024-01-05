@@ -28,7 +28,9 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import LivecheckNumbers from "~/components/layout/dashboard/LivecheckNumbers";
 import { Info, sendActionWebhook } from "~/components/server/auth/webhooks";
 import { getUser } from "~/components/server/db/models/user";
+import { requireSuperDuperToken } from "~/components/server/functions/env.server";
 import { requireUserGuild } from "~/components/server/functions/secureDashboard.server";
+import serverConfig from "~/components/server/serverConfig.server";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
 	const guildID = params.guildID!;
@@ -38,28 +40,18 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 	const number = url.searchParams.get("number") ?? "1";
 
 	const [livecheck, channels] = await Promise.all([
-		fetch(
-			`${
-				process.env.NODE_ENV === "production" ? "https://bot.ismcserver.online" : "http://localhost:3004"
-			}/${guildID}/livecheck/${number}`,
-			{
-				method: "get",
-				headers: {
-					Authorization: process.env.SUPER_DUPER_API_ACCESS_TOKEN ?? ""
-				}
+		fetch(`${serverConfig.botApi}/${guildID}/livecheck/${number}`, {
+			method: "get",
+			headers: {
+				Authorization: requireSuperDuperToken()
 			}
-		).then((res) => res.json()),
-		fetch(
-			`${
-				process.env.NODE_ENV === "production" ? "https://bot.ismcserver.online" : "http://localhost:3004"
-			}/${guildID}/channels`,
-			{
-				method: "get",
-				headers: {
-					Authorization: process.env.SUPER_DUPER_API_ACCESS_TOKEN ?? ""
-				}
+		}).then((res) => res.json()),
+		fetch(`${serverConfig.botApi}/${guildID}/channels`, {
+			method: "get",
+			headers: {
+				Authorization: requireSuperDuperToken()
 			}
-		).then((res) => res.json())
+		}).then((res) => res.json())
 	]);
 
 	return typedjson({ livecheck, channels });
@@ -88,19 +80,14 @@ export async function action({ request, params }: ActionFunctionArgs) {
 	}
 
 	const res = await (
-		await fetch(
-			`${
-				process.env.NODE_ENV === "production" ? "https://bot.ismcserver.online" : "http://localhost:3004"
-			}/${guildID}/livecheck/edit/${number}`,
-			{
-				method: "post",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: process.env.SUPER_DUPER_API_ACCESS_TOKEN ?? ""
-				},
-				body: JSON.stringify(Object.fromEntries(formData))
-			}
-		)
+		await fetch(`${serverConfig.botApi}/${guildID}/livecheck/edit/${number}`, {
+			method: "post",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: requireSuperDuperToken()
+			},
+			body: JSON.stringify(Object.fromEntries(formData))
+		})
 	).json();
 
 	getUser(request).then((user) => {

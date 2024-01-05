@@ -23,10 +23,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { BiSearchAlt } from "react-icons/bi/index.js";
 import Link from "~/components/utils/Link";
-import links from "../../../config/links.json";
+import links from "../../../config/config";
 import DiscordIcon from "../../icons/DiscordIcon";
 
-export default function Modal({ isOpen, onOpen, onClose }: { isOpen: boolean; onOpen: () => void; onClose: () => void }) {
+export default function Modal({ isOpen, onClose }: { isOpen: boolean; onOpen: () => void; onClose: () => void }) {
 	const { colorMode, toggleColorMode } = useColorMode();
 	const fetcher = useFetcher();
 	const submitting = fetcher.state !== "idle";

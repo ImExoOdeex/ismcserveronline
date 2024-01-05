@@ -1,6 +1,7 @@
 import { DiscordStrategy } from "remix-auth-discord";
 import { db } from "~/components/server/db/db.server";
 import { type Guild } from "~/routes/dashboard._index";
+import serverConfig from "../serverConfig.server";
 import { Info, sendLoginWebhook } from "./webhooks";
 
 if (!process.env.DISCORD_CLIENT_ID) throw new Error("process.env.DISCORD_CLIENT_ID is not defined!");
@@ -39,10 +40,7 @@ export const discordStrategy: any = new DiscordStrategy(
 				: process.env.DISCORD_CLIENT_SECRET_DEV ?? "",
 		scope: ["identify", "email", "guilds"],
 		prompt: "none",
-		callbackURL:
-			process.env.NODE_ENV === "production"
-				? `https://ismcserver.online/api/auth/discord/callback`
-				: `http://localhost:3000/api/auth/discord/callback`
+		callbackURL: `${serverConfig.dashUrl}/api/auth/discord/callback`
 	},
 	async ({ profile, accessToken, context }) => {
 		if (!profile?.emails?.length) {

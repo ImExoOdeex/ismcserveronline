@@ -19,11 +19,11 @@ import {
 	useToast,
 	VStack
 } from "@chakra-ui/react";
-import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import type { ShouldRevalidateFunction } from "@remix-run/react";
 import { useFetcher, useNavigate } from "@remix-run/react";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BiBookmark, BiBug, BiInfoCircle } from "react-icons/bi/index.js";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { getClientIPAddress } from "remix-utils/get-client-ip-address";
@@ -34,8 +34,10 @@ import { authenticator } from "~/components/server/auth/authenticator.server";
 import { Info, sendCommentWebhook, sendDeleteCommentWebhook, sendReportWebhook } from "~/components/server/auth/webhooks";
 import { db } from "~/components/server/db/db.server";
 import { getUser, getUserId } from "~/components/server/db/models/user";
+import { requireAPIToken } from "~/components/server/functions/env.server";
+import serverConfig from "~/components/server/serverConfig.server";
+import { MinecraftServer, MinecraftServerWoQuery } from "~/components/types/minecraftServer";
 import { getCookieWithoutDocument } from "~/components/utils/functions/cookies";
-import { context } from "~/components/utils/GlobalContext";
 import useUser from "~/components/utils/hooks/useUser";
 import Link from "~/components/utils/Link";
 
@@ -45,7 +47,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 	switch (action) {
 		case "query":
-			return redirect(`?query`);
+			throw redirect(`?query`);
 		case "comment": {
 			const content = form.get("content")?.toString();
 			const server = params.server!.toString().toLowerCase();
@@ -302,18 +304,14 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 		});
 	}
 
-	if (!process.env.API_TOKEN) throw new Error("API_TOKEN is not definied!");
-
 	const url = new URL(request.url);
 	const c = url.searchParams.get("page") || 0;
 	const query = url.searchParams.get("query") === "";
 
-	const data: any = await (
-		await fetch(`http://localhost:3004/${query ? "query/" : ""}${server}`, {
-			method: "get",
-			headers: [["Authorization", process.env.API_TOKEN]]
-		})
-	).json();
+	const data: MinecraftServer | MinecraftServerWoQuery = await fetch(`${serverConfig.api}/${query ? "query/" : ""}${server}`, {
+		method: "GET",
+		headers: [["Authorization", requireAPIToken()]]
+	}).then((r) => r.json());
 
 	const cookie = getCookieWithoutDocument("tracking", request.headers.get("cookie") ?? "");
 	const blockTracking = cookie == "no-track" ? true : false;
@@ -406,13 +404,14 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 	return typedjson({ server, data, checks, query, comments, isSaved });
 }
 
-export const meta: MetaFunction = ({ data }) => {
+export function meta({ data, matches }: MetaArgs) {
 	return [
 		{
 			title: (data as any).server + "'s status | IsMcServer.online"
-		}
-	];
-};
+		},
+		...matches[0].meta
+	] as ReturnType<MetaFunction>;
+}
 
 export const shouldRevalidate: ShouldRevalidateFunction = ({ formData, currentParams, nextParams }) => {
 	if (!formData) return false;
@@ -455,12 +454,6 @@ export default function $server() {
 
 	const bgImageColor = "rgba(0,0,0,.7)";
 
-	const { updateData } = useContext(context);
-	useEffect(() => {
-		updateData("gradientColor", data.online ? "green" : "red");
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
-
 	const fetcher = useFetcher();
 	const busy = fetcher.state !== "idle";
 
@@ -475,7 +468,7 @@ export default function $server() {
 		}
 	] as const;
 
-	const [tab, setTab] = useState<typeof tabs[number]["value"]>("checks");
+	const [tab, setTab] = useState<(typeof tabs)[number]["value"]>("checks");
 
 	const [comments, setComments] = useState(dbComments);
 
@@ -636,8 +629,8 @@ export default function $server() {
 									{query && (
 										<Tr>
 											<Td>Map</Td>
-											<Td fontWeight={"normal"} color={data?.map ? "text" : "textSec"}>
-												{data?.map ? data.map : "Unable to get"}
+											<Td fontWeight={"normal"} color={(data as MinecraftServer)?.map ? "text" : "textSec"}>
+												{(data as MinecraftServer)?.map ? (data as MinecraftServer).map : "Unable to get"}
 											</Td>
 										</Tr>
 									)}
@@ -677,9 +670,9 @@ export default function $server() {
 									{query && (
 										<Tr>
 											<Td>Plugins</Td>
-											{data.plugins?.length ? (
+											{(data as MinecraftServer).plugins?.length ? (
 												<>
-													{data.plugins.map((p: string) => {
+													{(data as MinecraftServer).plugins.map((p: string) => {
 														return (
 															<Td fontWeight={"normal"} key={p}>
 																{p}
@@ -714,8 +707,8 @@ export default function $server() {
 									{query && (
 										<Tr>
 											<Td>IP</Td>
-											<Td fontWeight={"normal"} color={data?.ip ? "text" : "textSec"}>
-												{data?.ip ? data.ip : "Unable to get"}
+											<Td fontWeight={"normal"} color={(data as MinecraftServer)?.ip ? "text" : "textSec"}>
+												{(data as MinecraftServer)?.ip ? (data as MinecraftServer).ip : "Unable to get"}
 											</Td>
 										</Tr>
 									)}

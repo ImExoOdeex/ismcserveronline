@@ -12,26 +12,15 @@ import {
 	Wrap,
 	WrapItem
 } from "@chakra-ui/react";
-import { useContext } from "react";
 import { AiOutlineDashboard } from "react-icons/ai/index.js";
 import { BsFillPeopleFill } from "react-icons/bs/index.js";
-import { context } from "~/components/utils/GlobalContext";
 import Link from "~/components/utils/Link";
-import links from "../../config/links.json";
+import links from "../../config/config";
 import DiscordIcon from "../icons/DiscordIcon";
 
 export default function BotInfo() {
-	// const [opened, setOpened] = useState<boolean>(false);
-
-	const { updateData } = useContext(context);
-
-	// useEffect(() => {
-	// 	updateData("displayLogoInBg", opened);
-	// 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	// }, [opened]);
-
 	return (
-		<VStack w="100%" align={"start"} my={20} spacing={10} pos={"relative"}>
+		<VStack w="100%" align={"start"} spacing={10} pos={"relative"}>
 			<Stack
 				justifyContent={"space-between"}
 				w="100%"

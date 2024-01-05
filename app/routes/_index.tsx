@@ -1,5 +1,5 @@
 import { Divider, VStack } from "@chakra-ui/react";
-import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useEffect, useRef, useState } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
@@ -30,13 +30,14 @@ export async function action({ request }: ActionFunctionArgs) {
 	return redirect(`/${bedrock ? "bedrock/" : ""}${server}${query && !bedrock ? "?query" : ""}`);
 }
 
-export const meta: MetaFunction = () => {
+export function meta({ matches }: MetaArgs) {
 	return [
 		{
 			title: "Minecraft server status | IsMcServer.online"
-		}
-	];
-};
+		},
+		...matches[0].meta
+	] as ReturnType<MetaFunction>;
+}
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const cookies = request.headers.get("Cookie");
@@ -44,7 +45,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	const query = getCookieWithoutDocument("query", cookies ?? "") === "true";
 
 	const start = Date.now();
-	let [sampleServers, count] = await Promise.all([
+
+	const [sampleServers, count] = await Promise.all([
 		db.sampleServer.findMany({
 			select: {
 				bedrock: true,
@@ -56,16 +58,23 @@ export async function loader({ request }: LoaderFunctionArgs) {
 			},
 			// get only servers that end dates are greater than now or null
 			where: {
-				OR: [
+				AND: [
 					{
-						end_date: {
-							gte: new Date()
-						}
+						OR: [
+							{
+								end_date: {
+									gte: new Date()
+								}
+							},
+							{
+								end_date: {
+									equals: null
+								}
+							}
+						]
 					},
 					{
-						end_date: {
-							equals: null
-						}
+						payment_status: "PAID"
 					}
 				]
 			}
@@ -75,7 +84,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 	console.log(`[Loader] Sample servers and count took ${Date.now() - start}ms`);
 
-	return typedjson({ bedrock, query, sampleServers, count });
+	return typedjson(
+		{ bedrock, query, sampleServers, count },
+		{
+			headers: {
+				"Cache-Control": "public, max-age=60"
+			}
+		}
+	);
 }
 
 export default function Index() {
@@ -112,7 +128,7 @@ export default function Index() {
 				count={count}
 			/>
 
-			<SampleServers setServerValue={setServerValue} setBedrock={setBedrockChecked} />
+			<SampleServers sampleServers={sampleServers} setServerValue={setServerValue} setBedrock={setBedrockChecked} />
 
 			<Divider />
 			<BotInfo />

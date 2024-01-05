@@ -1,7 +1,7 @@
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import { Button, Heading, Image, Link as ChakraLink, Stack, VStack } from "@chakra-ui/react";
+import { Button, Link as ChakraLink, Heading, Image, Stack, VStack } from "@chakra-ui/react";
 import Link from "~/components/utils/Link";
-import links from "../../config/links.json";
+import links from "../../config/config";
 import DiscordIcon from "../icons/DiscordIcon";
 
 export default function BotNotOnServer() {
@@ -18,7 +18,7 @@ export default function BotNotOnServer() {
 				<Button
 					as={Link}
 					prefetch="render"
-					to="/dashboard"
+					to="/dashboard/bot"
 					_hover={{ textDecor: "none", bg: "alpha100" }}
 					bg="alpha200"
 					leftIcon={<ArrowBackIcon />}

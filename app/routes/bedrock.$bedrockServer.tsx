@@ -17,7 +17,7 @@ import {
 	useToast,
 	VStack
 } from "@chakra-ui/react";
-import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
 import { useFetcher, useNavigate } from "@remix-run/react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { BiBookmark, BiBug, BiInfoCircle } from "react-icons/bi/index.js";
@@ -29,6 +29,8 @@ import { authenticator } from "~/components/server/auth/authenticator.server";
 import { Info, sendCommentWebhook, sendDeleteCommentWebhook, sendReportWebhook } from "~/components/server/auth/webhooks";
 import { db } from "~/components/server/db/db.server";
 import { getUser, getUserId } from "~/components/server/db/models/user";
+import { requireAPIToken } from "~/components/server/functions/env.server";
+import serverConfig from "~/components/server/serverConfig.server";
 import { getCookieWithoutDocument } from "~/components/utils/functions/cookies";
 import { context } from "~/components/utils/GlobalContext";
 import useUser from "~/components/utils/hooks/useUser";
@@ -289,12 +291,10 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 			status: 404
 		});
 
-	if (!process.env.API_TOKEN) throw new Error("API_TOKEN is not definied!");
-
 	const data: any = await (
-		await fetch(`https://api.ismcserver.online/bedrock/${server}`, {
+		await fetch(`${serverConfig.api}/bedrock/${server}`, {
 			method: "get",
-			headers: [["Authorization", process.env.API_TOKEN]]
+			headers: [["Authorization", requireAPIToken()]]
 		})
 	).json();
 
@@ -391,13 +391,14 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 	return typedjson({ server, data, checks, comments, isSaved });
 }
 
-export const meta: MetaFunction = ({ data }) => {
+export function meta({ data, matches }: MetaArgs) {
 	return [
 		{
 			title: (data as any).server + "'s status | IsMcServer.online"
-		}
-	];
-};
+		},
+		...matches[0].meta
+	] as ReturnType<MetaFunction>;
+}
 
 export default function $server() {
 	const lastServer = useRef({});
@@ -446,7 +447,7 @@ export default function $server() {
 		}
 	] as const;
 
-	const [tab, setTab] = useState<typeof tabs[number]["value"]>("checks");
+	const [tab, setTab] = useState<(typeof tabs)[number]["value"]>("checks");
 
 	const [comments, setComments] = useState(dbComments);
 

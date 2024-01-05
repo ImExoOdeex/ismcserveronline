@@ -1,43 +1,39 @@
 import { Button, Heading, HStack, Image, Stack } from "@chakra-ui/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
-import { useLoaderData, useLocation, useOutlet } from "@remix-run/react";
+import { redirect } from "@remix-run/node";
+import { useLocation, useOutlet } from "@remix-run/react";
 import { useEffect, useRef } from "react";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import BotNotOnServer from "~/components/layout/dashboard/BotNotOnServer";
 import { getUserGuilds } from "~/components/server/db/models/user";
+import { requireSuperDuperToken } from "~/components/server/functions/env.server";
 import { requireUserGuild } from "~/components/server/functions/secureDashboard.server";
+import serverConfig from "~/components/server/serverConfig.server";
 import Link from "~/components/utils/Link";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
 	const guildID = params.guildID!;
-	const userGuilds: any = await getUserGuilds(request);
+	const userGuilds = await getUserGuilds(request);
 
-	if (!userGuilds) return redirect("/dashboard");
+	if (!userGuilds) throw redirect("/dashboard");
 
-	await requireUserGuild(request, guildID);
+	await requireUserGuild(request, guildID, userGuilds);
 
-	const guild = await (
-		await fetch(
-			`${
-				process.env.NODE_ENV === "production" ? "https://bot.ismcserver.online" : "http://localhost:3004"
-			}/${guildID}/guild`,
-			{
-				method: "get",
-				headers: {
-					Authorization: process.env.SUPER_DUPER_API_ACCESS_TOKEN ?? ""
-				}
-			}
-		)
-	).json();
+	const guild = await fetch(`${serverConfig.botApi}/${guildID}/guild`, {
+		method: "GET",
+		headers: {
+			Authorization: requireSuperDuperToken()
+		}
+	}).then((res) => res.json());
 
-	const userContainsGuild = userGuilds.find((g: any) => g?.id === guild?.id) ? true : false;
+	const userContainsGuild = guild ? (userGuilds.find((g) => g.id === guild.id) ? true : false) : false;
 
-	return json({ guild: userContainsGuild ? guild : null });
+	return typedjson({ guild: userContainsGuild ? guild : null });
 }
 
 export default function $guildID() {
 	const lastGuild = useRef(null);
-	const { guild } = useLoaderData<typeof loader>() || {
+	const { guild } = useTypedLoaderData<typeof loader>() || {
 		guild: lastGuild.current
 	};
 

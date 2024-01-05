@@ -1,9 +1,10 @@
 import { ChatIcon } from "@chakra-ui/icons";
 import { Alert, AlertIcon, AlertTitle, Button, Flex, HStack, Image, Text, Textarea, useToast, VStack } from "@chakra-ui/react";
-import { useFetcher, useRouteLoaderData } from "@remix-run/react";
+import { useFetcher } from "@remix-run/react";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en.json";
 import { useEffect, useState } from "react";
+import useUser from "~/components/utils/hooks/useUser";
 import Comment from "./Comment";
 
 type Props = {
@@ -27,7 +28,7 @@ export interface CustomComment {
 }
 
 export default function Comments({ comments, setComments }: Props) {
-	const { user } = useRouteLoaderData("root");
+	const user = useUser();
 
 	const fetcher = useFetcher();
 
@@ -35,8 +36,8 @@ export default function Comments({ comments, setComments }: Props) {
 
 	const toast = useToast();
 	useEffect(() => {
-		if (fetcher.data?.success) {
-			setComments((comments) => [fetcher.data.comment, ...comments]);
+		if ((fetcher.data as any)?.success) {
+			setComments((comments) => [(fetcher.data as any).comment, ...comments]);
 			setNewComment("");
 			toast({
 				title: "Comment added.",
@@ -72,10 +73,10 @@ export default function Comments({ comments, setComments }: Props) {
 							<Flex flexDir={"column"} gap={2} w="100%">
 								<Text>
 									Write a comment
-									{fetcher.data?.error && (
+									{(fetcher.data as any)?.error && (
 										<Text as="span" fontWeight={600} color="red">
 											{" "}
-											{fetcher.data.error}
+											{(fetcher.data as any).error}
 										</Text>
 									)}
 								</Text>

@@ -3,7 +3,7 @@ import { authenticator } from "~/components/server/auth/authenticator.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	return await authenticator.logout(request, {
-		redirectTo: "/login"
+		redirectTo: "/"
 	});
 }
-export { loader as action } from "./api.auth.discord";
+export { loader as action };

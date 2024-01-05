@@ -1,12 +1,12 @@
 {
 	"private": true,
 	"sideEffects": false,
-	"version": "1.6.0",
+	"version": "2.0.0",
 	"type": "module",
 	"scripts": {
-		"build": "cross-env NODE_ENV=production tsc --skipLibCheck honoserver.ts --outDir ./build --esModuleInterop && remix build",
+		"build": "cross-env NODE_ENV=production tsc --skipLibCheck --esModuleInterop --moduleResolution node --target esnext --module esnext honoserver.ts --outDir ./build && remix build",
 		"dev:hono": "cross-env NODE_ENV=development tsc --skipLibCheck ./honoserver.ts --outDir ./build --esModuleInterop && remix dev -c \"node ./build/honoserver.js\"",
-		"dev": "cross-env NODE_ENV=development tsc --skipLibCheck --esModuleInterop --moduleResolution node --target esnext --module esnext ./server.ts --outDir ./build --esModuleInterop && remix dev -c \"node ./build/server.js\"",
+		"dev": "cross-env NODE_ENV=development tsc --skipLibCheck --esModuleInterop --moduleResolution node --target esnext --module esnext ./server.ts --outDir ./build --esModuleInterop && remix dev --manual -c \"node --watch-path ./build/server.js --watch ./build/server.js\"",
 		"start": "cross-env NODE_ENV=production node ./build/honoserver.js",
 		"typecheck": "tsc -b",
 		"theme": "chakra-cli tokens app/components/utils/theme.ts",
@@ -26,11 +26,13 @@
 		"@remix-run/node": "2.4.1",
 		"@remix-run/react": "2.4.1",
 		"@remix-run/serve": "2.4.1",
-		"@tsparticles/fireworks": "^3.0.3",
+		"@stripe/react-stripe-js": "^2.4.0",
+		"@stripe/stripe-js": "^2.2.2",
 		"chakra-react-select": "^4.7.6",
 		"color": "^4.2.3",
 		"compression": "^1.7.4",
 		"cross-env": "^7.0.3",
+		"dayjs": "^1.11.10",
 		"express": "^4.18.2",
 		"fast-average-color": "^9.3.0",
 		"framer-motion": "^7.6.19",
@@ -45,6 +47,7 @@
 		"remix-auth-discord": "^1.2.1",
 		"remix-typedjson": "^0.4.1",
 		"remix-utils": "^7.5.0",
+		"stripe": "^14.10.0",
 		"tiny-invariant": "^1.3.1"
 	},
 	"devDependencies": {

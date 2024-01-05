@@ -1,6 +1,7 @@
-import type { ActionFunctionArgs } from "@remix-run/node";
+import { json, type ActionFunctionArgs } from "@remix-run/node";
 import { getClientIPAddress } from "remix-utils/get-client-ip-address";
 import { db } from "~/components/server/db/db.server";
+import { requireAPIToken, requireSuperDuperToken } from "~/components/server/functions/env.server";
 
 // This is typically POST request to this route. I use it for adding discord server checks. You can't make this request, cuz you dont have super duper 2048 bit access token hah
 export async function action({ request }: ActionFunctionArgs) {
@@ -8,7 +9,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 	const headerToken = request.headers.get("Authorization");
 
-	if (!headerToken)
+	if (headerToken !== requireSuperDuperToken())
 		return new Response("Super Duper Token does not match the real 2048 bit Super Duper Token!", {
 			status: 405
 		});
@@ -21,7 +22,7 @@ export async function action({ request }: ActionFunctionArgs) {
 			? (
 					await db.token.findUnique({
 						where: {
-							token: process.env.API_TOKEN
+							token: requireAPIToken()
 						}
 					})
 			  )?.id
@@ -48,8 +49,8 @@ export async function action({ request }: ActionFunctionArgs) {
 		}
 	});
 
-	return new Response(null, {
-		status: 200
+	return json({
+		success: true
 	});
 }
 

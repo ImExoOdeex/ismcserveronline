@@ -1,4 +1,5 @@
 import { redirect } from "remix-typedjson";
+import { Guild } from "../../../../routes/dashboard.bot._index";
 import { authenticator } from "../../auth/authenticator.server";
 import { db } from "../db.server";
 
@@ -32,6 +33,7 @@ export async function getUser(request: Request) {
 			snowflake: true,
 			nick: true,
 			photo: true,
+			everPurchased: true,
 			role: true
 		}
 	});
@@ -76,5 +78,5 @@ export async function getUserGuilds(request: Request) {
 		}
 	});
 
-	return user?.guilds;
+	return user?.guilds as unknown as Guild[];
 }

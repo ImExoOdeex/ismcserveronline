@@ -1,21 +1,22 @@
 import { Badge, Code, Divider, Heading, Link, Text, VStack } from "@chakra-ui/react";
-import { type MetaFunction } from "@remix-run/node";
-import { useRouteLoaderData } from "@remix-run/react";
+import { MetaArgs, type MetaFunction } from "@remix-run/node";
 import os from "os";
 import { useEffect, useRef, useState } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { Ad, adType } from "~/components/ads/Yes";
 import SystemInfo from "~/components/layout/faq/SystemInfo";
 import { getCookie, getCookieWithoutDocument } from "~/components/utils/functions/cookies";
-import links from "../components/config/links.json";
+import useRootData from "~/components/utils/hooks/useRootData";
+import links from "../components/config/config";
 
-export const meta: MetaFunction = () => {
+export function meta({ matches }: MetaArgs) {
 	return [
 		{
 			title: "FAQ | IsMcServer.online"
-		}
-	];
-};
+		},
+		...matches[0].meta
+	] as ReturnType<MetaFunction>;
+}
 
 export async function loader() {
 	const bytesToMegabytes = (bytes: number) => Math.round((bytes / 1024 / 1024) * 100) / 100;
@@ -63,8 +64,7 @@ export default function Faq() {
 	}, [system]);
 
 	const name = "tracking";
-	const data: any = useRouteLoaderData("root");
-	const cookies = data?.cookies;
+	const { cookies } = useRootData();
 
 	const [cookieState, setCookieState] = useState<"track" | "no-track">(
 		getCookieWithoutDocument(name, cookies) == "no-track" ? "no-track" : "track"
@@ -138,7 +138,7 @@ export default function Faq() {
 			<VStack align={"start"}>
 				<Heading fontSize={"md"}>Is it really real-time data?</Heading>
 				<Text color={"textSec"} fontWeight={500}>
-					Yes, our API <b>do not</b> cache any responses!
+					Yes, our API <b>does not</b> cache any responses!
 				</Text>
 			</VStack>
 

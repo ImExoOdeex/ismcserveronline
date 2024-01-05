@@ -14,17 +14,20 @@ enum Role {
 
 // do not the fuck ask why this is via email, not id ok?
 model User {
-  id          Int           @id @unique @default(autoincrement())
-  email       String        @unique
-  snowflake   String        @unique
-  nick        String
-  photo       String?
-  role        Role          @default(USER)
-  guilds      Json?
-  created_at  DateTime      @default(now())
-  updated_at  DateTime      @updatedAt
-  Comment     Comment[]
-  SavedServer SavedServer[]
+  id            Int            @id @unique @default(autoincrement())
+  email         String         @unique
+  snowflake     String         @unique
+  nick          String
+  photo         String?
+  everPurchased Boolean        @default(false)
+  role          Role           @default(USER)
+  guilds        Json?
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
+  Comment       Comment[]
+  SavedServer   SavedServer[]
+  SampleServer  SampleServer[]
+  Token         Token?
 
   @@index([email])
 }
@@ -62,12 +65,26 @@ model Comment {
 }
 
 model SampleServer {
-  id       Int       @id @unique @default(autoincrement())
-  server   String
-  bedrock  Boolean   @default(false)
-  favicon  String
+  id      Int     @id @unique @default(autoincrement())
+  server  String
+  bedrock Boolean @default(false)
+  favicon String
+
+  user    User? @relation(fields: [user_id], references: [id])
+  user_id Int?
+
+  payment_id     String?
+  payment_status PaymentStatus @default(PROCESSING)
+
   add_date DateTime  @default(now())
   end_date DateTime?
+}
+
+enum PaymentStatus {
+  FAILED
+  CANCELLED
+  PROCESSING
+  PAID
 }
 
 // this server is for popular servers
@@ -97,7 +114,8 @@ model Check {
 model Token {
   id         Int      @id @unique @default(autoincrement())
   token      String   @unique
-  user_id    String   @unique
+  user       User?    @relation(fields: [user_id], references: [id])
+  user_id    Int?     @unique
   check      Check[]
   client_ip  String?
   created_at DateTime @default(now())

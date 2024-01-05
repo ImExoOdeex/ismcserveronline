@@ -1,4 +1,5 @@
-import { type EntryContext } from "@remix-run/node";
+import { redirect, type EntryContext } from "@remix-run/node";
+import config from "~/components/config/config";
 import { db } from "~/components/server/db/db.server";
 
 type Handler = (request: Request, remixContext: EntryContext) => Promise<Response | null> | null;
@@ -13,26 +14,27 @@ export const otherRootRoutes: Record<string, Handler> = {
 			}),
 			db.check.findMany({
 				select: {
-					server: true
+					server: true,
+					online: true
 				}
 			})
 		]);
 
 		// delete duplicate servers
 		const seen = new Set();
-		const filteredServers = servers.filter((server: any) => {
+		const filteredServers = servers.filter((server) => {
 			const duplicate = seen.has(server.server);
 			seen.add(server.server);
 			return !duplicate;
 		});
-		const filteredChecks = checks.filter((check: any) => {
+		const filteredChecks = checks.filter((check) => {
 			const duplicate = seen.has(check.server);
 			seen.add(check.server);
 
 			// filter only addresses that are not ips, but valid domains
 			const isValidAddress = check.server.match(/^(?!:\/\/)([a-zA-Z0-9-_]+\.)*[a-zA-Z0-9][a-zA-Z0-9-_]+\.[a-zA-Z]{2,11}?$/);
 
-			return !duplicate && isValidAddress;
+			return !duplicate && isValidAddress && check.online;
 		});
 
 		const filtered = new Set(filteredServers.concat(filteredChecks));
@@ -106,6 +108,18 @@ export const otherRootRoutes: Record<string, Handler> = {
 				}
 			}
 		);
+	},
+	"/discord": async () => {
+		return redirect(config.discordServerInvite);
+	},
+	"/support": async () => {
+		return redirect(config.discordServerInvite);
+	},
+	"/invite": async () => {
+		return redirect(config.discordBotInvite);
+	},
+	"/bot": async () => {
+		return redirect(config.discordBotInvite);
 	}
 };
 

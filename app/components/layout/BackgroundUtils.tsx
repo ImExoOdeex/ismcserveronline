@@ -27,6 +27,7 @@ export default function BackgroundUtils() {
 							left={0}
 							opacity={0.1}
 							src={user?.photo ?? "/discordLogo.png"}
+							filter={"blur(20px)"}
 							w={"100%"}
 							h={"100vh"}
 							zIndex={-1}
@@ -40,7 +41,7 @@ export default function BackgroundUtils() {
 				)}
 			</AnimatePresence>
 			{displayGradient && (
-				<svg style={{ width: "100%", opacity: colorMode === "light" ? (gradientColor === "gold" ? 0.2 : 0.2) : 0.15 }}>
+				<svg style={{ width: "100%", opacity: colorMode === "light" ? (gradientColor === "gold" ? 0.2 : 0.25) : 0.2 }}>
 					<defs>
 						<linearGradient id="background-gradient" gradientTransform="rotate(90)">
 							<stop offset="0%" stopColor={rawColor} style={{ transition: "stop-color 0.4s ease 0s" }}></stop>

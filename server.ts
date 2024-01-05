@@ -1,12 +1,11 @@
-import * as fs from "node:fs";
-import * as path from "node:path";
-import * as url from "node:url";
-
 import { GetLoadContextFunction, createRequestHandler } from "@remix-run/express";
 import { broadcastDevReady, installGlobals } from "@remix-run/node";
 import compression from "compression";
 import express from "express";
 import morgan from "morgan";
+import * as fs from "node:fs";
+import * as path from "node:path";
+import * as url from "node:url";
 import sourceMapSupport from "source-map-support";
 
 (async () => {
@@ -18,7 +17,7 @@ import sourceMapSupport from "source-map-support";
 
 	const initialBuild = await reimportServer();
 
-	const getLoadContext: GetLoadContextFunction = (req, res) => {
+	const getLoadContext: GetLoadContextFunction = () => {
 		return {
 			start: Date.now().toString()
 		};
@@ -57,7 +56,7 @@ import sourceMapSupport from "source-map-support";
 		console.log(`Express server listening on port ${port}`);
 
 		if (process.env.NODE_ENV === "development") {
-			broadcastDevReady(initialBuild);
+			broadcastDevReady(await reimportServer());
 		}
 	});
 

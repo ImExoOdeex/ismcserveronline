@@ -1,34 +1,29 @@
 import { Button, Divider, HStack, Icon, Stack, Text, VStack, Wrap, WrapItem } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
 import { useFetcher, useLoaderData, useRevalidator } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 import { BiSave } from "react-icons/bi/index.js";
 import { HiRefresh } from "react-icons/hi/index.js";
+import { typedjson } from "remix-typedjson";
 import StatusColor from "~/components/layout/dashboard/StatusColor";
 import { Info, sendActionWebhook } from "~/components/server/auth/webhooks";
 import { getUser } from "~/components/server/db/models/user";
+import { requireSuperDuperToken } from "~/components/server/functions/env.server";
 import { requireUserGuild } from "~/components/server/functions/secureDashboard.server";
+import serverConfig from "~/components/server/serverConfig.server";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
 	const guildID = params.guildID!;
 	await requireUserGuild(request, guildID);
 
-	const config = await (
-		await fetch(
-			`${
-				process.env.NODE_ENV === "production" ? "https://bot.ismcserver.online" : "http://localhost:3004"
-			}/${guildID}/config`,
-			{
-				method: "get",
-				headers: {
-					Authorization: process.env.SUPER_DUPER_API_ACCESS_TOKEN ?? ""
-				}
-			}
-		)
-	).json();
+	const config = await fetch(`${serverConfig.botApi}/${guildID}/config`, {
+		method: "GET",
+		headers: {
+			Authorization: requireSuperDuperToken()
+		}
+	}).then((res) => res.json());
 
-	return json({ config });
+	return typedjson({ config });
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -37,21 +32,14 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 	const formData = await request.formData();
 
-	const res = await (
-		await fetch(
-			`${
-				process.env.NODE_ENV === "production" ? "https://bot.ismcserver.online" : "http://localhost:3004"
-			}/${guildID}/config/edit`,
-			{
-				method: "post",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: process.env.SUPER_DUPER_API_ACCESS_TOKEN ?? ""
-				},
-				body: JSON.stringify(Object.fromEntries(formData))
-			}
-		)
-	).json();
+	const res = await fetch(`${serverConfig.botApi}/${guildID}/config/edit`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: requireSuperDuperToken()
+		},
+		body: JSON.stringify(Object.fromEntries(formData))
+	}).then((res) => res.json());
 
 	getUser(request).then((user) => {
 		if (user) {
@@ -68,7 +56,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 		}
 	});
 
-	return json(res);
+	return typedjson(res);
 }
 
 export default function Config() {

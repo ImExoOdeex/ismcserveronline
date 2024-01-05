@@ -13,12 +13,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	session.set("redirect", redirectURLParam);
 	session.set("guild", guildIDParam);
 
-	console.log("/dashboard");
-	console.table({
-		redirectURLParam,
-		guildIDParam
-	});
-
 	return redirect("/login?redirect", {
 		headers: {
 			"Set-Cookie": await commitSession(session)

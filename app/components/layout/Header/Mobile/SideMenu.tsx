@@ -20,7 +20,7 @@ import { useState } from "react";
 import { BiSearchAlt } from "react-icons/bi/index.js";
 import Link from "~/components/utils/Link";
 import useUser from "~/components/utils/hooks/useUser";
-import links from "../../../config/links.json";
+import links from "../../../config/config";
 
 type Props = {
 	mobileMenuTransition: Transition;

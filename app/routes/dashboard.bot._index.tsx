@@ -1,10 +1,11 @@
 import { Badge, Button, Heading, HStack, Icon, Image, SimpleGrid, Text, VStack } from "@chakra-ui/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
-import { useFetcher, useLoaderData, useOutlet } from "@remix-run/react";
+import { redirect } from "@remix-run/node";
+import { useFetcher } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 import { HiRefresh } from "react-icons/hi/index.js";
-import { getUser, getUserGuilds } from "~/components/server/db/models/user";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { getUserGuilds, getUserId } from "~/components/server/db/models/user";
 import Link from "~/components/utils/Link";
 
 export type Guild = {
@@ -18,10 +19,10 @@ export type Guild = {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-	const user = await getUser(request);
+	const userId = await getUserId(request);
 
-	if (!user) {
-		return redirect("/login");
+	if (!userId) {
+		throw redirect("/login");
 	}
 
 	const guilds = (await getUserGuilds(request))!;
@@ -30,23 +31,22 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		throw new Error("'Guilds' is not an object!");
 	}
 
-	return json({ guilds });
+	return typedjson({ guilds });
 }
 
 export default function Index() {
 	const lastGuilds = useRef({});
-	const { guilds }: { guilds: Guild[] } = useLoaderData() || { guilds: lastGuilds.current };
+	const { guilds } = useTypedLoaderData<typeof loader>() || { guilds: lastGuilds.current };
 	useEffect(() => {
 		if (guilds) lastGuilds.current = guilds;
 	}, [guilds]);
 
 	const refreshGuildsFetcher = useFetcher();
-	const outlet = useOutlet();
 
 	return (
 		<VStack w="100%" align={"start"} spacing={4}>
 			<VStack align="start">
-				<Heading fontSize={"3xl"}>Servers, that you can manage</Heading>
+				<Heading fontSize={"2xl"}>Servers, that you can manage</Heading>
 				<Text>There's a list of all your servers, that you can manage. Click of any you want to configure the bot!</Text>
 			</VStack>
 
@@ -69,7 +69,7 @@ export default function Index() {
 									key={guild.id}
 									as={Link}
 									to={guild.id}
-									prefetch="render"
+									prefetch="intent"
 									rounded={"xl"}
 									transform={"auto-gpu"}
 									_hover={{
@@ -120,13 +120,14 @@ export default function Index() {
 									/>
 									<HStack>
 										<Text
-											fontWeight={"black"}
+											fontWeight={800}
 											fontSize={"xl"}
 											color={"white"}
 											noOfLines={1}
-											sx={{
-												"-webkit-text-stroke": "0.5px #1a1a1a"
-											}}
+											// sx={{
+											// 	"-webkit-text-stroke": "0.5px #1a1a1a"
+											// }}
+											textShadow={"0px 1px 2px #000000"}
 										>
 											{guild.name}
 										</Text>
@@ -158,7 +159,6 @@ export default function Index() {
 					</refreshGuildsFetcher.Form>
 				</HStack>
 			</VStack>
-			{outlet}
 		</VStack>
 	);
 }

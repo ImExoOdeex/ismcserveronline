@@ -1,14 +1,24 @@
-import { Divider, Flex, Heading, HStack, Text, VStack } from "@chakra-ui/react";
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import { Button, Divider, Flex, HStack, Heading, Icon, VStack } from "@chakra-ui/react";
+import type { LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { useLocation, useOutlet } from "@remix-run/react";
+import { useFetcher, useLocation, useOutlet } from "@remix-run/react";
+import { Transition } from "framer-motion";
 import { useMemo } from "react";
-import AdaptiveAvatar from "~/components/layout/dashboard/AdaptiveAvatar";
+import { FiLogOut } from "react-icons/fi/index.js";
 import { ChakraBox } from "~/components/layout/MotionComponents";
 import { getUserId } from "~/components/server/db/models/user";
 import { commitSession, getSession } from "~/components/server/session.server";
 import Link from "~/components/utils/Link";
 import useUser from "../components/utils/hooks/useUser";
+
+export function meta({ matches }: MetaArgs) {
+	return [
+		{
+			title: "Dashboard | IsMcServer.online"
+		},
+		...matches[0].meta
+	] as ReturnType<MetaFunction>;
+}
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const userId = await getUserId(request);
@@ -53,6 +63,14 @@ export default function Dashboard() {
 			{
 				name: "Manage Discord Bot",
 				to: "/dashboard/bot"
+			},
+			{
+				name: "Add Server",
+				to: "/dashboard/add-server"
+			},
+			{
+				name: "API Token",
+				to: "/dashboard/token"
 			}
 		];
 
@@ -66,63 +84,90 @@ export default function Dashboard() {
 		return yes;
 	}, [user.role]);
 
+	const logoutFetcher = useFetcher();
+
 	return (
 		<VStack w="100%" maxW={"1200px"} mx="auto" align={"start"} mt={5} spacing={10} px={4}>
-			<VStack w="100%" align={"start"}>
-				<Flex
-					w="100%"
-					justify={"space-between"}
-					alignItems={{ base: "flex-start", sm: "center" }}
-					flexDir={{
-						base: "column",
-						sm: "row"
-					}}
-					gap={4}
-				>
-					<Heading fontSize={"4xl"} as={Link} to="/dashboard">
-						Dashboard
-					</Heading>
+			<Flex
+				w="100%"
+				justify={"space-between"}
+				alignItems={{ base: "flex-start", sm: "center" }}
+				flexDir={{
+					base: "column",
+					sm: "row"
+				}}
+				gap={4}
+			>
+				<Heading fontSize={"4xl"} as={Link} to="/dashboard">
+					Dashboard
+				</Heading>
 
-					<HStack spacing={4}>
-						<AdaptiveAvatar name={user.nick} photo={user.photo} boxSize={12} />
-						<Flex flexDir={"column"}>
-							<Text fontWeight={600}>{user.nick}</Text>
-							<Text fontSize={"sm"}>{user.email}</Text>
-						</Flex>
-					</HStack>
-				</Flex>
-				<Divider />
-			</VStack>
+				<HStack>
+					<logoutFetcher.Form action="/api/auth/logout">
+						<Button
+							transform={"auto-gpu"}
+							_hover={{
+								bg: "rgba(255, 0, 0, 0.1)",
+								textDecor: "none"
+							}}
+							_active={{ scale: 0.9 }}
+							type="submit"
+							variant={"ghost"}
+							color={"red"}
+							leftIcon={<Icon as={FiLogOut} />}
+							isLoading={logoutFetcher.state !== "idle"}
+						>
+							Logout
+						</Button>
+					</logoutFetcher.Form>
+				</HStack>
+			</Flex>
 
 			<Flex flexDir={"column"} gap={6} w="100%">
-				<Flex gap={4}>
-					{buttons.map((button, i) => (
-						<Link
-							key={i}
-							to={button.to}
-							pos="relative"
-							_hover={{
-								textDecoration: "none",
-								opacity: 1
-							}}
-							opacity={path === button.to ? 1 : 0.8}
-							fontWeight={500}
-						>
-							{button.name}
-							{path === button.to && (
-								<ChakraBox
-									pos="absolute"
-									bottom={0}
-									left={0}
-									w="100%"
-									h="2px"
-									bg="brand"
-									layout
-									layoutId="dashunderline"
-								/>
-							)}
-						</Link>
-					))}
+				<Flex flexDir={"column"}>
+					<Flex gap={4}>
+						{buttons.map((button, i) => (
+							<Button
+								as={Link}
+								variant={"ghost"}
+								rounded={"none"}
+								key={i}
+								to={button.to}
+								pos="relative"
+								_hover={{
+									bg: "alpha",
+									textDecoration: "none"
+								}}
+								_active={{
+									bg: "alpha100"
+								}}
+								opacity={path === button.to ? 1 : 0.8}
+								fontWeight={500}
+							>
+								{button.name}
+								{path === button.to && (
+									<ChakraBox
+										pos="absolute"
+										bottom={0}
+										left={0}
+										w="100%"
+										h="2px"
+										bg="brand"
+										layout
+										layoutId="dashunderline"
+										transition={
+											{
+												type: "spring",
+												bounce: 0.15,
+												duration: 0.75
+											} as Transition as any
+										}
+									/>
+								)}
+							</Button>
+						))}
+					</Flex>
+					<Divider />
 				</Flex>
 
 				{outlet}

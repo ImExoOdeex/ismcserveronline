@@ -1,9 +1,10 @@
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import { Box, ChakraBaseProvider, Flex, Heading, Icon, Stack, Text, theme, VStack } from "@chakra-ui/react";
 import { withEmotionCache } from "@emotion/react";
-import { Links, LiveReload, Meta, Scripts, ScrollRestoration, useLoaderData, useRouteError } from "@remix-run/react";
+import { Links, LiveReload, Meta, Scripts, ScrollRestoration, useRouteError } from "@remix-run/react";
 import { useContext, useEffect, useMemo } from "react";
 import { BiCode, BiHome } from "react-icons/bi/index.js";
+import { useTypedLoaderData } from "remix-typedjson";
 import { getCookieWithoutDocument } from "./components/utils/functions/cookies";
 import Link from "./components/utils/Link";
 import { ClientStyleContext, ServerStyleContext } from "./context";
@@ -32,7 +33,7 @@ const Document = withEmotionCache(({ children }: DocumentProps, emotionCache) =>
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	let { cookies, showAds } = useLoaderData<typeof loader>();
+	let { cookies, showAds } = useTypedLoaderData<typeof loader>();
 
 	if (typeof document !== "undefined") {
 		cookies = document.cookie;
@@ -69,7 +70,7 @@ const Document = withEmotionCache(({ children }: DocumentProps, emotionCache) =>
 	);
 });
 
-const ErrorBoundary = withEmotionCache((never, emotionCache) => {
+const ErrorBoundary = withEmotionCache((_never, emotionCache) => {
 	const serverStyleData = useContext(ServerStyleContext);
 	const clientStyleData = useContext(ClientStyleContext);
 	const error = useRouteError();

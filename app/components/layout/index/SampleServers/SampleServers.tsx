@@ -1,27 +1,19 @@
 import { Flex, Grid, GridItem, HStack, Heading, Image, Text } from "@chakra-ui/react";
-import { useLoaderData } from "@remix-run/react";
-import { useEffect, useRef } from "react";
 import AddServerPopover from "./AddServerPopover";
 
 type server = { server: string; favicon: string; bedrock: boolean };
 
 export default function SampleServers({
 	setServerValue,
-	setBedrock
+	setBedrock,
+	sampleServers
 }: {
 	setServerValue: (s: string) => void;
 	setBedrock: (b: boolean) => void;
+	sampleServers: server[];
 }) {
-	const lastSampleServers = useRef({});
-	const { sampleServers } = useLoaderData() ?? {
-		sampleServers: lastSampleServers.current
-	};
-	useEffect(() => {
-		if (sampleServers) lastSampleServers.current = sampleServers;
-	}, [sampleServers]);
-
 	return (
-		<Flex p={5} rounded={"2xl"} bg={"alpha"} w="100%" flexDir={"column"} mt={20}>
+		<Flex p={5} rounded={"2xl"} bg={"alpha"} w="100%" flexDir={"column"}>
 			<Heading as="h2" fontSize={"lg"}>
 				Just looking? Try out these sample servers!
 			</Heading>
@@ -36,7 +28,7 @@ export default function SampleServers({
 					w="100%"
 					gap={5 + " !important"}
 				>
-					{sampleServers.map((s: server) => (
+					{sampleServers.map((s) => (
 						<GridItem
 							key={s.server}
 							p={3}

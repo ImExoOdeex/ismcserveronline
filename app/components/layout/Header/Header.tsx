@@ -18,10 +18,11 @@ type Props = {
 
 export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 	const [scrollPosition, setScrollPosition] = useState(0);
-	const handleScroll = () => {
+
+	function handleScroll() {
 		const position = window.pageYOffset;
 		setScrollPosition(position);
-	};
+	}
 
 	useEffect(() => {
 		window.addEventListener("scroll", handleScroll, { passive: true });
@@ -38,11 +39,11 @@ export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 		<Flex
 			as={"header"}
 			w="100%"
-			h={{ base: "60px", md: "80px" }}
+			h={{ base: "60px", md: "70px" }}
 			pos={"sticky"}
 			top={0}
 			backdropFilter={scrollPosition < 1 ? "none" : "blur(20px)"}
-			zIndex={1799}
+			zIndex={1000}
 			borderBottom={"1px"}
 			borderBottomColor={scrollPosition > 0 ? "alpha" : "transparent"}
 			transition={"all .2s"}
