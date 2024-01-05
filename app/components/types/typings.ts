@@ -4,3 +4,9 @@ export interface PaymentIntentMetadata {
 	type: "sampleServer" | "premium";
 	sampleServerId?: string;
 }
+
+export interface SampleServerHomepage {
+	bedrock: boolean;
+	server: string;
+	favicon: string;
+}

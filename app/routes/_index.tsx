@@ -10,7 +10,10 @@ import Main from "~/components/layout/index/Main";
 import SampleServers from "~/components/layout/index/SampleServers/SampleServers";
 import WARWF from "~/components/layout/index/WARWF";
 import { db } from "~/components/server/db/db.server";
+import { getCache, setCache } from "~/components/server/db/redis.server";
 import { validateServer } from "~/components/server/functions/validateServer";
+import serverConfig from "~/components/server/serverConfig.server";
+import { SampleServerHomepage } from "~/components/types/typings";
 import { getCookieWithoutDocument } from "~/components/utils/functions/cookies";
 import PopularServers from "../components/layout/index/PopularServers";
 
@@ -46,41 +49,57 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 	const start = Date.now();
 
-	const [sampleServers, count] = await Promise.all([
-		db.sampleServer.findMany({
-			select: {
-				bedrock: true,
-				server: true,
-				favicon: true
-			},
-			orderBy: {
-				add_date: "desc"
-			},
-			// get only servers that end dates are greater than now or null
-			where: {
-				AND: [
-					{
-						OR: [
-							{
-								end_date: {
-									gte: new Date()
-								}
-							},
-							{
-								end_date: {
-									equals: null
-								}
-							}
-						]
-					},
-					{
-						payment_status: "PAID"
-					}
-				]
-			}
-		}),
-		db.check.count()
+	let sampleServers: SampleServerHomepage[], count: number;
+
+	let [cacheCount, cacheServers] = await Promise.all([
+		getCache(Object.keys(serverConfig.cache)[0]), // count
+		getCache(Object.keys(serverConfig.cache)[1]) // sampleServers
 	]);
+
+	if (!cacheServers || !cacheCount) {
+		console.log("[Loader] No cache");
+
+		[sampleServers, count] = await Promise.all([
+			db.sampleServer.findMany({
+				select: {
+					bedrock: true,
+					server: true,
+					favicon: true
+				},
+				orderBy: {
+					add_date: "desc"
+				},
+				// get only servers that end dates are greater than now or null
+				where: {
+					AND: [
+						{
+							OR: [
+								{
+									end_date: {
+										gte: new Date()
+									}
+								},
+								{
+									end_date: {
+										equals: null
+									}
+								}
+							]
+						},
+						{
+							payment_status: "PAID"
+						}
+					]
+				}
+			}),
+			db.check.count()
+		]);
+		setCache(Object.keys(serverConfig.cache)[0], count, serverConfig.cache.count);
+		setCache(Object.keys(serverConfig.cache)[1], sampleServers, serverConfig.cache.sampleServers);
+	} else {
+		console.log("[Loader] Using Cache");
+		[sampleServers, count] = [JSON.parse(cacheServers ?? "[]"), Number(cacheCount)];
+	}
 
 	console.log(`[Loader] Sample servers and count took ${Date.now() - start}ms`);
 
