@@ -88,7 +88,10 @@ export default function Comment({
 					<Flex flexDir={"row"} gap={2} alignItems="center">
 						<Flex boxSize={10}>
 							<Image
-								src={comment.user.photo ?? "/default.png"}
+								src={comment.user.photo ?? "/discordLogo.png"}
+								onError={(e) => {
+									(e.target as HTMLImageElement).src = "/discordLogo.png";
+								}}
 								overflow={"hidden"}
 								alt={comment.user.nick}
 								boxSize="100%"

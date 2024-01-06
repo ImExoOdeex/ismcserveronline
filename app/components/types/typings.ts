@@ -10,3 +10,11 @@ export interface SampleServerHomepage {
 	server: string;
 	favicon: string;
 }
+
+export interface IPlan {
+	title: string;
+	description: string;
+	price: number;
+	color: string;
+	features: string[];
+}

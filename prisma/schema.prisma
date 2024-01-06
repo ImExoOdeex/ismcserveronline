@@ -20,6 +20,8 @@ model User {
   nick          String
   photo         String?
   everPurchased Boolean        @default(false)
+  prime         Boolean        @default(false)
+  subId         String?
   role          Role           @default(USER)
   guilds        Json?
   created_at    DateTime       @default(now())

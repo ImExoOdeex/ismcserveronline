@@ -1,10 +1,11 @@
-import { Button, Divider, Flex, HStack, Heading, Icon, VStack } from "@chakra-ui/react";
+import { Button, Divider, Flex, HStack, Heading, VStack } from "@chakra-ui/react";
 import type { LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { useFetcher, useLocation, useOutlet } from "@remix-run/react";
 import { Transition } from "framer-motion";
 import { useMemo } from "react";
 import { FiLogOut } from "react-icons/fi/index.js";
+import { PiCrownSimpleDuotone } from "react-icons/pi/index.js";
 import { ChakraBox } from "~/components/layout/MotionComponents";
 import { getUserId } from "~/components/server/db/models/user";
 import { commitSession, getSession } from "~/components/server/session.server";
@@ -74,6 +75,13 @@ export default function Dashboard() {
 			}
 		];
 
+		if (user?.prime) {
+			yes.push({
+				name: "Prime",
+				to: "/dashboard/prime"
+			});
+		}
+
 		if (user.role === "ADMIN") {
 			yes.push({
 				name: "Admin",
@@ -103,6 +111,25 @@ export default function Dashboard() {
 				</Heading>
 
 				<HStack>
+					<Button
+						as={Link}
+						to="/prime"
+						variant={"ghost"}
+						color={"brand"}
+						_hover={{
+							bg: "rgba(72, 0, 255, 0.1)",
+							textDecoration: "none"
+						}}
+						_active={{
+							scale: 0.9
+						}}
+						transform={"auto-gpu"}
+						fontWeight={500}
+						rightIcon={<PiCrownSimpleDuotone />}
+					>
+						Prime
+					</Button>
+
 					<logoutFetcher.Form action="/api/auth/logout">
 						<Button
 							transform={"auto-gpu"}
@@ -114,7 +141,7 @@ export default function Dashboard() {
 							type="submit"
 							variant={"ghost"}
 							color={"red"}
-							leftIcon={<Icon as={FiLogOut} />}
+							rightIcon={<FiLogOut />}
 							isLoading={logoutFetcher.state !== "idle"}
 						>
 							Logout
@@ -124,8 +151,15 @@ export default function Dashboard() {
 			</Flex>
 
 			<Flex flexDir={"column"} gap={6} w="100%">
-				<Flex flexDir={"column"}>
-					<Flex gap={4}>
+				<Flex
+					flexDir={"column"}
+					overflow={"auto"}
+					overflowX={{
+						base: "auto",
+						md: "hidden"
+					}}
+				>
+					<Flex gap={4} w="max-content">
 						{buttons.map((button, i) => (
 							<Button
 								as={Link}

@@ -34,7 +34,9 @@ export async function getUser(request: Request) {
 			nick: true,
 			photo: true,
 			everPurchased: true,
-			role: true
+			role: true,
+			prime: true,
+			subId: true
 		}
 	});
 

@@ -9,6 +9,8 @@ export async function action({ request }: ActionFunctionArgs) {
 
 	console.log(`Received event ${event.type}`);
 	switch (event.type) {
+		// --- Payments ---
+
 		// Payment Intent Cancelled
 		case "payment_intent.canceled":
 			return await webhookHandlers.handlePaymentIntentCancelled(event);
@@ -18,9 +20,21 @@ export async function action({ request }: ActionFunctionArgs) {
 		// Payment Intent Processing
 		case "payment_intent.processing":
 			return await webhookHandlers.handlePaymentIntentProcessing(event);
-		// Payment Intent Succeeded
+		// Payment Intent Succeeded   Payment AND Subscription
 		case "payment_intent.succeeded":
 			return await webhookHandlers.handlePaymentIntentSucceeded(event);
+
+		// --- Subscriptions ---
+
+		// Subscription Created
+		case "customer.subscription.created":
+			return await webhookHandlers.handleCustomerSubscriptionCreated(event);
+		// Subscription Updated
+		case "customer.subscription.updated":
+			return await webhookHandlers.handleCustomerSubscriptionUpdated(event);
+		// Subscription Deleted
+		case "customer.subscription.deleted":
+			return await webhookHandlers.handleCustomerSubscriptionDeleted(event);
 	}
 
 	console.warn(`Unhandled event type ${event.type}`);

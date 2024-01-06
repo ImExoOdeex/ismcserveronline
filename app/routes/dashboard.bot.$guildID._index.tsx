@@ -24,7 +24,8 @@ import { useEffect, useRef, useState } from "react";
 import { BiSave } from "react-icons/bi/index.js";
 import { HiRefresh } from "react-icons/hi/index.js";
 import { TbTrash } from "react-icons/tb/index.js";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { redirect, typedjson, useTypedLoaderData } from "remix-typedjson";
+import invariant from "tiny-invariant";
 import LivecheckNumbers from "~/components/layout/dashboard/LivecheckNumbers";
 import { Info, sendActionWebhook } from "~/components/server/auth/webhooks";
 import { getUser } from "~/components/server/db/models/user";
@@ -36,8 +37,15 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 	const guildID = params.guildID!;
 	await requireUserGuild(request, guildID);
 
+	const user = await getUser(request);
+	invariant(user, "User is not logged in.");
+
 	const url = new URL(request.url);
 	const number = url.searchParams.get("number") ?? "1";
+
+	if (!user?.prime && Number(number) >= 3) {
+		throw redirect(`/dashboard/bot/${params.guildID}`);
+	}
 
 	const [livecheck, channels] = await Promise.all([
 		fetch(`${serverConfig.botApi}/${guildID}/livecheck/${number}`, {
