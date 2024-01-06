@@ -29,13 +29,15 @@ export async function action({ request }: ActionFunctionArgs) {
 			console.log("if if if if if");
 			return json({
 				type: "setup",
-				clientSecret: (subscription.pending_setup_intent as Stripe.SetupIntent).client_secret
+				clientSecret: (subscription.pending_setup_intent as Stripe.SetupIntent).client_secret,
+				paymentIntentId: paymentIntent!.id
 			});
 		} else {
 			console.log("else else else else else");
 			return json({
 				type: "payment",
-				clientSecret: paymentIntent!.client_secret
+				clientSecret: paymentIntent!.client_secret,
+				paymentIntentId: paymentIntent!.id
 			});
 		}
 	} catch (error: any) {

@@ -25,7 +25,7 @@ export default function SubscriptionForm() {
 			return;
 		}
 
-		const { type, clientSecret } = await fetch("/api/stripe/subscribe", {
+		const { type, clientSecret, paymentIntentId } = await fetch("/api/stripe/subscribe", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"
@@ -37,16 +37,42 @@ export default function SubscriptionForm() {
 		const { error } = await confirmIntent({
 			elements,
 			clientSecret,
+			redirect: "if_required", // redirecting manually, since webhooks are delayed and yes
 			confirmParams: {
 				return_url: `${window.location.origin}/dashboard`
 			}
 		});
 
-		setSubmitting(false);
 		if (error) {
+			setSubmitting(false);
 			console.error(error);
 			alert(error.message);
 			return;
+		} else {
+			console.info("Redirecting manually...");
+
+			// check if user has prime delivered by webhooks
+			setTimeout(async () => {
+				const res = await fetch("/api/user/prime", {
+					method: "POST"
+				}).then((res) => res.json());
+				console.log("res", res);
+
+				const newUrl =
+					window.location.origin +
+					"/dashboard/prime" +
+					`?payment_intent=${paymentIntentId}&payment_intent_client_secret=${clientSecret}&redirect_status=succeeded`;
+
+				if (res.prime) {
+					console.log("redirecting immediately");
+					window.location.href = newUrl;
+				} else {
+					console.log("redirecting in 1.5s");
+					setTimeout(() => {
+						window.location.href = newUrl;
+					}, 1500);
+				}
+			}, 500);
 		}
 	}
 

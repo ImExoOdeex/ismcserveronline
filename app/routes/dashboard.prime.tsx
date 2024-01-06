@@ -1,10 +1,14 @@
 import {
+	Alert,
+	AlertDescription,
 	AlertDialog,
 	AlertDialogBody,
 	AlertDialogContent,
 	AlertDialogFooter,
 	AlertDialogHeader,
 	AlertDialogOverlay,
+	AlertIcon,
+	AlertTitle,
 	Button,
 	Divider,
 	Flex,
@@ -20,7 +24,8 @@ import { FaHeartBroken } from "react-icons/fa/index.js";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import invariant from "tiny-invariant";
 import { getUser } from "~/components/server/db/models/user";
-import { subscriptionHandlers } from "~/components/server/payments/stripe.server";
+import { paymentHandlers, subscriptionHandlers } from "~/components/server/payments/stripe.server";
+import useUser from "~/components/utils/hooks/useUser";
 
 export async function action({ request }: ActionFunctionArgs) {
 	const user = await getUser(request);
@@ -39,24 +44,34 @@ export async function action({ request }: ActionFunctionArgs) {
 export async function loader({ request }: LoaderFunctionArgs) {
 	const user = await getUser(request);
 	invariant(user, "User not found");
-	invariant(user.subId, "User does not have a subscription");
-	invariant(user.prime, "User does not have a subscription");
 
-	const subscription = await subscriptionHandlers.retrieveSubscription(user.subId);
+	const url = new URL(request.url);
+	const paymentIntentId = url.searchParams.get("payment_intent");
+
+	const [subscription, paymentIntent] = await Promise.all([
+		user.subId ? subscriptionHandlers.retrieveSubscription(user.subId) : null,
+		paymentIntentId ? paymentHandlers.retrievePaymentIntent(paymentIntentId).catch(() => null) : Promise.resolve(null)
+	]);
 
 	return typedjson({
-		subscription
+		subscription,
+		paymentIntent
 	});
 }
 
 export default function DashboardPrime() {
 	const lastSubscription = useRef({});
-	const { subscription } = useTypedLoaderData<typeof loader>() ?? { subscription: lastSubscription.current };
+	const lastPaymentIntent = useRef({});
+	const { subscription, paymentIntent } = useTypedLoaderData<typeof loader>() ?? {
+		subscription: lastSubscription.current,
+		paymentIntent: lastPaymentIntent.current
+	};
 	useEffect(() => {
 		if (subscription) lastSubscription.current = subscription;
-	}, [subscription]);
+		if (paymentIntent) lastPaymentIntent.current = paymentIntent;
+	}, [subscription, paymentIntent]);
 
-	console.log(subscription);
+	const user = useUser();
 
 	const isCancelled = subscription?.cancel_at;
 
@@ -65,6 +80,14 @@ export default function DashboardPrime() {
 		month: "long",
 		day: "numeric"
 	});
+
+	useEffect(() => {
+		if (paymentIntent && !user?.everPurchased) {
+			setTimeout(() => {
+				window.location.reload();
+			}, 500);
+		}
+	}, []);
 
 	return (
 		<Flex flexDir={"column"} gap={4} alignItems={"flex-start"}>
@@ -75,27 +98,63 @@ export default function DashboardPrime() {
 
 			<Divider />
 
-			<Flex
-				w="100%"
-				justifyContent={"space-between"}
-				flexDir={{
-					base: "column",
-					md: "row"
-				}}
-				gap={4}
-			>
-				<Flex flexDir={"column"} gap={0.5}>
-					<Text fontWeight={500}>Prime Subscription Status</Text>
-					<Text fontWeight={600} fontSize={"xl"} color={isCancelled ? "orange" : "green.600"}>
-						{subscription?.cancel_at
-							? "Your subscription is cancelled and will end on " +
-							  intlDate.format(new Date(subscription.cancel_at! * 1000))
-							: "Your subscription is active. Thanks <3"}
-					</Text>
-				</Flex>
+			{paymentIntent && (
+				<Alert
+					status={
+						paymentIntent.status === "succeeded"
+							? "success"
+							: paymentIntent.status === "processing"
+							? "loading"
+							: "error"
+					}
+					variant="subtle"
+					flexDirection="column"
+					alignItems="center"
+					justifyContent="center"
+					textAlign="center"
+					height="200px"
+				>
+					<AlertIcon boxSize="40px" mr={0} />
+					<AlertTitle mt={4} mb={1} fontSize="lg">
+						{paymentIntent.status === "succeeded"
+							? "Payment succeeded"
+							: paymentIntent.status === "processing"
+							? "Payment processing"
+							: "Payment failed"}
+					</AlertTitle>
+					<AlertDescription maxWidth="sm">
+						{paymentIntent.status === "succeeded"
+							? "Your payment has been succeeded, you now have prime subscription."
+							: paymentIntent.status === "processing"
+							? "Your payment is processing. You will be able to see your subscription, once payment been succeeded. Please refresh to check the status."
+							: "Your payment has failed. Please try again."}
+					</AlertDescription>
+				</Alert>
+			)}
 
-				{!isCancelled && <CancelButton />}
-			</Flex>
+			{subscription && (
+				<Flex
+					w="100%"
+					justifyContent={"space-between"}
+					flexDir={{
+						base: "column",
+						md: "row"
+					}}
+					gap={4}
+				>
+					<Flex flexDir={"column"} gap={0.5}>
+						<Text fontWeight={500}>Prime Subscription Status</Text>
+						<Text fontWeight={600} fontSize={"xl"} color={isCancelled ? "orange" : "green.600"}>
+							{subscription?.cancel_at
+								? "Your subscription is cancelled and will end on " +
+								  intlDate.format(new Date(subscription.cancel_at! * 1000))
+								: "Your subscription is active. Thanks <3"}
+						</Text>
+					</Flex>
+
+					{!isCancelled && <CancelButton />}
+				</Flex>
+			)}
 
 			{isCancelled && (
 				<Text>

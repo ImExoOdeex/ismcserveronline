@@ -15,7 +15,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	const user = await getUser(request);
 
 	if (user?.prime) {
-		return redirect("/dashboard");
+		return redirect("/dashboard/prime");
 	} else if (!user) {
 		return redirect("/login");
 	}
