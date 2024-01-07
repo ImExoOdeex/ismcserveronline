@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { MetaArgs, MetaFunction } from "@remix-run/node";
 import Link from "~/components/utils/Link";
-import links from "../components/config/config";
+import { default as config, default as links } from "../components/config/config";
 
 export function meta({ matches }: MetaArgs) {
 	return [
@@ -172,6 +172,32 @@ export default function Tos() {
 						<Text>
 							- You agree for placing your server on this website's homepage for the time you bought. If you want to
 							remove your server from the homepage before the end of end date, contact us on discord.
+						</Text>
+					</VStack>
+				</VStack>
+
+				<VStack w="100%" spacing={5} align={"start"} fontSize={"sm"}>
+					<ListItemTitle>Prime Subscription Terms</ListItemTitle>
+
+					<VStack align={"start"}>
+						<Text>
+							Prime subscription is a subscription plan that costs {config.primePrice} usd and adds some features to
+							user account.
+						</Text>
+
+						<Text>- Subscription renews automatically every month. You can cancel it anytime in dashboard.</Text>
+						<Text>
+							- If you cancel your subscription, you will still have prime features until the end of the month you
+							paid for.
+						</Text>
+						<Text>- We don't refund any payments.</Text>
+						<Text>- We reserve the right to remove your prime subscription without any reason.</Text>
+						<Text>- We reserve the right to change prime subscription price at any time.</Text>
+						<Text>- We reserve the right to change prime subscription features at any time.</Text>
+						<Text>- Prime subscription helps us to keep this website alive. Thanks for supporting us!</Text>
+						<Text>
+							- If you have any questions about prime subscription or need any help related to it, feel free to
+							contact us on discord.
 						</Text>
 					</VStack>
 				</VStack>

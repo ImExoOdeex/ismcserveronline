@@ -2,12 +2,11 @@ import { Badge, Box, Button, Flex, Heading, HStack, Text } from "@chakra-ui/reac
 import { useLocation } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { PiCrownSimpleDuotone } from "react-icons/pi/index.js";
+import useUser from "~/components/utils/hooks/useUser";
 import Link from "../../utils/Link";
-import APIButton from "./APIButton";
-import FAQButton from "./FAQButton";
-import LoginButton from "./LoginButton";
+import { APIButton, FAQButton, LoginButton, PopularServersButton } from "./Buttons";
 import HamburgerMenu from "./Mobile/HamburgerMenu";
-import PopularServersButton from "./PopularServersButton";
 import ServerSearch from "./ServerSearch";
 import ThemeToggle from "./ToggleTheme";
 
@@ -22,7 +21,6 @@ export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 	function handleScroll(optimize = true) {
 		const position = window.pageYOffset;
 		if (optimize && position > 40) return;
-		console.log("setting scroll position", position > 10);
 
 		setHasScrolled(position > 10);
 	}
@@ -37,6 +35,7 @@ export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 	}, []);
 
 	const path = useLocation().pathname;
+	const user = useUser();
 
 	return (
 		<Flex
@@ -89,6 +88,26 @@ export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 				</HStack>
 
 				<HStack spacing={3} display={{ base: "none", lg: "flex" }}>
+					{!user?.prime && (
+						<Button
+							as={Link}
+							to="/prime"
+							variant={"ghost"}
+							color={"brand"}
+							_hover={{
+								bg: "rgba(72, 0, 255, 0.1)",
+								textDecoration: "none"
+							}}
+							_active={{
+								scale: 0.9
+							}}
+							transform={"auto-gpu"}
+							fontWeight={500}
+							rightIcon={<PiCrownSimpleDuotone />}
+						>
+							Prime
+						</Button>
+					)}
 					<PopularServersButton />
 					<FAQButton />
 					<APIButton />
