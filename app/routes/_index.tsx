@@ -37,7 +37,7 @@ export async function action({ request }: ActionFunctionArgs) {
 export function meta({ matches }: MetaArgs) {
 	return [
 		{
-			title: "Minecraft server status | IsMcServer.online"
+			title: "Minecraft server status | Check your server's status and vote (Java/Bedrock)"
 		},
 		...matches[0].meta
 	] as ReturnType<MetaFunction>;
@@ -137,16 +137,16 @@ export default function Index() {
 			<BotInfo />
 			<Divider />
 
-			<Ad type={adType.small} />
+			{/* <Ad type={adType.small} /> */}
 
 			<VStack spacing={"28"} w="100%" align={"start"}>
 				<HowToUse />
 
-				<Ad type={adType.responsive} />
+				{/* <Ad type={adType.responsive} /> */}
 
 				<PopularServers />
 
-				<Ad type={adType.small} />
+				{/* <Ad type={adType.small} /> */}
 
 				{/* What are you waiting for? */}
 				<WARWF />

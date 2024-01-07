@@ -15,6 +15,9 @@ import { Document } from "./document";
 // ----------------------------- META -----------------------------
 
 export function meta() {
+	const desc =
+		"Check Minecraft server status and data by real-time (Java and Bedrock). Comment and vote for your favorite server easily.";
+
 	return [
 		{
 			name: "robots",
@@ -22,7 +25,24 @@ export function meta() {
 		},
 		{
 			name: "description",
-			content: "Check Minecraft server status and data by real-time."
+			content: desc
+		},
+		// og tags
+		{
+			property: "og:description",
+			content: desc
+		},
+		{
+			property: "og:image",
+			content: "https://ismcserver.online/webp/statusbotlogo512.webp"
+		},
+		{
+			property: "og:url",
+			content: "https://ismcserver.online/"
+		},
+		{
+			property: "og:type",
+			content: "website"
 		},
 		{
 			name: "keywords",
@@ -38,7 +58,7 @@ export function meta() {
 		},
 		{
 			name: "author",
-			content: ".imexoodeex#0528"
+			content: "imexoodeex"
 		}
 	] as ReturnType<MetaFunction>;
 }

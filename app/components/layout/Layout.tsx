@@ -30,7 +30,6 @@ export default function Layout({ children }: { children?: React.ReactNode }) {
 			>
 				<BackgroundUtils />
 
-				<CookieConstent />
 				<Header isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
 				<Flex w="100%" minH={"calc(100vh - 121px)"}>
 					<Column />
@@ -41,10 +40,11 @@ export default function Layout({ children }: { children?: React.ReactNode }) {
 
 					<Column />
 				</Flex>
+				<CookieConstent />
 				<Footer />
 			</ChakraBox>
+
 			<SideMenu mobileMenuTransition={mobileMenuTransition} isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} />
-			{/* <Snowfall snowflakeCount={100} color={colorMode === "dark" ? "#fff" : brand} radius={[2, 3]} /> */}
 		</>
 	);
 }
