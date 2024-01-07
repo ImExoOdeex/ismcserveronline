@@ -1,7 +1,6 @@
 import { Alert, AlertDescription, AlertIcon, AlertTitle, Divider, Flex, Heading, Text, VStack } from "@chakra-ui/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
-import { useEffect, useRef } from "react";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
 import AddServerModal from "~/components/layout/dashboard/addServer/AddServerModal";
 import YourServer from "~/components/layout/dashboard/addServer/YourServer";
@@ -9,6 +8,7 @@ import { db } from "~/components/server/db/db.server";
 import { getUser } from "~/components/server/db/models/user";
 import { paymentHandlers } from "~/components/server/payments/stripe.server";
 import Link from "~/components/utils/Link";
+import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const user = await getUser(request);
@@ -31,16 +31,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function DashboardAddServer() {
-	const lastUserServers = useRef({});
-	const lastPaymentIntent = useRef<any>(null);
-	const { userServers, paymentIntent } = useTypedLoaderData<typeof loader>() || {
-		userServers: lastUserServers.current,
-		paymentIntent: lastPaymentIntent.current
-	};
-	useEffect(() => {
-		if (userServers) lastUserServers.current = userServers;
-		if (paymentIntent) lastPaymentIntent.current = paymentIntent;
-	}, [userServers, paymentIntent]);
+	const { userServers, paymentIntent } = useAnimationLoaderData<typeof loader>();
 
 	return (
 		<Flex gap={10} flexDir={"column"}>

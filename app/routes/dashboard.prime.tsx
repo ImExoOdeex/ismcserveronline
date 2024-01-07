@@ -21,10 +21,11 @@ import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 import { FaHeartBroken } from "react-icons/fa/index.js";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
 import { getUser } from "~/components/server/db/models/user";
 import { paymentHandlers, subscriptionHandlers } from "~/components/server/payments/stripe.server";
+import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 import useUser from "~/components/utils/hooks/useUser";
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -60,16 +61,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function DashboardPrime() {
-	const lastSubscription = useRef({});
-	const lastPaymentIntent = useRef<any>(null);
-	const { subscription, paymentIntent } = useTypedLoaderData<typeof loader>() || {
-		subscription: lastSubscription.current,
-		paymentIntent: lastPaymentIntent.current
-	};
-	useEffect(() => {
-		if (subscription) lastSubscription.current = subscription;
-		if (paymentIntent) lastPaymentIntent.current = paymentIntent;
-	}, [subscription, paymentIntent]);
+	const { subscription, paymentIntent } = useAnimationLoaderData<typeof loader>();
 
 	const user = useUser();
 

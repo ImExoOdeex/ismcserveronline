@@ -20,11 +20,11 @@ import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useFetcher, useRevalidator } from "@remix-run/react";
 import { Select } from "chakra-react-select";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { BiSave } from "react-icons/bi/index.js";
 import { HiRefresh } from "react-icons/hi/index.js";
 import { TbTrash } from "react-icons/tb/index.js";
-import { redirect, typedjson, useTypedLoaderData } from "remix-typedjson";
+import { redirect, typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
 import LivecheckNumbers from "~/components/layout/dashboard/LivecheckNumbers";
 import { Info, sendActionWebhook } from "~/components/server/auth/webhooks";
@@ -32,6 +32,7 @@ import { getUser } from "~/components/server/db/models/user";
 import { requireSuperDuperToken } from "~/components/server/functions/env.server";
 import { requireUserGuild } from "~/components/server/functions/secureDashboard.server";
 import serverConfig from "~/components/server/serverConfig.server";
+import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
 	const guildID = params.guildID!;
@@ -112,16 +113,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function Index() {
-	const lastLivecheck = useRef(null);
-	const lastChannels = useRef([]);
-	const { livecheck, channels } = useTypedLoaderData<typeof loader>() || {
-		livecheck: lastLivecheck.current,
-		channels: lastChannels.current
-	};
-	useEffect(() => {
-		if (livecheck) lastLivecheck.current = livecheck;
-		if (channels) lastChannels.current = channels;
-	}, [livecheck, channels]);
+	const { livecheck, channels } = useAnimationLoaderData<typeof loader>();
 
 	const livecheckFetcher = useFetcher();
 	const [isEditing, setIsEditing] = useState<boolean>(false);

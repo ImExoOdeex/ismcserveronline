@@ -19,9 +19,9 @@ import {
 } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
 import { useFetcher, useNavigate } from "@remix-run/react";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { BiBookmark, BiBug, BiInfoCircle } from "react-icons/bi/index.js";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { typedjson } from "remix-typedjson";
 import { getClientIPAddress } from "remix-utils/get-client-ip-address";
 import ChecksTable from "~/components/layout/server/ChecksTable";
 import Comments from "~/components/layout/server/Comments";
@@ -33,6 +33,7 @@ import { requireAPIToken } from "~/components/server/functions/env.server";
 import serverConfig from "~/components/server/serverConfig.server";
 import { getCookieWithoutDocument } from "~/components/utils/functions/cookies";
 import { context } from "~/components/utils/GlobalContext";
+import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 import useUser from "~/components/utils/hooks/useUser";
 import Link from "~/components/utils/Link";
 
@@ -401,31 +402,7 @@ export function meta({ data, matches }: MetaArgs) {
 }
 
 export default function $server() {
-	const lastServer = useRef({});
-	const lastData = useRef({});
-	const lastChecks = useRef({});
-	const lastComments = useRef({});
-	const lastIsSaved = useRef({});
-	const {
-		server,
-		data,
-		checks,
-		isSaved,
-		comments: dbComments
-	} = useTypedLoaderData<typeof loader>() || {
-		server: lastServer.current,
-		data: lastData.current,
-		checks: lastChecks.current,
-		isSaved: lastIsSaved.current,
-		comments: lastComments.current
-	};
-	useEffect(() => {
-		if (server) lastServer.current = server;
-		if (data) lastData.current = data;
-		if (checks) lastChecks.current = checks;
-		if (isSaved) lastIsSaved.current = isSaved;
-		if (dbComments) lastComments.current = dbComments;
-	}, [server, data, checks, isSaved, dbComments]);
+	const { server, data, checks, isSaved, comments: dbComments } = useAnimationLoaderData<typeof loader>();
 
 	const motd = data.motd.html?.split("\n");
 	const bgImageColor = "rgba(0,0,0,.7)";

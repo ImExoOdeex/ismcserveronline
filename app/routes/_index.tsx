@@ -1,8 +1,8 @@
 import { Divider, VStack } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { useEffect, useRef, useState } from "react";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { useState } from "react";
+import { typedjson } from "remix-typedjson";
 import { Ad, adType } from "~/components/ads/Yes";
 import BotInfo from "~/components/layout/index/BotInfo";
 import HowToUse from "~/components/layout/index/HowToUse";
@@ -15,6 +15,7 @@ import { validateServer } from "~/components/server/functions/validateServer";
 import serverConfig from "~/components/server/serverConfig.server";
 import { SampleServerHomepage } from "~/components/types/typings";
 import { getCookieWithoutDocument } from "~/components/utils/functions/cookies";
+import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 import PopularServers from "../components/layout/index/PopularServers";
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -114,24 +115,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function Index() {
-	const lastBedrock = useRef({});
-	const lastSampleServers = useRef({});
-	const lastQuery = useRef({});
-	const lastCount = useRef(0);
-
-	const { bedrock, sampleServers, query, count } = useTypedLoaderData<typeof loader>() ?? {
-		bedrock: lastBedrock.current,
-		sampleServers: lastSampleServers.current,
-		query: lastQuery.current,
-		count: lastCount.current
-	};
-
-	useEffect(() => {
-		if (bedrock) lastBedrock.current = bedrock;
-		if (sampleServers) lastSampleServers.current = sampleServers;
-		if (query) lastQuery.current = query;
-		if (count) lastCount.current = count;
-	}, [bedrock, sampleServers, query, count]);
+	const { bedrock, sampleServers, query, count } = useAnimationLoaderData<typeof loader>();
 
 	const [bedrockChecked, setBedrockChecked] = useState<boolean>(bedrock ? bedrock : false);
 	const [serverValue, setServerValue] = useState<string>("");

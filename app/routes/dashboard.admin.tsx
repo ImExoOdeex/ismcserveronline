@@ -20,10 +20,10 @@ import {
 	WrapItem
 } from "@chakra-ui/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
-import { useEffect, useRef } from "react";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { typedjson } from "remix-typedjson";
 import { getUser } from "~/components/server/db/models/user";
 import { getCounts, getStats } from "~/components/server/functions/admin.server";
+import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const [user, counts, stats] = await Promise.all([getUser(request), getCounts(), getStats()]);
@@ -37,13 +37,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function DashboardAdmin() {
-	const lastCounts = useRef({});
-	const lastStats = useRef({});
-	const { counts, stats } = useTypedLoaderData<typeof loader>() || { counts: lastCounts.current, stats: lastStats.current };
-	useEffect(() => {
-		if (counts) lastCounts.current = counts;
-		if (stats) lastStats.current = stats;
-	}, [counts, stats]);
+	const { counts, stats } = useAnimationLoaderData<typeof loader>();
 
 	return (
 		<Flex w="100%" flexDir={"column"} gap={10}>

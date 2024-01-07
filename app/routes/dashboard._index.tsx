@@ -1,12 +1,12 @@
 import { Flex, Heading, SimpleGrid, Text, VStack } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { useEffect, useRef } from "react";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
 import SavedServer from "~/components/layout/dashboard/SavedServer";
 import { db } from "~/components/server/db/db.server";
 import { getUserId } from "~/components/server/db/models/user";
+import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 
 export type Guild = {
 	id: string;
@@ -138,11 +138,7 @@ export interface DisplaySavedServer {
 }
 
 export default function Index() {
-	const lastServers = useRef({});
-	const { servers } = useTypedLoaderData<typeof loader>() || { servers: lastServers.current };
-	useEffect(() => {
-		if (servers) lastServers.current = servers;
-	}, [servers]);
+	const { servers } = useAnimationLoaderData<typeof loader>();
 
 	return (
 		<VStack display={"flex"} w="100%" align={"start"} spacing={4}>

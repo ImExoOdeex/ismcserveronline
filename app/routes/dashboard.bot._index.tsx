@@ -1,12 +1,12 @@
-import { Badge, Button, Heading, HStack, Icon, Image, SimpleGrid, Text, VStack } from "@chakra-ui/react";
+import { Badge, Button, HStack, Heading, Icon, Image, SimpleGrid, Text, VStack } from "@chakra-ui/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
-import { useEffect, useRef } from "react";
 import { HiRefresh } from "react-icons/hi/index.js";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { typedjson } from "remix-typedjson";
 import { getUserGuilds, getUserId } from "~/components/server/db/models/user";
 import Link from "~/components/utils/Link";
+import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 
 export type Guild = {
 	id: string;
@@ -35,11 +35,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function Index() {
-	const lastGuilds = useRef({});
-	const { guilds } = useTypedLoaderData<typeof loader>() || { guilds: lastGuilds.current };
-	useEffect(() => {
-		if (guilds) lastGuilds.current = guilds;
-	}, [guilds]);
+	const { guilds } = useAnimationLoaderData<typeof loader>();
 
 	const refreshGuildsFetcher = useFetcher();
 

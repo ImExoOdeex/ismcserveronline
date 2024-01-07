@@ -1,11 +1,12 @@
 import { Badge, Code, Divider, Heading, Link, Text, VStack } from "@chakra-ui/react";
 import { MetaArgs, type MetaFunction } from "@remix-run/node";
 import os from "os";
-import { useEffect, useRef, useState } from "react";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { useEffect, useState } from "react";
+import { typedjson } from "remix-typedjson";
 import { Ad, adType } from "~/components/ads/Yes";
 import SystemInfo from "~/components/layout/faq/SystemInfo";
 import { getCookie, getCookieWithoutDocument } from "~/components/utils/functions/cookies";
+import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 import useRootData from "~/components/utils/hooks/useRootData";
 import links from "../components/config/config";
 
@@ -56,12 +57,7 @@ export async function loader() {
 }
 
 export default function Faq() {
-	const lastSystem = useRef({});
-	const { system } = useTypedLoaderData<typeof loader>() || { system: lastSystem.current };
-
-	useEffect(() => {
-		if (system) lastSystem.current = system;
-	}, [system]);
+	const { system } = useAnimationLoaderData<typeof loader>();
 
 	const name = "tracking";
 	const { cookies } = useRootData();

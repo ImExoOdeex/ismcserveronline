@@ -5,12 +5,13 @@ import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-
 import { loadStripe } from "@stripe/stripe-js";
 import { useState } from "react";
 import { FiCreditCard } from "react-icons/fi/index.js";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
 import { getUser } from "~/components/server/db/models/user";
 import { paymentHandlers } from "~/components/server/payments/stripe.server";
 import { commitSession, getSession } from "~/components/server/session.server";
 import { calculatePriceFromDays } from "~/components/utils/functions/payments";
+import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 import useRootData from "~/components/utils/hooks/useRootData";
 
 export function shouldRevalidate() {
@@ -50,7 +51,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function DashboardAddServerPayment() {
-	const { stripeKey, paymentIntent, server, days } = useTypedLoaderData<typeof loader>();
+	const { stripeKey, paymentIntent, server, days } = useAnimationLoaderData<typeof loader>();
 	const stripePromise = loadStripe(stripeKey);
 
 	const { colorMode } = useColorMode();

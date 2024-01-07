@@ -18,12 +18,12 @@ import {
 } from "@chakra-ui/react";
 import { MetaArgs, type MetaFunction } from "@remix-run/node";
 import crypto from "crypto";
-import { useEffect, useRef } from "react";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { typedjson } from "remix-typedjson";
 import { Ad, adType } from "~/components/ads/Yes";
 import DiscordIcon from "~/components/layout/icons/DiscordIcon";
 import { type MinecraftServerWoQuery } from "~/components/types/minecraftServer";
 import Link from "~/components/utils/Link";
+import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 
 export function meta({ matches }: MetaArgs) {
 	return [
@@ -41,14 +41,7 @@ export async function loader() {
 }
 
 export default function Api() {
-	// that much code, cuz data will go on page transition. (framer motion full page transition)
-	const lastSampleToken = useRef({});
-	const { sampleToken } = useTypedLoaderData<typeof loader>() || {
-		sampleToken: lastSampleToken.current
-	};
-	useEffect(() => {
-		if (sampleToken) lastSampleToken.current = sampleToken;
-	}, [sampleToken]);
+	const { sampleToken } = useAnimationLoaderData<typeof loader>();
 
 	const data: MinecraftServerWoQuery = {
 		online: true,

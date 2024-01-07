@@ -1,14 +1,16 @@
 import { CopyIcon, ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
-import { Button, Code, Divider, Flex, HStack, Heading, Icon, IconButton, Text, VStack } from "@chakra-ui/react";
+import { Button, Code, Divider, Flex, HStack, Heading, Icon, IconButton, Text, VStack, useToast } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
-import { useEffect, useRef, useState } from "react";
+import dayjs from "dayjs";
+import { useState } from "react";
 import { RiAiGenerate } from "react-icons/ri/index.js";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
 import { db } from "~/components/server/db/db.server";
 import { getUserId } from "~/components/server/db/models/user";
 import { requireDomain } from "~/components/server/functions/security.server";
+import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 
 export async function action({ request }: ActionFunctionArgs) {
 	requireDomain(request);
@@ -54,25 +56,36 @@ export async function loader({ request }: LoaderFunctionArgs) {
 						check: true
 					}
 				},
+				id: true,
 				token: true,
 				created_at: true
 			}
 		})
 		.catch(() => null);
 
+	const lastMonthCount = token
+		? await db.check.count({
+				where: {
+					token_id: token?.id,
+					checked_at: {
+						gte: dayjs().subtract(1, "month").toDate()
+					}
+				}
+		  })
+		: 0;
+
 	return typedjson({
-		token
+		token,
+		lastMonthCount
 	});
 }
 
 export default function DashboardToken() {
-	const lastToken = useRef({});
-	const { token } = useTypedLoaderData<typeof loader>() || { token: lastToken.current };
-	useEffect(() => {
-		if (token) lastToken.current = token;
-	}, [token]);
+	const { token, lastMonthCount } = useAnimationLoaderData<typeof loader>();
 
 	const [show, setShow] = useState(false);
+
+	const toast = useToast();
 
 	return (
 		<Flex flexDir={"column"} gap={4} alignItems={"flex-start"}>
@@ -103,7 +116,14 @@ export default function DashboardToken() {
 					<Text fontSize={"xl"} fontWeight={600}>
 						{token ? (
 							<HStack>
-								<Text fontSize={"xl"} fontWeight={600} fontFamily={"monospace"}>
+								<Text
+									fontSize={{
+										base: "sm",
+										md: "xl"
+									}}
+									fontWeight={600}
+									fontFamily={"monospace"}
+								>
 									{show ? token.token : "*".repeat(token.token.length)}
 								</Text>
 								<IconButton
@@ -121,7 +141,16 @@ export default function DashboardToken() {
 								/>
 								<IconButton
 									onClick={() => {
-										navigator.clipboard.writeText(token.token);
+										navigator.clipboard.writeText(token.token).then(() => {
+											toast({
+												title: "Token copied to clipboard.",
+												status: "success",
+												duration: 3000,
+												variant: "subtle",
+												position: "bottom-right",
+												isClosable: true
+											});
+										});
 									}}
 									aria-label={"Copy Token"}
 									icon={<CopyIcon />}
@@ -142,7 +171,12 @@ export default function DashboardToken() {
 				</Flex>
 
 				{token ? (
-					<>
+					<HStack
+						w={{
+							base: "100%",
+							md: "50%"
+						}}
+					>
 						<Flex flexDir={"column"} gap={0.5} flex={1}>
 							<Text fontWeight={500}>Checks</Text>
 							<Text fontSize={"xl"} fontWeight={600}>
@@ -151,7 +185,16 @@ export default function DashboardToken() {
 								</Text>
 							</Text>
 						</Flex>
-					</>
+
+						<Flex flexDir={"column"} gap={0.5} flex={1}>
+							<Text fontWeight={500}>Last month</Text>
+							<Text fontSize={"xl"} fontWeight={600}>
+								<Text fontSize={"xl"} fontWeight={600} fontFamily={"monospace"}>
+									{lastMonthCount}
+								</Text>
+							</Text>
+						</Flex>
+					</HStack>
 				) : (
 					<GenerateToken />
 				)}

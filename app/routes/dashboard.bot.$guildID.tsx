@@ -1,15 +1,15 @@
-import { Button, Heading, HStack, Image, Stack } from "@chakra-ui/react";
+import { Button, HStack, Heading, Image, Stack } from "@chakra-ui/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { useLocation, useOutlet } from "@remix-run/react";
-import { useEffect, useRef } from "react";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { typedjson } from "remix-typedjson";
 import BotNotOnServer from "~/components/layout/dashboard/BotNotOnServer";
 import { getUserGuilds } from "~/components/server/db/models/user";
 import { requireSuperDuperToken } from "~/components/server/functions/env.server";
 import { requireUserGuild } from "~/components/server/functions/secureDashboard.server";
 import serverConfig from "~/components/server/serverConfig.server";
 import Link from "~/components/utils/Link";
+import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
 	const guildID = params.guildID!;
@@ -32,14 +32,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 }
 
 export default function $guildID() {
-	const lastGuild = useRef(null);
-	const { guild } = useTypedLoaderData<typeof loader>() || {
-		guild: lastGuild.current
-	};
-
-	useEffect(() => {
-		if (guild) lastGuild.current = guild;
-	}, [guild]);
+	const { guild } = useAnimationLoaderData<typeof loader>();
 
 	const outlet = useOutlet();
 	const { pathname } = useLocation();

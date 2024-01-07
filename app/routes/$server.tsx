@@ -23,9 +23,9 @@ import type { ActionFunctionArgs, LoaderFunctionArgs, MetaArgs, MetaFunction } f
 import { redirect } from "@remix-run/node";
 import type { ShouldRevalidateFunction } from "@remix-run/react";
 import { useFetcher, useNavigate } from "@remix-run/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { BiBookmark, BiBug, BiInfoCircle } from "react-icons/bi/index.js";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { typedjson } from "remix-typedjson";
 import { getClientIPAddress } from "remix-utils/get-client-ip-address";
 import { Ad, adType } from "~/components/ads/Yes";
 import ChecksTable from "~/components/layout/server/ChecksTable";
@@ -38,6 +38,7 @@ import { requireAPIToken } from "~/components/server/functions/env.server";
 import serverConfig from "~/components/server/serverConfig.server";
 import { MinecraftServer, MinecraftServerWoQuery } from "~/components/types/minecraftServer";
 import { getCookieWithoutDocument } from "~/components/utils/functions/cookies";
+import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 import useUser from "~/components/utils/hooks/useUser";
 import Link from "~/components/utils/Link";
 
@@ -421,36 +422,7 @@ export const shouldRevalidate: ShouldRevalidateFunction = ({ formData, currentPa
 };
 
 export default function $server() {
-	const lastServer = useRef({});
-	const lastData = useRef({});
-	const lastChecks = useRef({});
-	const lastQuery = useRef({});
-	const lastComments = useRef({});
-	const lastIsSaved = useRef({});
-
-	const {
-		server,
-		data,
-		checks,
-		query,
-		isSaved,
-		comments: dbComments
-	} = useTypedLoaderData<typeof loader>() || {
-		server: lastServer.current,
-		data: lastData.current,
-		checks: lastChecks.current,
-		query: lastQuery.current,
-		isSaved: lastIsSaved.current,
-		comments: lastComments.current
-	};
-	useEffect(() => {
-		if (server) lastServer.current = server;
-		if (data) lastData.current = data;
-		if (checks) lastChecks.current = checks;
-		if (query) lastQuery.current = query;
-		if (dbComments) lastComments.current = dbComments;
-		if (isSaved) lastIsSaved.current = isSaved;
-	}, [server, data, checks, query, dbComments, isSaved]);
+	const { server, data, checks, query, isSaved, comments: dbComments } = useAnimationLoaderData<typeof loader>();
 
 	const bgImageColor = "rgba(0,0,0,.7)";
 

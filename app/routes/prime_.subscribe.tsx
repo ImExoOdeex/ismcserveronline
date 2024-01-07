@@ -4,12 +4,13 @@ import { LoaderFunctionArgs } from "@remix-run/node";
 import { Elements } from "@stripe/react-stripe-js";
 import type { Stripe } from "@stripe/stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import { useEffect, useRef, useState } from "react";
-import { redirect, typedjson, useTypedLoaderData } from "remix-typedjson";
+import { useEffect, useState } from "react";
+import { redirect, typedjson } from "remix-typedjson";
 import config from "~/components/config/config";
 import SubscriptionForm from "~/components/layout/prime/SubscriptionForm";
 import { getUser } from "~/components/server/db/models/user";
 import { toStripeAmount } from "~/components/utils/functions/payments";
+import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const user = await getUser(request);
@@ -35,11 +36,7 @@ export function shouldRevalidate() {
 const pros = ["Max livecheck slots", "No API ratelimits", "No ads & premium look of website", "More coming soon!"] as const;
 
 export default function PrimeSubscribe() {
-	const lastENV = useRef({});
-	const { ENV } = useTypedLoaderData<typeof loader>() || { ENV: lastENV.current };
-	useEffect(() => {
-		if (ENV) lastENV.current = ENV;
-	}, [ENV]);
+	const { ENV } = useAnimationLoaderData<typeof loader>();
 
 	// stripe promise
 	const [stripePromise, setStripePromise] = useState<Promise<Stripe | null> | null>(null);
