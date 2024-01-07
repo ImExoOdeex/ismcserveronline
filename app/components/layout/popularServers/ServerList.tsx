@@ -1,13 +1,8 @@
-import { Box, Flex, Heading, Text, VStack } from "@chakra-ui/react";
-import loadable from "@loadable/component";
+import { Flex, Heading, Text, VStack } from "@chakra-ui/react";
 import { type Prisma } from "@prisma/client";
 import { Ad, adType } from "~/components/ads/Yes";
+import Pagination from "./Pagination";
 import ServerItem from "./ServerItem";
-
-const Pagination = loadable(() => import("./Pagination"), {
-	ssr: true,
-	fallback: <Box minH={"40px"} h="100%" />
-});
 
 export type ServerItemData = { id: number; server: string; icon: string | null; tags: Prisma.JsonValue };
 

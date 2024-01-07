@@ -13,13 +13,16 @@ export default function BackgroundUtils() {
 
 	return (
 		<Flex pos={"absolute"} zIndex={-1} maxH={"100vh"} w="100%" h="100%">
-			<AnimatePresence mode="sync" initial={false}>
+			<AnimatePresence mode="wait" initial={false}>
 				{displayLogoInBg && (
 					<motion.div
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
-						transition={{ ease: [0.25, 0.1, 0.25, 1] }}
+						transition={{
+							ease: [0.25, 0.1, 0.25, 1],
+							duration: 0.75
+						}}
 					>
 						<Image
 							pos={"absolute"}

@@ -19,10 +19,8 @@ import {
 } from "@chakra-ui/react";
 import { type SOURCE } from "@prisma/client";
 import { ScrollRestoration, useFetcher } from "@remix-run/react";
-import yes from "lodash";
+import debounce from "lodash.debounce";
 import { useEffect, useMemo, useRef, useState } from "react";
-
-const debounce = yes.debounce;
 
 type Check = {
 	id: number;

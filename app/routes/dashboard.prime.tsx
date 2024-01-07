@@ -61,8 +61,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function DashboardPrime() {
 	const lastSubscription = useRef({});
-	const lastPaymentIntent = useRef({});
-	const { subscription, paymentIntent } = useTypedLoaderData<typeof loader>() ?? {
+	const lastPaymentIntent = useRef<any>(null);
+	const { subscription, paymentIntent } = useTypedLoaderData<typeof loader>() || {
 		subscription: lastSubscription.current,
 		paymentIntent: lastPaymentIntent.current
 	};

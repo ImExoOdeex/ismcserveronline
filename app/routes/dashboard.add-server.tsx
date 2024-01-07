@@ -32,8 +32,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function DashboardAddServer() {
 	const lastUserServers = useRef({});
-	const lastPaymentIntent = useRef({});
-	const { userServers, paymentIntent } = useTypedLoaderData<typeof loader>() ?? {
+	const lastPaymentIntent = useRef<any>(null);
+	const { userServers, paymentIntent } = useTypedLoaderData<typeof loader>() || {
 		userServers: lastUserServers.current,
 		paymentIntent: lastPaymentIntent.current
 	};

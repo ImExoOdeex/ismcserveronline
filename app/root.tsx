@@ -1,4 +1,4 @@
-import { ChakraBaseProvider, cookieStorageManagerSSR, localStorageManager, useConst, usePrevious } from "@chakra-ui/react";
+import { ChakraBaseProvider, cookieStorageManagerSSR, useConst } from "@chakra-ui/react";
 import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, json, redirect } from "@remix-run/node";
 import type { ShouldRevalidateFunctionArgs } from "@remix-run/react";
 import { useLocation, useOutlet } from "@remix-run/react";
@@ -65,49 +65,46 @@ export function links() {
 export default function App() {
 	const { cookies } = useTypedLoaderData<typeof loader>();
 	const cookieManager = useConst(cookieStorageManagerSSR(cookies));
-	const location = useLocation();
+	const path = useLocation().pathname;
 	const outlet = useOutlet();
-
-	const prevPath = usePrevious(location.pathname);
-	const isDash = location.pathname.startsWith("/dashboard");
-
-	const shouldntAnimate = prevPath?.startsWith("/dashboard") && isDash;
-
 	const customTheme = useTheme();
+
+	const isDash = path.startsWith("/dashboard");
+	const animationKey = isDash ? "dashboard" : path;
 
 	return (
 		<Document>
-			<ChakraBaseProvider
-				resetCSS
-				theme={customTheme}
-				colorModeManager={typeof cookies === "string" ? cookieManager : localStorageManager}
-			>
+			<ChakraBaseProvider resetCSS theme={customTheme} colorModeManager={cookieManager}>
 				<GlobalContext>
 					<Layout>
-						{shouldntAnimate ? (
-							outlet
-						) : (
-							<AnimatePresence initial={false} mode={"popLayout"}>
-								<motion.main
-									key={location.pathname}
-									initial={{
-										opacity: 0,
-										scale: 1.1
-									}}
-									animate={{ opacity: 1, y: 0, scale: 1 }}
-									exit={{
-										opacity: 0,
-										scale: 0.9
-									}}
-									transition={{
-										ease: [0.25, 0.1, 0.25, 1],
-										duration: 0.2
-									}}
-								>
-									{outlet}
-								</motion.main>
-							</AnimatePresence>
-						)}
+						<AnimatePresence initial={false} mode={"popLayout"}>
+							<motion.main
+								custom={isDash}
+								key={animationKey}
+								initial={{
+									opacity: 0,
+									scale: 0.95
+								}}
+								animate={{
+									opacity: 1,
+									scale: 1
+								}}
+								exit={{
+									opacity: 0,
+									scale: 0.95
+								}}
+								transition={{
+									ease: [0.25, 0.1, 0.25, 1],
+									duration: 0.2
+								}}
+								style={{
+									overflow: "hidden",
+									display: "block"
+								}}
+							>
+								{outlet}
+							</motion.main>
+						</AnimatePresence>
 					</Layout>
 				</GlobalContext>
 			</ChakraBaseProvider>

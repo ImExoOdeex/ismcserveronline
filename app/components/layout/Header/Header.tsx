@@ -17,19 +17,22 @@ type Props = {
 };
 
 export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
-	const [scrollPosition, setScrollPosition] = useState(0);
+	const [hasScrolled, setHasScrolled] = useState(false);
 
-	function handleScroll() {
+	function handleScroll(optimize = true) {
 		const position = window.pageYOffset;
-		setScrollPosition(position);
+		if (optimize && position > 40) return;
+		console.log("setting scroll position", position > 10);
+
+		setHasScrolled(position > 10);
 	}
 
 	useEffect(() => {
-		window.addEventListener("scroll", handleScroll, { passive: true });
-		handleScroll();
+		window.addEventListener("scroll", () => handleScroll(), { passive: true });
+		handleScroll(false);
 
 		return () => {
-			window.removeEventListener("scroll", handleScroll);
+			window.removeEventListener("scroll", () => handleScroll());
 		};
 	}, []);
 
@@ -42,10 +45,10 @@ export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 			h={{ base: "60px", md: "70px" }}
 			pos={"sticky"}
 			top={0}
-			backdropFilter={scrollPosition < 1 ? "none" : "blur(20px)"}
+			backdropFilter={hasScrolled ? `blur(10px)` : "none"}
 			zIndex={1000}
 			borderBottom={"1px"}
-			borderBottomColor={scrollPosition > 0 ? "alpha" : "transparent"}
+			borderBottomColor={hasScrolled ? "alpha" : "transparent"}
 			transition={"all .2s"}
 		>
 			<Flex w="100%" maxW={"1500px"} px={4} alignItems="center" h="100%" mx="auto" justifyContent={"space-between"}>
