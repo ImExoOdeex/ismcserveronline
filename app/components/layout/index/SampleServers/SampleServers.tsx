@@ -14,7 +14,7 @@ export default function SampleServers({
 }) {
 	return (
 		<Flex p={5} rounded={"2xl"} bg={"alpha"} w="100%" flexDir={"column"}>
-			<Heading as="h2" fontSize={"lg"}>
+			<Heading as="h3" fontSize={"lg"}>
 				Just looking? Try out these sample servers!
 			</Heading>
 

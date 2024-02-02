@@ -1,4 +1,4 @@
-import { Button, HStack, Heading, Image, Stack } from "@chakra-ui/react";
+import { Button, Flex, HStack, Heading, Image, Stack } from "@chakra-ui/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { useLocation, useOutlet } from "@remix-run/react";
@@ -10,6 +10,7 @@ import { requireUserGuild } from "~/components/server/functions/secureDashboard.
 import serverConfig from "~/components/server/serverConfig.server";
 import Link from "~/components/utils/Link";
 import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
+import { InsideErrorBoundary } from "~/document";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
 	const guildID = params.guildID!;
@@ -91,5 +92,13 @@ export default function $guildID() {
 			</Stack>
 			{outlet}
 		</>
+	);
+}
+
+export function ErrorBoundary() {
+	return (
+		<Flex mt={20} mx={"auto"}>
+			<InsideErrorBoundary />
+		</Flex>
 	);
 }

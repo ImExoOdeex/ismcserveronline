@@ -3,6 +3,7 @@ import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, json, redirect } 
 import type { ShouldRevalidateFunctionArgs } from "@remix-run/react";
 import { useLocation, useOutlet } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
+import { isbot } from "isbot";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import Layout from "./components/layout/Layout";
 import { getUser } from "./components/server/db/models/user";
@@ -16,7 +17,7 @@ import { Document } from "./document";
 
 export function meta() {
 	const desc =
-		"Check Minecraft server status and data by real-time (Java and Bedrock). Comment and vote for your favorite server easily.";
+		"Check Minecraft server status and data by real-time. Supports Status, Legacy & Query protocols with no cached results.";
 
 	return [
 		{
@@ -119,7 +120,9 @@ export default function App() {
 								}}
 								style={{
 									overflow: "hidden",
-									display: "block"
+									display: "flex",
+									flexDirection: "column",
+									flex: 1
 								}}
 							>
 								{outlet}
@@ -152,11 +155,15 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		: getCookieWithoutDocument("no_ads", request.headers.get("cookie") ?? "") !== process.env.NO_ADS_PARAM_VALUE;
 	// ^^^ code for no ads up there uwu ^^^
 
+	console.log("user-agent: ", request.headers.get("user-agent"));
+	const isBot = isbot(request.headers.get("user-agent"));
+
 	return typedjson({
 		cookies: request.headers.get("cookie") ?? "",
 		showAds,
 		user,
-		dashUrl: process.env.DASH_URL
+		dashUrl: process.env.DASH_URL,
+		isBot
 	});
 }
 

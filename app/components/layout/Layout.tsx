@@ -31,10 +31,10 @@ export default function Layout({ children }: { children?: React.ReactNode }) {
 				<BackgroundUtils />
 
 				<Header isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
-				<Flex w="100%" minH={"calc(100vh - 121px)"}>
+				<Flex w="100%" minH={"calc(100vh - 121px)"} flex={1}>
 					<Column />
 
-					<Flex flexDir={"column"} w="100%">
+					<Flex flexDir={"column"} w="100%" flex={1}>
 						{children}
 					</Flex>
 

@@ -1,12 +1,37 @@
-import { Badge, Heading, Icon, Stack, Text, VStack } from "@chakra-ui/react";
+import { Badge, Heading, Icon, ListItem, OrderedList, Stack, Text, VStack } from "@chakra-ui/react";
 import { BiMessageError, BiNetworkChart, BiPointer } from "react-icons/bi/index.js";
 
 export default function HowToUse() {
 	return (
 		<VStack spacing={28} width={"100%"} align={"start"} mb={10}>
+
+			{/* steps */}
+			<VStack spacing={5} width={"100%"} align={"start"}>
+				<Heading as={"h2"} fontSize={{ base: "xl", md: "2xl" }} fontWeight={"black"} letterSpacing={"3px"}>
+					How to check the status of a Minecraft server in few steps?
+				</Heading>
+				<Stack direction={{ base: "column", md: "row" }} spacing={{ base: 5, md: 20 }} alignItems={"center"}>
+					{/* <Icon as={BiPointer} boxSize={"150px"} /> */}
+					<OrderedList color={"textSec"} letterSpacing={"1px"}>
+						<ListItem>
+							Enter the server address you want to check in the input box.
+						</ListItem>
+						<ListItem>
+							Click <b>Search</b> button.
+						</ListItem>
+						<ListItem>
+							Wait for the server status to be fetched.
+						</ListItem>
+						<ListItem>
+							That's it! You can now see the server status and all the information about it.
+						</ListItem>
+					</OrderedList>
+				</Stack>
+			</VStack>
+
 			{/* how to use */}
 			<VStack spacing={5} width={"100%"} align={"start"}>
-				<Heading as={"h2"} fontSize={{ base: "3xl", md: "5xl" }} fontWeight={"black"} letterSpacing={"3px"}>
+				<Heading as={"h3"} fontSize={{ base: "3xl", md: "5xl" }} fontWeight={"black"} letterSpacing={"3px"}>
 					How to use this tool?
 				</Heading>
 				<Stack direction={{ base: "column", md: "row" }} spacing={{ base: 5, md: 20 }} alignItems={"center"}>
@@ -25,7 +50,7 @@ export default function HowToUse() {
 			{/* how it works */}
 			<VStack spacing={5} width={"100%"} align={{ base: "start", md: "end" }}>
 				<Heading
-					as={"h2"}
+					as={"h3"}
 					fontSize={{ base: "3xl", md: "5xl" }}
 					fontWeight={"black"}
 					textAlign={{ base: "start", md: "end" }}
@@ -50,7 +75,7 @@ export default function HowToUse() {
 			{/* bot */}
 			<VStack spacing={5} width={"100%"} align={"start"}>
 				<Heading
-					as={"h2"}
+					as={"h3"}
 					fontSize={{ base: "3xl", md: "5xl" }}
 					fontWeight={"black"}
 					textAlign={{ base: "start", md: "end" }}

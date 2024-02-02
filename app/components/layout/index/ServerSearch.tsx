@@ -91,9 +91,9 @@ export default function ServerSearch({ bedrockChecked, serverValue, setBedrockCh
 											>
 												<Button
 													variant="brand"
-													type="submit"
+													type={!serverValue?.includes(".") ? "button" : "submit"}
 													w="35%"
-													isDisabled={!serverValue?.includes(".")}
+													// isDisabled={!serverValue?.includes(".")}
 													minW="115px"
 												>
 													<Text px={2}>Search</Text>

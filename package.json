@@ -34,6 +34,7 @@
 		"express": "^4.18.2",
 		"fast-average-color": "^9.3.0",
 		"framer-motion": "^7.6.19",
+		"isbot": "^4.3.0",
 		"javascript-time-ago": "^2.5.9",
 		"lodash.debounce": "^4.0.8",
 		"morgan": "^1.10.0",

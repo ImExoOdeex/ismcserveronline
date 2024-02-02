@@ -28,10 +28,10 @@ export default function BotInfo() {
 				align={{ base: "start", md: "center" }}
 			>
 				<VStack align={"start"}>
-					<Heading as={"h2"} fontSize={"4xl"}>
+					<Heading as={"h3"} fontSize={"4xl"}>
 						Discord bot
 					</Heading>
-					<Heading as={"h2"} fontSize={"2xl"}>
+					<Heading as={"h4"} fontSize={"2xl"}>
 						Is Minecraft Server Online bot
 					</Heading>
 				</VStack>
@@ -110,7 +110,7 @@ export default function BotInfo() {
 
 			<Stack direction={{ base: "column", md: "row" }} w="100%" spacing={10}>
 				<VStack align={"start"} w="100%" spacing={5}>
-					<Heading as={"h2"} fontSize={"2xl"}>
+					<Heading as={"h3"} fontSize={"2xl"}>
 						What is it?
 					</Heading>
 					<Text>
@@ -119,7 +119,7 @@ export default function BotInfo() {
 						seconds completely for free!
 					</Text>
 
-					<Heading as={"h2"} fontSize={"2xl"}>
+					<Heading as={"h3"} fontSize={"2xl"}>
 						How to use it?
 					</Heading>
 					<Text>

@@ -70,10 +70,15 @@ const Document = withEmotionCache(({ children }: DocumentProps, emotionCache) =>
 	);
 });
 
+const links = [
+	{ name: "Home", icon: BiHome, to: "/" },
+	{ name: "FAQ", icon: QuestionOutlineIcon, to: "/faq" },
+	{ name: "API", icon: BiCode, to: "/api" }
+];
+
 const ErrorBoundary = withEmotionCache((_never, emotionCache) => {
 	const serverStyleData = useContext(ServerStyleContext);
 	const clientStyleData = useContext(ClientStyleContext);
-	const error = useRouteError();
 
 	// Only executed on client
 	useEffect(() => {
@@ -87,14 +92,9 @@ const ErrorBoundary = withEmotionCache((_never, emotionCache) => {
 		});
 		// reset cache to reapply global styles
 		clientStyleData?.reset();
+
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
-
-	const links = [
-		{ name: "Home", icon: BiHome, to: "/" },
-		{ name: "FAQ", icon: QuestionOutlineIcon, to: "/faq" },
-		{ name: "API", icon: BiCode, to: "/api" }
-	];
 
 	return (
 		<html>
@@ -131,46 +131,56 @@ const ErrorBoundary = withEmotionCache((_never, emotionCache) => {
 			<body>
 				<ChakraBaseProvider theme={theme}>
 					<Flex h="100%" minH={"calc(100vh - 80px)"} px={4}>
-						<VStack m="auto" spacing={5}>
-							<Heading>Oops... Something unexpected has just happend</Heading>
-							<Heading fontSize={"lg"}>
-								Please try refreshing the page, if error still occurs please contact admin
-							</Heading>
-							{error instanceof Error ? (
-								<>
-									<Heading color={"red"}>{error?.name}</Heading>
-									<Box as="pre">{error?.message ? error?.message : error?.stack}</Box>
-								</>
-							) : (
-								<Heading color={"red"}>Unknown error</Heading>
-							)}
-							<Stack direction={{ base: "column", sm: "row" }} spacing={5} w="100%" justifyContent={"center"}>
-								{links.map((l) => (
-									<Link
-										to={l.to}
-										key={l.name}
-										rounded={"xl"}
-										p={[3, 4, 5]}
-										bg={"alpha"}
-										w={{ base: "100%", sm: "100px" }}
-										_hover={{
-											textDecor: "none",
-											bg: "alpha100"
-										}}
-									>
-										<VStack fontWeight={"semibold"}>
-											<Icon as={l.icon} />
-											<Text>{l.name}</Text>
-										</VStack>
-									</Link>
-								))}
-							</Stack>
-						</VStack>
+						<InsideErrorBoundary />
 					</Flex>
 				</ChakraBaseProvider>
 			</body>
 		</html>
 	);
 });
+
+export function InsideErrorBoundary() {
+	const error = useRouteError();
+
+	useEffect(() => {
+		console.error(JSON.stringify(error, null, 2));
+	}, [error]);
+
+	return (
+		<VStack m="auto" spacing={5}>
+			<Heading>Oops... Something unexpected has just happend</Heading>
+			<Heading fontSize={"lg"}>Please try refreshing the page, if error still occurs please contact admin</Heading>
+			{error instanceof Error ? (
+				<>
+					<Heading color={"red"}>{error?.name}</Heading>
+					<Box as="pre">{error?.message ? error?.message : error?.stack}</Box>
+				</>
+			) : (
+				<Heading color={"red"}>Unknown error</Heading>
+			)}
+			<Stack direction={{ base: "column", sm: "row" }} spacing={5} w="100%" justifyContent={"center"}>
+				{links.map((l) => (
+					<Link
+						to={l.to}
+						key={l.name}
+						rounded={"xl"}
+						p={[3, 4, 5]}
+						bg={"alpha"}
+						w={{ base: "100%", sm: "100px" }}
+						_hover={{
+							textDecor: "none",
+							bg: "alpha100"
+						}}
+					>
+						<VStack fontWeight={"semibold"}>
+							<Icon as={l.icon} />
+							<Text>{l.name}</Text>
+						</VStack>
+					</Link>
+				))}
+			</Stack>
+		</VStack>
+	);
+}
 
 export { Document, ErrorBoundary };

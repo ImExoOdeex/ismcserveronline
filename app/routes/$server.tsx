@@ -41,6 +41,7 @@ import { getCookieWithoutDocument } from "~/components/utils/functions/cookies";
 import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 import useUser from "~/components/utils/hooks/useUser";
 import Link from "~/components/utils/Link";
+import { InsideErrorBoundary } from "~/document";
 
 export async function action({ request, params }: ActionFunctionArgs) {
 	const form = await request.formData();
@@ -408,7 +409,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 export function meta({ data, matches }: MetaArgs) {
 	return [
 		{
-			title: (data as any).server + "'s status | IsMcServer.online"
+			title: data ? (data as any).server + "'s status | IsMcServer.online" : "Server not found | IsMcServer.online"
 		},
 		...matches[0].meta
 	] as ReturnType<MetaFunction>;
@@ -799,5 +800,13 @@ export default function $server() {
 
 			<Ad type={adType.multiplex} />
 		</VStack>
+	);
+}
+
+export function ErrorBoundary() {
+	return (
+		<Flex flex={1} alignItems={"center"} justifyContent={"center"}>
+			<InsideErrorBoundary />
+		</Flex>
 	);
 }

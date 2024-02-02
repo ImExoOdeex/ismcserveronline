@@ -37,7 +37,7 @@ export async function action({ request }: ActionFunctionArgs) {
 export function meta({ matches }: MetaArgs) {
 	return [
 		{
-			title: "Minecraft server status | Check your server's status and vote (Java/Bedrock)"
+			title: "Minecraft server status | Get info of any Java and Bedrock servers"
 		},
 		...matches[0].meta
 	] as ReturnType<MetaFunction>;
@@ -52,49 +52,65 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 	let sampleServers: SampleServerHomepage[], count: number;
 
-	let [cacheCount, cacheServers] = await Promise.all([
-		getCache(Object.keys(serverConfig.cache)[0]), // count
-		getCache(Object.keys(serverConfig.cache)[1]) // sampleServers
-	]);
+	const timeoutPromise = new Promise((_resolve, reject) => {
+		setTimeout(() => {
+			reject(new Error("Timeout exceeded"));
+		}, 2000); // 2 second timeout
+	});
+
+	let [cacheCount, cacheServers] = (await Promise.all([
+		Promise.race([
+			getCache(Object.keys(serverConfig.cache)[0]), // count
+			timeoutPromise
+		]).catch(() => 100_000),
+		Promise.race([
+			getCache(Object.keys(serverConfig.cache)[1]), // sampleServers
+			timeoutPromise
+		]).catch(() => "[]")
+	])) as [string | null, string | null];
 
 	if (!cacheServers || !cacheCount) {
 		console.log("[Loader] No cache");
 
-		[sampleServers, count] = await Promise.all([
-			db.sampleServer.findMany({
-				select: {
-					bedrock: true,
-					server: true,
-					favicon: true
-				},
-				orderBy: {
-					add_date: "desc"
-				},
-				// get only servers that end dates are greater than now or null
-				where: {
-					AND: [
-						{
-							OR: [
-								{
-									end_date: {
-										gte: new Date()
+		[sampleServers, count] = (await Promise.all([
+			Promise.race([
+				db.sampleServer.findMany({
+					select: {
+						bedrock: true,
+						server: true,
+						favicon: true
+					},
+					orderBy: {
+						add_date: "desc"
+					},
+					// get only servers that end dates are greater than now or null
+					where: {
+						AND: [
+							{
+								OR: [
+									{
+										end_date: {
+											gte: new Date()
+										}
+									},
+									{
+										end_date: {
+											equals: null
+										}
 									}
-								},
-								{
-									end_date: {
-										equals: null
-									}
-								}
-							]
-						},
-						{
-							payment_status: "PAID"
-						}
-					]
-				}
-			}),
-			db.check.count()
-		]);
+								]
+							},
+							{
+								payment_status: "PAID"
+							}
+						]
+					}
+				}),
+				timeoutPromise
+			]).catch(() => []),
+
+			Promise.race([db.check.count(), timeoutPromise]).catch(() => 100_000)
+		])) as [SampleServerHomepage[], number];
 		setCache(Object.keys(serverConfig.cache)[0], count, serverConfig.cache.count);
 		setCache(Object.keys(serverConfig.cache)[1], sampleServers, serverConfig.cache.sampleServers);
 	} else {
@@ -104,14 +120,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 	console.log(`[Loader] Sample servers and count took ${Date.now() - start}ms`);
 
-	return typedjson(
-		{ bedrock, query, sampleServers, count },
-		{
-			headers: {
-				"Cache-Control": "public, max-age=60"
-			}
-		}
-	);
+	return typedjson({ bedrock, query, sampleServers, count });
 }
 
 export default function Index() {
@@ -137,16 +146,10 @@ export default function Index() {
 			<BotInfo />
 			<Divider />
 
-			{/* <Ad type={adType.small} /> */}
-
 			<VStack spacing={"28"} w="100%" align={"start"}>
 				<HowToUse />
 
-				{/* <Ad type={adType.responsive} /> */}
-
 				<PopularServers />
-
-				{/* <Ad type={adType.small} /> */}
 
 				{/* What are you waiting for? */}
 				<WARWF />

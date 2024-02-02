@@ -3,12 +3,12 @@ import { useLocation } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { PiCrownSimpleDuotone } from "react-icons/pi/index.js";
-import useUser from "~/components/utils/hooks/useUser";
 import Link from "../../utils/Link";
 import { APIButton, FAQButton, LoginButton, PopularServersButton } from "./Buttons";
 import HamburgerMenu from "./Mobile/HamburgerMenu";
 import ServerSearch from "./ServerSearch";
 import ThemeToggle from "./ToggleTheme";
+import useRootData from "~/components/utils/hooks/useRootData";
 
 type Props = {
 	isMenuOpen: boolean;
@@ -35,7 +35,7 @@ export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 	}, []);
 
 	const path = useLocation().pathname;
-	const user = useUser();
+	const { isBot, user } = useRootData();
 
 	return (
 		<Flex
@@ -52,16 +52,23 @@ export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 		>
 			<Flex w="100%" maxW={"1500px"} px={4} alignItems="center" h="100%" mx="auto" justifyContent={"space-between"}>
 				<HStack spacing={5}>
-					<Link to="/" alignItems={"center"} _hover={{ textDecor: "none" }}>
-						<Heading fontSize="2xl" transition={"all .2s"} transform={"auto-gpu"} _active={{ scale: 0.95 }}>
+					<Link to="/" alignItems={"center"} _hover={{ textDecor: "none" }} fontSize="2xl" transition={"all .2s"} transform={"auto-gpu"} _active={{ scale: 0.95 }}>
+						{isBot ?
+							<Text fontSize="xl" fontWeight={700}>
+								Real Minecraft Server Status
+							</Text>
+							:
 							<HStack spacing={1} alignItems={"baseline"}>
-								<Text>IsMcServer</Text>
+								<Text fontWeight={700}>
+									IsMcServer
+								</Text>
 								<Badge fontSize={"md"} rounded={"md"} py={0.5} px={1.5} colorScheme="green" h="fit-content">
 									.online
 								</Badge>
 							</HStack>
-						</Heading>
+						}
 					</Link>
+
 					<Flex display={{ base: "none", md: "flex" }} w="320px">
 						<AnimatePresence mode="wait" initial={false}>
 							{path !== "/" && (

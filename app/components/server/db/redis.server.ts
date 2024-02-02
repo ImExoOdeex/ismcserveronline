@@ -8,7 +8,7 @@ declare global {
 }
 
 invariant(process.env.REDIS_HOST, "REDIS_HOST is not defined");
-invariant(process.env.REDIS_PASSWORD, "REDIS_PASSWORD is not defined");
+// invariant(process.env.REDIS_PASSWORD, "REDIS_PASSWORD is not defined");
 invariant(process.env.REDIS_DB, "REDIS_DB is not defined");
 
 const options = {

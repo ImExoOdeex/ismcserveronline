@@ -40,7 +40,7 @@ export const discordStrategy: any = new DiscordStrategy(
 				: process.env.DISCORD_CLIENT_SECRET_DEV ?? "",
 		scope: ["identify", "email", "guilds"],
 		prompt: "none",
-		callbackURL: `${serverConfig.dashUrl}/api/auth/discord/callback`
+		callbackURL: `${serverConfig.redirectUrl}/api/auth/discord/callback`
 	},
 	async ({ profile, accessToken, context }) => {
 		if (!profile?.emails?.length) {

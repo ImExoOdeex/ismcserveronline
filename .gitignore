@@ -6,3 +6,5 @@ node_modules
 .env
 /app/components/config/servers.json
 /public/favicons
+/app/routes/api.test.ts
+/app/routes/api.ownership.verification.ts

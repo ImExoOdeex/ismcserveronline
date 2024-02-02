@@ -22,7 +22,7 @@ export default function PopularServers() {
 
 			<VStack w="100%" spacing={5}>
 				<Text fontSize={"lg"} lineHeight={"175%"} fontWeight={600} textAlign={"center"} color={"textSec"}>
-					Explore over 2 thousand available servers in our database with our{" "}
+					Explore over hunderts of available servers in our database with our{" "}
 					<Link variant={"link"} to="/popular-servers">
 						popular-servers
 					</Link>{" "}
