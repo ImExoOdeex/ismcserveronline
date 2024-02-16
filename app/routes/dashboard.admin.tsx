@@ -47,7 +47,7 @@ export default function DashboardAdmin() {
 				<Wrap spacing={4} w="100%">
 					{Object.entries(counts).map(([key, value]) => (
 						<WrapItem key={key} gap={0.5} display={"flex"} flexDir={"column"} flex={1}>
-							<Text fontSize={"lg"}>{key}</Text>
+							<Text fontSize={"lg"}>{camelCaseToTitleCase(key)}</Text>
 							<Text fontSize={"2xl"} fontWeight={600}>
 								{value}
 							</Text>
@@ -229,4 +229,11 @@ export default function DashboardAdmin() {
 			</Flex>
 		</Flex>
 	);
+}
+
+function camelCaseToTitleCase(input: string): string {
+    const words = input.replace(/([a-z])([A-Z])/g, '$1 $2').split(' ');
+    const capitalizedWords = words.map(word => word.charAt(0).toUpperCase() + word.slice(1));
+
+    return capitalizedWords.join(' ');
 }
