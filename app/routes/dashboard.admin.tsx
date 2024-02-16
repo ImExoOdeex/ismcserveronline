@@ -141,8 +141,8 @@ export default function DashboardAdmin() {
 															<Image src={server.icon ?? ""} boxSize={10} rounded={"md"} />
 														</Th>
 														<Th>
-															<Link variant={"link"} to={`/${check.server}`}>
-																{check.server}
+															<Link variant={"link"} to={`/${server.server}`}>
+																{server.server}
 															</Link>
 														</Th>
 														<Th>{server.online ? "Online" : "Offline"}</Th>
@@ -182,8 +182,8 @@ export default function DashboardAdmin() {
 													<Tr>
 														<Th>{comment.id}</Th>
 														<Th>
-															<Link variant={"link"} to={`/${check.server}`}>
-																{check.server}
+															<Link variant={"link"} to={`/${comment.server}`}>
+																{comment.server}
 															</Link>
 														</Th>
 														<Th>{comment.content}</Th>
