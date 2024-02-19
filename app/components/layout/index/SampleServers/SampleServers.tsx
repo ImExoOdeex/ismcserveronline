@@ -15,7 +15,7 @@ export default function SampleServers({
 	return (
 		<Flex p={5} rounded={"2xl"} bg={"alpha"} w="100%" flexDir={"column"}>
 			<Heading as="h3" fontSize={"lg"}>
-				Just looking? Try out these sample servers!
+				Just looking? Try out these promoted servers!
 			</Heading>
 
 			<Flex mt={5} w="100%">
@@ -47,7 +47,7 @@ export default function SampleServers({
 						>
 							<HStack spacing={5}>
 								<Image
-									rounded={"none"}
+									rounded={"md"}
 									src={s.favicon}
 									alt={s.server + "'s favicon"}
 									width={"64px"}
