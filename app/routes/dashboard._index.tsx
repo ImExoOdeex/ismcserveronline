@@ -171,10 +171,10 @@ export default function Index() {
 	return (
 		<VStack display={"flex"} w="100%" align={"start"} spacing={4}>
 			<VStack align="start">
-				<Heading fontSize={"2xl"}>Servers, you have saved for later</Heading>
+				<Heading fontSize={"2xl"}>Servers, you have bookmarked</Heading>
 				<Text>
-					Here you can see all servers you have saved for later. You can save server for later by clicking the "Save"
-					button on server's page.
+					Here you can see all servers you have saved for later. You can bookmark a server by clicking "Bookmark"
+					on a server's page.
 				</Text>
 			</VStack>
 			<Suspense
@@ -212,7 +212,7 @@ function ServersDisplay({ servers }: { servers: DisplaySavedServer[] }) {
 					alignItems={"center"}
 					justifyContent="center"
 				>
-					<Text fontWeight={600}>You don't have any servers saved for later.</Text>
+					<Text fontWeight={600}>You don't have any servers bookmarked.</Text>
 				</Flex>
 			)}
 		</>

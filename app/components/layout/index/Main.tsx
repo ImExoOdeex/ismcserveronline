@@ -41,7 +41,7 @@ export default function Main({
 
 				<Text as="h2" fontWeight={600} color="textSec" maxW={"423px"} alignSelf="start">
 					Get information about your favourite Minecraft server for Java or Bedrock edition! Over{" "}
-					{formatBigNumbers(count)} checks have been checked!
+					{formatBigNumbers(count)} checks have been made!
 				</Text>
 			</VStack>
 

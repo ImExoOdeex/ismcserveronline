@@ -928,7 +928,7 @@ export default function $server() {
 						bg: saved ? "yellow.600" : "alpha100"
 					}}
 				>
-					{saved ? "Saved" : "Save"}
+					{saved ? "Bookmarked" : "Bookmark"}
 				</Button>
 			</Flex>
 

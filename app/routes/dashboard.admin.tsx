@@ -28,6 +28,7 @@ import { cache } from "~/components/server/db/redis.server";
 import { getCounts, getStats } from "~/components/server/functions/admin.server";
 import { ServerModel } from "~/components/types/minecraftServer";
 import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
+import Link from "~/components/utils/Link";
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const [user, counts, stats] = await Promise.all([getUser(request), getCounts(), getStats()]);
@@ -78,7 +79,7 @@ export default function DashboardAdmin() {
 				<Wrap spacing={4} w="100%">
 					{Object.entries(counts).map(([key, value]) => (
 						<WrapItem key={key} gap={0.5} display={"flex"} flexDir={"column"} flex={1}>
-							<Text fontSize={"lg"}>{key}</Text>
+							<Text fontSize={"lg"}>{camelCaseToTitleCase(key)}</Text>
 							<Text fontSize={"2xl"} fontWeight={600}>
 								{value}
 							</Text>
@@ -107,7 +108,7 @@ export default function DashboardAdmin() {
 										<Table variant="simple">
 											<Thead>
 												<Tr>
-													<Th>ID</Th>
+													<Th>Id</Th>
 													<Th>Server</Th>
 													<Th>Status</Th>
 													<Th>Source</Th>
@@ -121,7 +122,11 @@ export default function DashboardAdmin() {
 												{stats.checks.map((check) => (
 													<Tr>
 														<Th>{check.id}</Th>
-														<Th>{check.Server.server}</Th>
+														<Th>
+															<Link variant={"link"} to={`/${check.Server.server}`}>
+																{check.Server.server}
+															</Link>
+														</Th>
 														<Th>{check.online ? "Online" : "Offline"}</Th>
 														<Th>{check.source}</Th>
 														<Th isNumeric>{check.players}</Th>
@@ -140,7 +145,7 @@ export default function DashboardAdmin() {
 						<AccordionItem>
 							<AccordionButton>
 								<Box as="span" flex="1" textAlign="left">
-									Saved Servers
+									Bookmarked Servers
 								</Box>
 								<AccordionIcon />
 							</AccordionButton>
@@ -150,7 +155,7 @@ export default function DashboardAdmin() {
 										<Table variant="simple">
 											<Thead>
 												<Tr>
-													<Th>ID</Th>
+													<Th>Id</Th>
 													<Th>Icon</Th>
 													<Th>Server</Th>
 													<Th>Status</Th>
@@ -178,6 +183,13 @@ export default function DashboardAdmin() {
 																	?.online
 															}
 														</Th>
+														<Th>
+															<Link variant={"link"} to={`/${server.Server.server}`}>
+																{server.Server.server}
+															</Link>
+														</Th>
+														<Th>{server.Server.online ? "Online" : "Offline"}</Th>
+														<Th>{(server.Server.players as any)?.online}</Th>
 														<Th>{server.Server.bedrock ? "Bedrock" : "Java"}</Th>
 														<Th>{new Date(server.created_at).toLocaleString()}</Th>
 													</Tr>
@@ -202,7 +214,7 @@ export default function DashboardAdmin() {
 										<Table variant="simple">
 											<Thead>
 												<Tr>
-													<Th>ID</Th>
+													<Th>Id</Th>
 													<Th>Server</Th>
 													<Th>Content</Th>
 													<Th>Created At</Th>
@@ -237,7 +249,7 @@ export default function DashboardAdmin() {
 										<Table variant="simple">
 											<Thead>
 												<Tr>
-													<Th>ID</Th>
+													<Th>Id</Th>
 													<Th>Photo</Th>
 													<Th>Nick</Th>
 													<Th>Email</Th>
@@ -269,4 +281,11 @@ export default function DashboardAdmin() {
 			</Flex>
 		</Flex>
 	);
+}
+
+function camelCaseToTitleCase(input: string): string {
+	const words = input.replace(/([a-z])([A-Z])/g, "$1 $2").split(" ");
+	const capitalizedWords = words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
+
+	return capitalizedWords.join(" ");
 }

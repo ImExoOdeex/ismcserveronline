@@ -58,7 +58,7 @@ export default function Dashboard() {
 	const buttons = useMemo(() => {
 		const yes = [
 			{
-				name: "Saved Servers",
+				name: "Bookmarked Servers",
 				to: "/dashboard"
 			},
 			{
