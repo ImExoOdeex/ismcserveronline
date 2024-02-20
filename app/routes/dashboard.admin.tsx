@@ -175,7 +175,11 @@ export default function DashboardAdmin() {
 																rounded={"md"}
 															/>
 														</Th>
-														<Th>{server.Server.server}</Th>
+														<Th>
+															<Link variant={"link"} to={`/${server.Server.server}`}>
+																{server.Server.server}
+															</Link>
+														</Th>
 														<Th>{server.Server.online ? "Online" : "Offline"}</Th>
 														<Th>
 															{
@@ -183,13 +187,6 @@ export default function DashboardAdmin() {
 																	?.online
 															}
 														</Th>
-														<Th>
-															<Link variant={"link"} to={`/${server.Server.server}`}>
-																{server.Server.server}
-															</Link>
-														</Th>
-														<Th>{server.Server.online ? "Online" : "Offline"}</Th>
-														<Th>{(server.Server.players as any)?.online}</Th>
 														<Th>{server.Server.bedrock ? "Bedrock" : "Java"}</Th>
 														<Th>{new Date(server.created_at).toLocaleString()}</Th>
 													</Tr>
