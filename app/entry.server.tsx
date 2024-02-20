@@ -1,47 +1,61 @@
 import { CacheProvider } from "@emotion/react";
-import createEmotionServer from "@emotion/server/create-instance";
-import type { EntryContext } from "@remix-run/node"; // Depends on the runtime you choose
+import { createReadableStreamFromReadable, type EntryContext } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
-import { renderToString } from "react-dom/server";
-import { ServerStyleContext, createEmotionCache } from "./context";
-import { otherRootRouteHandlers } from "./routes/otherRootRoutes.server";
+import { renderToPipeableStream } from "react-dom/server";
+import { PassThrough } from "stream";
+import { createEmotionCache } from "./context";
 
+const ABORT_DELAY = 5000;
+
+// this will abort the request if it's not finished in 5 seconds. so if defer will suck i will remove it
 export default async function handleRequest(
 	request: Request,
 	responseStatusCode: number,
 	responseHeaders: Headers,
 	remixContext: EntryContext
 ) {
-	const cache = createEmotionCache();
-	const { extractCriticalToChunks } = createEmotionServer(cache);
+	return new Promise((resolve, reject) => {
+		let shellRendered = false;
 
-	const html = renderToString(
-		<ServerStyleContext.Provider value={null}>
+		const cache = createEmotionCache(); // basically CacheProvider it there, cause custom cache key. it works without it tho
+
+		const { pipe, abort } = renderToPipeableStream(
 			<CacheProvider value={cache}>
-				<RemixServer context={remixContext} url={request.url} />
-			</CacheProvider>
-		</ServerStyleContext.Provider>
-	);
+				<RemixServer context={remixContext} url={request.url} abortDelay={ABORT_DELAY} />
+			</CacheProvider>,
+			{
+				onShellReady() {
+					shellRendered = true;
+					const body = new PassThrough();
 
-	const chunks = extractCriticalToChunks(html);
+					const stream = createReadableStreamFromReadable(body);
 
-	for (const handler of otherRootRouteHandlers) {
-		const otherRouteResponse = await handler(request, remixContext);
-		if (otherRouteResponse) return otherRouteResponse;
-	}
+					responseHeaders.set("Content-Type", "text/html");
 
-	const markup = renderToString(
-		<ServerStyleContext.Provider value={chunks.styles}>
-			<CacheProvider value={cache}>
-				<RemixServer context={remixContext} url={request.url} />
-			</CacheProvider>
-		</ServerStyleContext.Provider>
-	);
+					resolve(
+						new Response(stream, {
+							headers: responseHeaders,
+							status: responseStatusCode
+						})
+					);
 
-	responseHeaders.set("Content-Type", "text/html");
+					pipe(body);
+				},
+				onShellError(error: unknown) {
+					reject(error);
+				},
+				onError(error: unknown) {
+					responseStatusCode = 500;
+					if (shellRendered) {
+						console.error(error);
+					}
+				},
+				onAllReady() {
+					abort();
+				}
+			}
+		);
 
-	return new Response(`<!DOCTYPE html>${markup}`, {
-		status: responseStatusCode,
-		headers: responseHeaders
+		setTimeout(abort, ABORT_DELAY);
 	});
 }

@@ -1,7 +1,7 @@
 import { Icon } from "@chakra-ui/icons";
 import { Box, Flex, Text, type BoxProps } from "@chakra-ui/react";
 import { useEffect } from "react";
-import { PiShieldWarningDuotone } from "react-icons/pi/index.js";
+import { PiShieldWarningDuotone } from "react-icons/pi";
 import useGlobalContext from "../utils/hooks/useGlobalContext";
 import useRootData from "../utils/hooks/useRootData";
 
@@ -46,7 +46,7 @@ export function Ad({ type = adType.responsive, width = "1168px", ...props }: { t
 	switch (type) {
 		case adType.small: {
 			return (
-				<Box w="100%" h="100%" minW={"100%"} {...props}>
+				<Box w="100%" minW={"100%"} {...props}>
 					<ins
 						className="adsbygoogle"
 						style={{ display: "inline-block", width: width, height: "90px", marginInline: "auto" }}
@@ -58,7 +58,7 @@ export function Ad({ type = adType.responsive, width = "1168px", ...props }: { t
 		}
 		case adType.responsive: {
 			return (
-				<Box h="100%" w="100%" minW={"100%"} {...props}>
+				<Box w="100%" minW={"100%"} {...props}>
 					<ins
 						className="adsbygoogle resad"
 						style={{ display: "block", height: "90px" }}
@@ -84,7 +84,7 @@ export function Ad({ type = adType.responsive, width = "1168px", ...props }: { t
 		}
 		case adType.multiplex: {
 			return (
-				<Box w="100%" h="100%" minH={"90px"} minW={"100%"} {...props}>
+				<Box w="100%" minH={"90px"} minW={"100%"} {...props}>
 					<ins
 						className="adsbygoogle"
 						style={{ display: "block" }}
@@ -97,7 +97,7 @@ export function Ad({ type = adType.responsive, width = "1168px", ...props }: { t
 		}
 		case adType.article: {
 			return (
-				<Box w="100%" h="100%" minH={"90px"} minW={"100%"} {...props}>
+				<Box w="100%" minH={"90px"} minW={"100%"} {...props}>
 					<ins
 						className="adsbygoogle"
 						style={{ display: "block", textAlign: "center" }}

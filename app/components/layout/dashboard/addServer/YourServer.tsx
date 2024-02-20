@@ -1,8 +1,21 @@
 import { Divider, Flex, HStack, Image, Text } from "@chakra-ui/react";
-import { SampleServer } from "@prisma/client";
+import { PaymentStatus } from "@prisma/client";
 
 interface Props {
-	server: SampleServer;
+	server: {
+		id: number;
+		Server: {
+			id: number;
+			server: string;
+			bedrock: boolean;
+			online: boolean;
+			players: number;
+			favicon: string | null;
+		};
+		add_date: Date;
+		end_date: Date | null;
+		payment_status: PaymentStatus;
+	};
 	isLast?: boolean;
 }
 
@@ -19,12 +32,12 @@ export default function YourServer({ server, isLast }: Props) {
 				justifyContent={"space-between"}
 			>
 				<Flex flexDir={"row"} gap={4} alignItems={"center"}>
-					<Image src={server.favicon} boxSize={20} rounded={"sm"} />
+					<Image src={server.Server.favicon ?? ""} boxSize={20} rounded={"sm"} />
 
 					<Flex flexDir={"column"} gap={0.5}>
 						<Text fontWeight={500}>Name</Text>
 						<Text fontSize={"xl"} fontWeight={600} letterSpacing={"2px"}>
-							{server.server}
+							{server.Server.server}
 						</Text>
 					</Flex>
 				</Flex>

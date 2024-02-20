@@ -1,14 +1,18 @@
-import { Flex, Heading, SimpleGrid, Text, VStack } from "@chakra-ui/react";
+import { Flex, Heading, SimpleGrid, Spinner, Text, VStack } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { typedjson } from "remix-typedjson";
+import { Await } from "@remix-run/react";
+import { Suspense, memo, useEffect, useRef } from "react";
+import { typeddefer, typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
 import SavedServer from "~/components/layout/dashboard/SavedServer";
 import { db } from "~/components/server/db/db.server";
 import { getUserId } from "~/components/server/db/models/user";
+import { getServerInfo } from "~/components/server/functions/api.server";
+import { ServerModel } from "~/components/types/minecraftServer";
 import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 
-export type Guild = {
+export interface Guild {
 	id: string;
 	name: string;
 	icon?: string;
@@ -16,7 +20,7 @@ export type Guild = {
 	permissions: number;
 	features: string[];
 	permissions_new: string;
-};
+}
 
 export async function action({ request }: ActionFunctionArgs) {
 	const formData = await request.formData();
@@ -32,8 +36,10 @@ export async function action({ request }: ActionFunctionArgs) {
 
 			const serverId = await db.savedServer.findFirst({
 				where: {
-					server,
-					bedrock,
+					Server: {
+						server,
+						bedrock
+					},
 					user_id: userId
 				}
 			});
@@ -58,28 +64,25 @@ export async function action({ request }: ActionFunctionArgs) {
 
 			const updatedServerId = await db.savedServer.findFirst({
 				where: {
-					server,
-					bedrock,
+					Server: {
+						server,
+						bedrock
+					},
 					user_id: userId
 				}
 			});
 
 			invariant(updatedServerId, "Server not found");
 
-			const data = await fetch(`https://api.ismcserver.online/${bedrock ? "bedrock/" : ""}${server}`, {
-				headers: {
-					Authorization: process.env.API_TOKEN ?? ""
-				}
-			}).then((res) => res.json());
+			const data = await getServerInfo(server, bedrock);
 
-			await db.savedServer.update({
+			await db.server.update({
 				where: {
-					id: updatedServerId.id
+					id: updatedServerId.server_id
 				},
 				data: {
-					icon: data?.icon || undefined,
-					online: data?.online,
-					players: data?.players?.online
+					online: data.online,
+					players: data.players
 				}
 			});
 
@@ -106,39 +109,64 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		throw redirect("/login");
 	}
 
-	const servers = await db.savedServer.findMany({
-		where: {
-			user_id: userId
-		},
-		select: {
-			id: true,
-			bedrock: true,
-			server: true,
-			icon: true,
-			online: true,
-			players: true,
-			created_at: true
-		},
-		orderBy: {
-			server: "asc"
-		}
-	});
+	const servers = new Promise((r) => {
+		r(
+			db.savedServer.findMany({
+				where: {
+					user_id: userId
+				},
+				select: {
+					id: true,
+					Server: {
+						select: {
+							bedrock: true,
+							server: true,
+							favicon: true,
+							online: true,
+							players: true
+						}
+					},
+					created_at: true
+				},
+				orderBy: {
+					Server: {
+						server: "asc"
+					}
+				}
+			})
+		);
+	}) as unknown as Promise<DisplaySavedServer[]>;
 
-	return typedjson({ servers });
+	return typeddefer({ servers });
 }
 
 export interface DisplaySavedServer {
 	id: number;
+	Server: {
+		bedrock: boolean;
+		server: string;
+		favicon: string | null;
+		online: boolean;
+		players: ServerModel.Players<false>;
+	};
 	created_at: Date;
-	bedrock: boolean;
-	server: string;
-	online: boolean;
-	players: number;
-	icon: string | null;
 }
 
 export default function Index() {
-	const { servers } = useAnimationLoaderData<typeof loader>();
+	const { servers: deferredServers } = useAnimationLoaderData<typeof loader>();
+
+	const init = useRef(true);
+
+	useEffect(() => {
+		if (init.current) {
+			console.log("INITTTTT EFFFECTTT");
+			init.current = false;
+		}
+
+		console.log({
+			deferredServers
+		});
+	}, [deferredServers]);
 
 	return (
 		<VStack display={"flex"} w="100%" align={"start"} spacing={4}>
@@ -149,10 +177,26 @@ export default function Index() {
 					button on server's page.
 				</Text>
 			</VStack>
+			<Suspense
+				fallback={
+					<Flex w="100%" p={5} alignItems={"center"} justifyContent={"center"}>
+						<Spinner size="lg" speed="0.4s" />
+					</Flex>
+				}
+			>
+				<Await resolve={deferredServers}>{(servers) => <MemoServersDisplay servers={servers} />}</Await>
+			</Suspense>
+			;
+		</VStack>
+	);
+}
 
+function ServersDisplay({ servers }: { servers: DisplaySavedServer[] }) {
+	return (
+		<>
 			{servers.length ? (
 				<SimpleGrid w="100%" minChildWidth={{ base: "100%", md: "calc(50% - 20px)" }} spacing={5}>
-					{servers.map((server: DisplaySavedServer) => (
+					{servers.map((server) => (
 						<SavedServer key={server.id} server={server} />
 					))}
 				</SimpleGrid>
@@ -171,6 +215,8 @@ export default function Index() {
 					<Text fontWeight={600}>You don't have any servers saved for later.</Text>
 				</Flex>
 			)}
-		</VStack>
+		</>
 	);
 }
+
+const MemoServersDisplay = memo(ServersDisplay);

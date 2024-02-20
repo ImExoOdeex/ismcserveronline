@@ -20,7 +20,7 @@ import {
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
 import { useFetcher, useNavigate } from "@remix-run/react";
 import { useContext, useEffect, useState } from "react";
-import { BiBookmark, BiBug, BiInfoCircle } from "react-icons/bi/index.js";
+import { BiBookmark, BiBug, BiInfoCircle } from "react-icons/bi";
 import { typedjson } from "remix-typedjson";
 import { getClientIPAddress } from "remix-utils/get-client-ip-address";
 import ChecksTable from "~/components/layout/server/ChecksTable";

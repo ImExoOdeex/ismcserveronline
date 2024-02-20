@@ -28,17 +28,26 @@ export async function getStats() {
 			orderBy: {
 				checked_at: "desc"
 			},
+			include: {
+				Server: true
+			},
 			take: 10
 		}),
 		db.comment.findMany({
 			orderBy: {
 				created_at: "desc"
 			},
+			include: {
+				Server: true
+			},
 			take: 10
 		}),
 		db.savedServer.findMany({
 			orderBy: {
 				created_at: "desc"
+			},
+			include: {
+				Server: true
 			},
 			take: 10
 		})

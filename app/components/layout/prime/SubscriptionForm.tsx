@@ -2,7 +2,7 @@ import { Button, Flex, Icon, Image, Link, Text, VStack } from "@chakra-ui/react"
 import { useFetcher } from "@remix-run/react";
 import { PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { useState } from "react";
-import { FiCreditCard } from "react-icons/fi/index.js";
+import { FiCreditCard } from "react-icons/fi";
 
 export default function SubscriptionForm() {
 	const fetcher = useFetcher();

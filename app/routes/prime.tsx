@@ -17,7 +17,7 @@ import {
 import { ActionFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import React from "react";
-import { FiCreditCard } from "react-icons/fi/index.js";
+import { FiCreditCard } from "react-icons/fi";
 import { redirect } from "remix-typedjson";
 import config from "~/components/config/config";
 import { IPlan } from "~/components/types/typings";
@@ -191,7 +191,7 @@ function Plan({ title, price, features, description, color }: IPlan) {
 				>
 					{price === 0 ? "Go to the dashboard" : "Choose this plan"}
 				</Button>
-				<VisuallyHiddenInput name="free" value={price === 0 ? "true" : "false"} />
+				<VisuallyHiddenInput name="free" value={price === 0 ? "true" : "false"} readOnly />
 			</fetcher.Form>
 		</Flex>
 	);

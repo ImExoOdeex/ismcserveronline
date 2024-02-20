@@ -12,8 +12,8 @@ import {
 	Wrap,
 	WrapItem
 } from "@chakra-ui/react";
-import { AiOutlineDashboard } from "react-icons/ai/index.js";
-import { BsFillPeopleFill } from "react-icons/bs/index.js";
+import { AiOutlineDashboard } from "react-icons/ai";
+import { BsFillPeopleFill } from "react-icons/bs";
 import Link from "~/components/utils/Link";
 import links from "../../config/config";
 import DiscordIcon from "../icons/DiscordIcon";

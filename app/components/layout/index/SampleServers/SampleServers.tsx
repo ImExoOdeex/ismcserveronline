@@ -1,7 +1,8 @@
 import { Flex, Grid, GridItem, HStack, Heading, Image, Text } from "@chakra-ui/react";
+import { Server } from "@prisma/client";
 import AddServerPopover from "./AddServerPopover";
 
-type server = { server: string; favicon: string; bedrock: boolean };
+type server = { Server: Pick<Server, "server" | "favicon" | "bedrock"> };
 
 export default function SampleServers({
 	setServerValue,
@@ -30,7 +31,7 @@ export default function SampleServers({
 				>
 					{sampleServers.map((s) => (
 						<GridItem
-							key={s.server}
+							key={"homepage-" + s.Server.server}
 							p={3}
 							rounded={"lg"}
 							bg={"alpha"}
@@ -40,7 +41,7 @@ export default function SampleServers({
 							_hover={{ bg: "alpha100", textDecor: "none" }}
 							onClick={() => {
 								setBedrock(false);
-								setServerValue(s.server);
+								setServerValue(s.Server.server);
 								window.scrollTo(0, 0);
 							}}
 							cursor={"pointer"}
@@ -48,13 +49,13 @@ export default function SampleServers({
 							<HStack spacing={5}>
 								<Image
 									rounded={"none"}
-									src={s.favicon}
-									alt={s.server + "'s favicon"}
+									src={s.Server.favicon ?? "/favicon.ico"}
+									alt={s.Server.server + "'s favicon"}
 									width={"64px"}
 									height={"64px"}
 									sx={{ aspectRatio: "1/1" }}
 								/>
-								<Text fontWeight={"bold"}>{s.server}</Text>
+								<Text fontWeight={"bold"}>{s.Server.server}</Text>
 							</HStack>
 						</GridItem>
 					))}

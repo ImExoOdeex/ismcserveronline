@@ -1,5 +1,5 @@
 import { ChakraBaseProvider, cookieStorageManagerSSR, useConst } from "@chakra-ui/react";
-import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, json, redirect } from "@remix-run/node";
+import { ActionFunctionArgs, LinksFunction, LoaderFunctionArgs, MetaFunction, json, redirect } from "@remix-run/node";
 import type { ShouldRevalidateFunctionArgs } from "@remix-run/react";
 import { useLocation, useOutlet } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -76,9 +76,22 @@ export function links() {
 		},
 		{
 			rel: "stylesheet",
-			href: "https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800&display=swap"
+			href: "https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=block"
+		},
+		{
+			rel: "preload",
+			href: "https://fonts.gstatic.com/s/montserrat/v26/JTUSjIg1_i6t8kCHKm459Wlhyw.woff2",
+			as: "font",
+			type: "font/woff2",
+			crossOrigin: "anonymous"
+		},
+		{
+			rel: "icon",
+			type: "image/png",
+			href: "/favicon.ico",
+			sizes: "20x20"
 		}
-	];
+	] as ReturnType<LinksFunction>;
 }
 
 // ----------------------------- APP -----------------------------
@@ -137,7 +150,7 @@ export default function App() {
 
 // ----------------------------- LOADER -----------------------------
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request, context }: LoaderFunctionArgs) {
 	const url = new URL(request.url);
 	const term = url.searchParams.get(process.env.NO_ADS_PARAM_NAME ?? "nope");
 
@@ -158,12 +171,15 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	console.log("user-agent: ", request.headers.get("user-agent"));
 	const isBot = isbot(request.headers.get("user-agent"));
 
+	const start = Number(context.start ?? Date.now());
+
 	return typedjson({
 		cookies: request.headers.get("cookie") ?? "",
 		showAds,
 		user,
 		dashUrl: process.env.DASH_URL,
-		isBot
+		isBot,
+		start
 	});
 }
 

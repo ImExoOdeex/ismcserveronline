@@ -1,6 +1,6 @@
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
-import { Button, Flex, Image, Text } from "@chakra-ui/react";
-import { BiCode, BiLineChart } from "react-icons/bi/index.js";
+import { Button, Flex, Icon, Image, Text } from "@chakra-ui/react";
+import { BiCode, BiLineChart } from "react-icons/bi";
 import Link from "~/components/utils/Link";
 import useUser from "~/components/utils/hooks/useUser";
 import DiscordIcon from "../icons/DiscordIcon";
@@ -18,10 +18,10 @@ export function PopularServersButton() {
 			as={Link}
 			rounded={"xl"}
 			bg={"transparent"}
-			tabIndex={-1}
-			rightIcon={<BiLineChart />}
+			rightIcon={<Icon as={BiLineChart} filter={"drop-shadow(0 0 5px #5cc877)"} />}
+			textShadow={"0 0 12px #5cc877"}
 		>
-			Popular servers
+			Top Voted Servers
 		</Button>
 	);
 }
@@ -39,7 +39,6 @@ export function FAQButton() {
 			_active={{ bg: "alpha100", scale: 0.9 }}
 			rounded={"xl"}
 			bg={"transparent"}
-			tabIndex={-1}
 			rightIcon={<QuestionOutlineIcon />}
 		>
 			FAQ
@@ -57,7 +56,6 @@ export function APIButton() {
 			_active={{ bg: "alpha100", scale: 0.9 }}
 			rounded={"xl"}
 			bg={"transparent"}
-			tabIndex={-1}
 			as={Link}
 			transform={"auto-gpu"}
 			to={"/api"}
@@ -75,12 +73,12 @@ export function LoginButton() {
 		return (
 			<Flex
 				as={Link}
-				px={2.5}
-				py={1.5}
-				rounded={"xl"}
+				px={4}
+				py={1}
+				rounded={"lg"}
 				_hover={{
 					textDecoration: "none",
-					bg: "alpha"
+					bg: "alpha100"
 				}}
 				_active={{ scale: 0.9 }}
 				transform={"auto-gpu"}
@@ -89,8 +87,8 @@ export function LoginButton() {
 				alignItems={"center"}
 				gap={3}
 			>
-				<Text>{user.nick}</Text>
-				<Image src={user.photo ?? "/discordLogo.png"} rounded={"full"} boxSize={10} />
+				<Text userSelect={"none !important" as any}>{user.nick}</Text>
+				<Image src={user.photo ?? "/discordLogo.png"} rounded={"full"} boxSize={9} />
 			</Flex>
 		);
 	}

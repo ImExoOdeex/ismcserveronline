@@ -91,7 +91,7 @@ export default function ServerSearch({ bedrockChecked, serverValue, setBedrockCh
 											>
 												<Button
 													variant="brand"
-													type={!serverValue?.includes(".") ? "button" : "submit"}
+													type={"submit"}
 													w="35%"
 													// isDisabled={!serverValue?.includes(".")}
 													minW="115px"
@@ -165,7 +165,7 @@ export default function ServerSearch({ bedrockChecked, serverValue, setBedrockCh
 												Use Query
 											</Button>
 
-											<VisuallyHiddenInput name="query" value={query ? "true" : "false"} />
+											<VisuallyHiddenInput name="query" value={query ? "true" : "false"} readOnly />
 										</Flex>
 									</Flex>
 								</motion.div>

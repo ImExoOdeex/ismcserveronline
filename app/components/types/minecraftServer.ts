@@ -30,14 +30,6 @@ export type MinecraftServer = {
 	};
 };
 
-//
-// differences:
-//
-// + ip
-// - plugins
-//
-//
-
 export type MinecraftServerWoQuery = {
 	online: boolean;
 	host: string;
@@ -67,6 +59,9 @@ export type MinecraftServerWoQuery = {
 	};
 };
 
+export type JavaServer = MinecraftServer | MinecraftServerWoQuery;
+export type AnyServer = JavaServer | BedrockServer;
+
 export type BedrockServer = {
 	online: boolean;
 	host: string;
@@ -94,3 +89,38 @@ export type BedrockServer = {
 		max: number;
 	};
 };
+
+// server model in db types
+export namespace ServerModel {
+	// T is bedrock (true) or java (false)
+	// K is query (true) or no query (false)
+	export interface Players<T extends boolean> {
+		online: number;
+		max: number;
+		list: T extends false ? { name: string; id: string | null }[] : never;
+	}
+
+	export interface Motd {
+		raw: string | null;
+		clean: string | null;
+		html: string | null;
+	}
+
+	export type Version<T extends boolean> = T extends false
+		? {
+				array: Array<string> | null | undefined;
+				string: string | null | undefined;
+		  }
+		: string | null;
+
+	export type Gamemonde<T extends boolean> = T extends true
+		? {
+				id: number | null;
+				name: string | null;
+		  }
+		: never;
+
+	export type Ip<K extends boolean> = K extends true ? string | null : never;
+	export type Plugins<K extends boolean> = K extends true ? string[] : never;
+	export type Map<K extends boolean> = K extends true ? string | null : never;
+}

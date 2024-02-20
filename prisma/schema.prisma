@@ -14,33 +14,77 @@ enum Role {
 
 // do not the fuck ask why this is via email, not id ok?
 model User {
-  id            Int            @id @unique @default(autoincrement())
-  email         String         @unique
-  snowflake     String         @unique
+  id            Int      @id @unique @default(autoincrement())
+  email         String   @unique
+  snowflake     String   @unique
   nick          String
   photo         String?
-  everPurchased Boolean        @default(false)
-  prime         Boolean        @default(false)
+  everPurchased Boolean  @default(false)
+  prime         Boolean  @default(false)
   subId         String?
-  role          Role           @default(USER)
+  role          Role     @default(USER)
   guilds        Json?
-  created_at    DateTime       @default(now())
-  updated_at    DateTime       @updatedAt
-  Comment       Comment[]
-  SavedServer   SavedServer[]
-  SampleServer  SampleServer[]
-  Token         Token?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  Comment      Comment[]
+  SavedServer  SavedServer[]
+  SampleServer SampleServer[]
+  Vote         Vote[]
+  Token        Token?
+  OwnedServers Server[]
 
   @@index([email])
 }
 
-model SavedServer {
-  id      Int     @id @unique @default(autoincrement())
+model Server {
+  id Int @id @unique @default(autoincrement())
+
+  // --- Server data ---
   server  String
-  icon    String?
-  online  Boolean @default(true)
-  players Int     @default(0)
+  host    String?
+  port    Int?
   bedrock Boolean @default(false)
+  online  Boolean
+  favicon String?
+
+  players Json?
+  motd    Json?
+  version Json?
+
+  protocol Int?
+  software String?
+  ping     Int?
+
+  // query 
+  ip      String?
+  plugins Json?
+  map     String?
+
+  // bedrock
+  gamemode Json?
+  edition  String?
+  guid     String?
+
+  // --- Server data end ---
+
+  Check        Check[]
+  Comment      Comment[]
+  SavedServer  SavedServer[]
+  SampleServer SampleServer[]
+  Vote         Vote[]
+
+  owner_id Int?
+  Owner    User? @relation(fields: [owner_id], references: [id])
+
+  @@index([id, server])
+}
+
+model SavedServer {
+  id Int @id @unique @default(autoincrement())
+
+  server_id Int
+  Server    Server @relation(fields: [server_id], references: [id])
 
   user_id Int
   User    User @relation(fields: [user_id], references: [id])
@@ -56,21 +100,24 @@ enum SOURCE {
 
 // comments are not related to any of server of check, cuz there is no server creating when someone checks it. it's determinated via address and port
 model Comment {
-  id         Int      @id @unique @default(autoincrement())
-  user_id    Int
-  user       User     @relation(fields: [user_id], references: [id])
-  server     String
-  bedrock    Boolean  @default(false)
-  content    String
+  id      Int  @id @unique @default(autoincrement())
+  user_id Int
+  user    User @relation(fields: [user_id], references: [id])
+
+  content String
+
+  server_id Int
+  Server    Server @relation(fields: [server_id], references: [id])
+
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 }
 
 model SampleServer {
-  id      Int     @id @unique @default(autoincrement())
-  server  String
-  bedrock Boolean @default(false)
-  favicon String
+  id Int @id @unique @default(autoincrement())
+
+  server_id Int
+  Server    Server @relation(fields: [server_id], references: [id])
 
   user    User? @relation(fields: [user_id], references: [id])
   user_id Int?
@@ -90,7 +137,7 @@ enum PaymentStatus {
 }
 
 // this server is for popular servers
-model Server {
+model PopularServer {
   id         Int      @id @unique @default(autoincrement())
   server     String
   icon       String?
@@ -99,27 +146,48 @@ model Server {
 }
 
 model Check {
-  id         Int      @id @unique @default(autoincrement())
-  server     String
-  online     Boolean
-  players    Int
-  bedrock    Boolean  @default(false)
+  id Int @id @unique @default(autoincrement())
+
+  server_id Int
+  Server    Server @relation(fields: [server_id], references: [id])
+
+  online  Boolean
+  players Int
+
   source     SOURCE   @default(API)
   client_ip  String?
   checked_at DateTime @default(now())
   Token      Token?   @relation(fields: [token_id], references: [id])
   token_id   Int
 
-  @@index([server])
+  @@index([server_id])
 }
 
 model Token {
-  id         Int      @id @unique @default(autoincrement())
-  token      String   @unique
-  user       User?    @relation(fields: [user_id], references: [id])
-  user_id    Int?     @unique
-  check      Check[]
-  client_ip  String?
+  id Int @id @unique @default(autoincrement())
+
+  token     String  @unique
+  client_ip String?
+
+  user    User? @relation(fields: [user_id], references: [id])
+  user_id Int?  @unique
+
+  check Check[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Vote {
+  id Int @id @unique @default(autoincrement())
+
+  nick String
+
+  user_id   Int
+  user      User   @relation(fields: [user_id], references: [id])
+  server_id Int
+  Server    Server @relation(fields: [server_id], references: [id])
+
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }

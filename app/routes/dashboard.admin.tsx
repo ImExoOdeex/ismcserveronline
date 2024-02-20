@@ -5,6 +5,7 @@ import {
 	AccordionItem,
 	AccordionPanel,
 	Box,
+	Button,
 	Divider,
 	Flex,
 	Heading,
@@ -19,10 +20,13 @@ import {
 	Wrap,
 	WrapItem
 } from "@chakra-ui/react";
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { useFetcher } from "@remix-run/react";
 import { typedjson } from "remix-typedjson";
 import { getUser } from "~/components/server/db/models/user";
+import { cache } from "~/components/server/db/redis.server";
 import { getCounts, getStats } from "~/components/server/functions/admin.server";
+import { ServerModel } from "~/components/types/minecraftServer";
 import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -36,11 +40,38 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	});
 }
 
+export async function action({ request }: ActionFunctionArgs) {
+	const user = await getUser(request);
+	if (!user || user.role !== "ADMIN") throw new Error("Unauthorized");
+
+	const res = await cache.flush().catch((err) => {
+		console.error(err);
+		return null;
+	});
+
+	return typedjson({
+		success: res !== null,
+		message: res
+	});
+}
+
 export default function DashboardAdmin() {
 	const { counts, stats } = useAnimationLoaderData<typeof loader>();
 
+	const flushFetcher = useFetcher();
+
 	return (
 		<Flex w="100%" flexDir={"column"} gap={10}>
+			<Flex w="100%" justify={"flex-end"}>
+				<Text>Flush Redis Cache</Text>
+
+				<flushFetcher.Form method="DELETE">
+					<Button variant={"brand"} type="submit" isLoading={flushFetcher.state !== "idle"}>
+						Flush Cache
+					</Button>
+				</flushFetcher.Form>
+			</Flex>
+
 			<Flex flexDir={"column"} gap={4}>
 				<Heading fontSize={"2xl"}>Counts</Heading>
 
@@ -90,11 +121,11 @@ export default function DashboardAdmin() {
 												{stats.checks.map((check) => (
 													<Tr>
 														<Th>{check.id}</Th>
-														<Th>{check.server}</Th>
+														<Th>{check.Server.server}</Th>
 														<Th>{check.online ? "Online" : "Offline"}</Th>
 														<Th>{check.source}</Th>
 														<Th isNumeric>{check.players}</Th>
-														<Th>{check.bedrock ? "Bedrock" : "Java"}</Th>
+														<Th>{check.Server.bedrock ? "Bedrock" : "Java"}</Th>
 														<Th>{check.client_ip}</Th>
 														<Th isNumeric>{new Date(check.checked_at).toLocaleString()}</Th>
 													</Tr>
@@ -133,12 +164,21 @@ export default function DashboardAdmin() {
 													<Tr>
 														<Th>{server.id}</Th>
 														<Th>
-															<Image src={server.icon ?? ""} boxSize={10} rounded={"md"} />
+															<Image
+																src={server.Server.favicon ?? ""}
+																boxSize={10}
+																rounded={"md"}
+															/>
 														</Th>
-														<Th>{server.server}</Th>
-														<Th>{server.online ? "Online" : "Offline"}</Th>
-														<Th>{server.players}</Th>
-														<Th>{server.bedrock ? "Bedrock" : "Java"}</Th>
+														<Th>{server.Server.server}</Th>
+														<Th>{server.Server.online ? "Online" : "Offline"}</Th>
+														<Th>
+															{
+																(server.Server.players as unknown as ServerModel.Players<false>)
+																	?.online
+															}
+														</Th>
+														<Th>{server.Server.bedrock ? "Bedrock" : "Java"}</Th>
 														<Th>{new Date(server.created_at).toLocaleString()}</Th>
 													</Tr>
 												))}
@@ -172,7 +212,7 @@ export default function DashboardAdmin() {
 												{stats.comments.map((comment) => (
 													<Tr>
 														<Th>{comment.id}</Th>
-														<Th>{comment.server}</Th>
+														<Th>{comment.Server.server}</Th>
 														<Th>{comment.content}</Th>
 														<Th>{new Date(comment.created_at).toLocaleString()}</Th>
 													</Tr>

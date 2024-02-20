@@ -2,8 +2,8 @@ import { Button, Divider, HStack, Icon, Stack, Text, VStack, Wrap, WrapItem } fr
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { useFetcher, useLoaderData, useRevalidator } from "@remix-run/react";
 import { useEffect, useRef } from "react";
-import { BiSave } from "react-icons/bi/index.js";
-import { HiRefresh } from "react-icons/hi/index.js";
+import { BiSave } from "react-icons/bi";
+import { HiRefresh } from "react-icons/hi";
 import { typedjson } from "remix-typedjson";
 import StatusColor from "~/components/layout/dashboard/StatusColor";
 import { Info, sendActionWebhook } from "~/components/server/auth/webhooks";

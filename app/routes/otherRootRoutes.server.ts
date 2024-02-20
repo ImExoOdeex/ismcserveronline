@@ -1,11 +1,22 @@
 import { redirect, type EntryContext } from "@remix-run/node";
 import config from "~/components/config/config";
 import { db } from "~/components/server/db/db.server";
+import { getCache, setCache } from "~/components/server/db/redis.server";
 
 type Handler = (request: Request, remixContext: EntryContext) => Promise<Response | null> | null;
 
 export const otherRootRoutes: Record<string, Handler> = {
 	"/sitemap.xml": async () => {
+		const cache = await getCache("sitemap");
+		if (cache) {
+			return new Response(cache, {
+				headers: {
+					"Content-Type": "application/xml",
+					"Cache-Control": "public, max-age=86400"
+				}
+			});
+		}
+
 		const [servers, checks] = await Promise.all([
 			db.server.findMany({
 				select: {
@@ -50,8 +61,7 @@ export const otherRootRoutes: Record<string, Handler> = {
 			filtered.delete(longUrl);
 		}
 
-		return new Response(
-			`<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+		const data = `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 		<url>
 		<loc>https://ismcserver.online/popular-servers</loc>
 		<priority>0.8</priority>
@@ -87,14 +97,16 @@ export const otherRootRoutes: Record<string, Handler> = {
 			<priority>0.5</priority>
 			</url>`;
 		})}
-		</urlset>`,
-			{
-				headers: {
-					"Content-Type": "application/xml",
-					"Cache-Control": "public, max-age=86400"
-				}
+		</urlset>`;
+
+		await setCache("sitemap", data, 86400);
+
+		return new Response(data, {
+			headers: {
+				"Content-Type": "application/xml",
+				"Cache-Control": "public, max-age=86400"
 			}
-		);
+		});
 	},
 	"/robots.txt": async () => {
 		return new Response(

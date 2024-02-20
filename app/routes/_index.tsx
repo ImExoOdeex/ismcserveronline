@@ -13,7 +13,6 @@ import { db } from "~/components/server/db/db.server";
 import { getCache, setCache } from "~/components/server/db/redis.server";
 import { validateServer } from "~/components/server/functions/validateServer";
 import serverConfig from "~/components/server/serverConfig.server";
-import { SampleServerHomepage } from "~/components/types/typings";
 import { getCookieWithoutDocument } from "~/components/utils/functions/cookies";
 import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 import PopularServers from "../components/layout/index/PopularServers";
@@ -50,67 +49,55 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 	const start = Date.now();
 
-	let sampleServers: SampleServerHomepage[], count: number;
-
-	const timeoutPromise = new Promise((_resolve, reject) => {
-		setTimeout(() => {
-			reject(new Error("Timeout exceeded"));
-		}, 2000); // 2 second timeout
-	});
+	let sampleServers: any[], count: number;
 
 	let [cacheCount, cacheServers] = (await Promise.all([
-		Promise.race([
-			getCache(Object.keys(serverConfig.cache)[0]), // count
-			timeoutPromise
-		]).catch(() => 100_000),
-		Promise.race([
-			getCache(Object.keys(serverConfig.cache)[1]), // sampleServers
-			timeoutPromise
-		]).catch(() => "[]")
+		getCache(Object.keys(serverConfig.cache)[0]), // count
+		getCache(Object.keys(serverConfig.cache)[1]) // sampleServers
 	])) as [string | null, string | null];
 
 	if (!cacheServers || !cacheCount) {
 		console.log("[Loader] No cache");
 
 		[sampleServers, count] = (await Promise.all([
-			Promise.race([
-				db.sampleServer.findMany({
-					select: {
-						bedrock: true,
-						server: true,
-						favicon: true
-					},
-					orderBy: {
-						add_date: "desc"
-					},
-					// get only servers that end dates are greater than now or null
-					where: {
-						AND: [
-							{
-								OR: [
-									{
-										end_date: {
-											gte: new Date()
-										}
-									},
-									{
-										end_date: {
-											equals: null
-										}
-									}
-								]
-							},
-							{
-								payment_status: "PAID"
-							}
-						]
+			db.sampleServer.findMany({
+				select: {
+					Server: {
+						select: {
+							server: true,
+							favicon: true,
+							bedrock: true
+						}
 					}
-				}),
-				timeoutPromise
-			]).catch(() => []),
-
-			Promise.race([db.check.count(), timeoutPromise]).catch(() => 100_000)
-		])) as [SampleServerHomepage[], number];
+				},
+				orderBy: {
+					add_date: "desc"
+				},
+				// get only servers that end dates are greater than now or null
+				where: {
+					AND: [
+						{
+							OR: [
+								{
+									end_date: {
+										gte: new Date()
+									}
+								},
+								{
+									end_date: {
+										equals: null
+									}
+								}
+							]
+						},
+						{
+							payment_status: "PAID"
+						}
+					]
+				}
+			}),
+			db.check.count()
+		])) as [any[], number];
 		setCache(Object.keys(serverConfig.cache)[0], count, serverConfig.cache.count);
 		setCache(Object.keys(serverConfig.cache)[1], sampleServers, serverConfig.cache.sampleServers);
 	} else {

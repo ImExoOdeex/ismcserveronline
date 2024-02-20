@@ -3,63 +3,136 @@ import { serveStatic } from "@hono/node-server/serve-static";
 import { broadcastDevReady } from "@remix-run/node";
 import type { AppLoadContext, ServerBuild } from "@remix-run/server-runtime";
 import { createRequestHandler } from "@remix-run/server-runtime";
+import cluster from "cluster";
 import type { Context, Env, Input, MiddlewareHandler } from "hono";
 import { Hono } from "hono";
 import { compress } from "hono/compress";
 import { isIP } from "is-ip";
 import * as fs from "node:fs";
 import * as url from "node:url";
+import os from "os";
 import path from "path";
 import sourceMapSupport from "source-map-support";
 
-sourceMapSupport.install();
-
 const BUILD_PATH = path.resolve("build/index.js");
 
-const build = await reimportServer();
+(async () => {
+	sourceMapSupport.install();
 
-const app = new Hono();
+	const build = await reimportServer();
 
-app.use(async (ctx, next) => {
-	ctx.res.headers.delete("x-powered-by");
-	await next();
-});
+	const app = new Hono();
 
-app.use("*", logger());
+	app.use(async (ctx, next) => {
+		ctx.res.headers.delete("x-powered-by");
+		await next();
+	});
 
-app.use("*", cacheBuild());
+	app.use("*", logger());
 
-app.use(
-	"/*",
-	serveStatic({
-		root: "./public"
-	})
-);
+	app.use("*", cacheBuild());
 
-app.use("*", compress());
+	app.use(
+		"/*",
+		serveStatic({
+			root: "./public"
+		})
+	);
 
-app.use(
-	"*",
-	remix({
-		build,
-		mode: process.env.NODE_ENV as "development" | "production"
-	})
-);
+	app.use("*", compress());
 
-const port = process.env.NODE_ENV === "production" ? Number(process.env.PORT) || 3010 : Number(process.env.PORT_DEV) || 3000;
+	app.use(
+		"*",
+		remix({
+			build,
+			mode: process.env.NODE_ENV as "development" | "production",
+			getLoadContext: async () => {
+				return {
+					start: Date.now().toString()
+				};
+			}
+		})
+	);
 
-serve(
-	{
-		fetch: app.fetch,
-		port
-	},
-	(info) => {
-		console.log(`Blazingly fast Hono server listening on http://localhost:${info.port}`);
-		if (process.env.NODE_ENV === "development") {
-			broadcastDevReady(build);
+	const port = process.env.NODE_ENV === "production" ? Number(process.env.PORT) || 3000 : Number(process.env.PORT_DEV) || 3000;
+
+	if (cluster.isPrimary) {
+		Logger(`Master ${process.pid} is running`, "magenta");
+
+		for (let i = 0; i < os.cpus().length; i++) {
+			cluster.fork();
 		}
+
+		cluster.on("exit", (worker) => {
+			Logger(`Worker ${worker.process.pid} died`, "white", "red");
+			cluster.fork();
+		});
+	} else {
+		Logger(`Worker ${process.pid} started`, "blue");
+
+		serve(
+			{
+				fetch: app.fetch,
+				port
+			},
+			(info) => {
+				Logger(`Blazingly fast Hono server listening on http://localhost:${info.port}`, "green");
+				if (process.env.NODE_ENV === "development") {
+					broadcastDevReady(build);
+				}
+			}
+		);
 	}
-);
+})();
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+const CONFIG = {
+	SYSTEM: {
+		reset: "\x1b[0m",
+		bold: "\x1b[1m",
+		dim: "\x1b[2m",
+		italic: "\x1b[3m",
+		underscore: "\x1b[4m",
+		reverse: "\x1b[7m",
+		strikethrough: "\x1b[9m",
+		backoneline: "\x1b[1A",
+		cleanthisline: "\x1b[K"
+	},
+	FONT: {
+		black: "\x1b[30m",
+		red: "\x1b[31m",
+		green: "\x1b[32m",
+		yellow: "\x1b[33m",
+		blue: "\x1b[34m",
+		magenta: "\x1b[35m",
+		cyan: "\x1b[36m",
+		white: "\x1b[37m"
+	},
+	BACKGROUND: {
+		black: "\x1b[40m",
+		red: "\x1b[41m",
+		green: "\x1b[42m",
+		yellow: "\x1b[43m",
+		blue: "\x1b[44m",
+		magenta: "\x1b[45m",
+		cyan: "\x1b[46m",
+		white: "\x1b[47m"
+	}
+} as const;
+
+export function Logger(
+	text: string | string[],
+	color: keyof typeof CONFIG.FONT = "black",
+	bg?: keyof typeof CONFIG.BACKGROUND
+): void {
+	console.log(
+		`[${new Date().toLocaleTimeString()}]`,
+		`${CONFIG.SYSTEM.bold}${CONFIG.FONT[color]}${bg ? CONFIG.BACKGROUND[bg] : ""}`,
+		Array.isArray(text) ? text.join(", ") : text,
+		`${CONFIG.SYSTEM.reset}`
+	);
+}
 
 interface RemixMiddlewareOptions<
 	E extends Env = Record<string, never>,
@@ -74,7 +147,7 @@ interface RemixMiddlewareOptions<
 function remix<E extends Env = Record<string, never>, P extends string = "", I extends Input = Record<string, never>>({
 	mode,
 	build,
-	getLoadContext = (context) => ({} as unknown as AppLoadContext)
+	getLoadContext = () => ({} as unknown as AppLoadContext)
 }: RemixMiddlewareOptions<E, P, I>): MiddlewareHandler {
 	return async function middleware(context) {
 		const requestHandler = createRequestHandler(build, mode);

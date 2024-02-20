@@ -1,10 +1,9 @@
 import { Badge, Heading, Icon, ListItem, OrderedList, Stack, Text, VStack } from "@chakra-ui/react";
-import { BiMessageError, BiNetworkChart, BiPointer } from "react-icons/bi/index.js";
+import { BiMessageError, BiNetworkChart, BiPointer } from "react-icons/bi";
 
 export default function HowToUse() {
 	return (
 		<VStack spacing={28} width={"100%"} align={"start"} mb={10}>
-
 			{/* steps */}
 			<VStack spacing={5} width={"100%"} align={"start"}>
 				<Heading as={"h2"} fontSize={{ base: "xl", md: "2xl" }} fontWeight={"black"} letterSpacing={"3px"}>
@@ -13,18 +12,12 @@ export default function HowToUse() {
 				<Stack direction={{ base: "column", md: "row" }} spacing={{ base: 5, md: 20 }} alignItems={"center"}>
 					{/* <Icon as={BiPointer} boxSize={"150px"} /> */}
 					<OrderedList color={"textSec"} letterSpacing={"1px"}>
-						<ListItem>
-							Enter the server address you want to check in the input box.
-						</ListItem>
+						<ListItem>Enter the server address you want to check in the input box.</ListItem>
 						<ListItem>
 							Click <b>Search</b> button.
 						</ListItem>
-						<ListItem>
-							Wait for the server status to be fetched.
-						</ListItem>
-						<ListItem>
-							That's it! You can now see the server status and all the information about it.
-						</ListItem>
+						<ListItem>Wait for the server status to be fetched.</ListItem>
+						<ListItem>That's it! You can now see the server status and all the information about it.</ListItem>
 					</OrderedList>
 				</Stack>
 			</VStack>

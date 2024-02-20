@@ -4,7 +4,7 @@ import { useFetcher } from "@remix-run/react";
 import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useState } from "react";
-import { FiCreditCard } from "react-icons/fi/index.js";
+import { FiCreditCard } from "react-icons/fi";
 import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
 import { getUser } from "~/components/server/db/models/user";

@@ -4,8 +4,8 @@ import { redirect } from "@remix-run/node";
 import { useFetcher, useLocation, useOutlet } from "@remix-run/react";
 import { Transition } from "framer-motion";
 import { useMemo } from "react";
-import { FiLogOut } from "react-icons/fi/index.js";
-import { PiCrownSimpleDuotone } from "react-icons/pi/index.js";
+import { FiLogOut } from "react-icons/fi";
+import { PiCrownSimpleDuotone } from "react-icons/pi";
 import { ChakraBox } from "~/components/layout/MotionComponents";
 import { getUserId } from "~/components/server/db/models/user";
 import { commitSession, getSession } from "~/components/server/session.server";
@@ -94,6 +94,37 @@ export default function Dashboard() {
 
 	const logoutFetcher = useFetcher();
 
+	function prefetchGuildIcons() {
+		const url = `/dashboard/bot?_data=routes%2Fdashboard.bot._index`;
+
+		fetch(url, {
+			headers: {
+				Accept: "application/json"
+			}
+		})
+			.then((res) => {
+				if (res.ok) {
+					return res.json() as Promise<{
+						guilds: { id: string; icon: string; name: string }[];
+					}>;
+				} else {
+					console.log("Failed to prefetch guild icons");
+				}
+			})
+			.then((data) => {
+				if (!data) return;
+				data.guilds.forEach((guild) => {
+					const img = new Image();
+					img.src = guild.icon
+						? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=96`
+						: "/banner.jpg";
+					img.onload = () => {
+						console.log("Prefetched image", guild.name);
+					};
+				});
+			});
+	}
+
 	return (
 		<VStack w="100%" maxW={"1200px"} mx="auto" align={"start"} mt={5} spacing={10} px={4}>
 			<Flex
@@ -154,6 +185,7 @@ export default function Dashboard() {
 				<Flex
 					flexDir={"column"}
 					overflow={"auto"}
+					overflowY={"hidden"}
 					overflowX={{
 						base: "auto",
 						md: "hidden"
@@ -177,6 +209,7 @@ export default function Dashboard() {
 								}}
 								opacity={path === button.to ? 1 : 0.8}
 								fontWeight={500}
+								onMouseEnter={button.to === "/dashboard/bot" ? prefetchGuildIcons : undefined}
 							>
 								{button.name}
 								{path === button.to && (

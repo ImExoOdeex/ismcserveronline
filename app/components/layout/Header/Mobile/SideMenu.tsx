@@ -17,7 +17,7 @@ import { useFetcher } from "@remix-run/react";
 import type { Transition } from "framer-motion";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import { BiSearchAlt } from "react-icons/bi/index.js";
+import { BiSearchAlt } from "react-icons/bi";
 import Link from "~/components/utils/Link";
 import useUser from "~/components/utils/hooks/useUser";
 import links from "../../../config/config";

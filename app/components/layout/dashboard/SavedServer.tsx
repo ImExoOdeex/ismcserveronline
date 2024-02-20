@@ -1,17 +1,17 @@
 import { Icon } from "@chakra-ui/icons";
 import { Badge, Flex, IconButton, Image, Text, Tooltip, useToast, VisuallyHiddenInput } from "@chakra-ui/react";
 import { useFetcher } from "@remix-run/react";
-import { useEffect } from "react";
-import { BiRefresh } from "react-icons/bi/index.js";
-import { FiTrash2 } from "react-icons/fi/index.js";
-import { IoReturnDownForwardOutline } from "react-icons/io5/index.js";
+import { memo, useEffect } from "react";
+import { BiRefresh } from "react-icons/bi";
+import { FiTrash2 } from "react-icons/fi";
+import { IoReturnDownForwardOutline } from "react-icons/io5";
 import type { DisplaySavedServer } from "~/routes/dashboard._index";
 
 interface Props {
 	server: DisplaySavedServer;
 }
 
-export default function SavedServer({ server }: Props) {
+function SavedServer({ server }: Props) {
 	const refreshFetcher = useFetcher();
 	const deleteFetcher = useFetcher();
 	const goFetcher = useFetcher();
@@ -53,7 +53,9 @@ export default function SavedServer({ server }: Props) {
 				<Flex gap={4} w="100%">
 					<Image
 						src={
-							server?.icon && server?.icon !== "null" && server?.icon !== "undefined" ? server.icon : "/mc-icon.png"
+							server?.Server.favicon && server?.Server.favicon !== "null" && server?.Server.favicon !== "undefined"
+								? server.Server.favicon
+								: "/mc-icon.png"
 						}
 						boxSize={20}
 						sx={{
@@ -62,15 +64,19 @@ export default function SavedServer({ server }: Props) {
 					/>
 					<Flex flexDir="column" gap={1}>
 						<Text fontWeight={600} fontSize="sm" whiteSpace={"nowrap"}>
-							{server.server}
+							{server.Server.server}
 						</Text>
 
 						<Flex gap={1}>
-							<Badge colorScheme={server.bedrock ? "blue" : "purple"}>{server.bedrock ? "Bedrock" : "Java"}</Badge>
-							<Badge colorScheme={server.online ? "green" : "red"}>{server.online ? "Online" : "Offline"}</Badge>
+							<Badge colorScheme={server.Server.bedrock ? "blue" : "purple"}>
+								{server.Server.bedrock ? "Bedrock" : "Java"}
+							</Badge>
+							<Badge colorScheme={server.Server.online ? "green" : "red"}>
+								{server.Server.online ? "Online" : "Offline"}
+							</Badge>
 						</Flex>
 
-						<Text fontSize="sm">{server.players} players</Text>
+						<Text fontSize="sm">{server.Server.players.online} players</Text>
 					</Flex>
 				</Flex>
 
@@ -82,8 +88,8 @@ export default function SavedServer({ server }: Props) {
 					}}
 				>
 					<deleteFetcher.Form method="DELETE">
-						<VisuallyHiddenInput name="server" value={server.server} />
-						<VisuallyHiddenInput name="bedrock" value={server.bedrock ? "true" : "false"} />
+						<VisuallyHiddenInput name="server" value={server.Server.server} readOnly />
+						<VisuallyHiddenInput name="bedrock" value={server.Server.bedrock ? "true" : "false"} readOnly />
 						<Tooltip label="Delete server" openDelay={200} hasArrow>
 							<IconButton
 								aria-label={"Delete server"}
@@ -102,8 +108,8 @@ export default function SavedServer({ server }: Props) {
 					</deleteFetcher.Form>
 
 					<refreshFetcher.Form method="PATCH">
-						<VisuallyHiddenInput name="server" value={server.server} />
-						<VisuallyHiddenInput name="bedrock" value={server.bedrock ? "true" : "false"} />
+						<VisuallyHiddenInput name="server" value={server.Server.server} readOnly />
+						<VisuallyHiddenInput name="bedrock" value={server.Server.bedrock ? "true" : "false"} readOnly />
 						<Tooltip label="Refresh data" openDelay={200} hasArrow>
 							<IconButton
 								aria-label={"Refresh data"}
@@ -122,8 +128,8 @@ export default function SavedServer({ server }: Props) {
 					</refreshFetcher.Form>
 
 					<goFetcher.Form method="POST">
-						<VisuallyHiddenInput name="server" value={server.server} />
-						<VisuallyHiddenInput name="bedrock" value={server.bedrock ? "true" : "false"} />
+						<VisuallyHiddenInput name="server" value={server.Server.server} readOnly />
+						<VisuallyHiddenInput name="bedrock" value={server.Server.bedrock ? "true" : "false"} readOnly />
 						<Tooltip label="Go to the server page" openDelay={200} hasArrow>
 							<IconButton
 								aria-label={"Go to the server page"}
@@ -145,3 +151,5 @@ export default function SavedServer({ server }: Props) {
 		</Flex>
 	);
 }
+
+export default memo(SavedServer);

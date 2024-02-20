@@ -1,31 +1,43 @@
 import { CacheProvider } from "@emotion/react";
 import { RemixBrowser } from "@remix-run/react";
-import React, { useState } from "react";
-import { hydrate } from "react-dom";
-
-import { ClientStyleContext, createEmotionCache, defaultCache } from "./context";
+import React, { startTransition, useCallback, useState } from "react";
+import { hydrateRoot } from "react-dom/client";
+import { ClientStyleContext, createEmotionCache } from "./context";
 
 interface ClientCacheProviderProps {
 	children: React.ReactNode;
+	time: number;
 }
 
-function ClientCacheProvider({ children }: ClientCacheProviderProps) {
-	const [cache, setCache] = useState(defaultCache);
+function ClientCacheProvider({ children, time }: ClientCacheProviderProps) {
+	const [cache, setCache] = useState(createEmotionCache());
 
-	function reset() {
-		setCache(createEmotionCache());
-	}
+	const reset = useCallback(() => {
+		return setCache(createEmotionCache());
+	}, []);
 
 	return (
-		<ClientStyleContext.Provider value={{ reset }}>
+		<ClientStyleContext.Provider value={{ reset, hydrationTime: time }}>
 			<CacheProvider value={cache}>{children}</CacheProvider>
 		</ClientStyleContext.Provider>
 	);
 }
 
-hydrate(
-	<ClientCacheProvider>
-		<RemixBrowser />
-	</ClientCacheProvider>,
-	document
-);
+function hydrate() {
+	const now = Date.now(); // initial hydration time
+
+	startTransition(() => {
+		hydrateRoot(
+			document,
+			<ClientCacheProvider time={now}>
+				<RemixBrowser />
+			</ClientCacheProvider>
+		);
+	});
+}
+
+if (typeof requestIdleCallback === "function") {
+	requestIdleCallback(hydrate);
+} else {
+	setTimeout(hydrate, 1);
+}

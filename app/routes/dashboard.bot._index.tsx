@@ -2,7 +2,7 @@ import { Badge, Button, HStack, Heading, Icon, Image, SimpleGrid, Text, VStack }
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
-import { HiRefresh } from "react-icons/hi/index.js";
+import { HiRefresh } from "react-icons/hi";
 import { typedjson } from "remix-typedjson";
 import { getUserGuilds, getUserId } from "~/components/server/db/models/user";
 import Link from "~/components/utils/Link";

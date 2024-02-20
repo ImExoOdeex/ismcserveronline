@@ -13,14 +13,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 	const checks = await db.check.findMany({
 		where: {
-			server: {
-				contains: server
-			},
-			bedrock: false
+			Server: {
+				server,
+				bedrock: true
+			}
 		},
 		select: {
 			id: true,
-			server: false,
 			online: true,
 			players: true,
 			source: true,

@@ -25,7 +25,9 @@ export async function action({ request }: ActionFunctionArgs) {
 				const exisitngServer = await db.sampleServer
 					.findFirst({
 						where: {
-							server
+							Server: {
+								server
+							}
 						}
 					})
 					.catch(() => null);

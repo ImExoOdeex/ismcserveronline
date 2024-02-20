@@ -8,3 +8,4 @@ node_modules
 /public/favicons
 /app/routes/api.test.ts
 /app/routes/api.ownership.verification.ts
+/migration

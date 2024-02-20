@@ -1,14 +1,14 @@
-import { Badge, Box, Button, Flex, Heading, HStack, Text } from "@chakra-ui/react";
+import { Badge, Box, Button, Flex, HStack, Text } from "@chakra-ui/react";
 import { useLocation } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { PiCrownSimpleDuotone } from "react-icons/pi/index.js";
+import { PiCrownSimpleDuotone } from "react-icons/pi";
+import useRootData from "~/components/utils/hooks/useRootData";
 import Link from "../../utils/Link";
 import { APIButton, FAQButton, LoginButton, PopularServersButton } from "./Buttons";
 import HamburgerMenu from "./Mobile/HamburgerMenu";
 import ServerSearch from "./ServerSearch";
 import ThemeToggle from "./ToggleTheme";
-import useRootData from "~/components/utils/hooks/useRootData";
 
 type Props = {
 	isMenuOpen: boolean;
@@ -18,16 +18,19 @@ type Props = {
 export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 	const [hasScrolled, setHasScrolled] = useState(false);
 
-	function handleScroll(optimize = true) {
+	function handleScroll() {
 		const position = window.pageYOffset;
-		if (optimize && position > 40) return;
 
-		setHasScrolled(position > 10);
+		if (position > 10) {
+			!hasScrolled && setHasScrolled(true);
+		} else {
+			setHasScrolled(false);
+		}
 	}
 
 	useEffect(() => {
 		window.addEventListener("scroll", () => handleScroll(), { passive: true });
-		handleScroll(false);
+		handleScroll();
 
 		return () => {
 			window.removeEventListener("scroll", () => handleScroll());
@@ -52,21 +55,27 @@ export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 		>
 			<Flex w="100%" maxW={"1500px"} px={4} alignItems="center" h="100%" mx="auto" justifyContent={"space-between"}>
 				<HStack spacing={5}>
-					<Link to="/" alignItems={"center"} _hover={{ textDecor: "none" }} fontSize="2xl" transition={"all .2s"} transform={"auto-gpu"} _active={{ scale: 0.95 }}>
-						{isBot ?
+					<Link
+						to="/"
+						alignItems={"center"}
+						_hover={{ textDecor: "none" }}
+						fontSize="2xl"
+						transition={"all .2s"}
+						transform={"auto-gpu"}
+						_active={{ scale: 0.95 }}
+					>
+						{isBot ? (
 							<Text fontSize="xl" fontWeight={700}>
 								Real Minecraft Server Status
 							</Text>
-							:
+						) : (
 							<HStack spacing={1} alignItems={"baseline"}>
-								<Text fontWeight={700}>
-									IsMcServer
-								</Text>
+								<Text fontWeight={700}>IsMcServer</Text>
 								<Badge fontSize={"md"} rounded={"md"} py={0.5} px={1.5} colorScheme="green" h="fit-content">
 									.online
 								</Badge>
 							</HStack>
-						}
+						)}
 					</Link>
 
 					<Flex display={{ base: "none", md: "flex" }} w="320px">

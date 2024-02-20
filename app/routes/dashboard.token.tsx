@@ -4,7 +4,7 @@ import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import dayjs from "dayjs";
 import { useState } from "react";
-import { RiAiGenerate } from "react-icons/ri/index.js";
+import { RiAiGenerate } from "react-icons/ri";
 import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
 import { db } from "~/components/server/db/db.server";

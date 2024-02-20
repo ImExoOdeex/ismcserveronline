@@ -19,6 +19,7 @@ const options = {
 } as RedisOptions;
 
 if (process.env.NODE_ENV === "production") {
+	console.log("[Redis] Connecting to Redis | Production");
 	redis = new Redis(options);
 } else {
 	if (!global.__redis) {
@@ -38,5 +39,28 @@ export async function setCache(key: string, value: string | object | number, ttl
 }
 
 export async function getCache(key: string) {
-	return await redis.get(key);
+	return await redis.get(key, (err, result) => {
+		if (err) {
+			console.error("REDIS ERROR", err);
+			console.error(err);
+		} else {
+			// console.log("REDIS RESULT", result);
+			return result;
+		}
+	});
 }
+
+async function deleteCache(key: string) {
+	return await redis.del(key);
+}
+
+async function flushCache() {
+	return await redis.flushdb();
+}
+
+export const cache = {
+	set: setCache,
+	get: getCache,
+	delete: deleteCache,
+	flush: flushCache
+};

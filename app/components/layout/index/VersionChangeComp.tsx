@@ -1,10 +1,12 @@
+import { Transition } from "framer-motion";
 import { ChakraBox } from "../MotionComponents";
 
 export function VersionChangeComp() {
 	return (
 		<ChakraBox
 			zIndex={-1}
-			layoutId={"animations"}
+			layout={"position"}
+			layoutId={"version-change"}
 			w="100%"
 			h="100%"
 			right={0}
@@ -13,10 +15,9 @@ export function VersionChangeComp() {
 			pos={"absolute"}
 			rounded={"xl"}
 			display="inline-flex"
-			// @ts-ignore
-			transition={{ ease: [0.25, 0.1, 0.25, 1] }}
+			transition={{ ease: [0.25, 0.1, 0.25, 1] } as Transition as any}
 			bottom={0}
 			bg="invNormal"
-		></ChakraBox>
+		/>
 	);
 }

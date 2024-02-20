@@ -2,8 +2,6 @@
 export default {
 	ignoredRouteFiles: ["**/.*"],
 	extends: "@remix-run/eslint-config",
-	serverDependenciesToBundle: [
-		/^remix-utils.*/,
-		"is-ip",
-	]
+	serverDependenciesToBundle: [/^remix-utils.*/, "is-ip", /^react-icons.*/],
+	serverMinify: true
 };

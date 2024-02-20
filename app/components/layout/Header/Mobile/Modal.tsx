@@ -21,7 +21,7 @@ import {
 import { useFetcher, useLocation } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { BiSearchAlt } from "react-icons/bi/index.js";
+import { BiSearchAlt } from "react-icons/bi";
 import Link from "~/components/utils/Link";
 import links from "../../../config/config";
 import DiscordIcon from "../../icons/DiscordIcon";

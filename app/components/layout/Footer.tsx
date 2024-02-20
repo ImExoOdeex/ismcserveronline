@@ -1,5 +1,6 @@
-import { Box, Link as ChakraLink, Flex, Stack, Text, VStack } from "@chakra-ui/react";
-import { useState } from "react";
+import { Box, Link as ChakraLink, Flex, HStack, Stack, Text, Tooltip, VStack } from "@chakra-ui/react";
+import { useContext, useMemo, useState } from "react";
+import { ClientStyleContext } from "~/context";
 import pack from "../../../package.json";
 import Link from "../utils/Link";
 import { getCookie, getCookieWithoutDocument } from "../utils/functions/cookies";
@@ -7,11 +8,17 @@ import useRootData from "../utils/hooks/useRootData";
 
 export default function Footer() {
 	const name = "tracking";
-	const { cookies } = useRootData();
+	const { cookies, start } = useRootData();
 
 	const [cookieState, setCookieState] = useState<"track" | "no-track">(
 		getCookieWithoutDocument(name, cookies) == "no-track" ? "no-track" : "track"
 	);
+
+	const clientContext = useContext(ClientStyleContext);
+
+	const requestStartToHydration = useMemo(() => {
+		return (clientContext ? clientContext.hydrationTime : Date.now()) - start;
+	}, [start]);
 
 	function toggleTracking() {
 		const cookie = getCookie(name);
@@ -103,7 +110,16 @@ export default function Footer() {
 					</VStack>
 
 					<VStack align={"start"} fontWeight="600">
-						<Text fontWeight="700">Other</Text>
+						<HStack w="100%" justifyContent={"space-between"}>
+							<Text fontWeight="700">Other</Text>
+							<HStack>
+								<Tooltip label="Time from request start to client hydration" hasArrow>
+									<Text fontWeight="500" fontSize={"xs"}>
+										{requestStartToHydration}ms
+									</Text>
+								</Tooltip>
+							</HStack>
+						</HStack>
 						<Text color={"textSec"}>
 							<ChakraLink
 								transition={"color .2s"}

@@ -26,7 +26,7 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "@remix-run/react";
 import { useState } from "react";
-import { FiCreditCard } from "react-icons/fi/index.js";
+import { FiCreditCard } from "react-icons/fi";
 import Link from "~/components/utils/Link";
 import { calculatePriceFromDays } from "~/components/utils/functions/payments";
 

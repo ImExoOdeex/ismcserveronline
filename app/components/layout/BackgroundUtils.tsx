@@ -30,9 +30,9 @@ export default function BackgroundUtils() {
 							left={0}
 							opacity={0.1}
 							src={user?.photo ?? "/discordLogo.png"}
-							filter={"blur(20px)"}
+							filter={"blur(25px)"}
 							w={"100%"}
-							h={"100vh"}
+							h={"80vh"}
 							zIndex={-1}
 							objectFit={"cover"}
 							objectPosition={"center"}

@@ -20,7 +20,7 @@ import {
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { useEffect, useRef } from "react";
-import { FaHeartBroken } from "react-icons/fa/index.js";
+import { FaHeartBroken } from "react-icons/fa";
 import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
 import { getUser } from "~/components/server/db/models/user";

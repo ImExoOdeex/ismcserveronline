@@ -11,11 +11,11 @@ import { useLocation } from "@remix-run/react";
 import { useMemo } from "react";
 import useUser from "./hooks/useUser";
 
-const config: ThemeConfig = {
+const config = {
 	initialColorMode: "system",
 	useSystemColorMode: true,
 	disableTransitionOnChange: true
-};
+} satisfies ThemeConfig;
 
 const colors = {
 	brand: {
@@ -74,7 +74,7 @@ export default function useTheme() {
 	const user = useUser();
 	const path = useLocation().pathname;
 
-	return useMemo(
+	const theme = useMemo(
 		() =>
 			extendBaseTheme({
 				colors,
@@ -105,7 +105,7 @@ export default function useTheme() {
 							},
 							"&::-webkit-scrollbar-thumb": {
 								backgroundColor: "brand.900",
-								borderRadius: "3px"
+								borderRadius: "1.5px"
 							},
 							"&::-webkit-scrollbar-thumb:hover": {
 								backgroundColor: mode("#c4c4c4", "#39393a")(props)
@@ -122,8 +122,8 @@ export default function useTheme() {
 					})
 				},
 				fonts: {
-					body: `"Montserrat", sans-serif`,
-					heading: '"Montserrat", sans-serif'
+					body: `"Montserrat"`,
+					heading: `"Montserrat"`
 				},
 				semanticTokens: {
 					colors: {
@@ -315,4 +315,6 @@ export default function useTheme() {
 			}) as ThemeOverride,
 		[path]
 	);
+
+	return theme;
 }

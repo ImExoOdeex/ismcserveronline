@@ -17,6 +17,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	const userServers = await db.sampleServer.findMany({
 		where: {
 			user_id: user.id
+		},
+		select: {
+			id: true,
+			Server: true,
+			add_date: true,
+			end_date: true,
+			payment_status: true
 		}
 	});
 

@@ -1,6 +1,6 @@
 import { Flex, Heading, Icon, Skeleton, Text, VisuallyHiddenInput, VStack } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
-import { BiColorFill } from "react-icons/bi/index.js";
+import { BiColorFill } from "react-icons/bi";
 import { context } from "~/components/utils/GlobalContext";
 
 export default function StatusColor({ config, type }: { config: any; type: "online" | "offline" }) {

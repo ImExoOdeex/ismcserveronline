@@ -1,5 +1,5 @@
 import { HStack, Heading, Icon, Text, VStack } from "@chakra-ui/react";
-import { AiFillStar } from "react-icons/ai/index.js";
+import { AiFillStar } from "react-icons/ai";
 import Link from "~/components/utils/Link";
 
 export default function PopularServers() {

@@ -24,7 +24,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 type Check = {
 	id: number;
-	server: string;
+	Server: { server: string; bedrock: boolean };
 	source: SOURCE;
 	online: boolean;
 	players: number;
