@@ -2,23 +2,23 @@ import { json, type ActionFunctionArgs } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { db } from "~/components/server/db/db.server";
 import { getUser } from "~/components/server/db/models/user";
-import { requireAPIToken } from "~/components/server/functions/env.server";
-import { requireDomain } from "~/components/server/functions/security.server";
+import { getServerInfo } from "~/components/server/functions/api.server";
+import { csrf } from "~/components/server/functions/security.server";
 import stripe from "~/components/server/payments/stripe.server";
-import serverConfig from "~/components/server/serverConfig.server";
 
 export async function action({ request }: ActionFunctionArgs) {
 	try {
 		const form = await request.formData();
 		const method = request.method;
 
-		requireDomain(request);
+		csrf(request);
 
 		switch (method) {
 			case "POST": {
-				const server = form.get("server")?.toString();
+				let serverId: string | number | undefined = form.get("server")?.toString();
 				const paymentIntentId = form.get("paymentIntentId")?.toString();
-				invariant(server, "Missing server");
+				invariant(serverId, "Missing server");
+				serverId = parseInt(serverId as string);
 				invariant(paymentIntentId, "Missing payment intent id");
 				const user = await getUser(request);
 				invariant(user, "Missing user");
@@ -26,24 +26,25 @@ export async function action({ request }: ActionFunctionArgs) {
 				const exisitngServer = await db.sampleServer
 					.findFirst({
 						where: {
-							server
+							server_id: serverId
 						}
 					})
 					.catch(() => null);
 				if (exisitngServer) throw new Error("Server already exists");
 
-				const res = await fetch(`${serverConfig.api}/${server}`, {
-					headers: {
-						Authorization: requireAPIToken()
+				const server = await db.server.findUnique({
+					where: {
+						id: serverId
 					}
-				}).then((res) => res.json());
+				});
+				invariant(server, "Server not found");
 
-				if (!res?.favicon) throw new Error("Invalid server");
+				const res = await getServerInfo(server.server);
+				if (!res?.favicon) throw new Error("Server has no favicon");
 
 				const createdSampleServer = await db.sampleServer.create({
 					data: {
-						server,
-						favicon: res.favicon,
+						server_id: serverId,
 						user_id: user.id
 					}
 				});

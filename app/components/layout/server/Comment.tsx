@@ -1,23 +1,25 @@
 import { ChatIcon, EditIcon } from "@chakra-ui/icons";
 import { Button, Flex, Icon, IconButton, Image, Text, Textarea, VisuallyHiddenInput, useToast } from "@chakra-ui/react";
 import { useFetcher } from "@remix-run/react";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { FiTrash2 } from "react-icons/fi";
 import { TbMessageReport } from "react-icons/tb";
 import ReactTimeAgo from "react-time-ago";
 import useRootData from "~/components/utils/hooks/useRootData";
 import type { CustomComment } from "./Comments";
 
-export default function Comment({
+export default memo(function Comment({
 	comment,
 	setComments
 }: {
 	comment: CustomComment;
-	setComments: React.Dispatch<React.SetStateAction<CustomComment[]>>;
+	setComments: React.Dispatch<React.SetStateAction<CustomComment[] | null>>;
 }) {
 	const { user } = useRootData();
 
-	const isOwner = user?.id === comment.user.id;
+	const isOwner = useMemo(() => {
+		return user?.id === comment.user.id;
+	}, [user, comment.user.id]);
 	const fetcher = useFetcher();
 	const reportFetcher = useFetcher();
 	const editFetcher = useFetcher();
@@ -29,13 +31,13 @@ export default function Comment({
 			toast({
 				title: success ? "Your comment has been deleted." : (fetcher.data as any).error,
 				status: success ? "success" : "error",
-				duration: 9000,
+				duration: 5000,
 				position: "bottom-right",
 				variant: "subtle",
 				isClosable: true
 			});
 			if (success) {
-				setComments((comments) => comments.filter((c) => c.id !== comment.id));
+				setComments((comments) => (comments ? comments.filter((c) => c.id !== comment.id) : comments));
 			}
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -46,7 +48,7 @@ export default function Comment({
 			toast({
 				title: success ? "Comment has been reported." : (reportFetcher.data as any).error,
 				status: success ? "success" : "error",
-				duration: 9000,
+				duration: 5000,
 				position: "bottom-right",
 				variant: "subtle",
 				isClosable: true
@@ -60,13 +62,15 @@ export default function Comment({
 			toast({
 				title: success ? "Comment has been edited." : (editFetcher.data as any).error,
 				status: success ? "success" : "error",
-				duration: 9000,
+				duration: 5000,
 				position: "bottom-right",
 				variant: "subtle",
 				isClosable: true
 			});
 			if (success) {
-				setComments((comments) => comments.map((c) => (c.id === comment.id ? (editFetcher.data as any).comment : c)));
+				setComments((comments) =>
+					comments ? comments.map((c) => (c.id === comment.id ? (editFetcher.data as any).comment : c)) : comments
+				);
 			}
 			setEditingData((prev) => ({
 				...prev,
@@ -82,7 +86,7 @@ export default function Comment({
 	});
 
 	return (
-		<Flex key={comment.id} bg="alpha" borderRadius={"md"} p={4} flexDir={"column"} gap={2} w="100%">
+		<Flex key={comment.id} bg="alpha" rounded={"md"} p={4} flexDir={"column"} gap={2} w="100%">
 			<Flex flexDir={"column"} gap={2}>
 				<Flex w="100%" justifyContent={"space-between"}>
 					<Flex flexDir={"row"} gap={2} alignItems="center">
@@ -219,4 +223,4 @@ export default function Comment({
 			</Flex>
 		</Flex>
 	);
-}
+});

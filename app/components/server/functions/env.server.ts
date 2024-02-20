@@ -1,19 +1,3 @@
-export function requireSuperDuperToken() {
-	const token = process.env.SUPER_DUPER_API_ACCESS_TOKEN;
-
-	if (!token) throw new Error("Super duper token is not set.");
-
-	return token;
-}
-
-export function requireAPIToken() {
-	const token = process.env.API_TOKEN;
-
-	if (!token) throw new Error("API token is not set.");
-
-	return token;
-}
-
 const envs = [
 	"DATABASE_URL",
 	"REDIS_HOST",

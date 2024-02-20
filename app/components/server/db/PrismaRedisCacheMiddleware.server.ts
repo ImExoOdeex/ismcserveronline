@@ -171,7 +171,11 @@ export async function redisCacheMiddleware<T = Result>(params: Params, next: (pa
 		if (cacheKey) {
 			console.log("Cache key found for findFirst, checking if cache has all fields");
 			// Check if cache has all fields
-			const select = (params.args?.select || {}) as Record<string, boolean>;
+			const select = (params.args?.select ||
+				modelConfig.fields.reduce((acc, key) => {
+					(acc as Record<string, boolean>)[key] = true;
+					return acc;
+				}, {})) as Record<string, boolean>;
 			const cacheRaw = await redisCache.get(cacheKey);
 			const cache = cacheRaw ? (JSON.parse(cacheRaw) as Partial<T>) : null;
 			const cacheHasAllFields = checkIfCacheHasAllFields<T>(cache, select);

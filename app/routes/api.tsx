@@ -40,36 +40,36 @@ export async function loader() {
 	return typedjson({ sampleToken });
 }
 
+const data: Omit<MinecraftServerWoQuery, "favicon"> = {
+	online: true,
+	host: "mc.hypixel.net",
+	port: 25565,
+	version: {
+		array: ["1.8 / 1.19"],
+		string: "Requires MC 1.8 / 1.19"
+	},
+	players: {
+		online: 54029,
+		max: 200000,
+		list: []
+	},
+	protocol: 47,
+	software: "Requires MC 1.8 / 1.19",
+	motd: {
+		raw: "§f                §aHypixel Network §c[1.8-1.19]§f\n   §c§lLUNAR MAPS §6§lCOSMETICS §7| §d§lSKYBLOCK 0.17.3",
+		clean: "                Hypixel Network [1.8-1.19]\n   LUNAR MAPS COSMETICS | SKYBLOCK 0.17.3",
+		html: '<span><span style="color: #FFFFFF;">                </span><span style="color: #55FF55;">Hypixel Network </span><span style="color: #FF5555;">[1.8-1.19]</span><span style="color: #FFFFFF;">\n   </span><span style="color: #FF5555; font-weight: bold;">LUNAR MAPS </span><span style="color: #FFAA00; font-weight: bold;">COSMETICS </span><span style="color: #AAAAAA;">| </span><span style="color: #FF55FF; font-weight: bold;">SKYBLOCK 0.17.3</span></span>'
+	},
+	ping: 107,
+	debug: {
+		status: true,
+		query: false,
+		legacy: false
+	}
+};
+
 export default function Api() {
 	const { sampleToken } = useAnimationLoaderData<typeof loader>();
-
-	const data: MinecraftServerWoQuery = {
-		online: true,
-		host: "mc.hypixel.net",
-		port: 25565,
-		version: {
-			array: ["1.8 / 1.19"],
-			string: "Requires MC 1.8 / 1.19"
-		},
-		players: {
-			online: 54029,
-			max: 200000,
-			list: []
-		},
-		protocol: 47,
-		software: "Requires MC 1.8 / 1.19",
-		motd: {
-			raw: "§f                §aHypixel Network §c[1.8-1.19]§f\n   §c§lLUNAR MAPS §6§lCOSMETICS §7| §d§lSKYBLOCK 0.17.3",
-			clean: "                Hypixel Network [1.8-1.19]\n   LUNAR MAPS COSMETICS | SKYBLOCK 0.17.3",
-			html: '<span><span style="color: #FFFFFF;">                </span><span style="color: #55FF55;">Hypixel Network </span><span style="color: #FF5555;">[1.8-1.19]</span><span style="color: #FFFFFF;">\n   </span><span style="color: #FF5555; font-weight: bold;">LUNAR MAPS </span><span style="color: #FFAA00; font-weight: bold;">COSMETICS </span><span style="color: #AAAAAA;">| </span><span style="color: #FF55FF; font-weight: bold;">SKYBLOCK 0.17.3</span></span>'
-		},
-		ping: 107,
-		debug: {
-			status: true,
-			query: false,
-			legacy: false
-		}
-	};
 
 	const { onCopy, hasCopied } = useClipboard(`await request("https://api.ismcserver.online/hypixel.net", {
         headers: {

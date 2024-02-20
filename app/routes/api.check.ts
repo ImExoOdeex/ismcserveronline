@@ -1,7 +1,7 @@
 import { json, type ActionFunctionArgs } from "@remix-run/node";
 import { getClientIPAddress } from "remix-utils/get-client-ip-address";
 import { db } from "~/components/server/db/db.server";
-import { requireAPIToken, requireSuperDuperToken } from "~/components/server/functions/env.server";
+import { requireEnv } from "~/components/server/functions/env.server";
 
 // This is typically POST request to this route. I use it for adding discord server checks. You can't make this request, cuz you dont have super duper 2048 bit access token hah
 export async function action({ request }: ActionFunctionArgs) {
@@ -9,7 +9,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 	const headerToken = request.headers.get("Authorization");
 
-	if (headerToken !== requireSuperDuperToken())
+	if (headerToken !== requireEnv("SUPER_DUPER_API_ACCESS_TOKEN"))
 		return new Response("Super Duper Token does not match the real 2048 bit Super Duper Token!", {
 			status: 405
 		});
@@ -22,7 +22,7 @@ export async function action({ request }: ActionFunctionArgs) {
 			? (
 					await db.token.findUnique({
 						where: {
-							token: requireAPIToken()
+							token: requireEnv("API_TOKEN")
 						}
 					})
 			  )?.id
@@ -36,13 +36,35 @@ export async function action({ request }: ActionFunctionArgs) {
 						}
 					})
 			  )?.id;
+	if (!token_id) {
+		return json({
+			success: false,
+			error: "Token not found"
+		});
+	}
+
+	const serverId = (
+		await db.server.findFirst({
+			where: {
+				server: body.server
+			},
+			select: {
+				id: true
+			}
+		})
+	)?.id;
+	if (!serverId) {
+		return json({
+			success: false,
+			error: "Server not found"
+		});
+	}
 
 	await db.check.create({
 		data: {
-			server: body.server,
+			server_id: serverId,
 			online: body.online,
 			players: body.players,
-			bedrock: body.bedrock ?? false,
 			source: body.source ?? "WEB",
 			token_id: token_id,
 			client_ip: IP

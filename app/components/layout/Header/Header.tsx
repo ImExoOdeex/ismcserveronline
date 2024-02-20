@@ -53,7 +53,7 @@ export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 			borderBottomColor={hasScrolled ? "alpha" : "transparent"}
 			transition={"all .2s"}
 		>
-			<Flex w="100%" maxW={"1500px"} px={4} alignItems="center" h="100%" mx="auto" justifyContent={"space-between"}>
+			<Flex w="100%" maxW={"1600px"} px={4} alignItems="center" h="100%" mx="auto" justifyContent={"space-between"}>
 				<HStack spacing={5}>
 					<Link
 						to="/"

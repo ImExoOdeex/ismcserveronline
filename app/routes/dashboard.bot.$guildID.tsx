@@ -5,7 +5,7 @@ import { useLocation, useOutlet } from "@remix-run/react";
 import { typedjson } from "remix-typedjson";
 import BotNotOnServer from "~/components/layout/dashboard/BotNotOnServer";
 import { getUserGuilds } from "~/components/server/db/models/user";
-import { requireSuperDuperToken } from "~/components/server/functions/env.server";
+import { requireEnv } from "~/components/server/functions/env.server";
 import { requireUserGuild } from "~/components/server/functions/secureDashboard.server";
 import serverConfig from "~/components/server/serverConfig.server";
 import Link from "~/components/utils/Link";
@@ -23,7 +23,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 	const guild = await fetch(`${serverConfig.botApi}/${guildID}/guild`, {
 		method: "GET",
 		headers: {
-			Authorization: requireSuperDuperToken()
+			Authorization: requireEnv("SUPER_DUPER_API_ACCESS_TOKEN")
 		}
 	}).then((res) => res.json());
 

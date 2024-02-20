@@ -3,14 +3,15 @@ import { Alert, AlertIcon, AlertTitle, Button, Flex, HStack, Image, Text, Textar
 import { useFetcher } from "@remix-run/react";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en.json";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import useUser from "~/components/utils/hooks/useUser";
+import { action } from "~/routes/$server";
 import Comment from "./Comment";
 
-type Props = {
+interface Props {
 	comments: CustomComment[];
-	setComments: React.Dispatch<React.SetStateAction<CustomComment[]>>;
-};
+	setComments: React.Dispatch<React.SetStateAction<CustomComment[] | null>>;
+}
 
 TimeAgo.setDefaultLocale(en.locale);
 TimeAgo.addLocale(en);
@@ -27,22 +28,22 @@ export interface CustomComment {
 	};
 }
 
-export default function Comments({ comments, setComments }: Props) {
+export default memo(function Comments({ comments, setComments }: Props) {
 	const user = useUser();
 
-	const fetcher = useFetcher();
+	const fetcher = useFetcher<typeof action>();
 
 	const [newComment, setNewComment] = useState("");
 
 	const toast = useToast();
 	useEffect(() => {
-		if ((fetcher.data as any)?.success) {
-			setComments((comments) => [(fetcher.data as any).comment, ...comments]);
+		if (fetcher.data?.success) {
+			setComments((comments) => (comments ? [fetcher.data.comment, ...comments] : comments));
 			setNewComment("");
 			toast({
 				title: "Comment added.",
 				status: "success",
-				duration: 9000,
+				duration: 5000,
 				position: "bottom-right",
 				variant: "subtle",
 				isClosable: true
@@ -51,7 +52,9 @@ export default function Comments({ comments, setComments }: Props) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [fetcher.data]);
 
-	const hasCommented = comments.some((comment) => comment.user.nick === user?.nick);
+	const hasCommented = useMemo(() => {
+		return comments.some((comment) => comment.user.nick === user?.nick);
+	}, [comments, user?.nick]);
 
 	return (
 		<Flex flexDir={"column"} gap={user !== null && !hasCommented ? 10 : 4} w="100%">
@@ -73,10 +76,10 @@ export default function Comments({ comments, setComments }: Props) {
 							<Flex flexDir={"column"} gap={2} w="100%">
 								<Text>
 									Write a comment
-									{(fetcher.data as any)?.error && (
+									{fetcher.data?.error && (
 										<Text as="span" fontWeight={600} color="red">
 											{" "}
-											{(fetcher.data as any).error}
+											{fetcher.data?.error}
 										</Text>
 									)}
 								</Text>
@@ -134,4 +137,4 @@ export default function Comments({ comments, setComments }: Props) {
 			</VStack>
 		</Flex>
 	);
-}
+});

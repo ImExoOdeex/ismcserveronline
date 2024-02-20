@@ -9,11 +9,11 @@ import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
 import { db } from "~/components/server/db/db.server";
 import { getUserId } from "~/components/server/db/models/user";
-import { requireDomain } from "~/components/server/functions/security.server";
+import { csrf } from "~/components/server/functions/security.server";
 import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 
 export async function action({ request }: ActionFunctionArgs) {
-	requireDomain(request);
+	csrf(request);
 	const userId = await getUserId(request);
 	invariant(userId, "User is not logged in");
 

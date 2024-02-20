@@ -1,11 +1,11 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { db } from "~/components/server/db/db.server";
-import { requireDomain } from "~/components/server/functions/security.server";
+import { csrf } from "~/components/server/functions/security.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const url = new URL(request.url);
-	requireDomain(request);
+	csrf(request);
 
 	const server = url.searchParams.get("server");
 	if (!server) throw new Error("No server provided");

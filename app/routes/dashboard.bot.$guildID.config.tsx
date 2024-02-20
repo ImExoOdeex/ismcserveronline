@@ -8,7 +8,7 @@ import { typedjson } from "remix-typedjson";
 import StatusColor from "~/components/layout/dashboard/StatusColor";
 import { Info, sendActionWebhook } from "~/components/server/auth/webhooks";
 import { getUser } from "~/components/server/db/models/user";
-import { requireSuperDuperToken } from "~/components/server/functions/env.server";
+import { requireEnv } from "~/components/server/functions/env.server";
 import { requireUserGuild } from "~/components/server/functions/secureDashboard.server";
 import serverConfig from "~/components/server/serverConfig.server";
 
@@ -19,7 +19,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 	const config = await fetch(`${serverConfig.botApi}/${guildID}/config`, {
 		method: "GET",
 		headers: {
-			Authorization: requireSuperDuperToken()
+			Authorization: requireEnv("SUPER_DUPER_API_ACCESS_TOKEN")
 		}
 	}).then((res) => res.json());
 
@@ -36,7 +36,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
-			Authorization: requireSuperDuperToken()
+			Authorization: requireEnv("SUPER_DUPER_API_ACCESS_TOKEN")
 		},
 		body: JSON.stringify(Object.fromEntries(formData))
 	}).then((res) => res.json());

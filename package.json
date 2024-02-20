@@ -41,7 +41,6 @@
 		"isbot": "^4.3.0",
 		"javascript-time-ago": "^2.5.9",
 		"lodash.debounce": "^4.0.8",
-		"minecraft-protocol": "^1.45.0",
 		"morgan": "^1.10.0",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",

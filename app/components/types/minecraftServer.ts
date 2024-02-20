@@ -1,4 +1,4 @@
-export type MinecraftServer = {
+export interface MinecraftServer {
 	online: boolean;
 	host: string;
 	ip: string | null;
@@ -28,9 +28,9 @@ export type MinecraftServer = {
 		query: boolean;
 		legacy: boolean;
 	};
-};
+}
 
-export type MinecraftServerWoQuery = {
+export interface MinecraftServerWoQuery {
 	online: boolean;
 	host: string;
 	port: number | null;
@@ -57,12 +57,9 @@ export type MinecraftServerWoQuery = {
 		query: boolean;
 		legacy: boolean;
 	};
-};
+}
 
-export type JavaServer = MinecraftServer | MinecraftServerWoQuery;
-export type AnyServer = JavaServer | BedrockServer;
-
-export type BedrockServer = {
+export interface BedrockServer {
 	online: boolean;
 	host: string;
 	port: {
@@ -88,7 +85,19 @@ export type BedrockServer = {
 		online: number;
 		max: number;
 	};
+}
+
+export type JavaServer = MinecraftServer | MinecraftServerWoQuery;
+export type AnyServer = JavaServer | BedrockServer;
+export type AnyServerModel = Omit<AnyServer, "debug"> & {
+	id: number;
+	server: string;
+	owner_id: string | null;
 };
+
+export type AnyServerWoDebug = Omit<AnyServer, "debug">;
+export type JavaServerWoDebug = Omit<JavaServer, "debug">;
+export type BedrockServerWoDebug = Omit<BedrockServer, "debug">;
 
 // server model in db types
 export namespace ServerModel {

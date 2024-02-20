@@ -20,23 +20,22 @@ import {
 import { type SOURCE } from "@prisma/client";
 import { ScrollRestoration, useFetcher } from "@remix-run/react";
 import debounce from "lodash.debounce";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 
-type Check = {
+interface Check {
 	id: number;
-	Server: { server: string; bedrock: boolean };
 	source: SOURCE;
 	online: boolean;
 	players: number;
 	checked_at: Date;
-};
+}
 
-type Props = {
+interface Props {
 	server: string;
 	checks: Check[];
-};
+}
 
-export default function ChecksTable({ server, checks }: Props) {
+export default memo(function ChecksTable({ server, checks }: Props) {
 	const borderColor = useColorModeValue("#2f2e32", "#2f2e32 !important");
 	const discordBg = useColorModeValue("rgba(88, 101, 242, 0.16)", "rgba(88, 147, 242, 0.12)");
 	const discordColor = useColorModeValue("discord.100", "#6f9ce6");
@@ -255,4 +254,4 @@ export default function ChecksTable({ server, checks }: Props) {
 			)}
 		</>
 	);
-}
+});

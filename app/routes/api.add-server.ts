@@ -3,16 +3,15 @@ import { redirect, typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
 import { db } from "~/components/server/db/db.server";
 import { getUserId } from "~/components/server/db/models/user";
-import { requireAPIToken } from "~/components/server/functions/env.server";
-import { requireDomain } from "~/components/server/functions/security.server";
-import serverConfig from "~/components/server/serverConfig.server";
+import { getServerInfo } from "~/components/server/functions/api.server";
+import { csrf } from "~/components/server/functions/security.server";
 import { commitSession, getSession } from "~/components/server/session.server";
 import { MinecraftServerWoQuery } from "~/components/types/minecraftServer";
 
 export async function action({ request }: ActionFunctionArgs) {
 	const form = await request.formData();
 
-	requireDomain(request);
+	csrf(request);
 	const userId = await getUserId(request);
 	invariant(userId, "User not found");
 
@@ -33,11 +32,7 @@ export async function action({ request }: ActionFunctionArgs) {
 					.catch(() => null);
 				if (exisitngServer) throw new Error("Server already exists");
 
-				const data: MinecraftServerWoQuery = await fetch(`${serverConfig.api}/${server}`, {
-					headers: {
-						Authorization: requireAPIToken()
-					}
-				}).then((res) => res.json());
+				const data: MinecraftServerWoQuery = await getServerInfo(server);
 
 				invariant(data.online, "Server is offline");
 				invariant(data.favicon, "Server has no favicon");

@@ -29,7 +29,7 @@ import invariant from "tiny-invariant";
 import LivecheckNumbers from "~/components/layout/dashboard/LivecheckNumbers";
 import { Info, sendActionWebhook } from "~/components/server/auth/webhooks";
 import { getUser } from "~/components/server/db/models/user";
-import { requireSuperDuperToken } from "~/components/server/functions/env.server";
+import { requireEnv } from "~/components/server/functions/env.server";
 import { requireUserGuild } from "~/components/server/functions/secureDashboard.server";
 import serverConfig from "~/components/server/serverConfig.server";
 import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
@@ -52,13 +52,13 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 		fetch(`${serverConfig.botApi}/${guildID}/livecheck/${number}`, {
 			method: "get",
 			headers: {
-				Authorization: requireSuperDuperToken()
+				Authorization: requireEnv("SUPER_DUPER_API_ACCESS_TOKEN")
 			}
 		}).then((res) => res.json()),
 		fetch(`${serverConfig.botApi}/${guildID}/channels`, {
 			method: "get",
 			headers: {
-				Authorization: requireSuperDuperToken()
+				Authorization: requireEnv("SUPER_DUPER_API_ACCESS_TOKEN")
 			}
 		}).then((res) => res.json())
 	]);
@@ -93,7 +93,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 			method: "post",
 			headers: {
 				"Content-Type": "application/json",
-				Authorization: requireSuperDuperToken()
+				Authorization: requireEnv("SUPER_DUPER_API_ACCESS_TOKEN")
 			},
 			body: JSON.stringify(Object.fromEntries(formData))
 		})
