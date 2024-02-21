@@ -3,6 +3,7 @@ import { useFetcher, useNavigate } from "@remix-run/react";
 import { Dispatch, SetStateAction, memo, useCallback, useEffect, useState } from "react";
 import { BiBookmark } from "react-icons/bi";
 import useUser from "~/components/utils/hooks/useUser";
+import { ChakraBox } from "../MotionComponents";
 
 export const tabs = [
 	{
@@ -59,35 +60,36 @@ export default memo(function Tabs({ tab, setTab, isSaved }: Props) {
 
 	return (
 		<Flex justifyContent={"space-between"} w="100%" alignItems={"center"}>
-			<Flex gap={2}>
+			<Flex gap={0}>
 				{tabs.map((t) => (
 					<Button
-						boxShadow={"sm"}
+						variant={"ghost"}
 						key={t.value}
 						onClick={() => setTab(t.value)}
-						size={"sm"}
-						rounded={"xl"}
-						bg={tab === t.value ? "brand.500" : "transparent"}
-						color={tab === t.value ? "white" : "text"}
-						fontWeight={500}
-						border="1px solid"
-						borderColor={tab === t.value ? "transparent" : "alpha300"}
-						px={4}
-						py={4}
-						_hover={{
-							bg: tab === t.value ? "brand.600" : "alpha100"
-						}}
+						size={"lg"}
+						rounded={"none"}
+						pos="relative"
 					>
 						{t.name}
+						{tab === t.value && (
+							<ChakraBox
+								layout
+								layoutId="tab-indicator"
+								pos="absolute"
+								bottom={0}
+								left={0}
+								right={0}
+								h={"2px"}
+								bg="brand"
+							/>
+						)}
 					</Button>
 				))}
 			</Flex>
 
 			<Button
-				size={"sm"}
-				py={4}
 				variant={saved ? "solid" : "outline"}
-				borderColor={"yellow.500"}
+				borderColor={saved ? "yellow.500" : "transparent"}
 				bg={saved ? "yellow.500" : "transparent"}
 				rightIcon={<Icon as={BiBookmark} color={saved ? "white" : "yellow.500"} boxSize={5} />}
 				color={saved ? "white" : "text"}

@@ -1,7 +1,7 @@
 import { CacheProvider } from "@emotion/react";
 import { RemixBrowser } from "@remix-run/react";
 import React, { startTransition, useCallback, useState } from "react";
-import { hydrateRoot } from "react-dom/client";
+import { hydrate } from "react-dom";
 import { ClientStyleContext, createEmotionCache } from "./context";
 
 interface ClientCacheProviderProps {
@@ -23,21 +23,22 @@ function ClientCacheProvider({ children, time }: ClientCacheProviderProps) {
 	);
 }
 
-function hydrate() {
-	const now = Date.now(); // initial hydration time
+function hydration() {
+	let now = Date.now(); // initial hydration time
 
 	startTransition(() => {
-		hydrateRoot(
-			document,
+		// hydrate, since hydrateRoot bugs with streaming with emotion
+		hydrate(
 			<ClientCacheProvider time={now}>
 				<RemixBrowser />
-			</ClientCacheProvider>
+			</ClientCacheProvider>,
+			document
 		);
 	});
 }
 
 if (typeof requestIdleCallback === "function") {
-	requestIdleCallback(hydrate);
+	requestIdleCallback(hydration);
 } else {
-	setTimeout(hydrate, 1);
+	setTimeout(hydration, 1);
 }

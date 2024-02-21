@@ -92,7 +92,9 @@ export type AnyServer = JavaServer | BedrockServer;
 export type AnyServerModel = Omit<AnyServer, "debug"> & {
 	id: number;
 	server: string;
+	bedrock: boolean;
 	owner_id: string | null;
+	message_from_owner: string | null;
 };
 
 export type AnyServerWoDebug = Omit<AnyServer, "debug">;

@@ -74,8 +74,9 @@ model Server {
   SampleServer SampleServer[]
   Vote         Vote[]
 
-  owner_id Int?
-  Owner    User? @relation(fields: [owner_id], references: [id])
+  owner_id           Int?
+  Owner              User?   @relation(fields: [owner_id], references: [id])
+  message_from_owner String?
 
   @@index([id, server])
 }

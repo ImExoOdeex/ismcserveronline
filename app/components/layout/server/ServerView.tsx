@@ -2,6 +2,7 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { Box, Flex, HStack, Heading, Image, Stack, VStack } from "@chakra-ui/react";
 import { memo } from "react";
 import { AnyServerModel, JavaServerWoDebug, ServerModel } from "~/components/types/minecraftServer";
+import StatusIndicator from "./StatusIndicator";
 
 interface Props {
 	server: string;
@@ -38,22 +39,7 @@ export default memo(function ServerView({ server, data, bedrock }: Props) {
 						</Heading>
 						<ExternalLinkIcon fontSize={"lg"} />
 					</HStack>
-					<HStack spacing={2}>
-						<Box
-							boxSize={"10px"}
-							rounded="full"
-							shadow={`0px 0px 20px ${data.online ? "#38A169" : "#E53E3E"}`}
-							bg={data.online ? "green.500" : "red.500"}
-						/>
-						<Heading
-							textShadow={"0px 0px 15px"}
-							fontSize="lg"
-							letterSpacing={"3px"}
-							color={data.online ? "green.500" : "red.500"}
-						>
-							{data.online ? "Online" : "Offline"}
-						</Heading>
-					</HStack>
+					<StatusIndicator online={data.online} />
 				</Flex>
 
 				<Flex

@@ -1,5 +1,6 @@
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import { Button, Flex, Icon, Image, Text } from "@chakra-ui/react";
+import { useFetcher } from "@remix-run/react";
 import { BiCode, BiLineChart } from "react-icons/bi";
 import Link from "~/components/utils/Link";
 import useUser from "~/components/utils/hooks/useUser";
@@ -68,6 +69,7 @@ export function APIButton() {
 
 export function LoginButton() {
 	const user = useUser();
+	const loginFetcher = useFetcher<any>();
 
 	if (user) {
 		return (
@@ -94,23 +96,23 @@ export function LoginButton() {
 	}
 
 	return (
-		<Button
-			as={Link}
-			_hover={{ textDecoration: "none", bg: "discord.900" }}
-			h="40px"
-			px={4}
-			fontWeight={500}
-			bg="discord.100"
-			rounded={"xl"}
-			color={"white"}
-			alignItems={"center"}
-			userSelect={"none"}
-			transform={"auto-gpu"}
-			_active={{ scale: 0.9 }}
-			to={"/login"}
-			leftIcon={<DiscordIcon />}
-		>
-			Login
-		</Button>
+		<loginFetcher.Form action="/login" method="POST">
+			<Button
+				isLoading={loginFetcher.state !== "idle"}
+				type="submit"
+				_hover={{ textDecoration: "none", bg: "discord.900" }}
+				px={4}
+				fontWeight={500}
+				bg="discord.100"
+				color={"white"}
+				alignItems={"center"}
+				userSelect={"none"}
+				transform={"auto-gpu"}
+				_active={{ scale: 0.9 }}
+				rightIcon={<DiscordIcon />}
+			>
+				Log in
+			</Button>
+		</loginFetcher.Form>
 	);
 }

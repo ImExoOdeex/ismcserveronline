@@ -2,11 +2,11 @@ import { Button, Flex, Heading, Spinner, Table, TableContainer, Tbody, Td, Text,
 import { useFetcher } from "@remix-run/react";
 import { memo, useMemo } from "react";
 import { AnyServer, AnyServerModel, JavaServer, MinecraftServer, ServerModel } from "~/components/types/minecraftServer";
-import { parse, toHTML } from "~/components/utils/functions/minecraftText";
+import useMinecraftTextFormatting from "~/components/utils/hooks/useMinecraftTextFormatting";
 
 interface Props {
 	server: string;
-	data: AnyServerModel;
+	data: AnyServerModel | AnyServer;
 	bedrock: boolean;
 	query: boolean;
 }
@@ -16,6 +16,18 @@ export default memo(function ServerInfo({ server, bedrock, data, query }: Props)
 	const busy = useMemo(() => {
 		return fetcher.state !== "idle";
 	}, [fetcher.state]);
+
+	const version = useMinecraftTextFormatting(
+		(bedrock
+			? (data.version as unknown as ServerModel.Version<true>)
+			: (data.version as unknown as ServerModel.Version<false>)?.string) ?? ""
+	);
+
+	const players = useMinecraftTextFormatting(
+		(data.players as unknown as ServerModel.Players<any>).list?.map((p) => p.name).join(", ")
+	);
+
+	const software = useMinecraftTextFormatting((data as unknown as JavaServer).software ?? "");
 
 	if (!data.online) return null;
 	return (
@@ -40,13 +52,7 @@ export default memo(function ServerInfo({ server, bedrock, data, query }: Props)
 								<Td
 									fontWeight={"normal"}
 									dangerouslySetInnerHTML={{
-										__html: toHTML(
-											parse(
-												(bedrock
-													? (data.version as unknown as ServerModel.Version<true>)
-													: (data.version as unknown as ServerModel.Version<false>)?.string) ?? ""
-											)
-										)
+										__html: version
 									}}
 								></Td>
 							</Tr>
@@ -71,28 +77,16 @@ export default memo(function ServerInfo({ server, bedrock, data, query }: Props)
 									</Td>
 								</Tr>
 							)}
-							{bedrock && (
+							{!bedrock && (
 								<Tr>
 									<Td>Players</Td>
 									{(data.players as unknown as ServerModel.Players<false>)?.list?.length ? (
-										<>
-											{(data.players as unknown as ServerModel.Players<false>).list.map(
-												(
-													p:
-														| {
-																id: number;
-																name: string;
-														  }
-														| any
-												) => {
-													return (
-														<Td fontWeight={"normal"} key={p.id}>
-															{p.name}
-														</Td>
-													);
-												}
-											)}
-										</>
+										<Td
+											fontWeight={"normal"}
+											dangerouslySetInnerHTML={{
+												__html: players
+											}}
+										></Td>
 									) : (
 										<Td fontWeight={"normal"} color={"textSec"}>
 											Unable to get
@@ -161,7 +155,12 @@ export default memo(function ServerInfo({ server, bedrock, data, query }: Props)
 							{!bedrock && (
 								<Tr>
 									<Td>Software</Td>
-									<Td fontWeight={"normal"}>{(data as unknown as JavaServer).software}</Td>
+									<Td
+										fontWeight={"normal"}
+										dangerouslySetInnerHTML={{
+											__html: software
+										}}
+									/>
 								</Tr>
 							)}
 						</Tbody>
@@ -192,3 +191,142 @@ export default memo(function ServerInfo({ server, bedrock, data, query }: Props)
 		</VStack>
 	);
 });
+
+export function PregenerateStyles({ bedrock, data, query }: Omit<Props, "server">) {
+	return (
+		<div
+			style={{
+				display: "none"
+			}}
+		>
+			<VStack spacing={"20px"} align="start" fontWeight={600} w="100%" maxW={"100%"}>
+				<Heading as={"h2"} fontSize="lg"></Heading>
+
+				<Flex overflowX={"auto"} w="100%" maxW={"100%"} pos={"relative"}>
+					<TableContainer>
+						<Table variant={"unstyled"} size={"sm"}>
+							<Tbody>
+								<Tr>
+									<Td></Td>
+									<Td fontWeight={"normal"}></Td>
+								</Tr>
+								<Tr>
+									<Td></Td>
+									<Td fontWeight={"normal"}></Td>
+								</Tr>
+								{query && (
+									<Tr>
+										<Td></Td>
+										<Td
+											fontWeight={"normal"}
+											color={(data as unknown as MinecraftServer)?.map ? "text" : "textSec"}
+										></Td>
+									</Tr>
+								)}
+								{!bedrock && (
+									<Tr>
+										<Td></Td>
+										<Td fontWeight={"normal"} fontFamily={"mono"}></Td>
+									</Tr>
+								)}
+								{bedrock && (
+									<Tr>
+										<Td></Td>
+										{(data.players as unknown as ServerModel.Players<false>)?.list?.length ? (
+											<>
+												{(data.players as unknown as ServerModel.Players<false>).list.map(
+													(
+														p:
+															| {
+																	id: number;
+																	name: string;
+															  }
+															| any
+													) => {
+														return <Td fontWeight={"normal"} key={p.id}></Td>;
+													}
+												)}
+											</>
+										) : (
+											<Td fontWeight={"normal"} color={"textSec"}></Td>
+										)}
+									</Tr>
+								)}
+								{query && (
+									<Tr>
+										<Td>Plugins</Td>
+										{(data as unknown as MinecraftServer).plugins?.length ? (
+											<>
+												{(data as unknown as MinecraftServer).plugins.map((p: string) => {
+													return <Td fontWeight={"normal"} key={p}></Td>;
+												})}
+											</>
+										) : (
+											<Td fontWeight={"normal"} color={"textSec"}></Td>
+										)}
+									</Tr>
+								)}
+							</Tbody>
+						</Table>
+					</TableContainer>
+				</Flex>
+
+				<Heading as={"h2"} fontSize="lg"></Heading>
+
+				<Flex overflowX={"auto"} w="100%" maxW={"100%"} pos={"relative"}>
+					<TableContainer>
+						<Table variant={"unstyled"} size={"sm"}>
+							<Tbody>
+								<Tr>
+									<Td></Td>
+									<Td fontWeight={"normal"}></Td>
+								</Tr>
+								{query && (
+									<Tr>
+										<Td></Td>
+										<Td
+											fontWeight={"normal"}
+											color={(data as unknown as MinecraftServer)?.ip ? "text" : "textSec"}
+										></Td>
+									</Tr>
+								)}
+								<Tr>
+									<Td></Td>
+									<Td fontWeight={"normal"}></Td>
+								</Tr>
+								<Tr>
+									<Td></Td>
+									<Td fontWeight={"normal"}></Td>
+								</Tr>
+								{!bedrock && (
+									<Tr>
+										<Td></Td>
+										<Td fontWeight={"normal"}></Td>
+									</Tr>
+								)}
+							</Tbody>
+						</Table>
+					</TableContainer>
+				</Flex>
+
+				{!query && (
+					<Text color="textSec" fontWeight={400}>
+						Misleading information?{" "}
+						<Button
+							variant={"unstyled"}
+							type="submit"
+							fontWeight={500}
+							textDecor="underline"
+							color={"sec"}
+							h="min-content"
+							name="action"
+							value="query"
+						>
+							Try searching with Query!
+						</Button>
+					</Text>
+				)}
+			</VStack>
+		</div>
+	);
+}

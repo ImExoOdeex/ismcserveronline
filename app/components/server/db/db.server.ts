@@ -19,9 +19,9 @@ if (process.env.NODE_ENV === "production") {
 	db = new PrismaClientWithCache();
 } else {
 	// this to not crete milion connections in dev mode, cus they create on fast refresh
-	// if (!global.__db) {
-	console.log("[Prisma] Connecting to Postgresql | Development");
-	global.__db = new PrismaClientWithCache();
-	// }
+	if (!global.__db) {
+		console.log("[Prisma] Connecting to Postgresql | Development");
+		global.__db = new PrismaClientWithCache();
+	}
 	db = global.__db;
 }

@@ -5,7 +5,7 @@ import { renderToPipeableStream } from "react-dom/server";
 import { PassThrough } from "stream";
 import { createEmotionCache } from "./context";
 
-const ABORT_DELAY = 5000;
+const ABORT_DELAY = 7000;
 
 // this will abort the request if it's not finished in 5 seconds. so if defer will suck i will remove it
 export default async function handleRequest(

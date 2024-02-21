@@ -2,8 +2,8 @@ import { Divider, Flex, Heading, HStack, Icon, Stack, Text, VStack } from "@chak
 import { Prisma } from "@prisma/client";
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import type { ShouldRevalidateFunction } from "@remix-run/react";
-import { useState } from "react";
+import { Await, type ShouldRevalidateFunction } from "@remix-run/react";
+import { Suspense, useState } from "react";
 import { BiBug, BiInfoCircle } from "react-icons/bi";
 import { typeddefer, typedjson } from "remix-typedjson";
 import { getClientIPAddress } from "remix-utils/get-client-ip-address";
@@ -11,7 +11,7 @@ import { Ad, adType } from "~/components/ads/Yes";
 import ChecksTable from "~/components/layout/server/ChecksTable";
 import Comments from "~/components/layout/server/Comments";
 import CommentsSkeleton from "~/components/layout/server/CommentsSkeleton";
-import ServerInfo from "~/components/layout/server/ServerInfo";
+import ServerInfo, { PregenerateStyles } from "~/components/layout/server/ServerInfo";
 import ServerView from "~/components/layout/server/ServerView";
 import Tabs, { tabs } from "~/components/layout/server/Tabs";
 import UnderServerView from "~/components/layout/server/UnderServerView";
@@ -497,8 +497,9 @@ export default function $server() {
 	} = useAnimationLoaderData<typeof loader>();
 
 	const [tab, setTab] = useState<(typeof tabs)[number]["value"]>("checks");
-
 	const [comments, setComments] = useState<any[] | null>(null);
+
+	// console.log("PROMISE DATA", promiseData);
 
 	return (
 		<VStack spacing={"40px"} align="start" maxW="1000px" mx="auto" w="100%" mt={"50px"} px={4} mb={5}>
@@ -506,11 +507,24 @@ export default function $server() {
 
 			<Flex w="100%" flexDir={"column"} gap={2}>
 				<ServerView server={server} data={data} bedrock={bedrock} />
-				<UnderServerView server={server} bedrock={bedrock} />
+				<UnderServerView
+					server={server}
+					bedrock={bedrock}
+					promiseData={promiseData instanceof Promise ? promiseData : Promise.resolve(promiseData)}
+				/>
 			</Flex>
 
 			<Divider />
-			<ServerInfo server={server} data={data} bedrock={bedrock} query={query} />
+
+			{/* I copy the component with non display, to generate the emotion styles, that would be used in streamed content, that emotion wouldn't generate */}
+			<PregenerateStyles bedrock={bedrock} data={data} query={query} />
+
+			<Suspense fallback={<ServerInfo server={server} data={data} bedrock={bedrock} query={query} />}>
+				<Await resolve={promiseData}>
+					{(freshData) => <ServerInfo server={server} data={freshData} bedrock={bedrock} query={query} />}
+				</Await>
+			</Suspense>
+
 			<Divider />
 
 			<Tabs tab={tab} setTab={setTab} isSaved={isSaved} />
