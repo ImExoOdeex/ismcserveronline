@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client";
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { Await, type ShouldRevalidateFunction } from "@remix-run/react";
+import dayjs from "dayjs";
 import { Suspense, useState } from "react";
 import { BiBug, BiInfoCircle } from "react-icons/bi";
 import { typeddefer, typedjson } from "remix-typedjson";
@@ -21,6 +22,7 @@ import { db } from "~/components/server/db/db.server";
 import { getUser, getUserId } from "~/components/server/db/models/user";
 import { getServerInfo } from "~/components/server/functions/api.server";
 import { requireEnv } from "~/components/server/functions/env.server";
+import { getRandomMinecarftImage } from "~/components/server/minecraftImages.server";
 import { AnyServer, AnyServerModel, BedrockServer, JavaServer, MinecraftServer } from "~/components/types/minecraftServer";
 import { getCookieWithoutDocument } from "~/components/utils/functions/cookies";
 import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
@@ -322,6 +324,41 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 			where: {
 				server,
 				bedrock
+			},
+			select: {
+				id: true,
+				server: true,
+				bedrock: true,
+				online: true,
+				players: true,
+				host: true,
+				port: true,
+				protocol: true,
+				motd: true,
+				version: true,
+				software: true,
+				favicon: true,
+				ping: true,
+				edition: true,
+				gamemode: true,
+				guid: true,
+				ip: true,
+				plugins: true,
+				owner_id: true,
+				map: true,
+				_count: {
+					select: {
+						Comment: true,
+						Vote: {
+							where: {
+								created_at: {
+									gte: dayjs().startOf("month").toDate()
+								}
+							}
+						},
+						Check: true
+					}
+				}
 			}
 		})
 		.catch(() => null)) as unknown as AnyServerModel | null;
@@ -464,7 +501,9 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 			: false
 	]);
 
-	return typeddefer({ server, data, checks, query, isSaved, foundServer, bedrock, serverId });
+	const image = getRandomMinecarftImage();
+
+	return typeddefer({ server, data, checks, query, isSaved, foundServer, bedrock, serverId, image });
 }
 
 export function meta({ data, matches }: MetaArgs) {
@@ -489,6 +528,7 @@ export default function $server() {
 		server,
 		data: promiseData,
 		checks,
+		image,
 		query,
 		isSaved,
 		bedrock,
@@ -498,16 +538,16 @@ export default function $server() {
 
 	const [tab, setTab] = useState<(typeof tabs)[number]["value"]>("checks");
 	const [comments, setComments] = useState<any[] | null>(null);
-
 	// console.log("PROMISE DATA", promiseData);
 
 	return (
 		<VStack spacing={"40px"} align="start" maxW="1000px" mx="auto" w="100%" mt={"50px"} px={4} mb={5}>
-			<Ad type={adType.small} width={"968px"} />
+			{/* <Ad type={adType.small} width={"968px"} /> */}
 
 			<Flex w="100%" flexDir={"column"} gap={2}>
-				<ServerView server={server} data={data} bedrock={bedrock} />
+				<ServerView server={server} data={data} bedrock={bedrock} image={image} />
 				<UnderServerView
+					voteCount={data?._count?.Vote}
 					server={server}
 					bedrock={bedrock}
 					promiseData={promiseData instanceof Promise ? promiseData : Promise.resolve(promiseData)}
@@ -527,7 +567,15 @@ export default function $server() {
 
 			<Divider />
 
-			<Tabs tab={tab} setTab={setTab} isSaved={isSaved} />
+			<Tabs
+				tab={tab}
+				setTab={setTab}
+				isSaved={isSaved}
+				counts={{
+					checks: data._count?.Check,
+					comments: data?._count?.Comment
+				}}
+			/>
 
 			{tab === "checks" && (
 				<VStack align={"start"} w="100%">

@@ -6,4 +6,5 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		redirectTo: "/"
 	});
 }
+
 export { loader as action };

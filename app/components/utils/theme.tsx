@@ -1,5 +1,7 @@
+import { inputAnatomy } from "@chakra-ui/anatomy";
 import {
 	theme as chakraTheme,
+	createMultiStyleConfigHelpers,
 	extendBaseTheme,
 	mergeThemeOverride,
 	type ThemeConfig,
@@ -9,9 +11,10 @@ import { mode, type StyleFunctionProps } from "@chakra-ui/theme-tools";
 import type { Dict } from "@chakra-ui/utils";
 import { useLocation } from "@remix-run/react";
 import { useMemo } from "react";
+import config from "../config/config";
 import useUser from "./hooks/useUser";
 
-const config = {
+const themeConfig = {
 	initialColorMode: "system",
 	useSystemColorMode: true,
 	disableTransitionOnChange: true
@@ -31,7 +34,7 @@ const colors = {
 	},
 	bg: {
 		100: "#ffffff",
-		900: `#18181a`
+		900: `#111117`
 	},
 	sec: {
 		100: "#93b8e9",
@@ -68,15 +71,42 @@ const {
 	List
 } = chakraTheme.components;
 
+const inputHelpers = createMultiStyleConfigHelpers(inputAnatomy.keys);
+
+const multipartComponents = {
+	input: inputHelpers.defineMultiStyleConfig({
+		variants: {
+			filled: {
+				field: {
+					bg: "alpha",
+					_hover: {
+						bg: "alpha100"
+					},
+					_active: {
+						bg: "alpha200"
+					}
+				}
+			}
+		},
+		baseStyle: {
+			field: {
+				_focusVisible: {
+					// boxShadow: `0 0 0 3px rgba(90, 53, 215, 0.6)`,
+					borderColor: "brand !important"
+				}
+			}
+		}
+	})
+};
+
 export default function useTheme() {
 	const user = useUser();
 	const path = useLocation().pathname;
-
 	const theme = useMemo(
 		() =>
 			extendBaseTheme({
 				colors,
-				config,
+				config: themeConfig,
 				styles: {
 					global: (props: StyleFunctionProps | Dict<any>) => ({
 						body: {
@@ -97,19 +127,20 @@ export default function useTheme() {
 							color: mode("#393942cc!important", "#dedef1be!important")(props)
 						},
 						html: {
+							// i wanted to style scrollbar dynamically, but it doesnt work in normal way, and i would need to do some classes for it, but im lazy and i fuck it
 							"&::-webkit-scrollbar": {
 								width: "6px",
 								padding: "2px"
 							},
 							"&::-webkit-scrollbar-thumb": {
-								backgroundColor: "brand.900",
+								backgroundColor: "#39393a",
 								borderRadius: "1.5px"
 							},
 							"&::-webkit-scrollbar-thumb:hover": {
 								backgroundColor: mode("#c4c4c4", "#39393a")(props)
 							},
 							"&::-webkit-scrollbar-thumb:active": {
-								backgroundColor: "brand.900"
+								backgroundColor: "brand"
 							},
 							"-webkit-tap-highlight-color": "transparent",
 							"*::selection": {
@@ -219,7 +250,6 @@ export default function useTheme() {
 					Avatar,
 					Slider,
 					Form,
-					Input,
 					Alert,
 					Popover,
 					CloseButton,
@@ -266,15 +296,30 @@ export default function useTheme() {
 								_active: {
 									bg: "#278adb"
 								}
+							},
+							solid: {
+								bg: "alpha200",
+								_hover: {
+									bg: "alpha300"
+								},
+								_active: {
+									bg: "alpha400"
+								}
 							}
 						},
 						baseStyle: {
 							rounded: "xl",
+							transform: "auto-gpu",
+							transition: `transform .2s ${config.cubicEase}, background .2s ${config.cubicEase}, color .2s ${config.cubicEase}`,
 							_hover: {
 								textDecor: "none"
+							},
+							_active: {
+								scale: 0.9
 							}
 						}
 					}),
+					Input: mergeThemeOverride(Input, multipartComponents.input),
 					IconButton: {
 						variants: {
 							brand: {

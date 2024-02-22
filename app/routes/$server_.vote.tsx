@@ -10,6 +10,7 @@ import ServerVoteView from "~/components/layout/server/vote/ServerVoteView";
 import Vote from "~/components/layout/server/vote/Vote";
 import { db } from "~/components/server/db/db.server";
 import { getUser, getUserId } from "~/components/server/db/models/user";
+import { cachePrefetch } from "~/components/server/functions/fetchHelpers.server";
 import { csrf } from "~/components/server/functions/security.server";
 import { AnyServerModel } from "~/components/types/minecraftServer";
 import Link from "~/components/utils/Link";
@@ -123,19 +124,26 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 	}
 
 	const userId = await getUserId(request);
+	// vote in last 12 hours
 	const vote = userId
 		? await db.vote.findFirst({
 				where: {
 					server_id: foundServer.id,
-					user_id: userId
+					user_id: userId,
+					created_at: {
+						gte: new Date(Date.now() - votingCooldown)
+					}
 				}
 		  })
 		: null;
 
-	return typedjson({
-		data: foundServer,
-		vote
-	});
+	return typedjson(
+		{
+			data: foundServer,
+			vote
+		},
+		cachePrefetch(request)
+	);
 }
 
 export function meta({ data, matches }: MetaArgs) {

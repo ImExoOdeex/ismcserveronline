@@ -7,6 +7,7 @@ import { isbot } from "isbot";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import Layout from "./components/layout/Layout";
 import { getUser } from "./components/server/db/models/user";
+import { requireEnv } from "./components/server/functions/env.server";
 import { validateServer } from "./components/server/functions/validateServer";
 import { GlobalContext } from "./components/utils/GlobalContext";
 import { getCookieWithoutDocument } from "./components/utils/functions/cookies";
@@ -97,6 +98,16 @@ export function links() {
 // ----------------------------- APP -----------------------------
 
 export default function App() {
+	return (
+		<Document>
+			<GlobalContext>
+				<InsideGlobal />
+			</GlobalContext>
+		</Document>
+	);
+}
+
+function InsideGlobal() {
 	const { cookies } = useTypedLoaderData<typeof loader>();
 	const cookieManager = useConst(cookieStorageManagerSSR(cookies));
 	const path = useLocation().pathname;
@@ -107,44 +118,53 @@ export default function App() {
 	const animationKey = isDash ? "dashboard" : path;
 
 	return (
-		<Document>
-			<ChakraBaseProvider resetCSS theme={customTheme} colorModeManager={cookieManager}>
-				<GlobalContext>
-					<Layout>
-						<AnimatePresence initial={false} mode={"popLayout"}>
-							<motion.main
-								custom={isDash}
-								key={animationKey}
-								initial={{
-									opacity: 0,
-									scale: 0.95
-								}}
-								animate={{
-									opacity: 1,
-									scale: 1
-								}}
-								exit={{
-									opacity: 0,
-									scale: 0.95
-								}}
-								transition={{
-									ease: [0.25, 0.1, 0.25, 1],
-									duration: 0.2
-								}}
-								style={{
-									overflow: "hidden",
-									display: "flex",
-									flexDirection: "column",
-									flex: 1
-								}}
-							>
-								{outlet}
-							</motion.main>
-						</AnimatePresence>
-					</Layout>
-				</GlobalContext>
-			</ChakraBaseProvider>
-		</Document>
+		<ChakraBaseProvider
+			resetCSS
+			toastOptions={{
+				defaultOptions: {
+					duration: 5000,
+					isClosable: true,
+					position: "bottom-right",
+					variant: "subtle",
+					status: "success"
+				}
+			}}
+			theme={customTheme}
+			colorModeManager={cookieManager}
+		>
+			<Layout>
+				<AnimatePresence initial={false} mode={"popLayout"}>
+					<motion.main
+						custom={isDash}
+						key={animationKey}
+						initial={{
+							opacity: 0,
+							scale: 0.95
+						}}
+						animate={{
+							opacity: 1,
+							scale: 1
+						}}
+						exit={{
+							opacity: 0,
+							scale: 0.95
+						}}
+						transition={{
+							ease: [0.25, 0.1, 0.25, 1],
+							duration: 0.2
+						}}
+						style={{
+							overflow: "hidden",
+							display: "flex",
+							flexDirection: "column",
+							flex: 1
+						}}
+					>
+						{outlet}
+					</motion.main>
+				</AnimatePresence>
+			</Layout>
+		</ChakraBaseProvider>
 	);
 }
 
@@ -152,12 +172,12 @@ export default function App() {
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
 	const url = new URL(request.url);
-	const term = url.searchParams.get(process.env.NO_ADS_PARAM_NAME ?? "nope");
+	const term = url.searchParams.get(requireEnv("NO_ADS_PARAM_NAME") ?? "nope");
 
-	const shouldRedirect: boolean = term?.toString() === process.env.NO_ADS_PARAM_VALUE;
+	const shouldRedirect: boolean = term?.toString() === requireEnv("NO_ADS_PARAM_VALUE");
 	if (shouldRedirect) {
 		throw redirect(url.pathname, {
-			headers: [["Set-Cookie", `no_ads=${process.env.NO_ADS_PARAM_VALUE}`]]
+			headers: [["Set-Cookie", `no_ads=${requireEnv("NO_ADS_PARAM_VALUE")}`]]
 		});
 	}
 
@@ -165,26 +185,31 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
 	const showAds = user?.everPurchased
 		? false
-		: getCookieWithoutDocument("no_ads", request.headers.get("cookie") ?? "") !== process.env.NO_ADS_PARAM_VALUE;
+		: getCookieWithoutDocument("no_ads", request.headers.get("cookie") ?? "") !== requireEnv("NO_ADS_PARAM_VALUE");
 	// ^^^ code for no ads up there uwu ^^^
 
-	console.log("user-agent: ", request.headers.get("user-agent"));
+	// console.log("user-agent: ", request.headers.get("user-agent"));
 	const isBot = isbot(request.headers.get("user-agent"));
 
 	const start = Number(context.start ?? Date.now());
+	const requestHandledIn = Date.now() - start;
 
 	return typedjson({
 		cookies: request.headers.get("cookie") ?? "",
 		showAds,
 		user,
-		dashUrl: process.env.DASH_URL,
+		dashUrl: requireEnv("DASH_URL"),
 		isBot,
-		start
+		timings: {
+			start,
+			requestHandledIn
+		}
 	});
 }
 
 export function shouldRevalidate({ nextUrl }: ShouldRevalidateFunctionArgs) {
 	if (nextUrl.pathname === "/login") return true;
+	if (nextUrl.pathname === "/") return true;
 	return false;
 }
 

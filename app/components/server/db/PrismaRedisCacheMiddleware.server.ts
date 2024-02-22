@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { isObject } from "~/components/utils/functions/utils";
+import { copyObjectWithoutKeys, isObject } from "~/components/utils/functions/utils";
 import { cache as redisCache } from "./redis.server";
 
 type Result = Record<string, unknown>;
@@ -57,7 +57,7 @@ function getCacheKey(params: Params, queryType = "uq") {
 
 function checkIfCacheHasAllFields<T>(cache: Result | null, select: Record<string, boolean>): cache is Required<T> {
 	if (!cache) return false;
-	console.log("cache", cache);
+	// console.log("cache", cache);
 	console.log("select", select);
 	try {
 		return Object.keys(select).every((key) => {
@@ -177,8 +177,8 @@ export async function redisCacheMiddleware<T = Result>(params: Params, next: (pa
 					return acc;
 				}, {})) as Record<string, boolean>;
 			const cacheRaw = await redisCache.get(cacheKey);
-			const cache = cacheRaw ? (JSON.parse(cacheRaw) as Partial<T>) : null;
-			const cacheHasAllFields = checkIfCacheHasAllFields<T>(cache, select);
+			const cache = cacheRaw ? (JSON.parse(cacheRaw) as T) : null;
+			const cacheHasAllFields = checkIfCacheHasAllFields<T>(cache as Required<T>, select);
 			console.log("Cache has all fields:", cacheHasAllFields);
 
 			if (cacheHasAllFields) {
@@ -186,6 +186,7 @@ export async function redisCacheMiddleware<T = Result>(params: Params, next: (pa
 				return cache as T;
 			} else {
 				console.log("Cache miss or partial cache for findFirst - executing query and caching result:", cacheKey);
+				console.log("Result Cache:", cache && copyObjectWithoutKeys(cache, ["favicon"] as any));
 				result = await goOn();
 				await redisCache.set(cacheKey, JSON.stringify(result));
 				return result;

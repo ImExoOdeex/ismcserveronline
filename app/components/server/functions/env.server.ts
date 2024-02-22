@@ -1,3 +1,5 @@
+import { json } from "@remix-run/node";
+
 const envs = [
 	"DATABASE_URL",
 	"REDIS_HOST",
@@ -24,9 +26,20 @@ const envs = [
 type Env = (typeof envs)[number];
 
 export function requireEnv(key: Env) {
-	console.log("key", key);
 	const value = process.env[key];
 	if (!value) throw new Error(`${key} is not set.`);
 
 	return value;
+}
+
+export function secureBotRoute(request: Request) {
+	if (request.headers.get("Authorization") !== requireEnv("SUPER_DUPER_API_ACCESS_TOKEN")) {
+		throw json(
+			{
+				success: false,
+				message: "This rotue is only accessible by the discord bot. Your token is simply not matching the right one :)"
+			},
+			{ status: 401 }
+		);
+	}
 }

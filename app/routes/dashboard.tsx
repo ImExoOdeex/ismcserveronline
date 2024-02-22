@@ -75,22 +75,25 @@ export default function Dashboard() {
 			}
 		];
 
-		if (user?.prime) {
-			yes.push({
-				name: "Prime",
-				to: "/dashboard/prime"
-			});
-		}
+		// doing this, cause on page transition if will loose the data, cuz it's weird
+		if (user) {
+			if (user.prime) {
+				yes.push({
+					name: "Prime",
+					to: "/dashboard/prime"
+				});
+			}
 
-		if (user.role === "ADMIN") {
-			yes.push({
-				name: "Admin",
-				to: "/dashboard/admin"
-			});
+			if (user.role === "ADMIN") {
+				yes.push({
+					name: "Admin",
+					to: "/dashboard/admin"
+				});
+			}
 		}
 
 		return yes;
-	}, [user.role]);
+	}, [user]);
 
 	const logoutFetcher = useFetcher();
 
@@ -125,6 +128,7 @@ export default function Dashboard() {
 			});
 	}
 
+	if (!user) return null;
 	return (
 		<VStack w="100%" maxW={"1200px"} mx="auto" align={"start"} mt={5} spacing={10} px={4}>
 			<Flex
@@ -191,9 +195,19 @@ export default function Dashboard() {
 						md: "hidden"
 					}}
 				>
-					<Flex gap={4} w="max-content">
+					<Flex
+						gap={0}
+						w={{
+							base: "min-content",
+							md: "100%"
+						}}
+					>
 						{buttons.map((button, i) => (
 							<Button
+								w={{
+									base: "min-content",
+									md: "100%"
+								}}
 								as={Link}
 								variant={"ghost"}
 								rounded={"none"}

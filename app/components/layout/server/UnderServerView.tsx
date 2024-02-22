@@ -10,13 +10,20 @@ interface Props {
 	server: string;
 	bedrock: boolean;
 	promiseData: Promise<AnyServer>;
+	voteCount: number | undefined;
 }
 
-export default memo(function UnderServerView({ server, bedrock, promiseData }: Props) {
+export default memo(function UnderServerView({ server, bedrock, promiseData, voteCount }: Props) {
 	const toast = useToast();
 
 	return (
-		<Flex justifyContent={"space-between"} w="100%" alignItems={"center"} gap={2}>
+		<Flex
+			justifyContent={"space-between"}
+			w="100%"
+			alignItems={"center"}
+			gap={4}
+			flexDirection={{ base: "column", md: "row" }}
+		>
 			<Flex>
 				<Suspense
 					fallback={
@@ -41,8 +48,20 @@ export default memo(function UnderServerView({ server, bedrock, promiseData }: P
 				</Suspense>
 			</Flex>
 
-			<Flex justifyContent={"flex-end"} alignItems={"center"} gap={2}>
+			<Flex
+				justifyContent={"flex-end"}
+				alignItems={"center"}
+				gap={2}
+				w={{
+					base: "100%",
+					md: "auto"
+				}}
+			>
 				<Button
+					w={{
+						base: "50%",
+						md: "auto"
+					}}
 					onClick={async () => {
 						await navigator.clipboard.writeText(server);
 						toast({
@@ -61,13 +80,17 @@ export default memo(function UnderServerView({ server, bedrock, promiseData }: P
 				</Button>
 
 				<Button
+					w={{
+						base: "50%",
+						md: "auto"
+					}}
 					size="lg"
 					variant={"brand"}
 					as={Link}
 					to={`/${bedrock ? "bedrock/" : ""}${server}/vote`}
 					rightIcon={<Icon as={TbSquareRoundedChevronsUpFilled} boxSize={6} />}
 				>
-					Vote
+					Vote ({voteCount || 0})
 				</Button>
 			</Flex>
 		</Flex>

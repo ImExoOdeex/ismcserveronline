@@ -48,11 +48,10 @@ export default function Main({
 			<Flex w={{ base: "100%", md: "50%" }}>
 				<Image
 					src="/webp/ismcserveronlineimg.webp"
-					display={"block"}
 					alt="image"
-					width={"100%"}
-					height={"100%"}
-					sx={{ imageRendering: "pixelated", aspectRatio: "4/3" }}
+					h="fit-content"
+					aspectRatio={"4/3"}
+					sx={{ imageRendering: "pixelated" }}
 				/>
 			</Flex>
 		</Stack>

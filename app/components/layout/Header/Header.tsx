@@ -1,7 +1,7 @@
 import { Badge, Box, Button, Flex, HStack, Text } from "@chakra-ui/react";
 import { useLocation } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { PiCrownSimpleDuotone } from "react-icons/pi";
 import useRootData from "~/components/utils/hooks/useRootData";
 import Link from "../../utils/Link";
@@ -10,15 +10,15 @@ import HamburgerMenu from "./Mobile/HamburgerMenu";
 import ServerSearch from "./ServerSearch";
 import ThemeToggle from "./ToggleTheme";
 
-type Props = {
+interface Props {
 	isMenuOpen: boolean;
 	setIsMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
-};
+}
 
-export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
+export default memo(function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 	const [hasScrolled, setHasScrolled] = useState(false);
 
-	function handleScroll() {
+	const handleScroll = useCallback(() => {
 		const position = window.pageYOffset;
 
 		if (position > 10) {
@@ -26,7 +26,7 @@ export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 		} else {
 			setHasScrolled(false);
 		}
-	}
+	}, [hasScrolled, setHasScrolled]);
 
 	useEffect(() => {
 		window.addEventListener("scroll", () => handleScroll(), { passive: true });
@@ -145,4 +145,4 @@ export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 			</Flex>
 		</Flex>
 	);
-}
+});

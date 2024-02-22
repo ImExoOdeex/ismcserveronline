@@ -2,6 +2,7 @@ import { PaymentStatus, Role, SOURCE } from "@prisma/client";
 import { json, type ActionFunctionArgs } from "@remix-run/node";
 import * as fs from "node:fs/promises";
 import { db } from "~/components/server/db/db.server";
+import { secureBotRoute } from "~/components/server/functions/env.server";
 import { Guild } from "./dashboard.bot._index";
 
 // enum Role {
@@ -122,6 +123,8 @@ import { Guild } from "./dashboard.bot._index";
 //   }
 
 export async function action({ request }: ActionFunctionArgs) {
+	secureBotRoute(request);
+
 	// const [servers, checks] = await Promise.all([
 	// 	db.server.findMany({
 	// 		select: {

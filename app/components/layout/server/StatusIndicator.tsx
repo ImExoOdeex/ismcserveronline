@@ -1,4 +1,4 @@
-import { Box, Flex, HStack, Heading, keyframes, useToken } from "@chakra-ui/react";
+import { Box, Flex, Heading, keyframes, useToken } from "@chakra-ui/react";
 import { useMemo } from "react";
 
 interface Props {
@@ -13,28 +13,36 @@ export default function StatusIndicator({ online, onlineColor = "green", offline
 	const boxShadowInfinityPulse = useMemo(() => {
 		return keyframes({
 			"0%": {
-				boxShadow: `0px 0px 5px 2px ${onlineColor}`
+				boxShadow: `0px 0px 5px 2px ${online ? onlineColor : offlineColor}`
 			},
 			"100%": {
-				boxShadow: `0px 0px 12px 6px ${onlineColor}`
+				boxShadow: `0px 0px 12px 6px ${online ? onlineColor : offlineColor}`
 			}
 		});
 	}, []);
 
 	return (
-		<HStack spacing={2}>
-			<Flex gap={2} alignItems={"center"} pos="relative">
-				<Box
-					boxSize={3}
-					rounded="full"
-					bg={online ? onlineColor : offlineColor}
-					animation={`${boxShadowInfinityPulse} 1s infinite alternate`}
-					boxShadow={`0px 0px 5px ${onlineColor}`}
-				/>
-				<Heading fontSize="lg" letterSpacing={"3px"} color={online ? onlineColor : offlineColor}>
-					{online ? "Online" : "Offline"}
-				</Heading>
-				<Flex
+		<Flex
+			gap={2}
+			alignItems={"center"}
+			pos="relative"
+			py={2}
+			px={4}
+			rounded={"lg"}
+			bg={online ? `rgba(0, 255, 17, 0.1)` : `rgba(255, 38, 0, 0.1)`}
+			h="min-content"
+		>
+			<Box
+				boxSize={3}
+				rounded="full"
+				bg={online ? onlineColor : offlineColor}
+				animation={`${boxShadowInfinityPulse} 1s infinite alternate`}
+				boxShadow={`0px 0px 5px ${onlineColor}`}
+			/>
+			<Heading fontSize="lg" letterSpacing={"3px"} color={online ? onlineColor : offlineColor}>
+				{online ? "Online" : "Offline"}
+			</Heading>
+			{/* <Flex
 					pos="absolute"
 					right={0}
 					bottom={0}
@@ -42,8 +50,7 @@ export default function StatusIndicator({ online, onlineColor = "green", offline
 					h={"2px"}
 					bg={online ? onlineColor : offlineColor}
 					rounded={"1px"}
-				/>
-			</Flex>
-		</HStack>
+				/> */}
+		</Flex>
 	);
 }

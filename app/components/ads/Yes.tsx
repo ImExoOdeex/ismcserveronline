@@ -2,7 +2,7 @@ import { Icon } from "@chakra-ui/icons";
 import { Box, Flex, Text, type BoxProps } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { PiShieldWarningDuotone } from "react-icons/pi";
-import useGlobalContext from "../utils/hooks/useGlobalContext";
+import { useGlobalContext } from "../utils/GlobalContext";
 import useRootData from "../utils/hooks/useRootData";
 
 export enum adType {

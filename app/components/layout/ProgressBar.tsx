@@ -1,6 +1,6 @@
 import { Flex, useColorModeValue } from "@chakra-ui/react";
 import { TargetAndTransition, motion, useAnimationControls } from "framer-motion";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import config from "~/components/config/config";
 import { useProgressBar } from "../utils/hooks/useProgressBar";
 
@@ -14,7 +14,7 @@ interface Props {
 	trickleTime: number;
 }
 
-export default function ProgressBar({
+export default memo(function ProgressBar({
 	doneWidthDuration = 0.2,
 	height = 2,
 	heightDuration = 0.4,
@@ -48,6 +48,7 @@ export default function ProgressBar({
 
 	return (
 		<motion.div
+			id="progress-bar"
 			animate={{
 				height: (completed && progress >= 100) || progress === 0 ? 0 : height,
 				opacity: (completed && progress >= 100) || progress === 0 ? 0 : 1
@@ -95,8 +96,8 @@ export default function ProgressBar({
 					}
 				}}
 			>
-				<Flex w="100%" h="100%" bg={color} />
+				<Flex w="100%" h={height + "px"} bg={color} />
 			</motion.div>
 		</motion.div>
 	);
-}
+});

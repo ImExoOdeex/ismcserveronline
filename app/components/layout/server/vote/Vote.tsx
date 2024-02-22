@@ -138,7 +138,7 @@ export default memo(function Vote() {
 						md: "auto"
 					}}
 				>
-					Vote
+					Vote{fetcher.data?.success ? "d!" : ""}
 				</Button>
 			</Flex>
 		</VoteOverlay>

@@ -1,6 +1,13 @@
-import { useTypedRouteLoaderData } from "remix-typedjson";
+import { useEffect, useRef } from "react";
+import { UseDataFunctionReturn, useTypedRouteLoaderData } from "remix-typedjson";
 import type { loader } from "~/root";
 
 export default function useRootData() {
-	return useTypedRouteLoaderData<typeof loader>("root")!;
+	const lastData = useRef({});
+	const data = useTypedRouteLoaderData<typeof loader>("root")! || (lastData.current as UseDataFunctionReturn<typeof loader>);
+	useEffect(() => {
+		if (data) lastData.current = data;
+	}, [data]);
+
+	return data;
 }

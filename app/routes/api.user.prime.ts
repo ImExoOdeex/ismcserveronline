@@ -17,7 +17,7 @@ export async function action({ request }: ActionFunctionArgs) {
 	});
 }
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader(_: LoaderFunctionArgs) {
 	return json("Method not allowed", {
 		status: 405,
 		headers: {

@@ -1,6 +1,6 @@
 import { Flex } from "@chakra-ui/react";
 import type { Transition } from "framer-motion";
-import { memo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import BackgroundUtils from "./BackgroundUtils";
 import Column from "./Column";
 import CookieConstent from "./CookieConsent";
@@ -10,16 +10,18 @@ import SideMenu from "./Header/Mobile/SideMenu";
 import { ChakraBox } from "./MotionComponents";
 import ProgressBar from "./ProgressBar";
 
-function Layout({ children }: { children?: React.ReactNode }) {
-	const mobileMenuTransition = {
-		duration: 0.5,
-		ease: [0.4, 0, 0.3, 1]
-	} as Transition;
+export const mobileMenuTransition = {
+	duration: 0.5,
+	ease: [0.4, 0, 0.3, 1]
+} as Transition;
 
+export default memo(function Layout({ children }: { children?: React.ReactNode }) {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
+	const isClient = useMemo(() => typeof window !== "undefined", []);
 
 	return (
 		<>
+			{/* not rendering only on clinet, since I dont use `hydrateRoot`, but normal `hydrate` from react 17 and it wouldn't just load if properry. just see yourself. */}
 			<ProgressBar />
 
 			<ChakraBox
@@ -34,7 +36,7 @@ function Layout({ children }: { children?: React.ReactNode }) {
 				<BackgroundUtils />
 
 				<Header isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
-				<Flex w="100%" minH={"calc(100vh - 121px)"} flex={1} justifyContent={"flex-start"}>
+				<Flex w="100%" minH={"calc(100vh - 69px)"} flex={1} justifyContent={"flex-start"}>
 					<Column />
 
 					<Flex flexDir={"column"} w="100%" flex={1}>
@@ -43,13 +45,12 @@ function Layout({ children }: { children?: React.ReactNode }) {
 
 					<Column />
 				</Flex>
-				<CookieConstent />
 				<Footer />
 			</ChakraBox>
 
-			<SideMenu mobileMenuTransition={mobileMenuTransition} isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} />
+			<CookieConstent />
+
+			{isClient && <SideMenu isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} />}
 		</>
 	);
-}
-
-export default memo(Layout);
+});

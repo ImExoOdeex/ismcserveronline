@@ -1,11 +1,12 @@
 import { Flex, Image, useColorMode, useToken } from "@chakra-ui/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useContext } from "react";
-import { context } from "../utils/GlobalContext";
+import { memo } from "react";
+import config from "../config/config";
+import { useGlobalContext } from "../utils/GlobalContext";
 import useUser from "../utils/hooks/useUser";
 
-export default function BackgroundUtils() {
-	const { displayGradient, displayLogoInBg, gradientColor } = useContext(context);
+export default memo(function BackgroundUtils() {
+	const { displayGradient, displayLogoInBg, gradientColor } = useGlobalContext();
 
 	const { colorMode } = useColorMode();
 	const user = useUser();
@@ -20,7 +21,7 @@ export default function BackgroundUtils() {
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
 						transition={{
-							ease: [0.25, 0.1, 0.25, 1],
+							ease: config.ease,
 							duration: 0.75
 						}}
 					>
@@ -44,16 +45,43 @@ export default function BackgroundUtils() {
 				)}
 			</AnimatePresence>
 			{displayGradient && (
-				<svg style={{ width: "100%", opacity: colorMode === "light" ? (gradientColor === "gold" ? 0.2 : 0.25) : 0.2 }}>
-					<defs>
-						<linearGradient id="background-gradient" gradientTransform="rotate(90)">
-							<stop offset="0%" stopColor={rawColor} style={{ transition: "stop-color 0.4s ease 0s" }}></stop>
-							<stop offset="100%" stopColor="transparent"></stop>
-						</linearGradient>
-					</defs>
-					<rect fill="url('#background-gradient')" width="100%" height="100%"></rect>
-				</svg>
+				<>
+					<svg
+						style={{ width: "100%", opacity: colorMode === "light" ? (gradientColor === "gold" ? 0.2 : 0.25) : 0.2 }}
+					>
+						<defs>
+							<linearGradient id="background-gradient" gradientTransform="rotate(70)">
+								<stop offset="0%" stopColor={rawColor} style={{ transition: "stop-color 0.4s ease 0s" }}></stop>
+								<stop offset="100%" stopColor="transparent"></stop>
+							</linearGradient>
+						</defs>
+						<rect fill="url('#background-gradient')" width="100%" height="100%"></rect>
+					</svg>
+
+					<svg
+						style={{ width: "100%", opacity: colorMode === "light" ? (gradientColor === "gold" ? 0.2 : 0.25) : 0.2 }}
+					>
+						<defs>
+							<linearGradient
+								id="background-gradient2"
+								gradientTransform="rotate(70)"
+								gradientUnits="objectBoundingBox"
+							>
+								<stop offset="0%" stopColor={rawColor} style={{ transition: "stop-color 0.4s ease 0s" }}></stop>
+								<stop offset="100%" stopColor="transparent"></stop>
+							</linearGradient>
+						</defs>
+						<rect
+							fill="url('#background-gradient2')"
+							width="100%"
+							height="100%"
+							// mirror in x
+							transform="scale(-1, 1)"
+							transform-origin="center"
+						></rect>
+					</svg>
+				</>
 			)}
 		</Flex>
 	);
-}
+});

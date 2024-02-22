@@ -1,10 +1,11 @@
 import { Flex } from "@chakra-ui/react";
 import { useLocation } from "@remix-run/react";
+import { memo } from "react";
 import { Ad, adType } from "../ads/Yes";
 
-export default function Column() {
-	const columnWidth = (1920 - 1200) * 0.5 - 8;
+const columnWidth = (1920 - 1200) * 0.5 - 8;
 
+export default memo(function Column() {
 	const path = useLocation().pathname;
 
 	return (
@@ -23,4 +24,4 @@ export default function Column() {
 			</Flex>
 		</Flex>
 	);
-}
+});

@@ -1,23 +1,26 @@
 import { Button, Text } from "@chakra-ui/react";
 import { AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import config from "../config/config";
 import { getCookieWithoutDocument } from "../utils/functions/cookies";
 import useRootData from "../utils/hooks/useRootData";
 import { ChakraBox } from "./MotionComponents";
 
-function CookieConsent() {
+const name = "cookie-consent";
+
+export default memo(function CookieConsent() {
 	const { cookies } = useRootData();
 
-	const name = "cookie-consent";
-	const loaderConsent = getCookieWithoutDocument(name, cookies);
+	const loaderConsent = useMemo(() => {
+		return getCookieWithoutDocument(name, cookies);
+	}, [cookies]);
 
 	const [isCookieConsent, setIsCookieConsent] = useState(loaderConsent ? true : false);
 
-	function accept() {
+	const accept = useCallback(() => {
 		document.cookie = `${name}=true`;
 		setIsCookieConsent(true);
-	}
+	}, []);
 
 	return (
 		<AnimatePresence mode="wait">
@@ -34,7 +37,7 @@ function CookieConsent() {
 						base: "5",
 						md: "auto"
 					}}
-					zIndex={100}
+					zIndex={10000}
 					fontWeight={"500"}
 					rounded={"lg"}
 					border={"1px solid"}
@@ -54,5 +57,4 @@ function CookieConsent() {
 			)}
 		</AnimatePresence>
 	);
-}
-export default CookieConsent;
+});

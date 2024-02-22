@@ -1,5 +1,5 @@
 import { Box, Link as ChakraLink, Flex, HStack, Stack, Text, Tooltip, VStack } from "@chakra-ui/react";
-import { useContext, useMemo, useState } from "react";
+import { useCallback, useContext, useMemo, useState } from "react";
 import { ClientStyleContext } from "~/context";
 import pack from "../../../package.json";
 import Link from "../utils/Link";
@@ -8,7 +8,7 @@ import useRootData from "../utils/hooks/useRootData";
 
 export default function Footer() {
 	const name = "tracking";
-	const { cookies, start } = useRootData();
+	const { cookies, timings } = useRootData();
 
 	const [cookieState, setCookieState] = useState<"track" | "no-track">(
 		getCookieWithoutDocument(name, cookies) == "no-track" ? "no-track" : "track"
@@ -17,10 +17,10 @@ export default function Footer() {
 	const clientContext = useContext(ClientStyleContext);
 
 	const requestStartToHydration = useMemo(() => {
-		return (clientContext ? clientContext.hydrationTime : Date.now()) - start;
-	}, [start]);
+		return (clientContext ? clientContext.hydrationTime : Date.now()) - timings.start;
+	}, [timings.start]);
 
-	function toggleTracking() {
+	const toggleTracking = useCallback(() => {
 		const cookie = getCookie(name);
 		if (cookie == "track" || !cookie) {
 			document.cookie = `${name}=no-track`;
@@ -29,7 +29,7 @@ export default function Footer() {
 			document.cookie = `${name}=track`;
 			setCookieState("track");
 		}
-	}
+	}, []);
 
 	return (
 		<Box h={"auto"} as="footer" mt={10}>
@@ -113,6 +113,11 @@ export default function Footer() {
 						<HStack w="100%" justifyContent={"space-between"}>
 							<Text fontWeight="700">Other</Text>
 							<HStack>
+								<Tooltip label="Time server took to handle request" hasArrow>
+									<Text fontWeight="500" fontSize={"xs"}>
+										{timings.requestHandledIn}ms
+									</Text>
+								</Tooltip>
 								<Tooltip label="Time from request start to client hydration" hasArrow>
 									<Text fontWeight="500" fontSize={"xs"}>
 										{requestStartToHydration}ms

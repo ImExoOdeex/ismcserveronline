@@ -1,6 +1,7 @@
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { DarkMode, IconButton, Text, Tooltip, useColorMode, useColorModeValue, useEventListener } from "@chakra-ui/react";
 import { AnimatePresence, motion } from "framer-motion";
+import { startTransition, useCallback } from "react";
 import { useActionKey } from "~/components/utils/hooks/useActionKey";
 
 export default function ThemeToggle() {
@@ -9,12 +10,18 @@ export default function ThemeToggle() {
 	const bgColorActive = useColorModeValue("rgba(68, 51, 122, .2)", "rgba(236, 201, 75,.2)");
 	const { colorMode, toggleColorMode } = useColorMode();
 
+	const toggleTheme = useCallback(() => {
+		startTransition(() => {
+			toggleColorMode();
+		});
+	}, [toggleColorMode]);
+
 	useEventListener("keydown", (event) => {
 		const isMac = /(Mac|iPhone|iPod|iPad)/i.test(navigator?.platform);
 		const hotkey = isMac ? "metaKey" : "ctrlKey";
 		if (event?.key?.toLowerCase() === "i" && event[hotkey] && !event.shiftKey) {
 			event.preventDefault();
-			toggleColorMode();
+			toggleTheme();
 		}
 	});
 
@@ -59,7 +66,7 @@ export default function ThemeToggle() {
 							)
 						}
 						aria-label={"Toggle color mode"}
-						onClick={toggleColorMode}
+						onClick={toggleTheme}
 					/>
 				</Tooltip>
 			</motion.div>

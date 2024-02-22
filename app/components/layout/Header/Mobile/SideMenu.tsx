@@ -14,22 +14,40 @@ import {
 	useColorModeValue
 } from "@chakra-ui/react";
 import { useFetcher } from "@remix-run/react";
-import type { Transition } from "framer-motion";
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { BiSearchAlt } from "react-icons/bi";
 import Link from "~/components/utils/Link";
 import useUser from "~/components/utils/hooks/useUser";
 import links from "../../../config/config";
+import { mobileMenuTransition } from "../../Layout";
 
-type Props = {
-	mobileMenuTransition: Transition;
+interface Props {
 	isOpen: boolean;
 	setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-};
+}
 
-export default function SideMenu({ isOpen, setIsOpen, mobileMenuTransition }: Props) {
-	const bg = useColorModeValue("white", "#0f0f0f");
+const routes = [
+	{
+		name: "Homepage",
+		link: "/"
+	},
+	{
+		name: "Popular servers",
+		link: "/popular-servers"
+	},
+	{
+		name: "FAQ",
+		link: "/faq"
+	},
+	{
+		name: "API",
+		link: "/api"
+	}
+];
+
+export default function SideMenu({ isOpen, setIsOpen }: Props) {
+	const bg = useColorModeValue("white", "bg");
 
 	const { colorMode, toggleColorMode } = useColorMode();
 
@@ -37,26 +55,9 @@ export default function SideMenu({ isOpen, setIsOpen, mobileMenuTransition }: Pr
 	const fetcher = useFetcher();
 	const borderInputAutoFill = useColorModeValue("#dfe4e8", "#262626");
 	const bgInputAutoFill = useColorModeValue("#e2e8f0", "#1d1d1d");
-	const submitting = fetcher.state !== "idle";
-
-	const routes = [
-		{
-			name: "Homepage",
-			link: "/"
-		},
-		{
-			name: "Popular servers",
-			link: "/popular-servers"
-		},
-		{
-			name: "FAQ",
-			link: "/faq"
-		},
-		{
-			name: "API",
-			link: "/api"
-		}
-	];
+	const submitting = useMemo(() => {
+		return fetcher.state !== "idle";
+	}, [fetcher.state]);
 
 	const user = useUser();
 

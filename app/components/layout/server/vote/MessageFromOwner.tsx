@@ -11,22 +11,17 @@ interface Props {
 
 export default memo(function MessageFromOwner({ message, ownerId, bedrock, server }: Props) {
 	return (
-		<Flex w="100%" flexDir={"column"} gap={2}>
-			<Text fontSize="xl" fontWeight="bold">
-				Message from the owner
-			</Text>
-			<Text>{message || "No message from the owner"}</Text>
-
+		<Flex w="100%" flexDir={"row"} gap={2} justifyContent={"space-between"} alignItems={"center"}>
+			<Flex w="100%" flexDir={"column"} gap={2}>
+				<Text fontSize="xl" fontWeight="bold">
+					Message from the owner
+				</Text>
+				<Text>{message || "No message from the owner"}</Text>
+			</Flex>
 			{!ownerId && (
-				<Flex mt={2} flexDir={"column"} gap={2}>
-					<Text fontWeight={500} textDecor={"underline"}>
-						Do you own this server?
-					</Text>
-
-					<Button as={Link} to={`/${bedrock ? "bedrock/" : ""}${server}/verify`} w="min-content" px={6}>
-						Verify
-					</Button>
-				</Flex>
+				<Button as={Link} to={`/${bedrock ? "bedrock/" : ""}${server}/verify`} w="min-content" px={6}>
+					Your server?
+				</Button>
 			)}
 		</Flex>
 	);

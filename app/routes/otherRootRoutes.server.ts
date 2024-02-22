@@ -17,38 +17,13 @@ export const otherRootRoutes: Record<string, Handler> = {
 			});
 		}
 
-		const [servers, checks] = await Promise.all([
-			db.server.findMany({
-				select: {
-					server: true
-				}
-			}),
-			db.check.findMany({
-				select: {
-					server: true,
-					online: true
-				}
-			})
-		]);
-
-		// delete duplicate servers
-		const seen = new Set();
-		const filteredServers = servers.filter((server) => {
-			const duplicate = seen.has(server.server);
-			seen.add(server.server);
-			return !duplicate;
-		});
-		const filteredChecks = checks.filter((check) => {
-			const duplicate = seen.has(check.server);
-			seen.add(check.server);
-
-			// filter only addresses that are not ips, but valid domains
-			const isValidAddress = check.server.match(/^(?!:\/\/)([a-zA-Z0-9-_]+\.)*[a-zA-Z0-9][a-zA-Z0-9-_]+\.[a-zA-Z]{2,11}?$/);
-
-			return !duplicate && isValidAddress && check.online;
+		const serversArr = await db.server.findMany({
+			select: {
+				server: true
+			}
 		});
 
-		const filtered = new Set(filteredServers.concat(filteredChecks));
+		const filtered = new Set(serversArr);
 
 		// remove long urls from filtered
 		const longUrls = new Set<{ server: string }>();
@@ -135,11 +110,11 @@ export const otherRootRoutes: Record<string, Handler> = {
 	}
 };
 
-export const otherRootRouteHandlers: Handler[] = [
+export const otherRootRouteHandlers = [
 	...Object.entries(otherRootRoutes).map(([path, handler]) => {
 		return (request: Request, remixContext: EntryContext) => {
 			if (new URL(request.url).pathname !== path) return null;
 			return handler(request, remixContext);
 		};
 	})
-];
+] satisfies Handler[];

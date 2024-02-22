@@ -75,13 +75,14 @@ function ErrorBoundary() {
 	const clientStyleData = useContext(ClientStyleContext);
 	const reinjectStylesRef = useRef(true);
 
-	useLayoutEffect(() => {
-		if (!reinjectStylesRef.current) return;
+	if (clientStyleData)
+		useLayoutEffect(() => {
+			if (!reinjectStylesRef.current) return;
 
-		clientStyleData?.reset();
+			clientStyleData?.reset();
 
-		reinjectStylesRef.current = false;
-	}, []);
+			reinjectStylesRef.current = false;
+		}, []);
 
 	return (
 		<html>

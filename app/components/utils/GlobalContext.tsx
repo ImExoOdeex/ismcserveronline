@@ -1,38 +1,49 @@
 import { useLocation } from "@remix-run/react";
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { useTypedRouteLoaderData } from "remix-typedjson";
 import { loader } from "~/routes/$server";
 import { useAdBlock } from "./hooks/useAdBlock";
 import useUser from "./hooks/useUser";
 
-type Props = {
+interface Props {
 	children?: React.ReactNode;
-};
+}
 
-type contextType = {
-	displayGradient?: boolean;
-	gradientColor?: string;
-	displayLogoInBg?: boolean;
-	hasAdblock?: boolean;
+interface contextType {
+	displayGradient: boolean;
+	gradientColor: string;
+	displayLogoInBg: boolean;
+	hasAdblock: boolean;
 	updateData: (key: "displayGradient" | "gradientColor" | "displayLogoInBg", value: any) => void;
-};
+}
 
-export const context = createContext<contextType>({ updateData(key, value) {} });
+export const context = createContext<contextType | null>(null);
+
+export function useGlobalContext() {
+	const contextValue = useContext(context);
+	if (!contextValue) {
+		throw new Error("useGlobalContext must be used within a GlobalContext");
+	}
+	return contextValue;
+}
 
 export function GlobalContext({ children }: Props) {
 	const path = useLocation().pathname;
 	const loaderData = useTypedRouteLoaderData<typeof loader>("routes/$server");
 
-	function getNewGradientColor() {
-		if (loaderData?.data?.online === true || loaderData?.data?.online === false) {
-			return loaderData.data.online ? "green" : "red";
+	const getNewGradientColor = useCallback(() => {
+		if (loaderData?.foundServer.online === true || loaderData?.foundServer.online === false) {
+			return loaderData.foundServer.online ? "green" : "red";
 		}
 		return path === "/api" ? "green.500" : path.includes("/popular-servers") ? "gold" : "brand.900";
-	}
-
-	const hasAdblock = useAdBlock();
+	}, [loaderData?.foundServer, path]);
 
 	const user = useUser();
+	const hasAdblock = useAdBlock();
+
+	const updateData = useCallback((key: "displayGradient" | "gradientColor" | "displayLogoInBg", value: any) => {
+		setData((prev) => ({ ...prev, [key]: value }));
+	}, []);
 
 	const [data, setData] = useState({
 		displayGradient: user?.everPurchased ? false : true,
@@ -40,10 +51,6 @@ export function GlobalContext({ children }: Props) {
 		displayLogoInBg: path.startsWith("/dashboard"),
 		updateData
 	});
-
-	function updateData(key: "displayGradient" | "gradientColor" | "displayLogoInBg", value: any) {
-		setData((prev) => ({ ...prev, [key]: value }));
-	}
 
 	useEffect(() => {
 		updateData("gradientColor", getNewGradientColor());

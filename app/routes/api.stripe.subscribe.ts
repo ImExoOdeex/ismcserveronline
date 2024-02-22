@@ -3,9 +3,12 @@ import Stripe from "stripe";
 import invariant from "tiny-invariant";
 import config from "~/components/config/config";
 import { getUser } from "~/components/server/db/models/user";
+import { csrf } from "~/components/server/functions/security.server";
 import stripe, { subscriptionHandlers } from "~/components/server/payments/stripe.server";
 
 export async function action({ request }: ActionFunctionArgs) {
+	csrf(request);
+
 	try {
 		const user = await getUser(request);
 		invariant(user, "Missing user");
