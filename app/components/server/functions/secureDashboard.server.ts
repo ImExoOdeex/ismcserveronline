@@ -1,8 +1,17 @@
 import { type Guild } from "~/routes/dashboard._index";
-import { getUserGuilds } from "../db/models/user";
+import { getUser } from "../db/models/user";
 
 export async function requireUserGuild(request: Request, guildID: string, guildsArg?: Guild[]) {
-	const guilds = guildsArg ?? ((await getUserGuilds(request)) as Guild[]);
+	const guilds =
+		guildsArg ||
+		((
+			await getUser(request, {
+				guilds: true
+			})
+		)?.guilds as unknown as Guild[]);
+	if (!guilds) {
+		throw new Error("User has no guilds.");
+	}
 
 	if (!guilds) {
 		throw new Error("User is not logged or has no guilds.");

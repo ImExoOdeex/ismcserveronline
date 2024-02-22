@@ -4,7 +4,7 @@ import { redirect } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { HiRefresh } from "react-icons/hi";
 import { typedjson } from "remix-typedjson";
-import { getUserGuilds, getUserId } from "~/components/server/db/models/user";
+import { getUser } from "~/components/server/db/models/user";
 import Link from "~/components/utils/Link";
 import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 
@@ -19,13 +19,13 @@ export type Guild = {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-	const userId = await getUserId(request);
-
-	if (!userId) {
-		throw redirect("/login");
+	const userWithGuilds = await getUser(request, {
+		guilds: true
+	});
+	if (!userWithGuilds) {
+		throw redirect("/relog");
 	}
-
-	const guilds = (await getUserGuilds(request))!;
+	const guilds = userWithGuilds.guilds as unknown as Guild[];
 
 	if (typeof guilds !== "object") {
 		throw new Error("'Guilds' is not an object!");

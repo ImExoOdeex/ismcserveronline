@@ -1,10 +1,11 @@
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
-import { Button, Flex, Icon, Image, Text } from "@chakra-ui/react";
+import { Button, Icon } from "@chakra-ui/react";
 import { useFetcher } from "@remix-run/react";
 import { BiCode, BiLineChart } from "react-icons/bi";
 import Link from "~/components/utils/Link";
 import useUser from "~/components/utils/hooks/useUser";
 import DiscordIcon from "../icons/DiscordIcon";
+import ProfilePopover from "./ProfilePopover";
 
 export function PopularServersButton() {
 	return (
@@ -72,27 +73,7 @@ export function LoginButton() {
 	const loginFetcher = useFetcher<any>();
 
 	if (user) {
-		return (
-			<Flex
-				as={Link}
-				px={4}
-				py={1}
-				rounded={"lg"}
-				_hover={{
-					textDecoration: "none",
-					bg: "alpha100"
-				}}
-				_active={{ scale: 0.9 }}
-				transform={"auto-gpu"}
-				transition={`all .2s ease-in-out`}
-				to={"/dashboard"}
-				alignItems={"center"}
-				gap={3}
-			>
-				<Text userSelect={"none !important" as any}>{user.nick}</Text>
-				<Image src={user.photo ?? "/discordLogo.png"} rounded={"full"} boxSize={9} />
-			</Flex>
-		);
+		return <ProfilePopover />;
 	}
 
 	return (

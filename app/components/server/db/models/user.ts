@@ -1,5 +1,5 @@
+import { Prisma } from "@prisma/client";
 import { redirect } from "remix-typedjson";
-import { Guild } from "../../../../routes/dashboard.bot._index";
 import { authenticator } from "../../auth/authenticator.server";
 import { db } from "../db.server";
 
@@ -13,7 +13,22 @@ export async function getUserId(request: Request) {
 	return auth.id;
 }
 
-export async function getUser(request: Request) {
+export async function getUser<T extends Prisma.UserSelect>(
+	request: Request,
+	select: T = {
+		id: true,
+		email: true,
+		snowflake: true,
+		nick: true,
+		photo: true,
+		everPurchased: true,
+		role: true,
+		prime: true,
+		subId: true
+	} as T
+): Promise<Prisma.UserGetPayload<{
+	select: T;
+}> | null> {
 	const auth = await authenticator.isAuthenticated(request);
 
 	if (!auth) {
@@ -27,17 +42,7 @@ export async function getUser(request: Request) {
 		where: {
 			email: auth.email
 		},
-		select: {
-			id: true,
-			email: true,
-			snowflake: true,
-			nick: true,
-			photo: true,
-			everPurchased: true,
-			role: true,
-			prime: true,
-			subId: true
-		}
+		select
 	});
 
 	return user;
@@ -62,23 +67,4 @@ export async function isUserAuthInDB(request: Request) {
 		: false;
 
 	return isInDB;
-}
-
-export async function getUserGuilds(request: Request) {
-	const auth = await authenticator.isAuthenticated(request);
-
-	if (!auth) {
-		return null;
-	}
-
-	const user = await db.user.findUnique({
-		where: {
-			email: auth.email
-		},
-		select: {
-			guilds: true
-		}
-	});
-
-	return user?.guilds as unknown as Guild[];
 }

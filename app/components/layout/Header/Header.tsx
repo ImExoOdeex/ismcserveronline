@@ -103,45 +103,49 @@ export default memo(function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 					</Flex>
 				</HStack>
 
-				<HStack spacing={3} display={{ base: "none", lg: "flex" }}>
-					{!user?.prime && (
-						<Button
-							as={Link}
-							to="/prime"
-							variant={"ghost"}
-							color={"brand"}
-							_hover={{
-								bg: "rgba(72, 0, 255, 0.1)",
-								textDecoration: "none"
-							}}
-							_active={{
-								scale: 0.9
-							}}
-							transform={"auto-gpu"}
-							fontWeight={500}
-							rightIcon={<PiCrownSimpleDuotone />}
-						>
-							Prime
-						</Button>
-					)}
-					<PopularServersButton />
-					<FAQButton />
-					<APIButton />
-					<ThemeToggle />
-					<LoginButton />
-				</HStack>
+				<HStack>
+					<HStack spacing={3}>
+						<HStack spacing={3} display={{ base: "none", lg: "flex" }}>
+							{!user?.prime && (
+								<Button
+									as={Link}
+									to="/prime"
+									variant={"ghost"}
+									color={"brand"}
+									_hover={{
+										bg: "rgba(72, 0, 255, 0.1)",
+										textDecoration: "none"
+									}}
+									_active={{
+										scale: 0.9
+									}}
+									transform={"auto-gpu"}
+									fontWeight={500}
+									rightIcon={<PiCrownSimpleDuotone />}
+								>
+									Prime
+								</Button>
+							)}
+							<PopularServersButton />
+							<FAQButton />
+							<APIButton />
+							<ThemeToggle />
+						</HStack>
+						<LoginButton />
+					</HStack>
 
-				<Box display={{ base: "flex", lg: "none" }} cursor="pointer">
-					<Button
-						variant={"unstyled"}
-						onClick={() => setIsMenuOpen(!isMenuOpen)}
-						display={"flex"}
-						justifyContent={"center"}
-						alignItems={"center"}
-					>
-						<HamburgerMenu isOpen={isMenuOpen} />
-					</Button>
-				</Box>
+					<Box display={{ base: "flex", lg: "none" }} cursor="pointer">
+						<Button
+							variant={"unstyled"}
+							onClick={() => setIsMenuOpen(!isMenuOpen)}
+							display={"flex"}
+							justifyContent={"center"}
+							alignItems={"center"}
+						>
+							<HamburgerMenu isOpen={isMenuOpen} />
+						</Button>
+					</Box>
+				</HStack>
 			</Flex>
 		</Flex>
 	);
