@@ -215,7 +215,7 @@ export default memo(function Comment({
 							</Flex>
 						</editFetcher.Form>
 					) : (
-						<Text as="pre" fontFamily={"body"}>
+						<Text as="pre" fontFamily={"body"} whiteSpace={"pre-wrap"}>
 							{comment.content}
 						</Text>
 					)}

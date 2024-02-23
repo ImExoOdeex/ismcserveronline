@@ -10,7 +10,7 @@ interface Props {
 	server: string;
 	bedrock: boolean;
 	promiseData: Promise<AnyServer>;
-	voteCount: number | undefined;
+	voteCount: number;
 }
 
 export default memo(function UnderServerView({ server, bedrock, promiseData, voteCount }: Props) {

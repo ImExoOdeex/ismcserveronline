@@ -20,8 +20,15 @@ export function PopularServersButton() {
 			as={Link}
 			rounded={"xl"}
 			bg={"transparent"}
-			rightIcon={<Icon as={BiLineChart} filter={"drop-shadow(0 0 5px #5cc877)"} />}
-			textShadow={"0 0 12px #5cc877"}
+			color="green"
+			rightIcon={
+				<Icon
+					as={BiLineChart}
+					color="green"
+					// filter={"drop-shadow(0 0 5px #5cc877)"}
+				/>
+			}
+			// textShadow={"0 0 12px #5cc877"}
 		>
 			Top Voted Servers
 		</Button>

@@ -1,4 +1,4 @@
-import { Flex, Heading, Image, Link, VStack } from "@chakra-ui/react";
+import { Flex, FlexProps, Heading, Image, Link, VStack } from "@chakra-ui/react";
 import { AnimatePresence, Transition, motion } from "framer-motion";
 import { memo, useState } from "react";
 import config from "~/components/config/config";
@@ -14,11 +14,11 @@ interface Props {
 	image: MinecraftImage;
 }
 
-export default memo(function ServerView({ server, data, bedrock, image }: Props) {
+export default memo(function ServerView({ server, data, bedrock, image, ...props }: Props & FlexProps) {
 	const [isOpen, setIsOpen] = useState(false);
 
 	return (
-		<Flex flexDir={"column"} pos="relative" mb={32}>
+		<Flex flexDir={"column"} pos="relative" {...props}>
 			<Flex pos="relative">
 				<Link
 					pos="absolute"

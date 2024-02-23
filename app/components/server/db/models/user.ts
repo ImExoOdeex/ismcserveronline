@@ -13,21 +13,27 @@ export async function getUserId(request: Request) {
 	return auth.id;
 }
 
-export async function getUser<T extends Prisma.UserSelect>(
+export async function getUser<
+	T extends Prisma.UserSelect = {
+		id: true;
+		nick: true;
+		email: true;
+		photo: true;
+		prime: true;
+		role: true;
+	}
+>(
 	request: Request,
 	select: T = {
 		id: true,
-		email: true,
-		snowflake: true,
 		nick: true,
+		email: true,
 		photo: true,
-		everPurchased: true,
-		role: true,
 		prime: true,
-		subId: true
+		role: true
 	} as T
 ): Promise<Prisma.UserGetPayload<{
-	select: T;
+	select: NonNullable<T>;
 }> | null> {
 	const auth = await authenticator.isAuthenticated(request);
 
@@ -45,7 +51,7 @@ export async function getUser<T extends Prisma.UserSelect>(
 		select
 	});
 
-	return user;
+	return user as any;
 }
 
 export async function isUserAuthInDB(request: Request) {

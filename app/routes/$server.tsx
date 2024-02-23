@@ -1,4 +1,4 @@
-import { Divider, Flex, Heading, HStack, Icon, Stack, Text, VStack } from "@chakra-ui/react";
+import { Divider, Flex, Heading, HStack, Icon, Stack, Text, useToast, VStack } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
@@ -12,6 +12,8 @@ import { Ad, adType } from "~/components/ads/Yes";
 import ChecksTable from "~/components/layout/server/ChecksTable";
 import Comments from "~/components/layout/server/Comments";
 import CommentsSkeleton from "~/components/layout/server/CommentsSkeleton";
+import McFonts from "~/components/layout/server/McFonts";
+import Motd from "~/components/layout/server/Motd";
 import ServerInfo, { PregenerateStyles } from "~/components/layout/server/ServerInfo";
 import ServerView from "~/components/layout/server/ServerView";
 import Tabs, { tabs } from "~/components/layout/server/Tabs";
@@ -26,6 +28,7 @@ import { getRandomMinecarftImage } from "~/components/server/minecraftImages.ser
 import { AnyServer, AnyServerModel, BedrockServer, JavaServer, MinecraftServer } from "~/components/types/minecraftServer";
 import { getCookieWithoutDocument } from "~/components/utils/functions/cookies";
 import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
+import useEventSourceCallback from "~/components/utils/hooks/useEventSourceCallback";
 import Link from "~/components/utils/Link";
 import { InsideErrorBoundary } from "~/document";
 
@@ -47,7 +50,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
 				}
 			}))!.id;
 
-			const user = await getUser(request);
+			const user = await getUser(request, {
+				nick: true,
+				photo: true,
+				id: true,
+				email: true
+			});
 			if (!user) throw new Error("User is not logged!");
 
 			try {
@@ -538,23 +546,50 @@ export default function $server() {
 
 	const [tab, setTab] = useState<(typeof tabs)[number]["value"]>("checks");
 	const [comments, setComments] = useState<any[] | null>(null);
-	// console.log("PROMISE DATA", promiseData);
+
+	const [votes, setVotes] = useState<number>(data?._count?.Vote ?? 0);
+	const toast = useToast();
+	useEventSourceCallback(
+		`/api/sse/vote?id=${serverId}`,
+		{
+			event: "new-vote"
+		},
+		(sourceData) => {
+			toast({
+				description: `${sourceData.nick} has voted for ${data.server}!`,
+				status: "info",
+				duration: 5000,
+				containerStyle: {
+					fontWeight: 500
+				},
+				isClosable: false,
+				variant: "subtle"
+			});
+
+			setVotes((v) => v + 1);
+		}
+	);
 
 	return (
-		<VStack spacing={"40px"} align="start" maxW="1000px" mx="auto" w="100%" mt={"50px"} px={4} mb={5}>
+		<Flex gap={5} flexDir={"column"} maxW="1000px" mx="auto" w="100%" mt={"50px"} px={4} mb={5}>
 			{/* <Ad type={adType.small} width={"968px"} /> */}
 
 			<Flex w="100%" flexDir={"column"} gap={2}>
-				<ServerView server={server} data={data} bedrock={bedrock} image={image} />
-				<UnderServerView
-					voteCount={data?._count?.Vote}
-					server={server}
-					bedrock={bedrock}
-					promiseData={promiseData instanceof Promise ? promiseData : Promise.resolve(promiseData)}
-				/>
+				<ServerView server={server} data={data} bedrock={bedrock} image={image} mb={16} />
+
+				{/* displaying motd */}
+				<McFonts />
+				<Motd motd={data?.motd.html} mt={5} />
 			</Flex>
 
 			<Divider />
+
+			<UnderServerView
+				voteCount={votes}
+				server={server}
+				bedrock={bedrock}
+				promiseData={promiseData instanceof Promise ? promiseData : Promise.resolve(promiseData)}
+			/>
 
 			{/* I copy the component with non display, to generate the emotion styles, that would be used in streamed content, that emotion wouldn't generate */}
 			<PregenerateStyles bedrock={bedrock} data={data} query={query} />
@@ -611,7 +646,7 @@ export default function $server() {
 			</Stack>
 
 			<Ad type={adType.multiplex} />
-		</VStack>
+		</Flex>
 	);
 }
 

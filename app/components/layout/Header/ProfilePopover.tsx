@@ -98,7 +98,7 @@ export default memo(function ProfilePopover() {
 									as={ChevronDownIcon}
 									transform={"auto-gpu"}
 									rotate={isOpen ? 180 : 0}
-									transition={`transform 0.3gs ${config.cubicEase}`}
+									transition={`transform 0.3s ${config.cubicEase}`}
 									display={{
 										base: "none",
 										md: "block"
@@ -182,6 +182,7 @@ export default memo(function ProfilePopover() {
 
 							{buttons.map((button) => (
 								<MenuItem
+									h={10}
 									bg="bg"
 									fontWeight={500}
 									icon={<Icon as={button.icon} boxSize={5} />}

@@ -12,6 +12,7 @@ import { db } from "~/components/server/db/db.server";
 import { getUser, getUserId } from "~/components/server/db/models/user";
 import { cachePrefetch } from "~/components/server/functions/fetchHelpers.server";
 import { csrf } from "~/components/server/functions/security.server";
+import { emitter } from "~/components/server/sse/emitter.server";
 import { AnyServerModel } from "~/components/types/minecraftServer";
 import Link from "~/components/utils/Link";
 import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
@@ -74,6 +75,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
 				user_id: user.id,
 				nick
 			}
+		});
+
+		emitter.emit(`vote-${foundServer.id}`, {
+			id: vote.id,
+			nick
 		});
 
 		return typedjson(
