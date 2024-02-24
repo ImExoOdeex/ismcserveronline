@@ -1,27 +1,46 @@
 import { Flex } from "@chakra-ui/react";
 import { useLocation } from "@remix-run/react";
-import { memo } from "react";
+import { memo, useEffect, useState } from "react";
 import { Ad, adType } from "../ads/Yes";
 
-const columnWidth = (1920 - 1200) * 0.5 - 8;
+interface Props {
+	side: "left" | "right";
+}
 
-export default memo(function Column() {
+export default memo(function Column({ side }: Props) {
 	const path = useLocation().pathname;
 
+	const [windowWidth, setWindowWidth] = useState<number | null>(null);
+
+	useEffect(() => {
+		function handleResize() {
+			setWindowWidth(window.innerWidth);
+		}
+
+		handleResize();
+		window.addEventListener("resize", handleResize);
+
+		return () => {
+			window.removeEventListener("resize", handleResize);
+		};
+	}, []);
+
+	if (!windowWidth) return null;
+	const columnWidth = windowWidth * 0.15;
 	return (
 		<Flex
-			mt={"80px"}
-			w={{ xl: columnWidth * 0.75, "2xl": columnWidth }}
-			maxW={{ xl: columnWidth * 0.75, "2xl": columnWidth }}
-			minW={{ xl: columnWidth * 0.75, "2xl": columnWidth }}
+			w={"100%"}
+			maxW={columnWidth}
 			justifyContent={"center"}
 			alignItems={"center"}
 			h="100%"
 			display={{ base: "none", "2xl": "flex" }}
+			pos="absolute"
+			top={0}
+			left={side === "left" ? 0 : "unset"}
+			right={side === "right" ? 0 : "unset"}
 		>
-			<Flex w="75%" mx={"auto"} justifyContent={"center"} alignItems={"center"} h="100%">
-				<Ad key={path} width={columnWidth <= 1920 ? "240px" : ""} type={adType.column} />
-			</Flex>
+			<Ad key={path} type={adType.responsive} w={columnWidth} />
 		</Flex>
 	);
 });

@@ -36,14 +36,10 @@ export default memo(function Layout({ children }: { children?: React.ReactNode }
 				<BackgroundUtils />
 
 				<Header isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
-				<Flex w="100%" minH={"calc(100vh - 69px)"} flex={1} justifyContent={"flex-start"}>
-					<Column />
-
-					<Flex flexDir={"column"} w="100%" flex={1}>
-						{children}
-					</Flex>
-
-					<Column />
+				<Flex w="100%" minH={"calc(100vh - 69px)"} flex={1} flexDir={"column"} pos="relative">
+					<Column side="left" />
+					{children}
+					<Column side="right" />
 				</Flex>
 				<Footer />
 			</ChakraBox>

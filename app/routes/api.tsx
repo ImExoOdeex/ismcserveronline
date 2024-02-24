@@ -18,12 +18,14 @@ import {
 } from "@chakra-ui/react";
 import { MetaArgs, type MetaFunction } from "@remix-run/node";
 import crypto from "crypto";
+import { FaCode } from "react-icons/fa";
 import { typedjson } from "remix-typedjson";
 import { Ad, adType } from "~/components/ads/Yes";
 import DiscordIcon from "~/components/layout/icons/DiscordIcon";
 import { type MinecraftServerWoQuery } from "~/components/types/minecraftServer";
 import Link from "~/components/utils/Link";
 import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
+import useUser from "~/components/utils/hooks/useUser";
 
 export function meta({ matches }: MetaArgs) {
 	return [
@@ -70,6 +72,7 @@ const data: Omit<MinecraftServerWoQuery, "favicon"> = {
 
 export default function Api() {
 	const { sampleToken } = useAnimationLoaderData<typeof loader>();
+	const user = useUser();
 
 	const { onCopy, hasCopied } = useClipboard(`await request("https://api.ismcserver.online/hypixel.net", {
         headers: {
@@ -138,7 +141,7 @@ export default function Api() {
 									h="40px"
 									px={4}
 									fontWeight={500}
-									bg="discord.100"
+									bg={user ? "brand.900" : "discord.100"}
 									rounded={"xl"}
 									w="100%"
 									color={"white"}
@@ -147,10 +150,11 @@ export default function Api() {
 									transform={"auto-gpu"}
 									_active={{ scale: 0.9 }}
 									to="/dashboard/token"
+									variant={user ? "brand" : "solid"}
 								>
 									<HStack h={"100%"} alignItems={"center"} justifyContent={"center"} mx="auto">
-										<DiscordIcon />
-										<Text>Log in to generate private token!</Text>
+										<Icon as={user ? FaCode : DiscordIcon} />
+										<Text>{user ? "Go to the dashboard!" : "Log in to generate private token!"}</Text>
 									</HStack>
 								</Link>
 							</VStack>
