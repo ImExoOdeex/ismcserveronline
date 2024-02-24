@@ -32,10 +32,11 @@ export default memo(function Motd({ motd, ...props }: Props & FlexProps) {
 					w="100%"
 					justifyContent="center"
 					alignItems={"center"}
-					dangerouslySetInnerHTML={{ __html: line }}
 					fontFamily={font}
 					fontWeight={500}
 					fontSize={font === "Minecraft" ? "xl" : "sm"}
+					dangerouslySetInnerHTML={{ __html: line }}
+					gap={1}
 				/>
 			))}
 

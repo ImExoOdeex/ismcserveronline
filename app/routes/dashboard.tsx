@@ -3,7 +3,7 @@ import type { LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node
 import { redirect } from "@remix-run/node";
 import { useFetcher, useLocation, useOutlet } from "@remix-run/react";
 import { Transition } from "framer-motion";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { FiLogOut } from "react-icons/fi";
 import { PiCrownSimpleDuotone } from "react-icons/pi";
 import { ChakraBox } from "~/components/layout/MotionComponents";
@@ -97,7 +97,7 @@ export default function Dashboard() {
 
 	const logoutFetcher = useFetcher();
 
-	function prefetchGuildIcons() {
+	const prefetchGuildIcons = useCallback(() => {
 		const url = `/dashboard/bot?_data=routes%2Fdashboard.bot._index`;
 
 		fetch(url, {
@@ -126,7 +126,7 @@ export default function Dashboard() {
 					};
 				});
 			});
-	}
+	}, []);
 
 	if (!user) return null;
 	return (
