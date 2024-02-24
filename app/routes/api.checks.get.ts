@@ -1,22 +1,19 @@
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { ActionFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { db } from "~/components/server/db/db.server";
 import { csrf } from "~/components/server/functions/security.server";
 
-export async function loader({ request }: LoaderFunctionArgs) {
-	const url = new URL(request.url);
+export async function action({ request }: ActionFunctionArgs) {
 	csrf(request);
+	const form = await request.formData();
 
-	const server = url.searchParams.get("server");
-	if (!server) throw new Error("No server provided");
-	const c = url.searchParams.get("c") || 0;
+	const serverId = form.get("serverId") as string;
+	if (!serverId) throw new Error("No server provided");
+	const c = form.get("c") as string;
 
 	const checks = await db.check.findMany({
 		where: {
-			Server: {
-				server,
-				bedrock: true
-			}
+			server_id: Number(serverId)
 		},
 		select: {
 			id: true,

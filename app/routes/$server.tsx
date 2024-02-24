@@ -618,7 +618,7 @@ export default function $server() {
 						Last checks
 					</Heading>
 
-					<ChecksTable checks={checks} server={server} />
+					<ChecksTable checks={checks} server={server} serverId={serverId} />
 				</VStack>
 			)}
 			{tab === "comments" && (

@@ -18,9 +18,8 @@ import {
 	useColorModeValue
 } from "@chakra-ui/react";
 import { type SOURCE } from "@prisma/client";
-import { ScrollRestoration, useFetcher } from "@remix-run/react";
-import debounce from "lodash.debounce";
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useDebounceFetcher } from "remix-utils/use-debounce-fetcher";
 
 interface Check {
 	id: number;
@@ -31,15 +30,13 @@ interface Check {
 }
 
 interface Props {
+	serverId: number;
 	server: string;
 	checks: Check[];
 }
 
-export default memo(function ChecksTable({ server, checks }: Props) {
+export default memo(function ChecksTable({ server, checks, serverId }: Props) {
 	const borderColor = useColorModeValue("#2f2e32", "#2f2e32 !important");
-	const discordBg = useColorModeValue("rgba(88, 101, 242, 0.16)", "rgba(88, 147, 242, 0.12)");
-	const discordColor = useColorModeValue("discord.100", "#6f9ce6");
-	const apiColor = useColorModeValue("blue.500", "blue.200");
 
 	const [checksState, setChecksState] = useState(checks);
 
@@ -53,9 +50,8 @@ export default memo(function ChecksTable({ server, checks }: Props) {
 			setClientHeight(window.innerHeight);
 			setScrollPosition(window.scrollY);
 		}
-		if (typeof window !== "undefined") {
-			window.addEventListener("scroll", scrollListener);
-		}
+		window.addEventListener("scroll", scrollListener);
+
 		return () => {
 			window.removeEventListener("scroll", scrollListener);
 		};
@@ -74,14 +70,22 @@ export default memo(function ChecksTable({ server, checks }: Props) {
 	// skip elements state (step by 20)
 	const [skip, setSkip] = useState(20);
 	// fetcher to fetch data
-	const fetcher = useFetcher();
+	const fetcher = useDebounceFetcher();
 
-	const loadDebounced = debounce(() => {
-		console.warn("fetching");
-
+	const loadDebounced = useCallback(() => {
 		setShouldFetch(false);
-		fetcher.load(`/api/checks/get?c=${skip}&server=${server}`);
-	}, 150);
+		fetcher.submit(
+			{
+				c: skip,
+				serverId
+			},
+			{
+				debounceTimeout: 300,
+				action: `/api/checks/get`,
+				method: "POST"
+			}
+		);
+	}, [fetcher, server, skip]);
 
 	const inital = useRef(true);
 
@@ -90,10 +94,6 @@ export default memo(function ChecksTable({ server, checks }: Props) {
 			inital.current = false;
 			return;
 		}
-		console.table({
-			pos: pos - 500,
-			tableReactPosFromTop
-		});
 
 		// if our position if greater than expected, we'll fetch the data from our API route
 		if (!tableReactPosFromTop || !shouldFetch) return;
@@ -105,7 +105,6 @@ export default memo(function ChecksTable({ server, checks }: Props) {
 	}, [clientHeight, scrollPosition]);
 
 	useEffect(() => {
-		// discontinue API calls if the last page has been reached
 		if (fetcher.data && (fetcher.data as any).checks.length === 0) {
 			setShouldFetch(false);
 			return;
@@ -116,6 +115,7 @@ export default memo(function ChecksTable({ server, checks }: Props) {
 			setChecksState((prev) => [...prev, ...(fetcher?.data as any)?.checks]);
 			setSkip((skip: number) => skip + 20);
 			setShouldFetch(true);
+			window.scrollTo(0, scrollPosition - 200);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [fetcher.data]);
@@ -136,68 +136,7 @@ export default memo(function ChecksTable({ server, checks }: Props) {
 						</Thead>
 						<Tbody>
 							{checksState.map((c: Check) => {
-								return (
-									<Tr
-										key={c.id + c.checked_at.toString()}
-										_hover={{ bg: "alpha" }}
-										transition="background .05s"
-										sx={{
-											"> *": { borderColor: borderColor }
-										}}
-									>
-										<Td>{new Date(c.checked_at).toLocaleString()}</Td>
-										<Td>
-											{c.online ? (
-												<HStack
-													rounded={"md"}
-													color="green"
-													bg={"rgba(72, 187, 120, 0.1)"}
-													w="min-content"
-													px={3}
-													py={1}
-												>
-													<Text textTransform={"none"} fontWeight={600}>
-														Online
-													</Text>
-													<CheckIcon />
-												</HStack>
-											) : (
-												<HStack
-													rounded={"md"}
-													color="red"
-													bg={"rgba(187, 72, 72, 0.1)"}
-													w="min-content"
-													px={3}
-													py={1}
-												>
-													<Text textTransform={"none"}>Offline</Text>
-													<SmallCloseIcon />
-												</HStack>
-											)}
-										</Td>
-										<Td>
-											<Badge
-												rounded={"md"}
-												fontWeight={700}
-												px={3}
-												py={1}
-												bg={
-													c.source == "WEB"
-														? "alpha200"
-														: c.source == "DISCORD"
-														? discordBg
-														: "rgba(144, 206, 244, 0.16)"
-												}
-												color={
-													c.source == "WEB" ? "text" : c.source == "DISCORD" ? discordColor : apiColor
-												}
-											>
-												{c.source}
-											</Badge>
-										</Td>
-										<Td isNumeric>{c.players}</Td>
-									</Tr>
-								);
+								return <MemoCheck key={c.id + c.checked_at.toString()} check={c} borderColor={borderColor} />;
 							})}
 
 							{fetcher.state !== "idle" && (
@@ -234,7 +173,6 @@ export default memo(function ChecksTable({ server, checks }: Props) {
 								</>
 							)}
 						</Tbody>
-						<ScrollRestoration />
 						<Tfoot ref={divHeight} __css={{ clear: "both" }}>
 							<Tr>
 								<Th>Date</Th>
@@ -255,3 +193,52 @@ export default memo(function ChecksTable({ server, checks }: Props) {
 		</>
 	);
 });
+
+function Check({ check, borderColor }: { check: Check; borderColor: string }) {
+	const discordBg = useColorModeValue("rgba(88, 101, 242, 0.16)", "rgba(88, 147, 242, 0.12)");
+	const discordColor = useColorModeValue("discord.100", "#6f9ce6");
+	const apiColor = useColorModeValue("blue.500", "blue.200");
+
+	return (
+		<Tr
+			key={check.id + check.checked_at.toString()}
+			_hover={{ bg: "alpha" }}
+			transition="background .05s"
+			sx={{
+				"> *": { borderColor }
+			}}
+		>
+			<Td>{new Date(check.checked_at).toLocaleString()}</Td>
+			<Td>
+				{check.online ? (
+					<HStack rounded={"md"} color="green" bg={"rgba(72, 187, 120, 0.1)"} w="min-content" px={3} py={1}>
+						<Text textTransform={"none"} fontWeight={600}>
+							Online
+						</Text>
+						<CheckIcon />
+					</HStack>
+				) : (
+					<HStack rounded={"md"} color="red" bg={"rgba(187, 72, 72, 0.1)"} w="min-content" px={3} py={1}>
+						<Text textTransform={"none"}>Offline</Text>
+						<SmallCloseIcon />
+					</HStack>
+				)}
+			</Td>
+			<Td>
+				<Badge
+					rounded={"md"}
+					fontWeight={700}
+					px={3}
+					py={1}
+					bg={check.source == "WEB" ? "alpha200" : check.source == "DISCORD" ? discordBg : "rgba(144, 206, 244, 0.16)"}
+					color={check.source == "WEB" ? "text" : check.source == "DISCORD" ? discordColor : apiColor}
+				>
+					{check.source}
+				</Badge>
+			</Td>
+			<Td isNumeric>{check.players}</Td>
+		</Tr>
+	);
+}
+
+const MemoCheck = memo(Check);

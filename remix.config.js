@@ -2,6 +2,13 @@
 export default {
 	ignoredRouteFiles: ["**/.*"],
 	extends: "@remix-run/eslint-config",
-	serverDependenciesToBundle: [/^remix-utils.*/, "is-ip", /^react-icons.*/, "dayjs", "dayjs/plugin/relativeTime"],
+	serverDependenciesToBundle: [
+		/^react-icons.*/,
+		/^remix-utils.*/,
+		"intl-parse-accept-language",
+		"is-ip",
+		"dayjs",
+		"dayjs/plugin/relativeTime"
+	],
 	serverMinify: true
 };

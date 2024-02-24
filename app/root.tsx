@@ -5,6 +5,7 @@ import { useLocation, useOutlet } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { isbot } from "isbot";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { getClientLocales } from "remix-utils/locales/server";
 import Layout from "./components/layout/Layout";
 import { getUser } from "./components/server/db/models/user";
 import { requireEnv } from "./components/server/functions/env.server";
@@ -172,12 +173,14 @@ function InsideGlobal() {
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
 	const url = new URL(request.url);
-	const term = url.searchParams.get(requireEnv("NO_ADS_PARAM_NAME") ?? "nope");
+	const term = url.searchParams.get(requireEnv("NO_ADS_PARAM_NAME"));
 
-	const shouldRedirect: boolean = term?.toString() === requireEnv("NO_ADS_PARAM_VALUE");
+	const shouldRedirect: boolean = term === requireEnv("NO_ADS_PARAM_VALUE");
 	if (shouldRedirect) {
 		throw redirect(url.pathname, {
-			headers: [["Set-Cookie", `no_ads=${requireEnv("NO_ADS_PARAM_VALUE")}`]]
+			headers: {
+				"Set-Cookie": `no_ads=${requireEnv("NO_ADS_PARAM_VALUE")}; Path=/; Max-Age=31536000;`
+			}
 		});
 	}
 
@@ -188,11 +191,9 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 		: getCookieWithoutDocument("no_ads", request.headers.get("cookie") ?? "") !== requireEnv("NO_ADS_PARAM_VALUE");
 	// ^^^ code for no ads up there uwu ^^^
 
-	// console.log("user-agent: ", request.headers.get("user-agent"));
 	const isBot = isbot(request.headers.get("user-agent"));
-
 	const start = Number(context.start ?? Date.now());
-	const requestHandledIn = Date.now() - start;
+	const locales = getClientLocales(request);
 
 	return typedjson({
 		cookies: request.headers.get("cookie") ?? "",
@@ -200,9 +201,9 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 		user,
 		dashUrl: requireEnv("DASH_URL"),
 		isBot,
+		locales,
 		timings: {
-			start,
-			requestHandledIn
+			start
 		}
 	});
 }

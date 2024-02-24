@@ -113,11 +113,11 @@ export default function Footer() {
 						<HStack w="100%" justifyContent={"space-between"}>
 							<Text fontWeight="700">Other</Text>
 							<HStack>
-								<Tooltip label="Time server took to handle request" hasArrow>
+								{/* <Tooltip label="Time server took to handle request" hasArrow>
 									<Text fontWeight="500" fontSize={"xs"}>
 										{timings.requestHandledIn}ms
 									</Text>
-								</Tooltip>
+								</Tooltip> */}
 								<Tooltip label="Time from request start to client hydration" hasArrow>
 									<Text fontWeight="500" fontSize={"xs"}>
 										{requestStartToHydration}ms
