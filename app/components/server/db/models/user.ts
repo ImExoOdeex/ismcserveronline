@@ -21,6 +21,7 @@ export async function getUser<
 		photo: true;
 		prime: true;
 		role: true;
+		everPurchased: true;
 	}
 >(
 	request: Request,
@@ -30,7 +31,8 @@ export async function getUser<
 		email: true,
 		photo: true,
 		prime: true,
-		role: true
+		role: true,
+		everPurchased: true
 	} as T
 ): Promise<Prisma.UserGetPayload<{
 	select: NonNullable<T>;

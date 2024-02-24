@@ -1,7 +1,8 @@
 import { Button, Flex, Icon, useToast } from "@chakra-ui/react";
-import { useFetcher, useNavigate } from "@remix-run/react";
-import { Dispatch, SetStateAction, memo, useCallback, useEffect, useState } from "react";
+import { useNavigate } from "@remix-run/react";
+import { Dispatch, SetStateAction, memo, useCallback, useState } from "react";
 import { BiBookmark } from "react-icons/bi";
+import useFetcherCallback from "~/components/utils/hooks/useFetcherCallback";
 import useUser from "~/components/utils/hooks/useUser";
 import { ChakraBox } from "../MotionComponents";
 
@@ -29,13 +30,8 @@ interface Props {
 export default memo(function Tabs({ tab, setTab, isSaved, counts }: Props) {
 	const [saved, setSaved] = useState(isSaved);
 
-	const saveFetcher = useFetcher();
-	const user = useUser();
-	const navigate = useNavigate();
-
-	const toast = useToast();
-	useEffect(() => {
-		if ((saveFetcher.data as any)?.success) {
+	const saveFetcher = useFetcherCallback((data) => {
+		if (data?.success) {
 			toast({
 				title: "Successfully saved server!",
 				duration: 5000,
@@ -45,8 +41,11 @@ export default memo(function Tabs({ tab, setTab, isSaved, counts }: Props) {
 				position: "bottom-right"
 			});
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [saveFetcher.data]);
+	});
+	const user = useUser();
+	const navigate = useNavigate();
+
+	const toast = useToast();
 
 	const handleSave = useCallback(() => {
 		if (!user) return navigate("/login");

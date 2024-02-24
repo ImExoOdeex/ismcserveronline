@@ -1,11 +1,11 @@
 import { ChatIcon, EditIcon } from "@chakra-ui/icons";
 import { Button, Flex, Icon, IconButton, Image, Text, Textarea, VisuallyHiddenInput, useToast } from "@chakra-ui/react";
-import { useFetcher } from "@remix-run/react";
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { FiTrash2 } from "react-icons/fi";
 import { TbMessageReport } from "react-icons/tb";
 import ReactTimeAgo from "react-time-ago";
-import useRootData from "~/components/utils/hooks/useRootData";
+import useFetcherCallback from "~/components/utils/hooks/useFetcherCallback";
+import useUser from "~/components/utils/hooks/useUser";
 import type { CustomComment } from "./Comments";
 
 export default memo(function Comment({
@@ -15,70 +15,57 @@ export default memo(function Comment({
 	comment: CustomComment;
 	setComments: React.Dispatch<React.SetStateAction<CustomComment[] | null>>;
 }) {
-	const { user } = useRootData();
+	const user = useUser();
+	const toast = useToast();
 
 	const isOwner = useMemo(() => {
 		return user?.id === comment.user.id;
 	}, [user, comment.user.id]);
-	const fetcher = useFetcher();
-	const reportFetcher = useFetcher();
-	const editFetcher = useFetcher();
-
-	const toast = useToast();
-	useEffect(() => {
-		if (fetcher.data) {
-			const success = (fetcher.data as any).success;
-			toast({
-				title: success ? "Your comment has been deleted." : (fetcher.data as any).error,
-				status: success ? "success" : "error",
-				duration: 5000,
-				position: "bottom-right",
-				variant: "subtle",
-				isClosable: true
-			});
-			if (success) {
-				setComments((comments) => (comments ? comments.filter((c) => c.id !== comment.id) : comments));
-			}
+	const fetcher = useFetcherCallback((data) => {
+		const success = (fetcher.data as any).success;
+		toast({
+			title: success ? "Your comment has been deleted." : (fetcher.data as any).error,
+			status: success ? "success" : "error",
+			duration: 5000,
+			position: "bottom-right",
+			variant: "subtle",
+			isClosable: true
+		});
+		if (success) {
+			setComments((comments) => (comments ? comments.filter((c) => c.id !== comment.id) : comments));
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [fetcher.data]);
-	useEffect(() => {
-		if (reportFetcher.data) {
-			const success = (reportFetcher.data as any).success;
-			toast({
-				title: success ? "Comment has been reported." : (reportFetcher.data as any).error,
-				status: success ? "success" : "error",
-				duration: 5000,
-				position: "bottom-right",
-				variant: "subtle",
-				isClosable: true
-			});
+	});
+	const reportFetcher = useFetcherCallback((data) => {
+		const success = (reportFetcher.data as any).success;
+		toast({
+			title: success ? "Comment has been reported." : (reportFetcher.data as any).error,
+			status: success ? "success" : "error",
+			duration: 5000,
+			position: "bottom-right",
+			variant: "subtle",
+			isClosable: true
+		});
+	});
+	const editFetcher = useFetcherCallback((data) => {
+		const success = (editFetcher.data as any).success;
+		toast({
+			title: success ? "Comment has been edited." : (editFetcher.data as any).error,
+			status: success ? "success" : "error",
+			duration: 5000,
+			position: "bottom-right",
+			variant: "subtle",
+			isClosable: true
+		});
+		if (success) {
+			setComments((comments) =>
+				comments ? comments.map((c) => (c.id === comment.id ? (editFetcher.data as any).comment : c)) : comments
+			);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [reportFetcher.data]);
-	useEffect(() => {
-		if (editFetcher.data) {
-			const success = (editFetcher.data as any).success;
-			toast({
-				title: success ? "Comment has been edited." : (editFetcher.data as any).error,
-				status: success ? "success" : "error",
-				duration: 5000,
-				position: "bottom-right",
-				variant: "subtle",
-				isClosable: true
-			});
-			if (success) {
-				setComments((comments) =>
-					comments ? comments.map((c) => (c.id === comment.id ? (editFetcher.data as any).comment : c)) : comments
-				);
-			}
-			setEditingData((prev) => ({
-				...prev,
-				isEditing: false
-			}));
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [editFetcher.data]);
+		setEditingData((prev) => ({
+			...prev,
+			isEditing: false
+		}));
+	});
 
 	const [editingData, setEditingData] = useState({
 		isEditing: false,

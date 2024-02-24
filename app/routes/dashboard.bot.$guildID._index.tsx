@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useFetcher, useRevalidator } from "@remix-run/react";
+import { useRevalidator } from "@remix-run/react";
 import { Select } from "chakra-react-select";
 import { useEffect, useState } from "react";
 import { BiSave } from "react-icons/bi";
@@ -33,6 +33,7 @@ import { requireEnv } from "~/components/server/functions/env.server";
 import { requireUserGuild } from "~/components/server/functions/secureDashboard.server";
 import serverConfig from "~/components/server/serverConfig.server";
 import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
+import useFetcherCallback from "~/components/utils/hooks/useFetcherCallback";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
 	const guildID = params.guildID!;
@@ -115,7 +116,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
 export default function Index() {
 	const { livecheck, channels } = useAnimationLoaderData<typeof loader>();
 
-	const livecheckFetcher = useFetcher();
+	const livecheckFetcher = useFetcherCallback((data) => {
+		setIsEditing(false);
+		setTimeout(() => {
+			revalidate();
+		}, 7000);
+	});
 	const [isEditing, setIsEditing] = useState<boolean>(false);
 	const { revalidate, state } = useRevalidator();
 
@@ -124,17 +130,6 @@ export default function Index() {
 		return () => clearInterval(interval);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
-
-	const data = livecheckFetcher.data as any;
-	useEffect(() => {
-		if (data) {
-			setIsEditing(false);
-			setTimeout(() => {
-				revalidate();
-			}, 7000);
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [data]);
 
 	const [clickedAction, setClickedAction] = useState<"toggle" | "edit" | null>();
 

@@ -29,7 +29,10 @@ import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderD
 import useUser from "~/components/utils/hooks/useUser";
 
 export async function action({ request }: ActionFunctionArgs) {
-	const user = await getUser(request);
+	const user = await getUser(request, {
+		prime: true,
+		subId: true
+	});
 	invariant(user, "User not found");
 	invariant(user.prime, "User does not have a subscription");
 	invariant(user.subId, "User does not have a subscription");
@@ -43,7 +46,11 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-	const user = await getUser(request);
+	const user = await getUser(request, {
+		prime: true,
+		subId: true,
+		everPurchased: true
+	});
 	invariant(user, "User not found");
 
 	const url = new URL(request.url);

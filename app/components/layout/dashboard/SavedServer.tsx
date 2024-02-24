@@ -1,51 +1,40 @@
 import { Icon } from "@chakra-ui/icons";
 import { Badge, Flex, IconButton, Image, Text, Tooltip, useToast, VisuallyHiddenInput } from "@chakra-ui/react";
 import { useFetcher } from "@remix-run/react";
-import { memo, useEffect } from "react";
+import { memo } from "react";
 import { BiRefresh } from "react-icons/bi";
 import { FiTrash2 } from "react-icons/fi";
 import { IoReturnDownForwardOutline } from "react-icons/io5";
+import useFetcherCallback from "~/components/utils/hooks/useFetcherCallback";
 import type { DisplaySavedServer } from "~/routes/dashboard._index";
 
 interface Props {
 	server: DisplaySavedServer;
 }
 
-function SavedServer({ server }: Props) {
-	const refreshFetcher = useFetcher();
-	const deleteFetcher = useFetcher();
-	const goFetcher = useFetcher();
-
+export default memo(function SavedServer({ server }: Props) {
 	const toast = useToast();
-
-	useEffect(() => {
-		const data = refreshFetcher.data as any;
-		if (data) {
-			toast({
-				title: data?.success ? "Server refreshed!" : "Server not refreshed!",
-				status: data?.success ? "success" : "error",
-				duration: 9000,
-				variant: "subtle",
-				position: "bottom-right",
-				isClosable: true
-			});
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [refreshFetcher.data]);
-	useEffect(() => {
-		const data = deleteFetcher.data as any;
-		if (data) {
-			toast({
-				title: data?.success ? "Server deleted!" : "Server not deleted!",
-				status: data?.success ? "success" : "error",
-				duration: 9000,
-				variant: "subtle",
-				position: "bottom-right",
-				isClosable: true
-			});
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [deleteFetcher.data]);
+	const goFetcher = useFetcher();
+	const refreshFetcher = useFetcherCallback((data) => {
+		toast({
+			title: data?.success ? "Server refreshed!" : "Server not refreshed!",
+			status: data?.success ? "success" : "error",
+			duration: 9000,
+			variant: "subtle",
+			position: "bottom-right",
+			isClosable: true
+		});
+	});
+	const deleteFetcher = useFetcherCallback((data) => {
+		toast({
+			title: data?.success ? "Server deleted!" : "Server not deleted!",
+			status: data?.success ? "success" : "error",
+			duration: 9000,
+			variant: "subtle",
+			position: "bottom-right",
+			isClosable: true
+		});
+	});
 
 	return (
 		<Flex key={server.id} w="100%" p={4} borderRadius={8} gap={4} bg="alpha" rounded={"xl"}>
@@ -150,6 +139,4 @@ function SavedServer({ server }: Props) {
 			</Flex>
 		</Flex>
 	);
-}
-
-export default memo(SavedServer);
+});

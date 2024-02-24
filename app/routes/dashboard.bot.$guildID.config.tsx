@@ -1,7 +1,6 @@
 import { Button, Divider, HStack, Icon, Stack, Text, VStack, Wrap, WrapItem } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { useFetcher, useLoaderData, useRevalidator } from "@remix-run/react";
-import { useEffect, useRef } from "react";
+import { useFetcher, useRevalidator } from "@remix-run/react";
 import { BiSave } from "react-icons/bi";
 import { HiRefresh } from "react-icons/hi";
 import { typedjson } from "remix-typedjson";
@@ -11,6 +10,7 @@ import { getUser } from "~/components/server/db/models/user";
 import { requireEnv } from "~/components/server/functions/env.server";
 import { requireUserGuild } from "~/components/server/functions/secureDashboard.server";
 import serverConfig from "~/components/server/serverConfig.server";
+import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
 	const guildID = params.guildID!;
@@ -60,13 +60,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function Config() {
-	const lastConfig = useRef(null);
-	const { config } = useLoaderData<typeof loader>() || {
-		config: lastConfig.current
-	};
-	useEffect(() => {
-		if (config) lastConfig.current = config;
-	}, [config]);
+	const { config } = useAnimationLoaderData<typeof loader>();
 
 	const fetcher = useFetcher();
 	const { revalidate, state } = useRevalidator();

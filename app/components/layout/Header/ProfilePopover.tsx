@@ -17,8 +17,9 @@ import {
 } from "@chakra-ui/react";
 import { useFetcher, useNavigate } from "@remix-run/react";
 import { memo } from "react";
+import { BiSolidDashboard } from "react-icons/bi";
+import { FaCode, FaDiscord } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
-import { TbLayoutDashboard } from "react-icons/tb";
 import config from "~/components/config/config";
 import { useActionKey } from "~/components/utils/hooks/useActionKey";
 import useUser from "~/components/utils/hooks/useUser";
@@ -26,21 +27,21 @@ import useUser from "~/components/utils/hooks/useUser";
 const buttons = [
 	{
 		name: "Dashboard",
-		icon: TbLayoutDashboard,
+		icon: BiSolidDashboard,
 		path: "/dashboard",
 		command: "d"
 	},
 	{
 		name: "Manage Discord Bot",
-		icon: TbLayoutDashboard,
+		icon: FaDiscord,
 		path: "/dashboard/bot",
-		command: "b"
+		command: "e"
 	},
 	{
 		name: "API Token",
-		icon: TbLayoutDashboard,
+		icon: FaCode,
 		path: "/dashboard/token",
-		command: "a"
+		command: "s"
 	}
 ];
 
@@ -55,17 +56,17 @@ export default memo(function ProfilePopover() {
 
 		if (e[hotkey] && !e.shiftKey) {
 			switch (e.key.toLowerCase()) {
-				case "d": {
+				case buttons[0].command: {
 					e.preventDefault();
 					navigate("/dashboard");
 					break;
 				}
-				case "b": {
+				case buttons[1].command: {
 					e.preventDefault();
 					navigate("/dashboard/bot");
 					break;
 				}
-				case "a": {
+				case buttons[2].command: {
 					e.preventDefault();
 					navigate("/dashboard/token");
 					break;
