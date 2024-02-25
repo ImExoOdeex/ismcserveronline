@@ -1,6 +1,5 @@
 import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
-import { broadcastDevReady } from "@remix-run/node";
 import type { AppLoadContext, ServerBuild } from "@remix-run/server-runtime";
 import { createRequestHandler } from "@remix-run/server-runtime";
 import cluster from "cluster";
@@ -14,12 +13,19 @@ import os from "os";
 import path from "path";
 import sourceMapSupport from "source-map-support";
 
-const BUILD_PATH = path.resolve("build/index.js");
+const BUILD_PATH = path.resolve("build/server/index.js");
 
 (async () => {
 	sourceMapSupport.install();
 
-	const build = await reimportServer();
+	const viteDevServer =
+		process.env.NODE_ENV === "production"
+			? undefined
+			: await import("vite").then((vite) =>
+					vite.createServer({
+						server: { middlewareMode: true }
+					})
+			  );
 
 	const app = new Hono();
 
@@ -35,6 +41,13 @@ const BUILD_PATH = path.resolve("build/index.js");
 	app.use(
 		"/*",
 		serveStatic({
+			root: "./build/client"
+		})
+	);
+
+	app.use(
+		"/*",
+		serveStatic({
 			root: "./public"
 		})
 	);
@@ -44,7 +57,7 @@ const BUILD_PATH = path.resolve("build/index.js");
 	app.use(
 		"*",
 		remix({
-			build,
+			build: viteDevServer ? () => viteDevServer.ssrLoadModule("virtual:remix/server-build") : await reimportServer(),
 			mode: process.env.NODE_ENV as "development" | "production",
 			getLoadContext: async () => {
 				return {
@@ -77,9 +90,6 @@ const BUILD_PATH = path.resolve("build/index.js");
 			},
 			(info) => {
 				Logger(`Blazingly fast Hono server listening on http://localhost:${info.port}`, "green");
-				if (process.env.NODE_ENV === "development") {
-					broadcastDevReady(build);
-				}
 			}
 		);
 	}

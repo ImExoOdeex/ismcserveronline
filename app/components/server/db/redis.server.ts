@@ -23,6 +23,7 @@ if (process.env.NODE_ENV === "production") {
 	redis = new Redis(options);
 } else {
 	if (!global.__redis) {
+		console.log("[Redis] Connecting to Redis | Development");
 		global.__redis = new Redis(options);
 	}
 	redis = global.__redis;

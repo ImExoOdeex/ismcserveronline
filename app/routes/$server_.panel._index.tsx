@@ -88,24 +88,20 @@ export default function ServerPanel() {
 		<Flex gap={4} w="100%" flexDir={"column"}>
 			<Flex flexDir={"column"} gap={4} w={"100%"}>
 				<Text fontSize={"2xl"} fontWeight={600}>
-					Server Information
+					Server Information!
 				</Text>
 
 				<Flex gap={2} flexDir={{ base: "column", md: "row" }}>
-					<Flex p={4} rounded="xl" border="1px solid" borderColor={"alpha300"} flexDir={"column"} w="100%" gap={2}>
-						<Text fontWeight={600} fontSize={"lg"}>
-							Server Status
-						</Text>
+					<Flex p={4} rounded="xl" border="1px solid" borderColor={"alpha300"} flexDir={"column"} w="100%" gap={1}>
+						<Text fontWeight={600}>Server Status</Text>
 
 						<Text color={server.online ? "green" : "red"} fontSize={"2xl"} fontWeight={600}>
 							{server.online ? "Online" : "Offline"}
 						</Text>
 					</Flex>
 
-					<Flex p={4} rounded="xl" border="1px solid" borderColor={"alpha300"} flexDir={"column"} w="100%" gap={2}>
-						<Text fontWeight={600} fontSize={"lg"}>
-							Current Players
-						</Text>
+					<Flex p={4} rounded="xl" border="1px solid" borderColor={"alpha300"} flexDir={"column"} w="100%" gap={1}>
+						<Text fontWeight={600}>Current Players</Text>
 
 						<Text color={"textSec"} fontSize={"2xl"} fontWeight={600}>
 							{(server.players as any as ServerModel.Players<any>).online}

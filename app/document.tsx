@@ -1,6 +1,6 @@
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import { Box, ChakraBaseProvider, Flex, Heading, Icon, Stack, Text, theme, VStack } from "@chakra-ui/react";
-import { Links, LiveReload, Meta, Scripts, ScrollRestoration, useRouteError } from "@remix-run/react";
+import { Links, Meta, Scripts, ScrollRestoration, useRouteError } from "@remix-run/react";
 import { useContext, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { BiCode, BiHome } from "react-icons/bi";
 import { useTypedLoaderData } from "remix-typedjson";
@@ -59,7 +59,7 @@ function Document({ children }: DocumentProps) {
 				{children}
 				<ScrollRestoration />
 				<Scripts />
-				<LiveReload />
+				{/* <LiveReload /> */}
 			</body>
 		</html>
 	);

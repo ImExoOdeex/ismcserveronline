@@ -1,18 +1,17 @@
 import { GetLoadContextFunction, createRequestHandler } from "@remix-run/express";
-import { broadcastDevReady, installGlobals } from "@remix-run/node";
+import { installGlobals } from "@remix-run/node";
 import compression from "compression";
 import express from "express";
 import morgan from "morgan";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as url from "node:url";
-import sourceMapSupport from "source-map-support";
 
 (async () => {
-	sourceMapSupport.install();
+	// sourceMapSupport.install();
 	installGlobals();
 
-	const BUILD_PATH = path.resolve("build/index.js");
+	const BUILD_PATH = path.resolve("build/server/index.js");
 	const VERSION_PATH = path.resolve("build/version.txt");
 
 	const initialBuild = await reimportServer();
@@ -23,14 +22,20 @@ import sourceMapSupport from "source-map-support";
 		};
 	};
 
-	const remixHandler =
-		process.env.NODE_ENV === "development"
-			? await createDevRequestHandler(initialBuild)
-			: createRequestHandler({
-					build: initialBuild,
-					mode: initialBuild.mode,
-					getLoadContext
-			  });
+	const viteDevServer =
+		process.env.NODE_ENV === "production"
+			? undefined
+			: await import("vite").then((vite) =>
+					vite.createServer({
+						server: { middlewareMode: true }
+					})
+			  );
+
+	const remixHandler = createRequestHandler({
+		build: viteDevServer ? () => viteDevServer.ssrLoadModule("virtual:remix/server-build") : await reimportServer(),
+		mode: initialBuild.mode,
+		getLoadContext
+	});
 
 	const app = express();
 
@@ -39,12 +44,16 @@ import sourceMapSupport from "source-map-support";
 	// http://expressjs.com/en/advanced/best-practice-security.html#at-a-minimum-disable-x-powered-by-header
 	app.disable("x-powered-by");
 
-	// Remix fingerprints its assets so we can cache forever.
-	app.use("/build", express.static("public/build", { immutable: true, maxAge: "1y" }));
+	if (viteDevServer) {
+		app.use(viteDevServer.middlewares);
+	} else {
+		// Remix fingerprints its assets so we can cache forever.
+		app.use("/build", express.static("public/build", { immutable: true, maxAge: "1y" }));
 
-	// Everything else (like favicon.ico) is cached for an hour. You may want to be
-	// more aggressive with this caching.
-	app.use(express.static("public", { maxAge: "1h" }));
+		// Everything else (like favicon.ico) is cached for an hour. You may want to be
+		// more aggressive with this caching.
+		app.use(express.static("public", { maxAge: "1h" }));
+	}
 
 	app.use(morgan("tiny"));
 
@@ -54,10 +63,6 @@ import sourceMapSupport from "source-map-support";
 
 	app.listen(port, async () => {
 		console.log(`Express server listening on port ${port}`);
-
-		if (process.env.NODE_ENV === "development") {
-			broadcastDevReady(await reimportServer());
-		}
 	});
 
 	/**
@@ -71,34 +76,5 @@ import sourceMapSupport from "source-map-support";
 
 		// use a timestamp query parameter to bust the import cache
 		return await import(BUILD_URL + "?t=" + stat.mtimeMs);
-	}
-
-	/**
-	 * @param {ServerBuild} initialBuild
-	 * @returns {Promise<import('@remix-run/express').RequestHandler>}
-	 */
-	async function createDevRequestHandler(initialBuild: any) {
-		let build = initialBuild;
-		async function handleServerUpdate() {
-			// 1. re-import the server build
-			build = await reimportServer();
-			// 2. tell Remix that this app server is now up-to-date and ready
-			broadcastDevReady(build);
-		}
-		const chokidar = await import("chokidar");
-		chokidar.watch(VERSION_PATH, { ignoreInitial: true }).on("add", handleServerUpdate).on("change", handleServerUpdate);
-
-		// wrap request handler to make sure its recreated with the latest build for every request
-		return async (req: any, res: any, next: any) => {
-			try {
-				return createRequestHandler({
-					build,
-					mode: "development",
-					getLoadContext
-				})(req, res, next);
-			} catch (error) {
-				next(error);
-			}
-		};
 	}
 })();

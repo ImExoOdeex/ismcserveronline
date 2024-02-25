@@ -5,125 +5,107 @@ import { db } from "~/components/server/db/db.server";
 import { secureBotRoute } from "~/components/server/functions/env.server";
 import { Guild } from "./dashboard.bot._index";
 
-// enum Role {
-// 	ADMIN
-// 	USER
-//   }
-
-//   // do not the fuck ask why this is via email, not id ok?
-//   model User {
-// 	id            Int            @id @unique @default(autoincrement())
-// 	email         String         @unique
-// 	snowflake     String         @unique
-// 	nick          String
-// 	photo         String?
-// 	everPurchased Boolean        @default(false)
-// 	prime         Boolean        @default(false)
-// 	subId         String?
-// 	role          Role           @default(USER)
-// 	guilds        Json?
-// 	created_at    DateTime       @default(now())
-// 	updated_at    DateTime       @updatedAt
-// 	Comment       Comment[]
-// 	SavedServer   SavedServer[]
-// 	SampleServer  SampleServer[]
-// 	Token         Token?
-
-// 	@@index([email])
-//   }
-
-//   model SavedServer {
-// 	id      Int     @id @unique @default(autoincrement())
-// 	server  String
-// 	icon    String?
-// 	online  Boolean @default(true)
-// 	players Int     @default(0)
-// 	bedrock Boolean @default(false)
-
-// 	user_id Int
-// 	User    User @relation(fields: [user_id], references: [id])
-
-// 	created_at DateTime @default(now())
-//   }
-
-//   enum SOURCE {
-// 	WEB
-// 	DISCORD
-// 	API
-//   }
-
-//   // comments are not related to any of server of check, cuz there is no server creating when someone checks it. it's determinated via address and port
-//   model Comment {
-// 	id         Int      @id @unique @default(autoincrement())
-// 	user_id    Int
-// 	user       User     @relation(fields: [user_id], references: [id])
-// 	server     String
-// 	bedrock    Boolean  @default(false)
-// 	content    String
-// 	created_at DateTime @default(now())
-// 	updated_at DateTime @default(now())
-//   }
-
-//   model SampleServer {
-// 	id      Int     @id @unique @default(autoincrement())
-// 	server  String
-// 	bedrock Boolean @default(false)
-// 	favicon String
-
-// 	user    User? @relation(fields: [user_id], references: [id])
-// 	user_id Int?
-
-// 	payment_id     String?
-// 	payment_status PaymentStatus @default(PROCESSING)
-
-// 	add_date DateTime  @default(now())
-// 	end_date DateTime?
-//   }
-
-//   enum PaymentStatus {
-// 	FAILED
-// 	CANCELLED
-// 	PROCESSING
-// 	PAID
-//   }
-
-//   // this server is for popular servers
-//   model Server {
-// 	id         Int      @id @unique @default(autoincrement())
-// 	server     String
-// 	icon       String?
-// 	tags       Json?
-// 	created_at DateTime @default(now())
-//   }
-
-//   model Check {
-// 	id         Int      @id @unique @default(autoincrement())
-// 	server     String
-// 	online     Boolean
-// 	players    Int
-// 	bedrock    Boolean  @default(false)
-// 	source     SOURCE   @default(API)
-// 	client_ip  String?
-// 	checked_at DateTime @default(now())
-// 	Token      Token?   @relation(fields: [token_id], references: [id])
-// 	token_id   Int
-
-// 	@@index([server])
-//   }
-
-//   model Token {
-// 	id         Int      @id @unique @default(autoincrement())
-// 	token      String   @unique
-// 	user       User?    @relation(fields: [user_id], references: [id])
-// 	user_id    Int?     @unique
-// 	check      Check[]
-// 	client_ip  String?
-// 	created_at DateTime @default(now())
-// 	updated_at DateTime @updatedAt
-//   }
-
 export async function action({ request }: ActionFunctionArgs) {
 	secureBotRoute(request);
+
+	async function saveDatabase() {
+		// write a script that will migrate the database to the new schema. new schema will have new Model named Server and it will be related to other models like Check, Comment, SavedServer etc
+		// the script will be run once and will be deleted after running
+
+		// get the whole database in json format
+		const [user, savedServer, sampleServer, comment, check, token] = await Promise.all([
+			db.user.findMany(),
+			db.savedServer.findMany(),
+			db.sampleServer.findMany(),
+			db.comment.findMany(),
+			db.check.findMany(),
+			db.token.findMany()
+		]);
+
+		const wholeDatabase = {
+			user,
+			savedServer,
+			sampleServer,
+			comment,
+			check,
+			token
+		};
+
+		const now = new Date()
+			.toLocaleString()
+			.replaceAll("/", "-")
+			.replaceAll(":", "-")
+			.replaceAll(" ", "-")
+			.replaceAll(",", "");
+		await fs.writeFile(`migration/migration-${now}.json`, JSON.stringify(wholeDatabase, null, 2)).then(() => {
+			console.log("migration.json has been created");
+		});
+
+		return wholeDatabase;
+	}
+
+	async function loadDatabaseFile() {
+		const file = await fs.readFile(`migration/migration-2-10-2024-7-04-58-PM.json`, "utf-8");
+		const json = JSON.parse(file) as {
+			user: {
+				id: number;
+				email: string;
+				snowflake: string;
+				nick: string;
+				photo: string;
+				everPurchased: boolean;
+				prime: boolean;
+				subId: string;
+				role: Role;
+				guilds: Guild[];
+				created_at: Date;
+				updated_at: Date;
+			}[];
+			savedServer: {
+				id: number;
+				server: string;
+				icon: string;
+				online: boolean;
+				players: number;
+				bedrock: boolean;
+				user_id: number;
+				created_at: Date;
+			}[];
+			sampleServer: {
+				id: number;
+				server: string;
+				bedrock: boolean;
+				favicon: string;
+				user_id: number;
+				payment_id: string;
+				payment_status: PaymentStatus;
+				add_date: Date;
+				end_date: Date;
+			}[];
+			comment: {
+				id: number;
+				user_id: number;
+				server: string;
+				bedrock: boolean;
+				content: string;
+				created_at: Date;
+				updated_at: Date;
+			}[];
+			check: {
+				id: number;
+				server: string;
+				online: boolean;
+				players: number;
+				bedrock: boolean;
+				source: SOURCE;
+				client_ip: string;
+				checked_at: Date;
+				token_id: number;
+			}[];
+			token: { id: number; token: string; user_id: number; client_ip: string; created_at: Date; updated_at: Date }[];
+		};
+		return json;
+	}
 
 	// const [servers, checks] = await Promise.all([
 	// 	db.server.findMany({
@@ -285,98 +267,4 @@ export async function action({ request }: ActionFunctionArgs) {
 	}
 
 	return json({});
-}
-
-async function saveDatabase() {
-	// write a script that will migrate the database to the new schema. new schema will have new Model named Server and it will be related to other models like Check, Comment, SavedServer etc
-	// the script will be run once and will be deleted after running
-
-	// get the whole database in json format
-	const [user, savedServer, sampleServer, comment, check, token] = await Promise.all([
-		db.user.findMany(),
-		db.savedServer.findMany(),
-		db.sampleServer.findMany(),
-		db.comment.findMany(),
-		db.check.findMany(),
-		db.token.findMany()
-	]);
-
-	const wholeDatabase = {
-		user,
-		savedServer,
-		sampleServer,
-		comment,
-		check,
-		token
-	};
-
-	const now = new Date().toLocaleString().replaceAll("/", "-").replaceAll(":", "-").replaceAll(" ", "-").replaceAll(",", "");
-	await fs.writeFile(`migration/migration-${now}.json`, JSON.stringify(wholeDatabase, null, 2)).then(() => {
-		console.log("migration.json has been created");
-	});
-
-	return wholeDatabase;
-}
-
-async function loadDatabaseFile() {
-	const file = await fs.readFile(`migration/migration-2-10-2024-7-04-58-PM.json`, "utf-8");
-	const json = JSON.parse(file) as {
-		user: {
-			id: number;
-			email: string;
-			snowflake: string;
-			nick: string;
-			photo: string;
-			everPurchased: boolean;
-			prime: boolean;
-			subId: string;
-			role: Role;
-			guilds: Guild[];
-			created_at: Date;
-			updated_at: Date;
-		}[];
-		savedServer: {
-			id: number;
-			server: string;
-			icon: string;
-			online: boolean;
-			players: number;
-			bedrock: boolean;
-			user_id: number;
-			created_at: Date;
-		}[];
-		sampleServer: {
-			id: number;
-			server: string;
-			bedrock: boolean;
-			favicon: string;
-			user_id: number;
-			payment_id: string;
-			payment_status: PaymentStatus;
-			add_date: Date;
-			end_date: Date;
-		}[];
-		comment: {
-			id: number;
-			user_id: number;
-			server: string;
-			bedrock: boolean;
-			content: string;
-			created_at: Date;
-			updated_at: Date;
-		}[];
-		check: {
-			id: number;
-			server: string;
-			online: boolean;
-			players: number;
-			bedrock: boolean;
-			source: SOURCE;
-			client_ip: string;
-			checked_at: Date;
-			token_id: number;
-		}[];
-		token: { id: number; token: string; user_id: number; client_ip: string; created_at: Date; updated_at: Date }[];
-	};
-	return json;
 }

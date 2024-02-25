@@ -4,7 +4,7 @@ import { RemixServer } from "@remix-run/react";
 import { renderToPipeableStream } from "react-dom/server";
 import { PassThrough } from "stream";
 import { createEmotionCache } from "./context";
-import { otherRootRouteHandlers } from "./routes/otherRootRoutes.server";
+import { otherRootRouteHandlers } from "./otherRootRoutes.server";
 
 const ABORT_DELAY = 7000;
 
@@ -16,7 +16,7 @@ export default async function handleRequest(
 	remixContext: EntryContext,
 	loadContext: AppLoadContext
 ) {
-	for (const handler of otherRootRouteHandlers) {
+	for (const handler of otherRootRouteHandlers!) {
 		const otherRouteResponse = await handler(request, remixContext);
 		if (otherRouteResponse) return otherRouteResponse;
 	}
