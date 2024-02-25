@@ -3,17 +3,17 @@ import { Button, Divider, Flex, VStack } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
 import { UseDataFunctionReturn, typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
-import { Ad, adType } from "~/components/ads/Yes";
+import ServerView from "~/components/layout/server/ServerView";
 import LoginToVote from "~/components/layout/server/vote/LoginToVote";
 import MessageFromOwner from "~/components/layout/server/vote/MessageFromOwner";
-import ServerVoteView from "~/components/layout/server/vote/ServerVoteView";
 import Vote from "~/components/layout/server/vote/Vote";
 import { db } from "~/components/server/db/db.server";
 import { getUser, getUserId } from "~/components/server/db/models/user";
 import { cachePrefetch } from "~/components/server/functions/fetchHelpers.server";
 import { csrf } from "~/components/server/functions/security.server";
+import { getRandomMinecarftImage } from "~/components/server/minecraftImages.server";
 import { emitter } from "~/components/server/sse/emitter.server";
-import { AnyServerModel } from "~/components/types/minecraftServer";
+import { AnyServer, AnyServerModel } from "~/components/types/minecraftServer";
 import Link from "~/components/utils/Link";
 import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 import useUser from "~/components/utils/hooks/useUser";
@@ -143,10 +143,13 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 		  })
 		: null;
 
+	const image = getRandomMinecarftImage();
+
 	return typedjson(
 		{
 			data: foundServer,
-			vote
+			vote,
+			image
 		},
 		cachePrefetch(request)
 	);
@@ -168,18 +171,25 @@ export function shouldRevalidate() {
 }
 
 export default function ServerVote() {
-	const { data } = useAnimationLoaderData<typeof loader>();
+	const { data, image } = useAnimationLoaderData<typeof loader>();
 	const user = useUser();
 
 	return (
 		<VStack spacing={"40px"} align="start" maxW="1000px" mx="auto" w="100%" mt={"50px"} px={4} mb={5}>
-			<Ad type={adType.small} width={"968px"} />
+			{/* <Ad type={adType.small} width={"968px"} /> */}
 
 			<Button leftIcon={<ArrowBackIcon />} as={Link} to={`/${data.bedrock ? "bedrock/" : ""}${data.server}`}>
 				Go back
 			</Button>
 			<Flex w="100%" flexDir={"column"} gap={2}>
-				<ServerVoteView server={data.server} data={data} bedrock={data.bedrock} />
+				<ServerView
+					server={data.server}
+					data={data as unknown as AnyServer}
+					verified={!!data.owner_id}
+					bedrock={data.bedrock}
+					image={image}
+					mb={20}
+				/>
 			</Flex>
 
 			{user ? <Vote /> : <LoginToVote />}

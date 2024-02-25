@@ -1,6 +1,6 @@
 import { Flex } from "@chakra-ui/react";
 import type { Transition } from "framer-motion";
-import { memo, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import BackgroundUtils from "./BackgroundUtils";
 import Column from "./Column";
 import CookieConstent from "./CookieConsent";
@@ -15,7 +15,7 @@ export const mobileMenuTransition = {
 	ease: [0.4, 0, 0.3, 1]
 } as Transition;
 
-export default memo(function Layout({ children }: { children?: React.ReactNode }) {
+export default function Layout({ children }: { children?: React.ReactNode }) {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const isClient = useMemo(() => typeof window !== "undefined", []);
 
@@ -49,4 +49,4 @@ export default memo(function Layout({ children }: { children?: React.ReactNode }
 			{isClient && <SideMenu isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} />}
 		</>
 	);
-});
+}

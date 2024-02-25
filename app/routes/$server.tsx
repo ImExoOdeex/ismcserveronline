@@ -1,4 +1,4 @@
-import { Divider, Flex, Heading, HStack, Icon, Stack, Text, useToast, VStack } from "@chakra-ui/react";
+import { Divider, Flex, Heading, HStack, Icon, Stack, Text, useToast, VisuallyHidden, VStack } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
@@ -353,20 +353,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 				ip: true,
 				plugins: true,
 				owner_id: true,
-				map: true,
-				_count: {
-					select: {
-						Comment: true,
-						Vote: {
-							where: {
-								created_at: {
-									gte: dayjs().startOf("month").toDate()
-								}
-							}
-						},
-						Check: true
-					}
-				}
+				map: true
 			}
 		})
 		.catch(() => null)) as unknown as AnyServerModel | null;
@@ -473,7 +460,15 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 	const serverId = foundServer.id;
 
 	const isAuth = await authenticator.isAuthenticated(request);
-	const [checks, isSaved] = await Promise.all([
+	const [votes, checks, isSaved] = await Promise.all([
+		db.vote.count({
+			where: {
+				server_id: serverId,
+				created_at: {
+					gte: dayjs().startOf("month").toDate()
+				}
+			}
+		}),
 		db.check.findMany({
 			where: {
 				server_id: serverId
@@ -511,7 +506,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
 	const image = getRandomMinecarftImage();
 
-	return typeddefer({ server, data, checks, query, isSaved, foundServer, bedrock, serverId, image });
+	return typeddefer({ server, data, checks, query, isSaved, foundServer, bedrock, serverId, image, votes });
 }
 
 export function meta({ data, matches }: MetaArgs) {
@@ -534,20 +529,21 @@ export const shouldRevalidate: ShouldRevalidateFunction = ({ formData, currentPa
 export default function $server() {
 	const {
 		server,
-		data: promiseData,
 		checks,
 		image,
 		query,
 		isSaved,
 		bedrock,
 		serverId,
+		votes: dbVotes,
+		data: promiseData, // data is there promise data, cause it's streaming, so "foundServer" is a data rn.
 		foundServer: data
 	} = useAnimationLoaderData<typeof loader>();
 
 	const [tab, setTab] = useState<(typeof tabs)[number]["value"]>("checks");
 	const [comments, setComments] = useState<any[] | null>(null);
 
-	const [votes, setVotes] = useState<number>(data?._count?.Vote ?? 0);
+	const [votes, setVotes] = useState<number>(dbVotes);
 	const toast = useToast();
 	useEventSourceCallback(
 		`/api/sse/vote?id=${serverId}`,
@@ -574,12 +570,52 @@ export default function $server() {
 		<Flex gap={5} flexDir={"column"} maxW="1000px" mx="auto" w="100%" mt={"50px"} px={4} mb={5}>
 			{/* <Ad type={adType.small} width={"968px"} /> */}
 
+			<VisuallyHidden>
+				{/* pregenerate styles, cause emotion sucks */}
+				<ServerView
+					verified={!!data.owner_id}
+					server={server}
+					data={data as unknown as AnyServer}
+					bedrock={bedrock}
+					image={image}
+					mb={16}
+				/>
+				<Motd motd={data?.motd.html} mt={5} />
+			</VisuallyHidden>
+
 			<Flex w="100%" flexDir={"column"} gap={2}>
-				<ServerView server={server} data={data} bedrock={bedrock} image={image} mb={16} />
+				<Suspense
+					fallback={
+						<ServerView
+							verified={!!data.owner_id}
+							server={server}
+							data={data as unknown as AnyServer}
+							bedrock={bedrock}
+							image={image}
+							mb={16}
+						/>
+					}
+				>
+					<Await resolve={promiseData}>
+						{(freshData) => (
+							<ServerView
+								verified={!!data.owner_id}
+								server={server}
+								data={freshData}
+								bedrock={bedrock}
+								image={image}
+								mb={16}
+							/>
+						)}
+					</Await>
+				</Suspense>
 
 				{/* displaying motd */}
 				<McFonts />
-				<Motd motd={data?.motd.html} mt={5} />
+
+				<Suspense fallback={data.online ? <Motd motd={data?.motd.html} mt={5} /> : <></>}>
+					<Await resolve={promiseData}>{(freshData) => <Motd motd={freshData.motd.html} mt={5} />}</Await>
+				</Suspense>
 			</Flex>
 
 			<Divider />
@@ -606,10 +642,10 @@ export default function $server() {
 				tab={tab}
 				setTab={setTab}
 				isSaved={isSaved}
-				counts={{
-					checks: data._count?.Check,
-					comments: data?._count?.Comment
-				}}
+				// counts={{
+				// checks: data._count?.Check,
+				// comments: data?._count?.Comment
+				// }}
 			/>
 
 			{tab === "checks" && (

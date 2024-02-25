@@ -79,7 +79,7 @@ export default memo(function ServerInfo({ server, bedrock, data, query }: Props)
 							)}
 							{!bedrock && (
 								<Tr>
-									<Td>Players</Td>
+									<Td>Player List</Td>
 									{(data.players as unknown as ServerModel.Players<false>)?.list?.length ? (
 										<Td
 											fontWeight={"normal"}

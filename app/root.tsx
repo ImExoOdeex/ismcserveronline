@@ -4,6 +4,7 @@ import type { ShouldRevalidateFunctionArgs } from "@remix-run/react";
 import { useLocation, useOutlet } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { isbot } from "isbot";
+import { useMemo } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { getClientLocales } from "remix-utils/locales/server";
 import Layout from "./components/layout/Layout";
@@ -115,8 +116,13 @@ function InsideGlobal() {
 	const outlet = useOutlet();
 	const customTheme = useTheme();
 
-	const isDash = path.startsWith("/dashboard");
-	const animationKey = isDash ? "dashboard" : path;
+	const animationKey = useMemo(() => {
+		const isDash = path.startsWith("/dashboard");
+		const panelRoutesRegex = /\/(?:bedrock\/)?[^\/]+\/panel(?:\/.*)?/;
+		const isPanel = panelRoutesRegex.test(path);
+
+		return isDash ? "dashboard" : isPanel ? "panel" : path;
+	}, [path]);
 
 	return (
 		<ChakraBaseProvider
@@ -136,7 +142,6 @@ function InsideGlobal() {
 			<Layout>
 				<AnimatePresence initial={false} mode={"popLayout"}>
 					<motion.main
-						custom={isDash}
 						key={animationKey}
 						initial={{
 							opacity: 0,

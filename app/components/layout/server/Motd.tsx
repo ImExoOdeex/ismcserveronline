@@ -11,7 +11,7 @@ export default memo(function Motd({ motd, ...props }: Props & FlexProps) {
 
 	return (
 		<Flex
-			h={20}
+			h={motd ? 20 : 0}
 			w="100%"
 			alignItems={"center"}
 			justifyContent={"center"}

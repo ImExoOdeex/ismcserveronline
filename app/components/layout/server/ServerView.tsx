@@ -1,21 +1,29 @@
-import { Flex, FlexProps, Heading, Image, Link, VStack } from "@chakra-ui/react";
+import { Badge, Flex, FlexProps, Heading, Image, Link, VStack } from "@chakra-ui/react";
 import { AnimatePresence, Transition, motion } from "framer-motion";
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import config from "~/components/config/config";
-import { AnyServerModel, JavaServerWoDebug } from "~/components/types/minecraftServer";
+import { AnyServer, JavaServerWoDebug } from "~/components/types/minecraftServer";
+import { useGlobalContext } from "~/components/utils/GlobalContext";
 import { MinecraftImage } from "../../server/minecraftImages.server";
 import { ChakraBox } from "../MotionComponents";
 import StatusIndicator from "./StatusIndicator";
 
 interface Props {
 	server: string;
-	data: AnyServerModel;
+	data: AnyServer;
 	bedrock: boolean;
 	image: MinecraftImage;
+	verified: boolean;
 }
 
-export default memo(function ServerView({ server, data, bedrock, image, ...props }: Props & FlexProps) {
+export default memo(function ServerView({ server, data, bedrock, image, verified, ...props }: Props & FlexProps) {
 	const [isOpen, setIsOpen] = useState(false);
+
+	const { updateData } = useGlobalContext();
+
+	useEffect(() => {
+		updateData("gradientColor", data.online ? "green" : "red");
+	}, [data.online]);
 
 	return (
 		<Flex flexDir={"column"} pos="relative" {...props}>
@@ -135,68 +143,30 @@ export default memo(function ServerView({ server, data, bedrock, image, ...props
 					<VStack spacing={4} flexDir={"column"} justifyContent="center" w="100%" align={"center"}>
 						<Flex flexDir={"row"} alignItems="center" justifyContent={"space-between"} w="100%">
 							{/* <HStack as={"a"} target="_blank" href={`http://${server}`}> */}
-							<Heading
-								as={"a"}
-								target="_blank"
-								href={`http://${server}`}
-								color={"whiteAlpha.800"}
-								fontSize={{
-									base: "md",
-									sm: "2xl",
-									md: "4xl"
-								}}
-								letterSpacing={"3px"}
-							>
-								{server}
-							</Heading>
-							{/* <ExternalLinkIcon fontSize={"lg"} /> */}
-							{/* </HStack> */}
+							<Flex flexDir={"column"}>
+								<Heading
+									as={"a"}
+									target="_blank"
+									href={`http://${server}`}
+									color={"whiteAlpha.800"}
+									fontSize={{
+										base: "md",
+										sm: "2xl",
+										md: "4xl"
+									}}
+									letterSpacing={"3px"}
+								>
+									{server}
+								</Heading>
+
+								{verified && (
+									<Badge colorScheme="orange" w="min-content">
+										Verified
+									</Badge>
+								)}
+							</Flex>
 							<StatusIndicator online={data.online} />
 						</Flex>
-
-						{/* <Flex
-						py={4}
-						flexDir={"column"}
-						w="100%"
-						pos="relative"
-						maxW={"100%"}
-						overflowX={"auto"}
-						rounded={"3xl"}
-						justifyContent="center"
-						align={"center"}
-						alignItems="center"
-					>
-						<pre>
-							{(data?.motd as unknown as ServerModel.Motd)?.html?.split("\n")?.map((m: string) => (
-								<Flex
-									key={m}
-									dangerouslySetInnerHTML={{
-										__html: m
-									}}
-									w="100%"
-									fontFamily={"mono"}
-									justifyContent="center"
-									align={"center"}
-									alignItems="center"
-									fontSize={"md"}
-									fontWeight={"normal"}
-								/>
-							))}
-						</pre>
-
-						<Box
-							rounded={"xl"}
-							zIndex={-1}
-							pos={"absolute"}
-							top="0"
-							left="0"
-							right="0"
-							bottom={"0"}
-							bgImage={`linear-gradient(${bgImageColor}, ${bgImageColor}), url(/dirt.png)`}
-							bgRepeat={"repeat"}
-							bgSize="30px"
-						/>
-					</Flex> */}
 					</VStack>
 				</ChakraBox>
 			</AnimatePresence>

@@ -1,6 +1,6 @@
-import { Button, Flex, Text } from "@chakra-ui/react";
+import { Flex, Text } from "@chakra-ui/react";
 import { memo } from "react";
-import Link from "~/components/utils/Link";
+import VerifyModal from "./verify/VerifyModal";
 
 interface Props {
 	message?: string | null;
@@ -18,11 +18,7 @@ export default memo(function MessageFromOwner({ message, ownerId, bedrock, serve
 				</Text>
 				<Text>{message || "No message from the owner"}</Text>
 			</Flex>
-			{!ownerId && (
-				<Button as={Link} to={`/${bedrock ? "bedrock/" : ""}${server}/verify`} w="min-content" px={6}>
-					Your server?
-				</Button>
-			)}
+			{!ownerId && <VerifyModal server={server} bedrock={bedrock} />}
 		</Flex>
 	);
 });

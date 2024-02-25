@@ -21,13 +21,13 @@ interface Props {
 	tab: string;
 	setTab: Dispatch<SetStateAction<(typeof tabs)[number]["value"]>>;
 	isSaved: boolean;
-	counts: {
-		comments: number | undefined;
-		checks: number | undefined;
-	};
+	// counts: {
+	// 	comments: number | undefined;
+	// 	checks: number | undefined;
+	// };
 }
 
-export default memo(function Tabs({ tab, setTab, isSaved, counts }: Props) {
+export default memo(function Tabs({ tab, setTab, isSaved }: Props) {
 	const [saved, setSaved] = useState(isSaved);
 
 	const saveFetcher = useFetcherCallback((data) => {
@@ -73,7 +73,8 @@ export default memo(function Tabs({ tab, setTab, isSaved, counts }: Props) {
 						rounded={"none"}
 						pos="relative"
 					>
-						{t.name} ({(t.value === "comments" ? counts?.comments : counts?.checks) || "0"})
+						{t.name}
+						{/* ({(t.value === "comments" ? counts?.comments : counts?.checks) || "0"}) */}
 						{tab === t.value && (
 							<ChakraBox
 								layout

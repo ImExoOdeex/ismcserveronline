@@ -33,12 +33,17 @@ model User {
   Vote         Vote[]
   Token        Token?
   OwnedServers Server[]
+  Verification Verification[]
 
   @@index([email])
 }
 
 model Server {
   id Int @id @unique @default(autoincrement())
+
+  // --- Custom data
+  banner     String? // free
+  background String? // sub
 
   // --- Server data ---
   server  String
@@ -73,12 +78,29 @@ model Server {
   SavedServer  SavedServer[]
   SampleServer SampleServer[]
   Vote         Vote[]
+  Verification Verification[]
 
   owner_id           Int?
   Owner              User?   @relation(fields: [owner_id], references: [id])
   message_from_owner String?
 
   @@index([id, server])
+}
+
+model Verification {
+  id Int @id @unique @default(autoincrement())
+
+  user_id Int
+  User    User @relation(fields: [user_id], references: [id])
+
+  server_id Int
+  Server    Server @relation(fields: [server_id], references: [id])
+
+  code    String  @unique
+  success Boolean @default(false)
+
+  verified_at DateTime?
+  created_at  DateTime  @default(now())
 }
 
 model SavedServer {

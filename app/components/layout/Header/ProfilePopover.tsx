@@ -140,7 +140,7 @@ export default memo(function ProfilePopover() {
 								</Flex>
 							</HStack>
 						</MenuButton>
-						<MenuList bg="bg" border={0} w="280px">
+						<MenuList bg="bg" border={0} w="300px">
 							<Flex tabIndex={-1} w="100%" justifyContent={"space-between"} gap={4} px={2}>
 								<HStack spacing={4}>
 									<Image src={user.photo ?? "/discordLogo.png"} rounded={"full"} boxSize={"42px"} />
@@ -149,7 +149,7 @@ export default memo(function ProfilePopover() {
 											{user.nick}
 										</Text>
 										<Badge
-											fontSize={"xs"}
+											fontSize={"11px"}
 											w="min-content"
 											fontWeight={500}
 											colorScheme={user.role === "ADMIN" ? "pink" : user.prime ? "purple" : "green"}
