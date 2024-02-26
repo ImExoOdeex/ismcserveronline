@@ -204,7 +204,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 		cookies: request.headers.get("cookie") ?? "",
 		showAds,
 		user,
-		dashUrl: requireEnv("DASH_URL"),
+		dashUrl: requireEnv("REDIRECT_URL"),
 		isBot,
 		locales,
 		timings: {

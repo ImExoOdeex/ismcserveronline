@@ -1,12 +1,14 @@
-import { Flex, Heading } from "@chakra-ui/react";
+import { Button, Divider, Flex, Heading, useToast } from "@chakra-ui/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet } from "@remix-run/react";
+import { useCallback } from "react";
 import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
 import Sidebar from "~/components/layout/server/panel/Sidebar";
 import { db } from "~/components/server/db/db.server";
 import { getUser } from "~/components/server/db/models/user";
 import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
+import useRootData from "~/components/utils/hooks/useRootData";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
 	const user = await getUser(request);
@@ -33,20 +35,51 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 	if (!server) throw new Response("Server not found", { status: 404 });
 	if (!server.owner_id) throw new Response("Server not verified", { status: 404 });
 
+	if (server.owner_id !== user.id) throw new Response("You are not the owner of this server", { status: 403 });
+
 	return typedjson({
 		server
 	});
 }
 
 export default function ServerPanel() {
+	const { dashUrl } = useRootData();
 	const { server } = useAnimationLoaderData<typeof loader>();
+	const toast = useToast();
+
+	const copyVisitLink = useCallback(() => {
+		const link = `${dashUrl}/${server.bedrock ? "bedrock/" : ""}${server.server}`;
+
+		navigator.clipboard.writeText(link).then(() => {
+			toast({
+				title: "Copied visit link",
+				description: `${link}`,
+				status: "success",
+				duration: 3000
+			});
+		});
+	}, []);
 
 	return (
-		<Flex flexDir={"column"} w="100%" gap={10} maxW={"1200px"} mx="auto" px={4} mt={5}>
-			<Heading fontSize={"2xl"}>{server.server}'s Panel</Heading>
+		<Flex flexDir={"column"} w="100%" gap={10} maxW={"1400px"} mx="auto" px={4} mt={5}>
+			<Flex flexDir={"column"} w="100%" gap={4}>
+				<Flex w="100%" alignItems={"center"} justifyContent={"space-between"}>
+					<Heading fontSize={"2xl"}>{server.server}'s Panel</Heading>
+					<Button onClick={copyVisitLink}>Copy visit link</Button>
+				</Flex>
 
-			<Flex gap={10} w="100%">
-				<Sidebar server={server.server} bedrock={server.bedrock} />
+				<Divider />
+			</Flex>
+
+			<Flex
+				gap={10}
+				w="100%"
+				flexDir={{
+					base: "column",
+					md: "row"
+				}}
+			>
+				<Sidebar server={server.server} bedrock={server.bedrock} favicon={server.favicon} />
 				<Outlet />
 			</Flex>
 		</Flex>

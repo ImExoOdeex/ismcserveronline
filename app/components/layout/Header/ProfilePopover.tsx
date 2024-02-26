@@ -183,6 +183,7 @@ export default memo(function ProfilePopover() {
 
 							{buttons.map((button) => (
 								<MenuItem
+									key={button.name}
 									h={10}
 									bg="bg"
 									fontWeight={500}

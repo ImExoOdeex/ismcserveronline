@@ -58,6 +58,7 @@ const {
 	Input,
 	Popover,
 	Link,
+	Stat,
 	Modal,
 	Spinner,
 	Textarea,
@@ -80,6 +81,17 @@ const multipartComponents = {
 			filled: {
 				field: {
 					bg: "alpha",
+					_hover: {
+						bg: "alpha100"
+					},
+					_active: {
+						bg: "alpha200"
+					}
+				}
+			},
+			ghost: {
+				field: {
+					bg: "transparent",
 					_hover: {
 						bg: "alpha100"
 					},
@@ -253,6 +265,7 @@ export default function useTheme() {
 					Form,
 					Menu,
 					Alert,
+					Stat,
 					Popover,
 					CloseButton,
 					Modal,
@@ -306,6 +319,15 @@ export default function useTheme() {
 								},
 								_active: {
 									bg: "alpha400"
+								}
+							},
+							ghost: {
+								bg: "transparent",
+								_hover: {
+									bg: "alpha100"
+								},
+								_active: {
+									bg: "alpha200"
 								}
 							}
 						},
