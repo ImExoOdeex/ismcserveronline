@@ -1,6 +1,6 @@
+import { requireEnv } from "@/.server/functions/env.server";
+import stripe, { webhookHandlers } from "@/.server/payments/stripe";
 import { ActionFunctionArgs } from "@remix-run/node";
-import { requireEnv } from "~/components/server/functions/env.server";
-import stripe, { webhookHandlers } from "~/components/server/payments/stripe.server";
 
 export async function action({ request }: ActionFunctionArgs) {
 	const sig = request.headers.get("stripe-signature");

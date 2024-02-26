@@ -1,8 +1,8 @@
+import useAnimationRouteLoaderData from "@/hooks/useAnimationRouteLoaderData";
+import Link from "@/layout/global/Link";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import { Alert, AlertDescription, AlertTitle, Button, Flex, HStack } from "@chakra-ui/react";
 import { useLocation } from "@remix-run/react";
-import Link from "~/components/utils/Link";
-import useAnimationRouteLoaderData from "~/components/utils/hooks/useAnimationRouteLoaderData";
 import { loader } from "./$server_.panel";
 
 export default function ServerPanel() {

@@ -1,14 +1,14 @@
+import { getCookie, getCookieWithoutDocument } from "@/functions/cookies";
+import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import useRootData from "@/hooks/useRootData";
+import { Ad, adType } from "@/layout/global/ads/Yes";
+import SystemInfo from "@/layout/routes/faq/SystemInfo";
+import config from "@/utils/config";
 import { Badge, Code, Divider, Heading, Link, Text, VStack } from "@chakra-ui/react";
 import { MetaArgs, type MetaFunction } from "@remix-run/node";
 import os from "os";
 import { useEffect, useState } from "react";
 import { typedjson } from "remix-typedjson";
-import { Ad, adType } from "~/components/ads/Yes";
-import SystemInfo from "~/components/layout/faq/SystemInfo";
-import { getCookie, getCookieWithoutDocument } from "~/components/utils/functions/cookies";
-import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
-import useRootData from "~/components/utils/hooks/useRootData";
-import links from "../components/config/config";
 
 export function meta({ matches }: MetaArgs) {
 	return [
@@ -157,7 +157,7 @@ export default function Faq() {
 				<Heading fontSize={"md"}>How can I contact you?</Heading>
 				<Text color={"textSec"} fontWeight={500}>
 					You can join our{" "}
-					<Link href={links.discordServerInvite} variant={"link"}>
+					<Link href={config.discordServerInvite} variant={"link"}>
 						discord server
 					</Link>
 					.

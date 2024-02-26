@@ -1,3 +1,9 @@
+import { getUser } from "@/.server/db/models/user";
+import { paymentHandlers } from "@/.server/payments/stripe";
+import { commitSession, getSession } from "@/.server/session";
+import { calculatePriceFromDays } from "@/functions/payments";
+import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import useRootData from "@/hooks/useRootData";
 import { Button, Flex, Heading, Icon, Text, useColorMode, useColorModeValue } from "@chakra-ui/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
@@ -7,12 +13,6 @@ import { useState } from "react";
 import { FiCreditCard } from "react-icons/fi";
 import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
-import { getUser } from "~/components/server/db/models/user";
-import { paymentHandlers } from "~/components/server/payments/stripe.server";
-import { commitSession, getSession } from "~/components/server/session.server";
-import { calculatePriceFromDays } from "~/components/utils/functions/payments";
-import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
-import useRootData from "~/components/utils/hooks/useRootData";
 
 export function shouldRevalidate() {
 	return false;

@@ -1,3 +1,10 @@
+import { getUser } from "@/.server/db/models/user";
+import { cache } from "@/.server/db/redis";
+import { getCounts, getStats } from "@/.server/functions/admin.server";
+import { csrf } from "@/.server/functions/security.server";
+import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import Link from "@/layout/global/Link";
+import { ServerModel } from "@/types/minecraftServer";
 import {
 	Accordion,
 	AccordionButton,
@@ -23,14 +30,9 @@ import {
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { typedjson } from "remix-typedjson";
-import { getUser } from "~/components/server/db/models/user";
-import { cache } from "~/components/server/db/redis.server";
-import { getCounts, getStats } from "~/components/server/functions/admin.server";
-import { ServerModel } from "~/components/types/minecraftServer";
-import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
-import Link from "~/components/utils/Link";
 
 export async function loader({ request }: LoaderFunctionArgs) {
+	csrf(request);
 	const [user, counts, stats] = await Promise.all([getUser(request), getCounts(), getStats()]);
 
 	if (!user || user.role !== "ADMIN") throw new Error("Unauthorized");
@@ -42,6 +44,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export async function action({ request }: ActionFunctionArgs) {
+	csrf(request);
 	const user = await getUser(request);
 	if (!user || user.role !== "ADMIN") throw new Error("Unauthorized");
 

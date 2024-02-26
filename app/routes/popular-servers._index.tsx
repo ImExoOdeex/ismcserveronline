@@ -1,7 +1,7 @@
+import { db } from "@/.server/db/db";
+import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import ServerList from "@/layout/routes/popularServers/ServerList";
 import { typedjson } from "remix-typedjson";
-import ServerList from "~/components/layout/popularServers/ServerList";
-import { db } from "~/components/server/db/db.server";
-import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 
 export async function loader() {
 	const [servers, count] = await Promise.all([
@@ -10,8 +10,7 @@ export async function loader() {
 			select: {
 				id: true,
 				server: true,
-				icon: true,
-				tags: true
+				favicon: true
 			}
 		}),
 		db.server.count()
@@ -23,5 +22,5 @@ export async function loader() {
 export default function Index() {
 	const { servers, count } = useAnimationLoaderData<typeof loader>();
 
-	return <ServerList servers={servers} count={count} />;
+	return <ServerList servers={[]} count={count} />;
 }

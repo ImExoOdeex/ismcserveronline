@@ -1,10 +1,10 @@
+import { getUser } from "@/.server/db/models/user";
+import { csrf } from "@/.server/functions/security.server";
+import stripe, { subscriptionHandlers } from "@/.server/payments/stripe";
+import config from "@/utils/config";
 import { ActionFunctionArgs, json } from "@remix-run/node";
 import Stripe from "stripe";
 import invariant from "tiny-invariant";
-import config from "~/components/config/config";
-import { getUser } from "~/components/server/db/models/user";
-import { csrf } from "~/components/server/functions/security.server";
-import stripe, { subscriptionHandlers } from "~/components/server/payments/stripe.server";
 
 export async function action({ request }: ActionFunctionArgs) {
 	csrf(request);

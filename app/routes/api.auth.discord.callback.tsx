@@ -1,6 +1,6 @@
+import { authenticator } from "@/.server/auth/authenticator";
+import { getSession } from "@/.server/session";
 import type { LoaderFunctionArgs } from "@remix-run/node";
-import { authenticator } from "~/components/server/auth/authenticator.server";
-import { getSession } from "~/components/server/session.server";
 
 // get to this route
 export async function loader({ request }: LoaderFunctionArgs) {

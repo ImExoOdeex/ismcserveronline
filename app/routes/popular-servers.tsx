@@ -1,11 +1,11 @@
+import { db } from "@/.server/db/db";
+import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import { Ad, adType } from "@/layout/global/ads/Yes";
+import Main from "@/layout/routes/popularServers/Main";
 import { VStack } from "@chakra-ui/react";
 import { MetaArgs, type MetaFunction } from "@remix-run/node";
 import { Outlet } from "@remix-run/react";
 import { typedjson } from "remix-typedjson";
-import { Ad, adType } from "~/components/ads/Yes";
-import Main from "~/components/layout/popularServers/Main";
-import { db } from "~/components/server/db/db.server";
-import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 
 export function meta({ matches }: MetaArgs) {
 	return [

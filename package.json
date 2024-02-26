@@ -1,14 +1,14 @@
 {
 	"private": true,
 	"sideEffects": false,
-	"version": "2.0.0",
+	"version": "3.0.1",
 	"type": "module",
 	"scripts": {
 		"build": "remix vite:build",
-		"dev": "cross-env NODE_ENV=development tsx ./server",
-		"dev:hono": "cross-env NODE_ENV=development tsx ./honoserver",
-		"start": "cross-env NODE_ENV=production tsx ./honoserver",
-		"start:build": "npm run build && cross-env NODE_ENV=production tsx ./honoserver",
+		"dev": "cross-env NODE_ENV=development tsx ./server/server",
+		"dev:hono": "cross-env NODE_ENV=development tsx ./server/honoserver",
+		"start": "cross-env NODE_ENV=production tsx ./server/honoserver",
+		"start:build": "npm run build && cross-env NODE_ENV=production tsx ./server/honoserver",
 		"typecheck": "tsc -b",
 		"theme": "chakra-cli tokens app/components/utils/theme.tsx"
 	},

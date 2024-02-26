@@ -1,8 +1,8 @@
+import { db } from "@/.server/db/db";
+import { csrf } from "@/.server/functions/security.server";
 import { ActionFunctionArgs } from "@remix-run/node";
 import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
-import { db } from "~/components/server/db/db.server";
-import { csrf } from "~/components/server/functions/security.server";
 
 export async function action({ request }: ActionFunctionArgs) {
 	csrf(request);

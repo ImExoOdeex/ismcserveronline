@@ -1,7 +1,7 @@
+import { db } from "@/.server/db/db";
+import { requireEnv } from "@/.server/functions/env.server";
 import { json, type ActionFunctionArgs } from "@remix-run/node";
 import { getClientIPAddress } from "remix-utils/get-client-ip-address";
-import { db } from "~/components/server/db/db.server";
-import { requireEnv } from "~/components/server/functions/env.server";
 
 // This is typically POST request to this route. I use it for adding discord server checks. You can't make this request, cuz you dont have super duper 2048 bit access token hah
 export async function action({ request }: ActionFunctionArgs) {

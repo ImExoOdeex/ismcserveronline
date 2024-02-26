@@ -1,9 +1,9 @@
+import { db } from "@/.server/db/db";
+import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import ServerList from "@/layout/routes/popularServers/ServerList";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { typedjson } from "remix-typedjson";
-import ServerList from "~/components/layout/popularServers/ServerList";
-import { db } from "~/components/server/db/db.server";
-import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 
 export async function loader({ params }: LoaderFunctionArgs) {
 	const page = Number(params.page);
@@ -19,8 +19,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
 			select: {
 				id: true,
 				server: true,
-				icon: true,
-				tags: true
+				favicon: true
 			}
 		})
 	]);
@@ -38,7 +37,7 @@ export default function $page() {
 
 	return (
 		<>
-			<ServerList servers={servers} page={page} count={count} />
+			<ServerList servers={[]} page={page} count={count} />
 		</>
 	);
 }

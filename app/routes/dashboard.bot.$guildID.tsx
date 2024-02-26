@@ -1,19 +1,21 @@
+import { getUser } from "@/.server/db/models/user";
+import { requireEnv } from "@/.server/functions/env.server";
+import { requireUserGuild } from "@/.server/functions/secureDashboard.server";
+import { csrf } from "@/.server/functions/security.server";
+import serverConfig from "@/.server/serverConfig";
+import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import Link from "@/layout/global/Link";
+import BotNotOnServer from "@/layout/routes/dashboard/BotNotOnServer";
 import { Button, Flex, HStack, Heading, Image, Stack } from "@chakra-ui/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { useLocation, useOutlet } from "@remix-run/react";
 import { typedjson } from "remix-typedjson";
-import BotNotOnServer from "~/components/layout/dashboard/BotNotOnServer";
-import { getUser } from "~/components/server/db/models/user";
-import { requireEnv } from "~/components/server/functions/env.server";
-import { requireUserGuild } from "~/components/server/functions/secureDashboard.server";
-import serverConfig from "~/components/server/serverConfig.server";
-import Link from "~/components/utils/Link";
-import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 import { InsideErrorBoundary } from "~/document";
 import { Guild } from "./dashboard.bot._index";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
+	csrf(request);
 	const guildID = params.guildID!;
 	const userGuilds = await getUser(request, {
 		guilds: true
@@ -21,7 +23,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 		if (!user) {
 			throw redirect("/relog");
 		}
-		return user.guilds as Guild[];
+		return user.guilds as unknown as Guild[];
 	});
 
 	if (!userGuilds) throw redirect("/dashboard");

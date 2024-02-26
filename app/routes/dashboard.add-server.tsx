@@ -1,16 +1,19 @@
+import { db } from "@/.server/db/db";
+import { getUser } from "@/.server/db/models/user";
+import { csrf } from "@/.server/functions/security.server";
+import { paymentHandlers } from "@/.server/payments/stripe";
+import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import Link from "@/layout/global/Link";
+import AddServerModal from "@/layout/routes/dashboard/addServer/AddServerModal";
+import YourServer from "@/layout/routes/dashboard/addServer/YourServer";
 import { Alert, AlertDescription, AlertIcon, AlertTitle, Divider, Flex, Heading, Text, VStack } from "@chakra-ui/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
-import AddServerModal from "~/components/layout/dashboard/addServer/AddServerModal";
-import YourServer from "~/components/layout/dashboard/addServer/YourServer";
-import { db } from "~/components/server/db/db.server";
-import { getUser } from "~/components/server/db/models/user";
-import { paymentHandlers } from "~/components/server/payments/stripe.server";
-import Link from "~/components/utils/Link";
-import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 
 export async function loader({ request }: LoaderFunctionArgs) {
+	csrf(request);
+
 	const user = await getUser(request);
 	invariant(user, "User not found");
 

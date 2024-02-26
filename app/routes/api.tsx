@@ -1,3 +1,9 @@
+import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import useUser from "@/hooks/useUser";
+import Link from "@/layout/global/Link";
+import { Ad, adType } from "@/layout/global/ads/Yes";
+import DiscordIcon from "@/layout/global/icons/DiscordIcon";
+import { MinecraftServerWoQuery } from "@/types/minecraftServer";
 import { CheckIcon, CopyIcon } from "@chakra-ui/icons";
 import {
 	Badge,
@@ -20,12 +26,6 @@ import { MetaArgs, type MetaFunction } from "@remix-run/node";
 import crypto from "crypto";
 import { FaCode } from "react-icons/fa";
 import { typedjson } from "remix-typedjson";
-import { Ad, adType } from "~/components/ads/Yes";
-import DiscordIcon from "~/components/layout/icons/DiscordIcon";
-import { type MinecraftServerWoQuery } from "~/components/types/minecraftServer";
-import Link from "~/components/utils/Link";
-import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
-import useUser from "~/components/utils/hooks/useUser";
 
 export function meta({ matches }: MetaArgs) {
 	return [

@@ -1,7 +1,7 @@
+import { secureBotRoute } from "@/.server/functions/env.server";
+import serverConfig from "@/.server/serverConfig";
 import { json, type ActionFunctionArgs } from "@remix-run/node";
 import invariant from "tiny-invariant";
-import { secureBotRoute } from "~/components/server/functions/env.server";
-import serverConfig from "~/components/server/serverConfig.server";
 
 export async function action({ request }: ActionFunctionArgs) {
 	secureBotRoute(request);

@@ -1,8 +1,8 @@
+import { getUser } from "@/.server/db/models/user";
+import { csrf } from "@/.server/functions/security.server";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json, type ActionFunctionArgs } from "@remix-run/node";
 import invariant from "tiny-invariant";
-import { getUser } from "~/components/server/db/models/user";
-import { csrf } from "~/components/server/functions/security.server";
 
 export async function action({ request }: ActionFunctionArgs) {
 	csrf(request);

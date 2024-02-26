@@ -1,12 +1,12 @@
+import { db } from "@/.server/db/db";
+import { getUserId } from "@/.server/db/models/user";
+import { getServerInfo } from "@/.server/functions/api.server";
+import { csrf } from "@/.server/functions/security.server";
+import { commitSession, getSession } from "@/.server/session";
+import { MinecraftServerWoQuery } from "@/types/minecraftServer";
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { redirect, typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
-import { db } from "~/components/server/db/db.server";
-import { getUserId } from "~/components/server/db/models/user";
-import { getServerInfo } from "~/components/server/functions/api.server";
-import { csrf } from "~/components/server/functions/security.server";
-import { commitSession, getSession } from "~/components/server/session.server";
-import { MinecraftServerWoQuery } from "~/components/types/minecraftServer";
 
 export async function action({ request }: ActionFunctionArgs) {
 	const form = await request.formData();

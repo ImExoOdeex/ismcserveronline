@@ -1,8 +1,8 @@
+import { db } from "@/.server/db/db";
+import { secureBotRoute } from "@/.server/functions/env.server";
 import { PaymentStatus, Role, SOURCE } from "@prisma/client";
 import { json, type ActionFunctionArgs } from "@remix-run/node";
 import * as fs from "node:fs/promises";
-import { db } from "~/components/server/db/db.server";
-import { secureBotRoute } from "~/components/server/functions/env.server";
 import { Guild } from "./dashboard.bot._index";
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -175,7 +175,7 @@ export async function action({ request }: ActionFunctionArgs) {
 				prime: user.prime,
 				subId: user.subId,
 				role: user.role,
-				guilds: user.guilds,
+				guilds: user.guilds as any,
 				created_at: user.created_at,
 				updated_at: user.updated_at
 			}

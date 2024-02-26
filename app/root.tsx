@@ -1,3 +1,10 @@
+import { getUser } from "@/.server/db/models/user";
+import { requireEnv } from "@/.server/functions/env.server";
+import { validateServer } from "@/.server/functions/validateServer";
+import { getCookieWithoutDocument } from "@/functions/cookies";
+import Layout from "@/layout/global/Layout";
+import { GlobalContext } from "@/utils/GlobalContext";
+import useTheme from "@/utils/theme";
 import { ChakraBaseProvider, cookieStorageManagerSSR, useConst } from "@chakra-ui/react";
 import { ActionFunctionArgs, LinksFunction, LoaderFunctionArgs, MetaFunction, json, redirect } from "@remix-run/node";
 import type { ShouldRevalidateFunctionArgs } from "@remix-run/react";
@@ -7,13 +14,6 @@ import { isbot } from "isbot";
 import { useMemo } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { getClientLocales } from "remix-utils/locales/server";
-import Layout from "./components/layout/Layout";
-import { getUser } from "./components/server/db/models/user";
-import { requireEnv } from "./components/server/functions/env.server";
-import { validateServer } from "./components/server/functions/validateServer";
-import { GlobalContext } from "./components/utils/GlobalContext";
-import { getCookieWithoutDocument } from "./components/utils/functions/cookies";
-import useTheme from "./components/utils/theme";
 import { Document } from "./document";
 
 // ----------------------------- META -----------------------------
@@ -207,6 +207,8 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 		dashUrl: requireEnv("REDIRECT_URL"),
 		isBot,
 		locales,
+		version: (context?.version as string | undefined) ?? "v3",
+		repoVersion: (context?.repoVersion as string | undefined) ?? "",
 		timings: {
 			start
 		}

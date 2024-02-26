@@ -1,3 +1,8 @@
+import { getUserId } from "@/.server/db/models/user";
+import { commitSession, getSession } from "@/.server/session";
+import useUser from "@/hooks/useUser";
+import Link from "@/layout/global/Link";
+import { ChakraBox } from "@/layout/global/MotionComponents";
 import { Button, Divider, Flex, HStack, Heading, VStack } from "@chakra-ui/react";
 import type { LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
@@ -6,11 +11,6 @@ import { Transition } from "framer-motion";
 import { useCallback, useMemo } from "react";
 import { FiLogOut } from "react-icons/fi";
 import { PiCrownSimpleDuotone } from "react-icons/pi";
-import { ChakraBox } from "~/components/layout/MotionComponents";
-import { getUserId } from "~/components/server/db/models/user";
-import { commitSession, getSession } from "~/components/server/session.server";
-import Link from "~/components/utils/Link";
-import useUser from "../components/utils/hooks/useUser";
 
 export function meta({ matches }: MetaArgs) {
 	return [

@@ -1,8 +1,8 @@
+import { csrf } from "@/.server/functions/security.server";
+import { emitter } from "@/.server/sse/emitter";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { eventStream } from "remix-utils/sse/server";
 import invariant from "tiny-invariant";
-import { csrf } from "~/components/server/functions/security.server";
-import { emitter } from "~/components/server/sse/emitter.server";
 
 export interface NewVote {
 	id: string;

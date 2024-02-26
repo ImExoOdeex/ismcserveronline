@@ -1,3 +1,7 @@
+import { db } from "@/.server/db/db";
+import { getUserId } from "@/.server/db/models/user";
+import { csrf } from "@/.server/functions/security.server";
+import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import { CopyIcon, ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { Button, Code, Divider, Flex, HStack, Heading, Icon, IconButton, Text, VStack, useToast } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
@@ -7,10 +11,6 @@ import { useState } from "react";
 import { RiAiGenerate } from "react-icons/ri";
 import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
-import { db } from "~/components/server/db/db.server";
-import { getUserId } from "~/components/server/db/models/user";
-import { csrf } from "~/components/server/functions/security.server";
-import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 
 export async function action({ request }: ActionFunctionArgs) {
 	csrf(request);
@@ -42,6 +42,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
+	csrf(request);
 	const userId = await getUserId(request);
 	invariant(userId, "User is not logged in");
 

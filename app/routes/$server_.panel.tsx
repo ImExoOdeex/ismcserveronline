@@ -1,14 +1,14 @@
+import { db } from "@/.server/db/db";
+import { getUser } from "@/.server/db/models/user";
+import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import useRootData from "@/hooks/useRootData";
+import Sidebar from "@/layout/routes/server/panel/Sidebar";
 import { Button, Divider, Flex, Heading, useToast } from "@chakra-ui/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet } from "@remix-run/react";
 import { useCallback } from "react";
 import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
-import Sidebar from "~/components/layout/server/panel/Sidebar";
-import { db } from "~/components/server/db/db.server";
-import { getUser } from "~/components/server/db/models/user";
-import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
-import useRootData from "~/components/utils/hooks/useRootData";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
 	const user = await getUser(request);

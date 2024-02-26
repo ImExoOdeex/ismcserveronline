@@ -1,6 +1,6 @@
+import { db } from "@/.server/db/db";
+import { secureBotRoute } from "@/.server/functions/env.server";
 import { json, type ActionFunctionArgs } from "@remix-run/node";
-import { db } from "~/components/server/db/db.server";
-import { secureBotRoute } from "~/components/server/functions/env.server";
 
 export async function action({ request }: ActionFunctionArgs) {
 	secureBotRoute(request);

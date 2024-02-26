@@ -1,3 +1,8 @@
+import { getUser } from "@/.server/db/models/user";
+import { toStripeAmount } from "@/functions/payments";
+import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import SubscriptionForm from "@/layout/routes/prime/SubscriptionForm";
+import config from "@/utils/config";
 import { CheckIcon } from "@chakra-ui/icons";
 import { Box, Flex, HStack, Heading, Text, useColorMode, useColorModeValue } from "@chakra-ui/react";
 import { LoaderFunctionArgs } from "@remix-run/node";
@@ -6,11 +11,6 @@ import type { Stripe } from "@stripe/stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useEffect, useState } from "react";
 import { redirect, typedjson } from "remix-typedjson";
-import config from "~/components/config/config";
-import SubscriptionForm from "~/components/layout/prime/SubscriptionForm";
-import { getUser } from "~/components/server/db/models/user";
-import { toStripeAmount } from "~/components/utils/functions/payments";
-import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const user = await getUser(request);

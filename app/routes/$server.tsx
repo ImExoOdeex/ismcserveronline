@@ -1,35 +1,36 @@
-import { Divider, Flex, Heading, HStack, Icon, Stack, Text, useToast, VisuallyHidden, VStack } from "@chakra-ui/react";
+import { authenticator } from "@/.server/auth/authenticator";
+import { Info, sendCommentWebhook, sendDeleteCommentWebhook, sendReportWebhook } from "@/.server/auth/webhooks";
+import { db } from "@/.server/db/db";
+import { getUser, getUserId } from "@/.server/db/models/user";
+import { getServerInfo } from "@/.server/functions/api.server";
+import { requireEnv } from "@/.server/functions/env.server";
+import { getRandomMinecarftImage } from "@/.server/minecraftImages";
+import { getCookieWithoutDocument } from "@/functions/cookies";
+import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import useEventSourceCallback from "@/hooks/useEventSourceCallback";
+import useUser from "@/hooks/useUser";
+import Link from "@/layout/global/Link";
+import { Ad, adType } from "@/layout/global/ads/Yes";
+import ChecksTable from "@/layout/routes/server/index/ChecksTable";
+import Comments from "@/layout/routes/server/index/Comments";
+import CommentsSkeleton from "@/layout/routes/server/index/CommentsSkeleton";
+import McFonts from "@/layout/routes/server/index/McFonts";
+import Motd from "@/layout/routes/server/index/Motd";
+import ServerInfo from "@/layout/routes/server/index/ServerInfo";
+import ServerView from "@/layout/routes/server/index/ServerView";
+import Tabs, { tabs } from "@/layout/routes/server/index/Tabs";
+import UnderServerView from "@/layout/routes/server/index/UnderServerView";
+import { AnyServer, AnyServerModel, BedrockServer, JavaServer, MinecraftServer } from "@/types/minecraftServer";
+import { Divider, Flex, HStack, Heading, Icon, Stack, Text, VStack, VisuallyHidden, useToast } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { Await, type ShouldRevalidateFunction } from "@remix-run/react";
 import dayjs from "dayjs";
-import { Suspense, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { BiBug, BiInfoCircle } from "react-icons/bi";
 import { typeddefer, typedjson } from "remix-typedjson";
 import { getClientIPAddress } from "remix-utils/get-client-ip-address";
-import { Ad, adType } from "~/components/ads/Yes";
-import ChecksTable from "~/components/layout/server/ChecksTable";
-import Comments from "~/components/layout/server/Comments";
-import CommentsSkeleton from "~/components/layout/server/CommentsSkeleton";
-import McFonts from "~/components/layout/server/McFonts";
-import Motd from "~/components/layout/server/Motd";
-import ServerInfo, { PregenerateStyles } from "~/components/layout/server/ServerInfo";
-import ServerView from "~/components/layout/server/ServerView";
-import Tabs, { tabs } from "~/components/layout/server/Tabs";
-import UnderServerView from "~/components/layout/server/UnderServerView";
-import { authenticator } from "~/components/server/auth/authenticator.server";
-import { Info, sendCommentWebhook, sendDeleteCommentWebhook, sendReportWebhook } from "~/components/server/auth/webhooks";
-import { db } from "~/components/server/db/db.server";
-import { getUser, getUserId } from "~/components/server/db/models/user";
-import { getServerInfo } from "~/components/server/functions/api.server";
-import { requireEnv } from "~/components/server/functions/env.server";
-import { getRandomMinecarftImage } from "~/components/server/minecraftImages.server";
-import { AnyServer, AnyServerModel, BedrockServer, JavaServer, MinecraftServer } from "~/components/types/minecraftServer";
-import { getCookieWithoutDocument } from "~/components/utils/functions/cookies";
-import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
-import useEventSourceCallback from "~/components/utils/hooks/useEventSourceCallback";
-import Link from "~/components/utils/Link";
 import { InsideErrorBoundary } from "~/document";
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -566,6 +567,13 @@ export default function $server() {
 		}
 	);
 
+	const user = useUser();
+	const isOwner = useMemo(() => {
+		if (!user) return false;
+		if (!data?.owner_id) return false;
+		return user.id === data.owner_id;
+	}, [data]);
+
 	return (
 		<Flex gap={5} flexDir={"column"} maxW="1000px" mx="auto" w="100%" mt={"50px"} px={4} mb={5}>
 			{/* <Ad type={adType.small} width={"968px"} /> */}
@@ -580,7 +588,7 @@ export default function $server() {
 					image={image}
 					mb={16}
 				/>
-				<Motd motd={data?.motd.html} mt={5} />
+				<Motd motd={data?.motd.html} />
 			</VisuallyHidden>
 
 			<Flex w="100%" flexDir={"column"} gap={2}>
@@ -613,8 +621,8 @@ export default function $server() {
 				{/* displaying motd */}
 				<McFonts />
 
-				<Suspense fallback={data.online ? <Motd motd={data?.motd.html} mt={5} /> : <></>}>
-					<Await resolve={promiseData}>{(freshData) => <Motd motd={freshData.motd.html} mt={5} />}</Await>
+				<Suspense fallback={data.online ? <Motd motd={data?.motd.html} /> : <></>}>
+					<Await resolve={promiseData}>{(freshData) => <Motd motd={freshData.motd.html} />}</Await>
 				</Suspense>
 			</Flex>
 
@@ -625,10 +633,13 @@ export default function $server() {
 				server={server}
 				bedrock={bedrock}
 				promiseData={promiseData instanceof Promise ? promiseData : Promise.resolve(promiseData)}
+				isOwner={isOwner}
 			/>
 
 			{/* I copy the component with non display, to generate the emotion styles, that would be used in streamed content, that emotion wouldn't generate */}
-			<PregenerateStyles bedrock={bedrock} data={data} query={query} />
+			<VisuallyHidden>
+				<ServerInfo bedrock={bedrock} data={data} query={query} server={server} />
+			</VisuallyHidden>
 
 			<Suspense fallback={<ServerInfo server={server} data={data} bedrock={bedrock} query={query} />}>
 				<Await resolve={promiseData}>

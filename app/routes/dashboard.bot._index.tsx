@@ -1,14 +1,15 @@
+import { getUser } from "@/.server/db/models/user";
+import { csrf } from "@/.server/functions/security.server";
+import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import Link from "@/layout/global/Link";
 import { Badge, Button, HStack, Heading, Icon, Image, SimpleGrid, Text, VStack } from "@chakra-ui/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { HiRefresh } from "react-icons/hi";
 import { typedjson } from "remix-typedjson";
-import { getUser } from "~/components/server/db/models/user";
-import Link from "~/components/utils/Link";
-import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 
-export type Guild = {
+export interface Guild {
 	id: string;
 	name: string;
 	icon?: string;
@@ -16,9 +17,10 @@ export type Guild = {
 	permissions: number;
 	features: string[];
 	permissions_new: string;
-};
+}
 
 export async function loader({ request }: LoaderFunctionArgs) {
+	csrf(request);
 	const userWithGuilds = await getUser(request, {
 		guilds: true
 	});

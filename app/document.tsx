@@ -1,12 +1,12 @@
+import { getCookieWithoutDocument } from "@/functions/cookies";
+import Link from "@/layout/global/Link";
+import { ClientStyleContext } from "@/utils/ClientContext";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import { Box, ChakraBaseProvider, Flex, Heading, Icon, Stack, Text, theme, VStack } from "@chakra-ui/react";
 import { Links, Meta, Scripts, ScrollRestoration, useRouteError } from "@remix-run/react";
 import { useContext, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { BiCode, BiHome } from "react-icons/bi";
 import { useTypedLoaderData } from "remix-typedjson";
-import { getCookieWithoutDocument } from "./components/utils/functions/cookies";
-import Link from "./components/utils/Link";
-import { ClientStyleContext } from "./context";
 import { type loader } from "./root";
 
 interface DocumentProps {

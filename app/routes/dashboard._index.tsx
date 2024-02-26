@@ -1,3 +1,9 @@
+import { db } from "@/.server/db/db";
+import { getUserId } from "@/.server/db/models/user";
+import { getServerInfo } from "@/.server/functions/api.server";
+import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import SavedServer from "@/layout/routes/dashboard/SavedServer";
+import { ServerModel } from "@/types/minecraftServer";
 import { Flex, Heading, SimpleGrid, Spinner, Text, VStack } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
@@ -5,12 +11,6 @@ import { Await } from "@remix-run/react";
 import { Suspense, memo, useEffect, useRef } from "react";
 import { typeddefer, typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
-import SavedServer from "~/components/layout/dashboard/SavedServer";
-import { db } from "~/components/server/db/db.server";
-import { getUserId } from "~/components/server/db/models/user";
-import { getServerInfo } from "~/components/server/functions/api.server";
-import { ServerModel } from "~/components/types/minecraftServer";
-import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 
 export interface Guild {
 	id: string;
@@ -173,8 +173,8 @@ export default function Index() {
 			<VStack align="start">
 				<Heading fontSize={"2xl"}>Servers, you have bookmarked</Heading>
 				<Text>
-					Here you can see all servers you have saved for later. You can bookmark a server by clicking "Bookmark"
-					on a server's page.
+					Here you can see all servers you have saved for later. You can bookmark a server by clicking "Bookmark" on a
+					server's page.
 				</Text>
 			</VStack>
 			<Suspense

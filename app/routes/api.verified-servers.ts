@@ -1,9 +1,9 @@
+import { db } from "@/.server/db/db";
+import { getUser } from "@/.server/db/models/user";
+import { csrf } from "@/.server/functions/security.server";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
-import { db } from "~/components/server/db/db.server";
-import { getUser } from "~/components/server/db/models/user";
-import { csrf } from "~/components/server/functions/security.server";
 
 export interface APIVerifiedServer {
 	id: number;

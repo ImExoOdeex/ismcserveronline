@@ -1,10 +1,10 @@
+import { db } from "@/.server/db/db";
+import { getUser } from "@/.server/db/models/user";
+import { getServerInfo } from "@/.server/functions/api.server";
+import { generateVerificationCode } from "@/.server/functions/verification.server";
 import { redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
-import { db } from "~/components/server/db/db.server";
-import { getUser } from "~/components/server/db/models/user";
-import { getServerInfo } from "~/components/server/functions/api.server";
-import { generateVerificationCode } from "~/components/server/functions/verification.server";
 
 /* 
 	$server param is a srever address with port

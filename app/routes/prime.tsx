@@ -1,3 +1,5 @@
+import { IPlan } from "@/types/typings";
+import config from "@/utils/config";
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import {
 	Badge,
@@ -19,8 +21,6 @@ import { useFetcher } from "@remix-run/react";
 import React from "react";
 import { FiCreditCard } from "react-icons/fi";
 import { redirect } from "remix-typedjson";
-import config from "~/components/config/config";
-import { IPlan } from "~/components/types/typings";
 
 export function meta({ matches }: MetaArgs) {
 	return [
@@ -158,7 +158,7 @@ function Plan({ title, price, features, description, color }: IPlan) {
 							_hover={{
 								bg: "alpha"
 							}}
-							transition={`all 0.1s cubic-bezier(${config.ease.join(", ")})`}
+							transition={`all 0.1s ${config.cubicEase}`}
 						>
 							<HStack spacing={5}>
 								<CheckCircleIcon color={color} boxSize={5} />

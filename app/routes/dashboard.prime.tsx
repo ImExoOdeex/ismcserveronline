@@ -1,3 +1,8 @@
+import { getUser } from "@/.server/db/models/user";
+import { csrf } from "@/.server/functions/security.server";
+import { paymentHandlers, subscriptionHandlers } from "@/.server/payments/stripe";
+import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import useUser from "@/hooks/useUser";
 import {
 	Alert,
 	AlertDescription,
@@ -23,12 +28,9 @@ import { useEffect, useRef } from "react";
 import { FaHeartBroken } from "react-icons/fa";
 import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
-import { getUser } from "~/components/server/db/models/user";
-import { paymentHandlers, subscriptionHandlers } from "~/components/server/payments/stripe.server";
-import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
-import useUser from "~/components/utils/hooks/useUser";
 
 export async function action({ request }: ActionFunctionArgs) {
+	csrf(request);
 	const user = await getUser(request, {
 		prime: true,
 		subId: true
@@ -46,6 +48,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
+	csrf(request);
 	const user = await getUser(request, {
 		prime: true,
 		subId: true,

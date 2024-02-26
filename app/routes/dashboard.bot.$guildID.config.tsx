@@ -1,18 +1,20 @@
+import { Info, sendActionWebhook } from "@/.server/auth/webhooks";
+import { getUser } from "@/.server/db/models/user";
+import { requireEnv } from "@/.server/functions/env.server";
+import { requireUserGuild } from "@/.server/functions/secureDashboard.server";
+import { csrf } from "@/.server/functions/security.server";
+import serverConfig from "@/.server/serverConfig";
+import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import StatusColor from "@/layout/routes/dashboard/StatusColor";
 import { Button, Divider, HStack, Icon, Stack, Text, VStack, Wrap, WrapItem } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { useFetcher, useRevalidator } from "@remix-run/react";
 import { BiSave } from "react-icons/bi";
 import { HiRefresh } from "react-icons/hi";
 import { typedjson } from "remix-typedjson";
-import StatusColor from "~/components/layout/dashboard/StatusColor";
-import { Info, sendActionWebhook } from "~/components/server/auth/webhooks";
-import { getUser } from "~/components/server/db/models/user";
-import { requireEnv } from "~/components/server/functions/env.server";
-import { requireUserGuild } from "~/components/server/functions/secureDashboard.server";
-import serverConfig from "~/components/server/serverConfig.server";
-import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
+	csrf(request);
 	const guildID = params.guildID!;
 	await requireUserGuild(request, guildID);
 
@@ -27,6 +29,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
+	csrf(request);
 	const guildID = params.guildID!;
 	await requireUserGuild(request, guildID);
 

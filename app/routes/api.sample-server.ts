@@ -1,10 +1,10 @@
+import { db } from "@/.server/db/db";
+import { getUser } from "@/.server/db/models/user";
+import { getServerInfo } from "@/.server/functions/api.server";
+import { csrf } from "@/.server/functions/security.server";
+import stripe from "@/.server/payments/stripe";
 import { json, type ActionFunctionArgs } from "@remix-run/node";
 import invariant from "tiny-invariant";
-import { db } from "~/components/server/db/db.server";
-import { getUser } from "~/components/server/db/models/user";
-import { getServerInfo } from "~/components/server/functions/api.server";
-import { csrf } from "~/components/server/functions/security.server";
-import stripe from "~/components/server/payments/stripe.server";
 
 export async function action({ request }: ActionFunctionArgs) {
 	try {

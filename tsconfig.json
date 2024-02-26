@@ -1,5 +1,5 @@
 {
-	"include": ["env.d.ts", "**/*.ts", "**/*.tsx"],
+	"include": ["env.d.ts", "**/*.ts", "**/*.tsx", "app/src/.server/otherRootRoutes.ts"],
 	"compilerOptions": {
 		"lib": ["DOM", "DOM.Iterable", "ESNext"],
 		"isolatedModules": true,
@@ -15,6 +15,7 @@
 		"forceConsistentCasingInFileNames": true,
 		"baseUrl": ".",
 		"paths": {
+			"@/*": ["./app/src/*"],
 			"~/*": ["./app/*"]
 		},
 

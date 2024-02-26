@@ -1,3 +1,5 @@
+import Link from "@/layout/global/Link";
+import config from "@/utils/config";
 import {
 	Link as ChakraLink,
 	Code,
@@ -11,8 +13,6 @@ import {
 	type ListItemProps
 } from "@chakra-ui/react";
 import { MetaArgs, MetaFunction } from "@remix-run/node";
-import Link from "~/components/utils/Link";
-import { default as config, default as links } from "../components/config/config";
 
 export function meta({ matches }: MetaArgs) {
 	return [
@@ -219,7 +219,7 @@ export default function Tos() {
 						If you want to pernamently delete your data from our database, you can just kick the bot. It will
 						automatically delelete all livechecks and all config. If you want to make sure your data has been deleted
 						you can join{" "}
-						<ChakraLink href={links.discordServerInvite} color={"brand"}>
+						<ChakraLink href={config.discordServerInvite} color={"brand"}>
 							Discord server
 						</ChakraLink>{" "}
 						and create a ticket or shot a dm to an admin!

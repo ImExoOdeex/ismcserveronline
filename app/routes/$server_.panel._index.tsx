@@ -1,3 +1,9 @@
+import { db } from "@/.server/db/db";
+import { getUser } from "@/.server/db/models/user";
+import { getFullFileUrl } from "@/functions/storage";
+import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import DragAndDropFile from "@/layout/routes/server/panel/DragAndDropFile";
+import { ServerModel } from "@/types/minecraftServer";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import {
 	Divider,
@@ -18,12 +24,6 @@ import dayjs from "dayjs";
 import { useMemo } from "react";
 import { typeddefer } from "remix-typedjson";
 import invariant from "tiny-invariant";
-import DragAndDropFile from "~/components/layout/server/panel/DragAndDropFile";
-import { db } from "~/components/server/db/db.server";
-import { getUser } from "~/components/server/db/models/user";
-import { ServerModel } from "~/components/types/minecraftServer";
-import { getFullFileUrl } from "~/components/utils/functions/storage";
-import useAnimationLoaderData from "~/components/utils/hooks/useAnimationLoaderData";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
 	const user = await getUser(request);

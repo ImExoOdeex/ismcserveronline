@@ -1,6 +1,6 @@
+import { commitSession, getSession } from "@/.server/session";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "remix-typedjson";
-import { commitSession, getSession } from "~/components/server/session.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const url = new URL(request.url);

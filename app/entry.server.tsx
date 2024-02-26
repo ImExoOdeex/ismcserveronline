@@ -1,10 +1,10 @@
+import { otherRootRouteHandlers } from "@/.server/otherRootRoutes";
+import { createEmotionCache } from "@/utils/ClientContext";
 import { CacheProvider } from "@emotion/react";
 import { AppLoadContext, createReadableStreamFromReadable, type EntryContext } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
 import { renderToPipeableStream } from "react-dom/server";
 import { PassThrough } from "stream";
-import { createEmotionCache } from "./context";
-import { otherRootRouteHandlers } from "./otherRootRoutes.server";
 
 const ABORT_DELAY = 7000;
 
