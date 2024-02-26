@@ -74,13 +74,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
 		// named action
 		switch (intent) {
 			case "start": {
-				// user can't craete more than 10 verifications
 				const verifications = await db.verification.count({
 					where: {
 						user_id: user.id
 					}
 				});
-				invariant(verifications < 10, "You can't create more than 10 verifications");
+				invariant(verifications < 50, "You can't create more than 50 verifications");
 
 				// create verification
 				const code = generateVerificationCode();
