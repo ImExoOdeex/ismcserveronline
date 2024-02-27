@@ -4,7 +4,8 @@ import { db } from "@/.server/db/db";
 import { getUser, getUserId } from "@/.server/db/models/user";
 import { getServerInfo } from "@/.server/functions/api.server";
 import { requireEnv } from "@/.server/functions/env.server";
-import { getRandomMinecarftImage } from "@/.server/minecraftImages";
+import { MinecraftImage, getRandomMinecarftImage } from "@/.server/minecraftImages";
+import serverConfig from "@/.server/serverConfig";
 import { getCookieWithoutDocument } from "@/functions/cookies";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import useEventSourceCallback from "@/hooks/useEventSourceCallback";
@@ -345,6 +346,9 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 				protocol: true,
 				motd: true,
 				version: true,
+				banner: true,
+				background: true,
+				tags: true,
 				software: true,
 				favicon: true,
 				ping: true,
@@ -505,7 +509,13 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 			: false
 	]);
 
-	const image = getRandomMinecarftImage();
+	const image = foundServer.banner
+		? ({
+				name: "Server banner",
+				url: serverConfig.uploadsUrl + "/" + foundServer.banner,
+				credits: ""
+		  } as MinecraftImage)
+		: getRandomMinecarftImage();
 
 	return typeddefer({ server, data, checks, query, isSaved, foundServer, bedrock, serverId, image, votes });
 }
@@ -586,7 +596,7 @@ export default function $server() {
 					data={data as unknown as AnyServer}
 					bedrock={bedrock}
 					image={image}
-					mb={16}
+					mb={28}
 				/>
 				<Motd motd={data?.motd.html} />
 			</VisuallyHidden>
@@ -600,7 +610,7 @@ export default function $server() {
 							data={data as unknown as AnyServer}
 							bedrock={bedrock}
 							image={image}
-							mb={16}
+							mb={28}
 						/>
 					}
 				>
@@ -612,7 +622,7 @@ export default function $server() {
 								data={freshData}
 								bedrock={bedrock}
 								image={image}
-								mb={16}
+								mb={28}
 							/>
 						)}
 					</Await>

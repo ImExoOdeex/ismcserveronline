@@ -1,15 +1,24 @@
+import { db } from "@/.server/db/db";
 import { getUser } from "@/.server/db/models/user";
-import { csrf } from "@/.server/functions/security.server";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json, type ActionFunctionArgs } from "@remix-run/node";
 import invariant from "tiny-invariant";
 
 export async function action({ request }: ActionFunctionArgs) {
-	csrf(request);
-	const user = await getUser(request);
+	const user = await getUser(request, {
+		id: true,
+		prime: true
+	});
 	invariant(user, "User not found");
 
-	const prime = !!user?.prime;
+	const hasAnyServerWithPrime = !!(await db.server.findFirst({
+		where: {
+			owner_id: user.id,
+			prime: true
+		}
+	}));
+
+	const prime = user.prime || hasAnyServerWithPrime;
 
 	return json({
 		prime,

@@ -1,5 +1,5 @@
 import { requireEnv } from "@/.server/functions/env.server";
-import stripe, { webhookHandlers } from "@/.server/payments/stripe";
+import stripe, { webhookHandlers } from "@/.server/modules/stripe";
 import { ActionFunctionArgs } from "@remix-run/node";
 
 export async function action({ request }: ActionFunctionArgs) {

@@ -1,6 +1,6 @@
 import { getUser } from "@/.server/db/models/user";
 import { csrf } from "@/.server/functions/security.server";
-import { paymentHandlers, subscriptionHandlers } from "@/.server/payments/stripe";
+import { paymentHandlers, subscriptionHandlers } from "@/.server/modules/stripe";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import useUser from "@/hooks/useUser";
 import {

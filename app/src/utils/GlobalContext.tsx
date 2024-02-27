@@ -9,15 +9,16 @@ interface Props {
 	children?: React.ReactNode;
 }
 
-interface contextType {
+interface ContextType {
 	displayGradient: boolean;
-	gradientColor: string;
 	displayLogoInBg: boolean;
+	displayServerBackground: boolean;
+	gradientColor: string;
 	hasAdblock: boolean;
 	updateData: (key: "displayGradient" | "gradientColor" | "displayLogoInBg", value: any) => void;
 }
 
-export const context = createContext<contextType | null>(null);
+export const context = createContext<ContextType | null>(null);
 
 export function GlobalContext({ children }: Props) {
 	const path = useLocation().pathname;
@@ -37,10 +38,11 @@ export function GlobalContext({ children }: Props) {
 		setData((prev) => ({ ...prev, [key]: value }));
 	}, []);
 
-	const [data, setData] = useState({
+	const [data, setData] = useState<Omit<ContextType, "hasAdblock">>({
 		displayGradient: user?.everPurchased ? false : true,
 		gradientColor: getNewGradientColor(),
 		displayLogoInBg: path.startsWith("/dashboard"),
+		displayServerBackground: true,
 		updateData
 	});
 

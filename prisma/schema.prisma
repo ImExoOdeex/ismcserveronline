@@ -31,9 +31,9 @@ model User {
   SavedServer  SavedServer[]
   SampleServer SampleServer[]
   Vote         Vote[]
-  Token        Token?
   OwnedServers Server[]
   Verification Verification[]
+  Token        Token?
 
   @@index([email])
 }
@@ -44,6 +44,11 @@ model Server {
   // --- Custom data
   banner     String? // free
   background String? // sub
+
+  prime Boolean @default(false)
+  subId String?
+
+  tags Tag[]
 
   // --- Server data ---
   server  String
@@ -85,6 +90,16 @@ model Server {
   message_from_owner String?
 
   @@index([id, server])
+}
+
+model Tag {
+  id Int @id @unique @default(autoincrement())
+
+  name String @unique
+
+  servers Server[]
+
+  created_at DateTime @default(now())
 }
 
 model Verification {

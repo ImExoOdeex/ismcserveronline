@@ -2,7 +2,7 @@ import { db } from "@/.server/db/db";
 import { getUser } from "@/.server/db/models/user";
 import { getServerInfo } from "@/.server/functions/api.server";
 import { csrf } from "@/.server/functions/security.server";
-import stripe from "@/.server/payments/stripe";
+import stripe from "@/.server/modules/stripe";
 import { json, type ActionFunctionArgs } from "@remix-run/node";
 import invariant from "tiny-invariant";
 

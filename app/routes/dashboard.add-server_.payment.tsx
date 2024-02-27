@@ -1,5 +1,5 @@
 import { getUser } from "@/.server/db/models/user";
-import { paymentHandlers } from "@/.server/payments/stripe";
+import { paymentHandlers } from "@/.server/modules/stripe";
 import { commitSession, getSession } from "@/.server/session";
 import { calculatePriceFromDays } from "@/functions/payments";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";

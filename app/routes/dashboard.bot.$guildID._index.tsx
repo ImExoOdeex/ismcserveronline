@@ -13,6 +13,7 @@ import {
 	Button,
 	Code,
 	Divider,
+	Flex,
 	FormLabel,
 	HStack,
 	Heading,
@@ -20,10 +21,14 @@ import {
 	Input,
 	Skeleton,
 	Stack,
+	Switch,
 	Text,
+	Tooltip,
 	VStack,
+	VisuallyHiddenInput,
 	Wrap,
-	WrapItem
+	WrapItem,
+	useToast
 } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
@@ -53,13 +58,13 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
 	const [livecheck, channels] = await Promise.all([
 		fetch(`${serverConfig.botApi}/${guildID}/livecheck/${number}`, {
-			method: "get",
+			method: "GET",
 			headers: {
 				Authorization: requireEnv("SUPER_DUPER_API_ACCESS_TOKEN")
 			}
 		}).then((res) => res.json()),
 		fetch(`${serverConfig.botApi}/${guildID}/channels`, {
-			method: "get",
+			method: "GET",
 			headers: {
 				Authorization: requireEnv("SUPER_DUPER_API_ACCESS_TOKEN")
 			}
@@ -94,12 +99,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 	const res = await (
 		await fetch(`${serverConfig.botApi}/${guildID}/livecheck/edit/${number}`, {
-			method: "post",
+			method: "POST",
 			headers: {
-				"Content-Type": "application/json",
 				Authorization: requireEnv("SUPER_DUPER_API_ACCESS_TOKEN")
 			},
-			body: JSON.stringify(Object.fromEntries(formData))
+			body: formData
 		})
 	).json();
 
@@ -119,11 +123,17 @@ export async function action({ request, params }: ActionFunctionArgs) {
 export default function Index() {
 	const { livecheck, channels } = useAnimationLoaderData<typeof loader>();
 
+	const toast = useToast();
 	const livecheckFetcher = useFetcherCallback((data) => {
 		setIsEditing(false);
 		setTimeout(() => {
 			revalidate();
 		}, 7000);
+
+		toast({
+			title: data.message ?? "Success!",
+			status: data.success ? "success" : "error"
+		});
 	});
 	const [isEditing, setIsEditing] = useState<boolean>(false);
 	const { revalidate, state } = useRevalidator();
@@ -134,7 +144,7 @@ export default function Index() {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	const [clickedAction, setClickedAction] = useState<"toggle" | "edit" | null>();
+	const [alertEnabled, setAlertEnabled] = useState(livecheck?.alert_enabled ?? false);
 
 	return (
 		<VStack w="100%" align={"start"} spacing={10}>
@@ -535,18 +545,12 @@ export default function Index() {
 								value={"edit"}
 								isLoading={
 									isEditing
-										? clickedAction === "edit"
+										? livecheckFetcher.formData?.get("_action") === "edit"
 											? livecheckFetcher.state !== "idle"
 											: false
 										: state === "loading"
 								}
-								onClick={
-									isEditing
-										? () => {
-												setClickedAction("edit");
-										  }
-										: revalidate
-								}
+								onClick={isEditing ? undefined : revalidate}
 								variant={"brand"}
 							>
 								<HStack>
@@ -559,13 +563,14 @@ export default function Index() {
 						<WrapItem>
 							<Button
 								transform={"auto-gpu"}
-								isLoading={clickedAction === "toggle" ? livecheckFetcher.state !== "idle" : false}
+								isLoading={
+									livecheckFetcher.formData?.get("_action") === "toggle"
+										? livecheckFetcher.state !== "idle"
+										: false
+								}
 								type="submit"
 								name="_action"
 								value={"toggle"}
-								onClick={() => {
-									setClickedAction("toggle");
-								}}
 								colorScheme={livecheck ? "red" : "green"}
 								_hover={{ bg: livecheck ? "red.700" : "green.600" }}
 								_active={{ bg: livecheck ? "red.800" : "green.700", scale: 0.9 }}
@@ -595,12 +600,124 @@ export default function Index() {
 							</WrapItem>
 						)}
 					</Wrap>
-					{livecheckFetcher.data && (
+					{/* {livecheckFetcher.data && (
 						<Text fontWeight={600} color={livecheckFetcher.data?.success ? "green" : "red"}>
 							{livecheckFetcher.data?.message}
 						</Text>
-					)}
+					)} */}
 					{livecheck && <Text fontSize={"xs"}>Data refreshes automatically every 30 seconds.</Text>}
+
+					<Divider my={5} />
+
+					<Tooltip label={"You can't set up alerts, when livecheck is disabled."} isDisabled={!!livecheck} hasArrow>
+						<Flex flexDir={"column"} gap={4} w="100%" opacity={livecheck ? 1 : 0.5}>
+							<Flex
+								flexDir={"row"}
+								w="100%"
+								justifyContent={"space-between"}
+								pointerEvents={livecheck ? "auto" : "none"}
+							>
+								<Flex flexDir={"column"} gap={0}>
+									<Text fontWeight={600}>Enable Alerts</Text>
+									<Text color={"textSec"}>Get notified when a user goes offline.</Text>
+								</Flex>
+
+								<Switch
+									size="lg"
+									colorScheme="brand"
+									isChecked={alertEnabled}
+									onChange={(e) => setAlertEnabled(e.target.checked)}
+								/>
+								<VisuallyHiddenInput name="alertEnabled" value={alertEnabled.toString()} readOnly />
+							</Flex>
+
+							{alertEnabled && (
+								<Flex flexDir={"row"} w="100%" justifyContent={"space-between"}>
+									<Flex flexDir={"column"} gap={0}>
+										<Text fontWeight={600}>Alert Channel</Text>
+										<Text color={"textSec"}>Select a channel you'd like to be notified in.</Text>
+									</Flex>
+
+									<Select
+										name="alertChannel"
+										variant={"filled"}
+										defaultValue={{
+											label: `#${
+												channels.find(
+													(c: { name: string; id: string }) => c.id === livecheck?.alert_channel
+												)?.name
+											}`,
+											value: livecheck?.alert_channel
+										}}
+										options={channels.map((channel: { name: string; id: string }) => ({
+											label: `#${channel.name}`,
+											value: channel.id
+										}))}
+										chakraStyles={{
+											control: (provided) => ({
+												...provided,
+												borderRadius: "xl",
+												cursor: "pointer",
+												w: "100%",
+												bg: "alpha",
+												_hover: {
+													bg: "alpha200"
+												}
+											}),
+											dropdownIndicator: (provided, { selectProps: { menuIsOpen } }) => ({
+												...provided,
+												"> svg": {
+													transitionDuration: "normal",
+													transform: `rotate(${menuIsOpen ? -180 : 0}deg)`
+												},
+												background: "transparent",
+												padding: "0 5px"
+											}),
+											container: (provided) => ({
+												...provided,
+												borderRadius: "xl",
+												w: "100%",
+												maxW: "md",
+												bg: "transparent"
+											}),
+											input: (provided) => ({
+												...provided,
+												rounded: "xl",
+												w: "100%",
+												bg: "transparent"
+											}),
+											menuList: (provided) => ({
+												...provided,
+												bg: "bg"
+											}),
+											option: (provided) => ({
+												...provided,
+												bg: "bg",
+												color: "text",
+												_hover: {
+													bg: "alpha100"
+												}
+											})
+										}}
+									/>
+								</Flex>
+							)}
+
+							<Flex w={"100%"} justifyContent={"flex-end"} pointerEvents={livecheck ? "auto" : "none"}>
+								<Button
+									type="submit"
+									name="_action"
+									value={"alert"}
+									isLoading={
+										livecheckFetcher.state !== "idle" && livecheckFetcher.formData?.get("_action") === "alert"
+									}
+									variant={"brand"}
+								>
+									Save
+								</Button>
+							</Flex>
+						</Flex>
+					</Tooltip>
 				</VStack>
 
 				<Divider my={10} />

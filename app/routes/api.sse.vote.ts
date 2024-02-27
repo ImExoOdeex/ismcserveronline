@@ -1,5 +1,5 @@
 import { csrf } from "@/.server/functions/security.server";
-import { emitter } from "@/.server/sse/emitter";
+import { emitter } from "@/.server/modules/emitter";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { eventStream } from "remix-utils/sse/server";
 import invariant from "tiny-invariant";

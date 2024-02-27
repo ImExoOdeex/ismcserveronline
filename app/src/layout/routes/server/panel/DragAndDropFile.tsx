@@ -1,8 +1,14 @@
 import { Flex, Icon, Image, Spinner, Text, useToast } from "@chakra-ui/react";
+import { useRevalidator } from "@remix-run/react";
 import { useCallback, useState } from "react";
 import { FaFileUpload } from "react-icons/fa";
 
-export default function DragAndDropFile() {
+interface Props {
+	fileName: string;
+	serverId: number;
+}
+
+export default function DragAndDropFile({ fileName, serverId }: Props) {
 	const [isDropping, setIsDropping] = useState(false);
 	const [file, setFile] = useState<File | null>(null);
 	const [preview, setPreview] = useState<string | ArrayBuffer | null>(null);
@@ -25,84 +31,74 @@ export default function DragAndDropFile() {
 		e.preventDefault();
 	}, []);
 
+	const { revalidate } = useRevalidator();
 	const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-		e.preventDefault();
-		setIsDropping(false);
-		setIsUploading(true);
-		setPreview(null);
-		setSuccess(false);
-		const file = e.dataTransfer.files[0];
+		(async () => {
+			e.preventDefault();
+			setIsDropping(false);
+			setIsUploading(true);
+			setPreview(null);
+			setSuccess(false);
+			const file = e.dataTransfer.files[0];
 
-		// accept only images and videos and audios
-		if (!file.type.startsWith("image")) {
-			toast({
-				title: "Invalid file type",
-				description: "Only images are allowed",
-				status: "error"
-			});
+			// accept only images and videos
+			if (!file.type.startsWith("image") && !file.type.startsWith("video")) {
+				toast({
+					title: "Invalid file type",
+					description: "Only images or videos are allowed",
+					status: "error"
+				});
+				setIsUploading(false);
+				return;
+			}
+
+			// max file size is 10MB
+			const mbLimit = 10;
+			if (file.size > mbLimit * 1024 * 1024) {
+				toast({
+					title: "File is too large",
+					description: `Max file size is ${mbLimit}MB`,
+					status: "error"
+				});
+				setIsUploading(false);
+				return;
+			}
+
+			setFile(file);
+
+			// set preview
+			const reader = new FileReader();
+			reader.onload = () => {
+				setPreview(reader.result);
+			};
+			reader.readAsDataURL(file);
+
+			const body = new FormData();
+			body.append("size", file.size.toString());
+			body.append(fileName, file);
+
+			const res = await fetch(`/api/s3/upload/${serverId}`, {
+				method: "PUT",
+				body
+			}).then((res) => res.json());
+
+			console.log("res", res);
+
+			if (!res.success) {
+				toast({
+					title: "Upload failed",
+					description: res.message,
+					status: "error"
+				});
+			} else {
+				revalidate();
+			}
+
 			setIsUploading(false);
-			return;
-		}
-
-		// max file size is 50MB
-		const mbLimit = 15;
-		if (file.size > mbLimit * 1024 * 1024) {
-			toast({
-				title: "File is too large",
-				description: "Max file size is 15MB",
-				status: "error"
-			});
-			setIsUploading(false);
-			return;
-		}
-
-		setFile(file);
-
-		// set preview
-		const reader = new FileReader();
-		reader.onload = () => {
-			setPreview(reader.result);
-		};
-		reader.readAsDataURL(file);
-
-		// upload to the api
-		const type: any = file.type.startsWith("image") ? "Image" : null;
-		if (!type) {
-			toast({
-				title: "File type not found",
-				description: "Please try again",
-				status: "error"
-			});
-			setIsUploading(false);
-			return;
-		}
-		const body = new FormData();
-		body.append("filename", file.name);
-		body.append("type", type);
-		body.append("size", file.size.toString());
-		body.append("file", file);
-
-		// const res = (await fetch("/api/cdn/upload", {
-		// 	method: "PUT",
-		// 	body,
-		// 	headers: {
-		// 		Accept: "*/*"
-		// 	}
-		// }).then(async (res) => {
-		// 	const text = await res.text();
-
-		// 	try {
-		// 		return JSON.parse(text);
-		// 	} catch (e) {
-		// 		console.error(e);
-		// 		return text;
-		// 	}
-		// })) as { url: string; success: boolean; asset: Asset };
-
-		setIsUploading(false);
-		setSuccess(true);
-		// setAssets((prev) => [res.asset, ...prev]);
-		// console.log("upload res", res);
+			setSuccess(true);
+			// setAssets((prev) => [res.asset, ...prev]);
+			// console.log("upload res", res);
+		})();
 	}, []);
 
 	const color = isDropping ? "brand" : success ? "green" : "alpha300";

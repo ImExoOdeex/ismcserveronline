@@ -1,6 +1,6 @@
 import { getUser } from "@/.server/db/models/user";
 import { csrf } from "@/.server/functions/security.server";
-import stripe, { subscriptionHandlers } from "@/.server/payments/stripe";
+import stripe, { subscriptionHandlers } from "@/.server/modules/stripe";
 import config from "@/utils/config";
 import { ActionFunctionArgs, json } from "@remix-run/node";
 import Stripe from "stripe";

@@ -4,7 +4,7 @@ import VerifyModal from "./verify/VerifyModal";
 
 interface Props {
 	message?: string | null;
-	ownerId?: string | null;
+	ownerId: number | null;
 	server: string;
 	bedrock: boolean;
 }

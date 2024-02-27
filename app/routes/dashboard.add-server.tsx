@@ -1,7 +1,7 @@
 import { db } from "@/.server/db/db";
 import { getUser } from "@/.server/db/models/user";
 import { csrf } from "@/.server/functions/security.server";
-import { paymentHandlers } from "@/.server/payments/stripe";
+import { paymentHandlers } from "@/.server/modules/stripe";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import Link from "@/layout/global/Link";
 import AddServerModal from "@/layout/routes/dashboard/addServer/AddServerModal";

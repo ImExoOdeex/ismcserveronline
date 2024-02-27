@@ -1,3 +1,4 @@
+import serverConfig from "@/.server/serverConfig";
 import { PrismaClient } from "@prisma/client";
 import { redisCacheMiddleware } from "./PrismaRedisCacheMiddleware";
 
@@ -14,7 +15,7 @@ class PrismaClientWithCache extends PrismaClient {
 	}
 }
 
-if (process.env.NODE_ENV === "production") {
+if (process.env.NODE_ENV === "production" || serverConfig.reconnectEverytimeDbInDev) {
 	console.log("[Prisma] Connecting to Postgresql | Production");
 	db = new PrismaClientWithCache();
 } else {

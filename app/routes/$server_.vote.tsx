@@ -2,8 +2,9 @@ import { db } from "@/.server/db/db";
 import { getUser, getUserId } from "@/.server/db/models/user";
 import { cachePrefetch } from "@/.server/functions/fetchHelpers.server";
 import { csrf } from "@/.server/functions/security.server";
-import { getRandomMinecarftImage } from "@/.server/minecraftImages";
-import { emitter } from "@/.server/sse/emitter";
+import { MinecraftImage, getRandomMinecarftImage } from "@/.server/minecraftImages";
+import { emitter } from "@/.server/modules/emitter";
+import { getFullFileUrl } from "@/functions/storage";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import useUser from "@/hooks/useUser";
 import Link from "@/layout/global/Link";
@@ -15,12 +16,12 @@ import { AnyServer, AnyServerModel } from "@/types/minecraftServer";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { Button, Divider, Flex, VStack } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
+import dayjs from "dayjs";
 import { UseDataFunctionReturn, typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
 import { InsideErrorBoundary } from "~/document";
 
 const votingHours = 12;
-const votingCooldown = votingHours * 60 * 60 * 1000; // 12 hours in milliseconds
 
 export async function action({ request, params }: ActionFunctionArgs) {
 	csrf(request);
@@ -51,7 +52,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 				server_id: foundServer.id,
 				user_id: user.id,
 				created_at: {
-					gte: new Date(Date.now() - votingCooldown)
+					gte: dayjs().subtract(votingHours, "hour").toDate()
 				}
 			}
 		});
@@ -63,7 +64,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 				server_id: foundServer.id,
 				nick,
 				created_at: {
-					gte: new Date(Date.now() - votingCooldown)
+					gte: dayjs().subtract(votingHours, "hour").toDate()
 				}
 			}
 		});
@@ -137,13 +138,19 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 					server_id: foundServer.id,
 					user_id: userId,
 					created_at: {
-						gte: new Date(Date.now() - votingCooldown)
+						gte: dayjs().subtract(votingHours, "hours").toDate()
 					}
 				}
 		  })
 		: null;
 
-	const image = getRandomMinecarftImage();
+	const image = foundServer.banner
+		? ({
+				credits: "",
+				name: foundServer.server + "'s banner",
+				url: getFullFileUrl(foundServer.banner)
+		  } as MinecraftImage)
+		: getRandomMinecarftImage();
 
 	return typedjson(
 		{
@@ -188,7 +195,7 @@ export default function ServerVote() {
 					verified={!!data.owner_id}
 					bedrock={data.bedrock}
 					image={image}
-					mb={20}
+					mb={28}
 				/>
 			</Flex>
 

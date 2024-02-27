@@ -14,6 +14,9 @@ export default defineConfig({
 		}),
 		tsconfigPaths()
 	],
+	optimizeDeps: {
+		noDiscovery: true
+	},
 	ssr: {
 		noExternal: [
 			/^react-icons.*/,

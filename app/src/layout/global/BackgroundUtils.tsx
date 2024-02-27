@@ -1,7 +1,9 @@
+import { getFullFileUrl } from "@/functions/storage";
 import useGlobalContext from "@/hooks/useGlobalContext";
 import useUser from "@/hooks/useUser";
 import config from "@/utils/config";
 import { Flex, Image, useColorMode, useToken } from "@chakra-ui/react";
+import { useLocation, useMatches } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { memo } from "react";
 
@@ -11,9 +13,17 @@ export default memo(function BackgroundUtils() {
 	const { colorMode } = useColorMode();
 	const user = useUser();
 	const [rawColor] = useToken("colors", [gradientColor ?? ""]);
+	const path = useLocation().pathname;
+	const isVote = path.split("/").pop() === "vote";
+
+	const serverLoaderData = useMatches()[1].data as any;
+	const backgroundUrl = serverLoaderData?.[isVote ? "data" : "foundServer"]?.background
+		? getFullFileUrl(serverLoaderData?.[isVote ? "data" : "foundServer"]?.background)
+		: null;
 
 	return (
 		<Flex pos={"absolute"} zIndex={-1} maxH={"100vh"} w="100%" h="100%">
+			{/* Avatar */}
 			<AnimatePresence mode="wait" initial={false}>
 				{displayLogoInBg && (
 					<motion.div
@@ -22,7 +32,7 @@ export default memo(function BackgroundUtils() {
 						exit={{ opacity: 0 }}
 						transition={{
 							ease: config.ease,
-							duration: 0.75
+							duration: 0.5
 						}}
 					>
 						<Image
@@ -44,7 +54,39 @@ export default memo(function BackgroundUtils() {
 					</motion.div>
 				)}
 			</AnimatePresence>
-			{displayGradient && (
+
+			{/* Background */}
+			<AnimatePresence mode="wait" initial={false}>
+				{backgroundUrl && (
+					<motion.div
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}
+						transition={{
+							ease: config.ease,
+							duration: 0.5
+						}}
+					>
+						<Image
+							pos={"absolute"}
+							top={0}
+							left={0}
+							opacity={0.1}
+							src={backgroundUrl}
+							w={"100%"}
+							h={"90vh"}
+							zIndex={-1}
+							objectFit={"cover"}
+							objectPosition={"center"}
+							sx={{
+								WebkitMaskImage: `linear-gradient(to top, transparent 2%, black 50%)`
+							}}
+						/>
+					</motion.div>
+				)}
+			</AnimatePresence>
+
+			{displayGradient && !backgroundUrl && (
 				<>
 					<svg
 						style={{ width: "100%", opacity: colorMode === "light" ? (gradientColor === "gold" ? 0.2 : 0.25) : 0.2 }}

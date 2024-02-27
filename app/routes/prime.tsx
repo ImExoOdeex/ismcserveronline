@@ -65,8 +65,8 @@ export default function Prime() {
 				<Heading
 					fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}
 					textAlign={"center"}
-					bgClip="text"
 					fontWeight={"extrabold"}
+					bgClip="text"
 					bgGradient={`linear(to-r, text, ${colorMode === "light" ? "#d16ede" : "#da92e4"}, #866ec7, text, text, text)`}
 				>
 					Choose a plan, ideal for you!

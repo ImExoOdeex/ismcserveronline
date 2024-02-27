@@ -3,7 +3,7 @@ import { getUser } from "@/.server/db/models/user";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import useRootData from "@/hooks/useRootData";
 import Sidebar from "@/layout/routes/server/panel/Sidebar";
-import { Button, Divider, Flex, Heading, useToast } from "@chakra-ui/react";
+import { Box, Button, Divider, Flex, Heading, useColorMode, useToast } from "@chakra-ui/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet } from "@remix-run/react";
 import { useCallback } from "react";
@@ -60,11 +60,22 @@ export default function ServerPanel() {
 		});
 	}, []);
 
+	const { colorMode } = useColorMode();
+
 	return (
 		<Flex flexDir={"column"} w="100%" gap={10} maxW={"1400px"} mx="auto" px={4} mt={5}>
 			<Flex flexDir={"column"} w="100%" gap={4}>
 				<Flex w="100%" alignItems={"center"} justifyContent={"space-between"}>
-					<Heading fontSize={"2xl"}>{server.server}'s Panel</Heading>
+					<Heading fontSize={"2xl"}>
+						<Box
+							as="span"
+							bgClip="text"
+							bgGradient={`linear(to-r, ${colorMode === "light" ? "#d16ede" : "#da92e4"}, #866ec7)`}
+						>
+							{server.server}'s
+						</Box>{" "}
+						Panel
+					</Heading>
 					<Button onClick={copyVisitLink}>Copy visit link</Button>
 				</Flex>
 

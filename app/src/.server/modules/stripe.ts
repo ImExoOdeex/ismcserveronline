@@ -6,6 +6,7 @@ import Stripe from "stripe";
 import invariant from "tiny-invariant";
 import { toStripeAmount } from "../../functions/payments";
 import { db } from "../db/db";
+import { newSubscriptionNotify } from "../functions/dmer";
 import { requireEnv } from "../functions/env.server";
 
 const stripe = new Stripe(requireEnv("STRIPE_SECRET_KEY"), {
@@ -204,6 +205,8 @@ export const webhookHandlers = {
 				subId: subscription.id
 			}
 		});
+
+		newSubscriptionNotify(user.nick, user.email, user.photo);
 
 		return json({ user }, { status: 200 });
 	},

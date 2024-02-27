@@ -28,21 +28,23 @@ export default memo(function ServerView({ server, data, bedrock, image, verified
 	return (
 		<Flex flexDir={"column"} pos="relative" {...props}>
 			<Flex pos="relative">
-				<Link
-					pos="absolute"
-					top={1}
-					right={2}
-					href={image.credits}
-					target="_blank"
-					rel="noopener noreferrer"
-					fontSize={"sm"}
-					fontWeight={"600"}
-					color={"textSec"}
-					opacity={0.4}
-					zIndex={1}
-				>
-					Credits
-				</Link>
+				{image.credits && (
+					<Link
+						pos="absolute"
+						top={1}
+						right={2}
+						href={image.credits}
+						target="_blank"
+						rel="noopener noreferrer"
+						fontSize={"sm"}
+						fontWeight={"600"}
+						color={"textSec"}
+						opacity={0.4}
+						zIndex={1}
+					>
+						Credits
+					</Link>
+				)}
 				<AnimatePresence initial={false}>
 					<Image
 						as={motion.img}
@@ -120,7 +122,7 @@ export default memo(function ServerView({ server, data, bedrock, image, verified
 					right={0}
 					bottom={0}
 					animate={{
-						y: isOpen ? "80%" : "50%"
+						y: isOpen ? "90%" : "75%"
 					}}
 					transition={
 						{

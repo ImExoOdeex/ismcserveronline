@@ -95,6 +95,8 @@ export type AnyServerModel = Omit<AnyServer, "debug"> & {
 	bedrock: boolean;
 	owner_id: number | null;
 	message_from_owner: string | null;
+	banner: string | null;
+	background: string | null;
 	// _count?: {
 	// 	Check: number;
 	// 	Comment: number;

@@ -38,10 +38,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
 	const res = await fetch(`${serverConfig.botApi}/${guildID}/config/edit`, {
 		method: "POST",
 		headers: {
-			"Content-Type": "application/json",
 			Authorization: requireEnv("SUPER_DUPER_API_ACCESS_TOKEN")
 		},
-		body: JSON.stringify(Object.fromEntries(formData))
+		body: new URLSearchParams({
+			onlineColor: formData.get("onlineColor")?.toString() ?? "#00ff00",
+			offlineColor: formData.get("offlineColor")?.toString() ?? "#ff0000"
+		})
 	}).then((res) => res.json());
 
 	getUser(request).then((user) => {

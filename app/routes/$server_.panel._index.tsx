@@ -22,7 +22,7 @@ import {
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import dayjs from "dayjs";
 import { useMemo } from "react";
-import { typeddefer } from "remix-typedjson";
+import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
@@ -108,11 +108,12 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 		})
 	];
 
+	// didnt want to defer it, cause too much work
 	const [votes, votesInThisMonth, checks, checksInThisMonth, comments, votesInLastMonth, checksInLastMonth] = await Promise.all(
 		promises
 	);
 
-	return typeddefer({
+	return typedjson({
 		server,
 		votes,
 		votesInThisMonth,
@@ -200,7 +201,7 @@ export default function ServerPanel() {
 					</Flex>
 
 					{server.banner && <Image src={getFullFileUrl(server.banner)} alt={`${server.server}'s banner`} w="100%" />}
-					{!server.banner && <DragAndDropFile />}
+					<DragAndDropFile fileName="banner" serverId={server.id} />
 				</Flex>
 
 				<Flex flexDir={"column"} gap={2}>
@@ -218,8 +219,10 @@ export default function ServerPanel() {
 						<IconButton aria-label="Info" icon={<InfoOutlineIcon />} variant={"ghost"} />
 					</Flex>
 
-					{server.banner && <Image src={getFullFileUrl(server.banner)} alt={`${server.server}'s banner`} w="100%" />}
-					{!server.banner && <DragAndDropFile />}
+					{server.background && (
+						<Image src={getFullFileUrl(server.background)} alt={`${server.server}'s banner`} w="100%" />
+					)}
+					<DragAndDropFile fileName="background" serverId={server.id} />
 				</Flex>
 			</Flex>
 		</Flex>
@@ -230,10 +233,11 @@ function StatBox({ title, value, helper }: { title: string; value: number; helpe
 	const percent = useMemo(() => {
 		if (helper !== 0 && !helper) return 0;
 
-		if (helper === 0) return 100;
+		if (helper === 0) {
+			helper = 1;
+		}
 
-		const percentIncrease = (value / helper) * 100;
-		return percentIncrease - 100;
+		return (value / helper) * 100;
 	}, [helper, value]);
 
 	return (

@@ -61,6 +61,10 @@ export default function $guildID() {
 			name: "Config",
 			path: `/dashboard/bot/${guild.id}/config`
 		}
+		// {
+		// 	name: "Alerts",
+		// 	path: `/dashboard/bot/${guild.id}/alerts`
+		// }
 	];
 
 	return (

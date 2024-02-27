@@ -57,7 +57,7 @@ function getCacheKey(params: Params, queryType = "uq") {
 
 	// Add properties from where object to cache key
 	Object.keys(where).forEach((key) => {
-		cacheKey += `-${key}-${where[key]}`;
+		cacheKey += `-${key}-${where[key] instanceof Object ? JSON.stringify(where[key]) : where[key]}`;
 	});
 
 	return cacheKey;
