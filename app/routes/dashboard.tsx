@@ -2,13 +2,11 @@ import { getUserId } from "@/.server/db/models/user";
 import { commitSession, getSession } from "@/.server/session";
 import useUser from "@/hooks/useUser";
 import Link from "@/layout/global/Link";
-import { ChakraBox } from "@/layout/global/MotionComponents";
-import { Button, Divider, Flex, HStack, Heading, VStack } from "@chakra-ui/react";
+import Sidebar from "@/layout/routes/dashboard/Sidebar";
+import { Box, Button, Divider, Flex, HStack, Heading, VStack, useColorMode } from "@chakra-ui/react";
 import type { LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { useFetcher, useLocation, useOutlet } from "@remix-run/react";
-import { Transition } from "framer-motion";
-import { useCallback, useMemo } from "react";
+import { Outlet, useFetcher } from "@remix-run/react";
 import { FiLogOut } from "react-icons/fi";
 import { PiCrownSimpleDuotone } from "react-icons/pi";
 
@@ -49,209 +47,78 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function Dashboard() {
-	const outlet = useOutlet();
-
+	const { colorMode } = useColorMode();
 	const user = useUser(true);
-
-	const path = useLocation().pathname;
-
-	const buttons = useMemo(() => {
-		const yes = [
-			{
-				name: "Bookmarked Servers",
-				to: "/dashboard"
-			},
-			{
-				name: "Manage Discord Bot",
-				to: "/dashboard/bot"
-			},
-			{
-				name: "Add Server",
-				to: "/dashboard/add-server"
-			},
-			{
-				name: "API Token",
-				to: "/dashboard/token"
-			}
-		];
-
-		// doing this, cause on page transition if will loose the data, cuz it's weird
-		if (user) {
-			if (user.prime) {
-				yes.push({
-					name: "Prime",
-					to: "/dashboard/prime"
-				});
-			}
-
-			if (user.role === "ADMIN") {
-				yes.push({
-					name: "Admin",
-					to: "/dashboard/admin"
-				});
-			}
-		}
-
-		return yes;
-	}, [user]);
 
 	const logoutFetcher = useFetcher();
 
-	const prefetchGuildIcons = useCallback(() => {
-		const url = `/dashboard/bot?_data=routes%2Fdashboard.bot._index`;
-
-		fetch(url, {
-			headers: {
-				Accept: "application/json"
-			}
-		})
-			.then((res) => {
-				if (res.ok) {
-					return res.json() as Promise<{
-						guilds: { id: string; icon: string; name: string }[];
-					}>;
-				} else {
-					console.log("Failed to prefetch guild icons");
-				}
-			})
-			.then((data) => {
-				if (!data) return;
-				data.guilds.forEach((guild) => {
-					const img = new Image();
-					img.src = guild.icon
-						? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=96`
-						: "/banner.jpg";
-					img.onload = () => {
-						console.log("Prefetched image", guild.name);
-					};
-				});
-			});
-	}, []);
-
 	if (!user) return null;
 	return (
-		<VStack w="100%" maxW={"1200px"} mx="auto" align={"start"} mt={5} spacing={10} px={4}>
-			<Flex
-				w="100%"
-				justify={"space-between"}
-				alignItems={{ base: "flex-start", sm: "center" }}
-				flexDir={{
-					base: "column",
-					sm: "row"
-				}}
-				gap={4}
-			>
-				<Heading fontSize={"4xl"} as={Link} to="/dashboard">
-					Dashboard
-				</Heading>
-
-				<HStack>
-					<Button
-						as={Link}
-						to="/prime"
-						variant={"ghost"}
-						color={"brand"}
-						_hover={{
-							bg: "rgba(72, 0, 255, 0.1)",
-							textDecoration: "none"
-						}}
-						_active={{
-							scale: 0.9
-						}}
-						transform={"auto-gpu"}
-						fontWeight={500}
-						rightIcon={<PiCrownSimpleDuotone />}
-					>
-						Prime
-					</Button>
-
-					<logoutFetcher.Form action="/api/auth/logout">
-						<Button
-							transform={"auto-gpu"}
-							_hover={{
-								bg: "rgba(255, 0, 0, 0.1)",
-								textDecor: "none"
-							}}
-							_active={{ scale: 0.9 }}
-							type="submit"
-							variant={"ghost"}
-							color={"red"}
-							rightIcon={<FiLogOut />}
-							isLoading={logoutFetcher.state !== "idle"}
+		<VStack w="100%" maxW={"1400px"} mx="auto" align={"start"} mt={5} spacing={10} px={4}>
+			<Flex flexDir={"column"} w="100%" gap={4}>
+				<Flex w="100%" alignItems={"center"} justifyContent={"space-between"}>
+					<Heading fontSize={"2xl"}>
+						<Box
+							as="span"
+							bgClip="text"
+							bgGradient={`linear(to-r, ${colorMode === "light" ? "#d16ede" : "#da92e4"}, #866ec7)`}
 						>
-							Logout
+							{user.nick}
+						</Box>
+					</Heading>
+					<HStack>
+						<Button
+							as={Link}
+							to="/prime"
+							variant={"ghost"}
+							color={"brand"}
+							_hover={{
+								bg: "rgba(72, 0, 255, 0.1)",
+								textDecoration: "none"
+							}}
+							_active={{
+								scale: 0.9
+							}}
+							transform={"auto-gpu"}
+							fontWeight={500}
+							rightIcon={<PiCrownSimpleDuotone />}
+						>
+							Prime
 						</Button>
-					</logoutFetcher.Form>
-				</HStack>
-			</Flex>
 
-			<Flex flexDir={"column"} gap={6} w="100%">
-				<Flex
-					flexDir={"column"}
-					overflow={"auto"}
-					overflowY={"hidden"}
-					overflowX={{
-						base: "auto",
-						md: "hidden"
-					}}
-				>
-					<Flex
-						gap={0}
-						w={{
-							base: "min-content",
-							md: "100%"
-						}}
-					>
-						{buttons.map((button, i) => (
+						<logoutFetcher.Form action="/api/auth/logout">
 							<Button
-								w={{
-									base: "min-content",
-									md: "100%"
-								}}
-								as={Link}
-								variant={"ghost"}
-								rounded={"none"}
-								key={i}
-								to={button.to}
-								pos="relative"
+								transform={"auto-gpu"}
 								_hover={{
-									bg: "alpha",
-									textDecoration: "none"
+									bg: "rgba(255, 0, 0, 0.1)",
+									textDecor: "none"
 								}}
-								_active={{
-									bg: "alpha100"
-								}}
-								opacity={path === button.to ? 1 : 0.8}
-								fontWeight={500}
-								onMouseEnter={button.to === "/dashboard/bot" ? prefetchGuildIcons : undefined}
+								_active={{ scale: 0.9 }}
+								type="submit"
+								variant={"ghost"}
+								color={"red"}
+								rightIcon={<FiLogOut />}
+								isLoading={logoutFetcher.state !== "idle"}
 							>
-								{button.name}
-								{path === button.to && (
-									<ChakraBox
-										pos="absolute"
-										bottom={0}
-										left={0}
-										w="100%"
-										h="2px"
-										bg="brand"
-										layout
-										layoutId="dashunderline"
-										transition={
-											{
-												type: "spring",
-												bounce: 0.15,
-												duration: 0.75
-											} as Transition as any
-										}
-									/>
-								)}
+								Logout
 							</Button>
-						))}
-					</Flex>
-					<Divider />
+						</logoutFetcher.Form>
+					</HStack>
 				</Flex>
 
-				{outlet}
+				<Divider />
+			</Flex>
+
+			<Flex
+				gap={10}
+				w="100%"
+				flexDir={{
+					base: "column",
+					md: "row"
+				}}
+			>
+				<Sidebar />
+				<Outlet />
 			</Flex>
 		</VStack>
 	);

@@ -1,5 +1,6 @@
 import { db } from "@/.server/db/db";
 import { getUser } from "@/.server/db/models/user";
+import { cachePrefetch } from "@/.server/functions/fetchHelpers.server";
 import { csrf } from "@/.server/functions/security.server";
 import { subscriptionHandlers } from "@/.server/modules/stripe";
 import { capitalize } from "@/functions/utils";
@@ -101,9 +102,12 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 			return null;
 		});
 
-	return typeddefer({
-		subscription
-	});
+	return typeddefer(
+		{
+			subscription
+		},
+		cachePrefetch(request)
+	);
 }
 
 export default function ServerPanel() {

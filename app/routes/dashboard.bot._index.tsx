@@ -1,8 +1,9 @@
 import { getUser } from "@/.server/db/models/user";
+import { cachePrefetch } from "@/.server/functions/fetchHelpers.server";
 import { csrf } from "@/.server/functions/security.server";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import Link from "@/layout/global/Link";
-import { Badge, Button, HStack, Heading, Icon, Image, SimpleGrid, Text, VStack } from "@chakra-ui/react";
+import { Badge, Button, Divider, HStack, Heading, Icon, Image, SimpleGrid, Text, VStack } from "@chakra-ui/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
@@ -33,7 +34,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		throw new Error("'Guilds' is not an object!");
 	}
 
-	return typedjson({ guilds });
+	return typedjson({ guilds }, cachePrefetch(request));
 }
 
 export default function Index() {
@@ -43,9 +44,13 @@ export default function Index() {
 
 	return (
 		<VStack w="100%" align={"start"} spacing={4}>
-			<VStack align="start">
-				<Heading fontSize={"2xl"}>Servers, that you can manage</Heading>
+			<VStack align="start" w="100%">
+				<Heading fontSize={"2xl"} fontWeight={600}>
+					Servers, that you can manage
+				</Heading>
 				<Text>There's a list of all your servers, that you can manage. Click of any you want to configure the bot!</Text>
+
+				<Divider />
 			</VStack>
 
 			<VStack w="100%" align={"start"} spacing={10}>

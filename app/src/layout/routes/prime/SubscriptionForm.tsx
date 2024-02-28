@@ -89,78 +89,80 @@ export default function SubscriptionForm({
 	return (
 		<fetcher.Form style={{ width: "100%" }} onSubmit={handleSubmit}>
 			<Flex flexDir={"column"} gap={10} w="100%">
-				<Flex flexDir={"column"} gap={4} w="100%">
-					<Text fontSize={"xl"} fontWeight={600}>
-						Choose your server
-					</Text>
-					<Select
-						isRequired
-						value={{
-							label: serverId ? verifiedServers.find((s) => s.id === serverId)?.server : "Select a server",
-							value: serverId
-						}}
-						onChange={(server) => {
-							setServerId((server as any)?.value as number);
-						}}
-						variant={"filled"}
-						chakraStyles={{
-							control: (provided) => ({
-								...provided,
-								w: "100%",
-								cursor: "pointer",
-								alignItems: "center",
-								h: "30px",
-								borderColor: "alpha100",
-								display: "flex"
-							}),
-							dropdownIndicator: (provided, { selectProps: { menuIsOpen } }) => ({
-								...provided,
-								"> svg": {
-									transitionDuration: "normal",
-									transform: `rotate(${menuIsOpen ? -180 : 0}deg)`
-								},
-								background: "transparent",
-								padding: "0 5px"
-							}),
-							container: (provided) => ({
-								...provided,
-								h: "30px",
-								w: "100%",
-								bg: "transparent"
-							}),
-							input: (provided) => ({
-								...provided,
-								h: "30px",
-								bg: "transparent"
-							}),
-							menuList: (provided) => ({
-								...provided,
-								mt: 2,
-								rounded: "lg",
-								bg: "bg"
-							}),
-							option: (provided) => ({
-								...provided,
-								bg: "bg",
-								color: "text",
-								_hover: {
-									bg: "alpha100"
-								}
-							})
-						}}
-						noOptionsMessage={() =>
-							"It looks like you have no verified servers. Before you buy prime, verify the server you want to buy prime for."
-						}
-						options={
-							(verifiedServers
-								? verifiedServers.map((server) => ({
-										label: server.server,
-										value: server.id
-								  }))
-								: []) as any
-						}
-					/>
-				</Flex>
+				{subType === "server" && (
+					<Flex flexDir={"column"} gap={4} w="100%">
+						<Text fontSize={"xl"} fontWeight={600}>
+							Choose your server
+						</Text>
+						<Select
+							isRequired
+							value={{
+								label: serverId ? verifiedServers.find((s) => s.id === serverId)?.server : "Select a server",
+								value: serverId
+							}}
+							onChange={(server) => {
+								setServerId((server as any)?.value as number);
+							}}
+							variant={"filled"}
+							chakraStyles={{
+								control: (provided) => ({
+									...provided,
+									w: "100%",
+									cursor: "pointer",
+									alignItems: "center",
+									h: "30px",
+									borderColor: "alpha100",
+									display: "flex"
+								}),
+								dropdownIndicator: (provided, { selectProps: { menuIsOpen } }) => ({
+									...provided,
+									"> svg": {
+										transitionDuration: "normal",
+										transform: `rotate(${menuIsOpen ? -180 : 0}deg)`
+									},
+									background: "transparent",
+									padding: "0 5px"
+								}),
+								container: (provided) => ({
+									...provided,
+									h: "30px",
+									w: "100%",
+									bg: "transparent"
+								}),
+								input: (provided) => ({
+									...provided,
+									h: "30px",
+									bg: "transparent"
+								}),
+								menuList: (provided) => ({
+									...provided,
+									mt: 2,
+									rounded: "lg",
+									bg: "bg"
+								}),
+								option: (provided) => ({
+									...provided,
+									bg: "bg",
+									color: "text",
+									_hover: {
+										bg: "alpha100"
+									}
+								})
+							}}
+							noOptionsMessage={() =>
+								"It looks like you have no verified servers. Before you buy prime, verify the server you want to buy prime for."
+							}
+							options={
+								(verifiedServers
+									? verifiedServers.map((server) => ({
+											label: server.server,
+											value: server.id
+									  }))
+									: []) as any
+							}
+						/>
+					</Flex>
+				)}
 
 				<PaymentElement
 					options={{

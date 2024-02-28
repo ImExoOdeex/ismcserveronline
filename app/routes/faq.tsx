@@ -91,6 +91,16 @@ export default function Faq() {
 			</VStack>
 
 			<VStack align={"start"}>
+				<Heading fontSize={"md"}>
+					What's <Badge>Query</Badge>?
+				</Heading>
+				<Text color={"textSec"} fontWeight={500}>
+					Query is a protocol used to get information about server. It's less known than status protocol and it has to
+					be enabled in server.properties file. It allows to get more information about server, but it's slower.
+				</Text>
+			</VStack>
+
+			<VStack align={"start"}>
 				<Heading fontSize={"md"}>How do I change port of server I want to check?</Heading>
 				<Text color={"textSec"} fontWeight={500}>
 					You can use the same way as in game. Add the <Badge>:</Badge> and port you want to check after the domain.

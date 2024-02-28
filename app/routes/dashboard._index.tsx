@@ -3,12 +3,14 @@ import { getUserId } from "@/.server/db/models/user";
 import { getServerInfo } from "@/.server/functions/api.server";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import SavedServer from "@/layout/routes/dashboard/SavedServer";
+import VerifiedServer from "@/layout/routes/dashboard/VerifiedServer";
 import { ServerModel } from "@/types/minecraftServer";
-import { Flex, Heading, SimpleGrid, Spinner, Text, VStack } from "@chakra-ui/react";
+import { Divider, Flex, Heading, SimpleGrid, Spinner, Text, VStack } from "@chakra-ui/react";
+import { Server } from "@prisma/client";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { Await } from "@remix-run/react";
-import { Suspense, memo, useEffect, useRef } from "react";
+import { Suspense, memo } from "react";
 import { typeddefer, typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
 
@@ -137,7 +139,25 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		);
 	}) as unknown as Promise<DisplaySavedServer[]>;
 
-	return typeddefer({ servers });
+	const verifiedServers = new Promise((r) => {
+		r(
+			db.server.findMany({
+				where: {
+					owner_id: userId
+				},
+				select: {
+					id: true,
+					favicon: true,
+					online: true,
+					players: true,
+					bedrock: true,
+					server: true
+				}
+			})
+		);
+	}) as unknown as Promise<Pick<Server, "id" | "favicon" | "server" | "players" | "online" | "bedrock">[]>;
+
+	return typeddefer({ servers, verifiedServers });
 }
 
 export interface DisplaySavedServer {
@@ -153,51 +173,68 @@ export interface DisplaySavedServer {
 }
 
 export default function Index() {
-	const { servers: deferredServers } = useAnimationLoaderData<typeof loader>();
-
-	const init = useRef(true);
-
-	useEffect(() => {
-		if (init.current) {
-			console.log("INITTTTT EFFFECTTT");
-			init.current = false;
-		}
-
-		console.log({
-			deferredServers
-		});
-	}, [deferredServers]);
+	const { servers: deferredServers, verifiedServers } = useAnimationLoaderData<typeof loader>();
 
 	return (
 		<VStack display={"flex"} w="100%" align={"start"} spacing={4}>
-			<VStack align="start">
-				<Heading fontSize={"2xl"}>Servers, you have bookmarked</Heading>
-				<Text>
+			<VStack align="start" w="100%">
+				<Heading fontSize={"2xl"} fontWeight={600}>
+					Your Servers
+				</Heading>
+				{/* <Text>
 					Here you can see all servers you have saved for later. You can bookmark a server by clicking "Bookmark" on a
 					server's page.
-				</Text>
+				</Text> */}
+
+				<Divider />
 			</VStack>
-			<Suspense
-				fallback={
-					<Flex w="100%" p={5} alignItems={"center"} justifyContent={"center"}>
-						<Spinner size="lg" speed="0.4s" />
-					</Flex>
-				}
-			>
-				<Await resolve={deferredServers}>{(servers) => <MemoServersDisplay servers={servers} />}</Await>
-			</Suspense>
-			;
+
+			<Flex w="100%" flexDir={"column"} gap={4} rounded={"xl"} border="1px solid" p={4} borderColor={"alpha300"}>
+				<Text fontSize={"xl"} fontWeight={600}>
+					Verified Servers
+				</Text>
+
+				<Suspense
+					fallback={
+						<Flex w="100%" p={5} alignItems={"center"} justifyContent={"center"}>
+							<Spinner size="lg" speed="0.4s" />
+						</Flex>
+					}
+				>
+					<Await resolve={verifiedServers}>{(servers) => <VerifiedServerDisplay servers={servers} />}</Await>
+				</Suspense>
+			</Flex>
+
+			<Flex w="100%" flexDir={"column"} gap={4} rounded={"xl"} border="1px solid" p={4} borderColor={"alpha300"}>
+				<Text fontSize={"xl"} fontWeight={600}>
+					Bookmarked Servers
+				</Text>
+
+				<Suspense
+					fallback={
+						<Flex w="100%" p={5} alignItems={"center"} justifyContent={"center"}>
+							<Spinner size="lg" speed="0.4s" />
+						</Flex>
+					}
+				>
+					<Await resolve={deferredServers}>{(servers) => <BookmarkedServersDisplay servers={servers} />}</Await>
+				</Suspense>
+			</Flex>
 		</VStack>
 	);
 }
 
-function ServersDisplay({ servers }: { servers: DisplaySavedServer[] }) {
+const VerifiedServerDisplay = memo(function VerifiedServerDisplay({
+	servers
+}: {
+	servers: Pick<Server, "id" | "favicon" | "server" | "players" | "online" | "bedrock">[];
+}) {
 	return (
 		<>
 			{servers.length ? (
 				<SimpleGrid w="100%" minChildWidth={{ base: "100%", md: "calc(50% - 20px)" }} spacing={5}>
 					{servers.map((server) => (
-						<SavedServer key={server.id} server={server} />
+						<VerifiedServer key={"verified-" + server.id} server={server} />
 					))}
 				</SimpleGrid>
 			) : (
@@ -217,6 +254,32 @@ function ServersDisplay({ servers }: { servers: DisplaySavedServer[] }) {
 			)}
 		</>
 	);
-}
+});
 
-const MemoServersDisplay = memo(ServersDisplay);
+const BookmarkedServersDisplay = memo(function BookmarkedServersDisplay({ servers }: { servers: DisplaySavedServer[] }) {
+	return (
+		<>
+			{servers.length ? (
+				<SimpleGrid w="100%" minChildWidth={{ base: "100%", md: "calc(50% - 20px)" }} spacing={5}>
+					{servers.map((server) => (
+						<SavedServer key={"bookmarked-" + server.id} server={server} />
+					))}
+				</SimpleGrid>
+			) : (
+				<Flex
+					bg="alpha"
+					rounded={"xl"}
+					w="100%"
+					maxW="600px"
+					p={5}
+					mx="auto"
+					alignSelf={"center"}
+					alignItems={"center"}
+					justifyContent="center"
+				>
+					<Text fontWeight={600}>You don't have any servers bookmarked.</Text>
+				</Flex>
+			)}
+		</>
+	);
+});

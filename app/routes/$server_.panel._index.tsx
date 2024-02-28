@@ -298,7 +298,7 @@ function StatBox({ title, value, helper }: { title: string; value: number; helpe
 					<Tooltip label={`Percentage shows the increase in this month compared to the last month.`} hasArrow>
 						<StatHelpText mb={0} w="fit-content">
 							<StatArrow type={percent > 0 ? "increase" : "decrease"} />
-							<>{percent.toFixed(2)}%</>
+							<>{percent.toFixed(0)}%</>
 						</StatHelpText>
 					</Tooltip>
 				)}

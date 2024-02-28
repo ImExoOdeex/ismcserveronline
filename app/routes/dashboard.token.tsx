@@ -90,9 +90,13 @@ export default function DashboardToken() {
 
 	return (
 		<Flex flexDir={"column"} gap={4} alignItems={"flex-start"}>
-			<VStack align="start">
-				<Heading fontSize={"2xl"}>Your API Token</Heading>
+			<VStack align="start" w="100%">
+				<Heading fontSize={"2xl"} fontWeight={600}>
+					Your API Token
+				</Heading>
 				<Text>Here you can generate your token for our API.</Text>
+
+				<Divider />
 			</VStack>
 
 			<Flex
