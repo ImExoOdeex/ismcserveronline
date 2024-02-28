@@ -3,13 +3,13 @@ import { requireEnv } from "../functions/env.server";
 
 const key = requireEnv("ENCRYPTION_KEY");
 const algorithm = "AES-CBC";
-
 const textEncoder = new TextEncoder();
+const defaultIv = textEncoder.encode("0000000000000000");
+
 const keyBuffer = await crypto.subtle.importKey("raw", textEncoder.encode(key), { name: algorithm }, false, [
 	"encrypt",
 	"decrypt"
 ]);
-const defaultIv = textEncoder.encode("0000000000000000");
 
 export async function encrypt(data: string) {
 	const cipher = await crypto.subtle.encrypt(
@@ -30,7 +30,6 @@ export async function encrypt(data: string) {
 
 export async function decrypt(encryptedHex: string) {
 	const textDecoder = new TextDecoder();
-	console.log("before", encryptedHex);
 
 	const encryptedArray = new Uint8Array(encryptedHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16)));
 
@@ -44,8 +43,6 @@ export async function decrypt(encryptedHex: string) {
 	);
 
 	const decryptedHex = textDecoder.decode(decrypted);
-
-	console.log("after", decryptedHex);
 
 	return decryptedHex;
 }

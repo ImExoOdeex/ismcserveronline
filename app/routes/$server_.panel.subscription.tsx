@@ -27,10 +27,19 @@ import {
 	useDisclosure
 } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { Await } from "@remix-run/react";
+import { Await, MetaArgs, MetaFunction } from "@remix-run/react";
 import { Suspense, useRef } from "react";
 import { typeddefer, typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
+
+export function meta({ data, matches, params }: MetaArgs) {
+	return [
+		{
+			title: params.server + "'s prime subscription | IsMcServer.online"
+		},
+		...matches[0].meta
+	] as ReturnType<MetaFunction>;
+}
 
 export async function action({ request }: ActionFunctionArgs) {
 	csrf(request);
@@ -100,7 +109,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 export default function ServerPanel() {
 	const { subscription } = useAnimationLoaderData<typeof loader>();
 	const { prime } = useServerPanelData();
-	console.log(subscription);
 
 	return (
 		<Flex gap={5} w="100%" flexDir={"column"}>

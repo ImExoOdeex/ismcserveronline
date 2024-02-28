@@ -6,9 +6,19 @@ import useFetcherCallback from "@/hooks/useFetcherCallback";
 import useServerPanelData from "@/hooks/useServerPanelData";
 import { Button, Code, Divider, Flex, Input, Text, useToast } from "@chakra-ui/react";
 import type { ActionFunctionArgs } from "@remix-run/node";
+import { MetaArgs, MetaFunction } from "@remix-run/react";
 import { useState } from "react";
 import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
+
+export function meta({ data, matches, params }: MetaArgs) {
+	return [
+		{
+			title: params.server + "'s votes webhook | IsMcServer.online"
+		},
+		...matches[0].meta
+	] as ReturnType<MetaFunction>;
+}
 
 export async function action({ request, params }: ActionFunctionArgs) {
 	csrf(request);

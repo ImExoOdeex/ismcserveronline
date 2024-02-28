@@ -30,11 +30,21 @@ import {
 	Tooltip,
 	useDisclosure
 } from "@chakra-ui/react";
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaArgs } from "@remix-run/node";
+import { MetaFunction } from "@remix-run/react";
 import dayjs from "dayjs";
 import { useMemo, useRef } from "react";
 import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
+
+export function meta({ data, matches, params }: MetaArgs) {
+	return [
+		{
+			title: params.server + "'s panel | IsMcServer.online"
+		},
+		...matches[0].meta
+	] as ReturnType<MetaFunction>;
+}
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
 	const user = await getUser(request);
