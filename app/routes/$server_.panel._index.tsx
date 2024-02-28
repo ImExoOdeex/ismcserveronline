@@ -1,13 +1,23 @@
 import { db } from "@/.server/db/db";
 import { getUser } from "@/.server/db/models/user";
+import { cachePrefetch } from "@/.server/functions/fetchHelpers.server";
 import { getFullFileUrl } from "@/functions/storage";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import useAnyPrime from "@/hooks/useAnyPrime";
 import DragAndDropFile from "@/layout/routes/server/panel/DragAndDropFile";
 import { ServerModel } from "@/types/minecraftServer";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import {
+	AlertDialog,
+	AlertDialogBody,
+	AlertDialogCloseButton,
+	AlertDialogContent,
+	AlertDialogHeader,
+	AlertDialogOverlay,
+	Button,
 	Divider,
 	Flex,
+	HStack,
 	IconButton,
 	Image,
 	SimpleGrid,
@@ -17,11 +27,12 @@ import {
 	StatLabel,
 	StatNumber,
 	Text,
-	Tooltip
+	Tooltip,
+	useDisclosure
 } from "@chakra-ui/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import dayjs from "dayjs";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
 
@@ -44,7 +55,8 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 			players: true,
 			owner_id: true,
 			banner: true,
-			background: true
+			background: true,
+			prime: true
 		}
 	});
 	if (!server) throw new Response("Server not found", { status: 404 });
@@ -113,21 +125,27 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 		promises
 	);
 
-	return typedjson({
-		server,
-		votes,
-		votesInThisMonth,
-		checks,
-		checksInThisMonth,
-		comments,
-		votesInLastMonth,
-		checksInLastMonth
-	});
+	return typedjson(
+		{
+			server,
+			votes,
+			votesInThisMonth,
+			checks,
+			checksInThisMonth,
+			comments,
+			votesInLastMonth,
+			checksInLastMonth
+		},
+		cachePrefetch(request)
+	);
 }
 
 export default function ServerPanel() {
 	const { server, checks, checksInThisMonth, comments, votes, votesInThisMonth, checksInLastMonth, votesInLastMonth } =
 		useAnimationLoaderData<typeof loader>();
+
+	const hasPrime = useAnyPrime(server);
+	// const hasPrime = false;
 
 	return (
 		<Flex gap={10} w="100%" flexDir={"column"}>
@@ -160,7 +178,7 @@ export default function ServerPanel() {
 
 			<Divider />
 
-			<Flex gap={4} w="100%" flexDir={"column"}>
+			<Flex gap={10} w="100%" flexDir={"column"}>
 				<Flex flexDir={"column"} gap={4} w={"100%"}>
 					<Text fontSize={"2xl"} fontWeight={600}>
 						Server Information
@@ -196,8 +214,7 @@ export default function ServerPanel() {
 							</Text>
 						</Flex>
 
-						{/* TODO: do alert dialog for that to show template */}
-						<IconButton aria-label="Info" icon={<InfoOutlineIcon />} variant={"ghost"} />
+						<TemplateAlertDialog />
 					</Flex>
 
 					{server.banner && <Image src={getFullFileUrl(server.banner)} alt={`${server.server}'s banner`} w="100%" />}
@@ -215,14 +232,36 @@ export default function ServerPanel() {
 							</Text>
 						</Flex>
 
-						{/* TODO: do alert dialog for that to show template */}
-						<IconButton aria-label="Info" icon={<InfoOutlineIcon />} variant={"ghost"} />
+						{!hasPrime && (
+							<Tooltip label="This feature requires prime subscription." hasArrow>
+								<IconButton
+									aria-label="Info"
+									icon={
+										<InfoOutlineIcon
+											color="orange"
+											filter={"drop-shadow(0px 0px 6px rgba(255, 119, 0, 0.5))"}
+										/>
+									}
+									variant={"ghost"}
+								/>
+							</Tooltip>
+						)}
 					</Flex>
 
 					{server.background && (
 						<Image src={getFullFileUrl(server.background)} alt={`${server.server}'s banner`} w="100%" />
 					)}
-					<DragAndDropFile fileName="background" serverId={server.id} />
+					<Flex
+						w="100%"
+						opacity={hasPrime ? 1 : 0.5}
+						flexDir={"column"}
+						cursor={hasPrime ? "pointer" : "not-allowed"}
+						gap={2}
+					>
+						<Flex pointerEvents={hasPrime ? "auto" : "none"}>
+							<DragAndDropFile fileName="background" serverId={server.id} />
+						</Flex>
+					</Flex>
 				</Flex>
 			</Flex>
 		</Flex>
@@ -255,5 +294,41 @@ function StatBox({ title, value, helper }: { title: string; value: number; helpe
 				)}
 			</Stat>
 		</Flex>
+	);
+}
+
+function TemplateAlertDialog() {
+	const { isOpen, onOpen, onClose } = useDisclosure();
+	const cancelRef = useRef(null);
+
+	return (
+		<>
+			<IconButton aria-label="Info" icon={<InfoOutlineIcon />} variant={"ghost"} onClick={onOpen} />
+
+			<AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} isCentered onClose={onClose} size="xl">
+				<AlertDialogOverlay>
+					<AlertDialogContent bg="bg">
+						<AlertDialogHeader fontSize="lg" fontWeight="bold">
+							Banner Template
+							<AlertDialogCloseButton />
+						</AlertDialogHeader>
+
+						<AlertDialogBody display={"flex"} flexDir={"column"} gap={4} pb={4}>
+							The recommended aspect ratio for the banner is 21:9. Below you can download the template for the
+							banner.
+							<Image src="/banner-template.png" alt="Banner template" />
+							<HStack w="100%">
+								<Button as="a" href="/banner-template.png" download w="100%">
+									Download PNG
+								</Button>
+								<Button as="a" href="/banner-template.psd" download w="100%">
+									Download PSD
+								</Button>
+							</HStack>
+						</AlertDialogBody>
+					</AlertDialogContent>
+				</AlertDialogOverlay>
+			</AlertDialog>
+		</>
 	);
 }

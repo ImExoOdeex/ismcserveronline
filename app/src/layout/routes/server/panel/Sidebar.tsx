@@ -1,3 +1,4 @@
+import useAnyPrime from "@/hooks/useAnyPrime";
 import Link from "@/layout/global/Link";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import { Button, Flex, HStack, Icon, Image, Text, Tooltip } from "@chakra-ui/react";
@@ -36,13 +37,13 @@ const buttons = [
 interface Props {
 	server: string;
 	bedrock: boolean;
+	serverPrime: boolean;
 	favicon: string | null;
 }
 
-export default function Sidebar({ server, bedrock, favicon }: Props) {
+export default function Sidebar({ server, bedrock, favicon, serverPrime }: Props) {
 	const path = useLocation().pathname;
-
-	const hasSubscription = false;
+	const hasPrime = useAnyPrime({ prime: serverPrime });
 
 	return (
 		<Flex
@@ -66,7 +67,6 @@ export default function Sidebar({ server, bedrock, favicon }: Props) {
 
 			{buttons.map((button) => {
 				const isActive = path === `${bedrock ? "/bedrock" : ""}/${server}/panel${button.to}`;
-				const shouldShowWarning = button.requiresSubscription && !hasSubscription;
 
 				return (
 					<Button
@@ -80,12 +80,14 @@ export default function Sidebar({ server, bedrock, favicon }: Props) {
 					>
 						<Flex w="100%" justifyContent="space-between">
 							{button.name}
-							{shouldShowWarning && (
-								<Tooltip label="This feature requires prime subscription" hasArrow>
+							{button.requiresSubscription && (
+								<Tooltip label="This feature requires prime subscription" hasArrow isDisabled={hasPrime}>
 									<InfoOutlineIcon
 										boxSize={4}
-										color={"orange"}
-										filter={"drop-shadow(0px 0px 6px rgba(255, 119, 0, 0.5))"}
+										color={hasPrime ? "green" : "orange"}
+										filter={`drop-shadow(0px 0px 6px ${
+											hasPrime ? "rgba(0, 255, 106, 0.5)" : "rgba(255, 119, 0, 0.5)"
+										})`}
 									/>
 								</Tooltip>
 							)}

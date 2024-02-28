@@ -1,7 +1,9 @@
+import { db } from "@/.server/db/db";
 import { getUser } from "@/.server/db/models/user";
 import { csrf } from "@/.server/functions/security.server";
 import stripe, { subscriptionHandlers } from "@/.server/modules/stripe";
-import config from "@/utils/config";
+import { getSession } from "@/.server/session";
+import plans from "@/utils/plans";
 import { ActionFunctionArgs, json } from "@remix-run/node";
 import Stripe from "stripe";
 import invariant from "tiny-invariant";
@@ -13,7 +15,29 @@ export async function action({ request }: ActionFunctionArgs) {
 		const user = await getUser(request);
 		invariant(user, "Missing user");
 
-		const subscription = await subscriptionHandlers.createSubscription(user, config.primePrice);
+		const session = await getSession(request.headers.get("Cookie"));
+		const subType = session.get("subType") as "server" | "user";
+		invariant(subType === "server" || subType === "user", "Invalid subType");
+
+		const form = await request.formData();
+		const serverId = Number(form.get("serverId")) as number | undefined;
+
+		const plan = plans.find((p) => p.type === subType);
+		invariant(plan, "Invalid plan");
+
+		if (subType === "server") {
+			invariant(serverId, "Invalid serverId");
+
+			const server = await db.server.findUnique({
+				where: {
+					id: serverId
+				}
+			});
+
+			invariant(server, "This server does not exist");
+		}
+
+		const subscription = await subscriptionHandlers.createSubscription(user, plan.price, serverId);
 
 		const paymentIntent = (subscription.latest_invoice as Stripe.Invoice).payment_intent as Stripe.PaymentIntent | null;
 
@@ -23,7 +47,9 @@ export async function action({ request }: ActionFunctionArgs) {
 					type: "subscription",
 					userId: user.id,
 					email: user.email,
-					subscription: "prime"
+					subscription: "prime",
+					subType: serverId ? "server" : "user",
+					serverId: serverId ? serverId : null
 				}
 			});
 		}

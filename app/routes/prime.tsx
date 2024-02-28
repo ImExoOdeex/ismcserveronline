@@ -1,5 +1,7 @@
+import { commitSession, getSession } from "@/.server/session";
 import { IPlan } from "@/types/typings";
 import config from "@/utils/config";
+import plans from "@/utils/plans";
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import {
 	Badge,
@@ -21,6 +23,7 @@ import { useFetcher } from "@remix-run/react";
 import React from "react";
 import { FiCreditCard } from "react-icons/fi";
 import { redirect } from "remix-typedjson";
+import invariant from "tiny-invariant";
 
 export function meta({ matches }: MetaArgs) {
 	return [
@@ -33,28 +36,20 @@ export function meta({ matches }: MetaArgs) {
 
 export async function action({ request }: ActionFunctionArgs) {
 	const formData = await request.formData();
-	const free = formData.get("free") === "true";
-	if (free) throw redirect(`/dashboard`);
 
-	throw redirect(`subscribe`);
+	const session = await getSession(request.headers.get("Cookie"));
+
+	const subType = formData.get("subType") as string;
+	invariant(subType === "server" || subType === "user", "Invalid subType");
+
+	session.set("subType", subType);
+
+	throw redirect(`subscribe`, {
+		headers: {
+			"Set-Cookie": await commitSession(session)
+		}
+	});
 }
-
-const plans = [
-	{
-		title: "Free",
-		description: "Basic subscription",
-		price: 0,
-		color: "sec.900" as const,
-		features: ["Up to 2 livecheck slots", "API ratelimit", "Up to 1.000 checks/month", "Ads"]
-	},
-	{
-		title: "Prime",
-		description: "Best subscription for the best people",
-		price: 3.49,
-		color: "brand.900" as const,
-		features: ["More livecheck slots", "No API ratelimit", "Up to 100.000 checks/month", "Premium look & ads free"]
-	}
-] as IPlan[];
 
 export default function Prime() {
 	const { colorMode } = useColorMode();
@@ -96,7 +91,7 @@ export default function Prime() {
 	);
 }
 
-function Plan({ title, price, features, description, color }: IPlan) {
+function Plan({ title, price, features, description, color, type }: IPlan) {
 	const { colorMode } = useColorMode();
 	const fetcher = useFetcher();
 
@@ -162,7 +157,9 @@ function Plan({ title, price, features, description, color }: IPlan) {
 						>
 							<HStack spacing={5}>
 								<CheckCircleIcon color={color} boxSize={5} />
+								{/* <Tooltip label={feature} aria-label={feature} hasArrow> */}
 								<Text color={"textSec"}>{feature}</Text>
+								{/* </Tooltip> */}
 							</HStack>
 						</ListItem>
 
@@ -191,7 +188,7 @@ function Plan({ title, price, features, description, color }: IPlan) {
 				>
 					{price === 0 ? "Go to the dashboard" : "Choose this plan"}
 				</Button>
-				<VisuallyHiddenInput name="free" value={price === 0 ? "true" : "false"} readOnly />
+				<VisuallyHiddenInput name="subType" value={type} readOnly />
 			</fetcher.Form>
 		</Flex>
 	);

@@ -12,6 +12,7 @@ export interface SampleServerHomepage {
 }
 
 export interface IPlan {
+	type: "server" | "user";
 	title: string;
 	description: string;
 	price: number;

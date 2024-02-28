@@ -1,8 +1,10 @@
+import { db } from "@/.server/db/db";
 import { getUser } from "@/.server/db/models/user";
+import { getSession } from "@/.server/session";
 import { toStripeAmount } from "@/functions/payments";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import SubscriptionForm from "@/layout/routes/prime/SubscriptionForm";
-import config from "@/utils/config";
+import plans from "@/utils/plans";
 import { CheckIcon } from "@chakra-ui/icons";
 import { Box, Flex, HStack, Heading, Text, useColorMode, useColorModeValue } from "@chakra-ui/react";
 import { LoaderFunctionArgs } from "@remix-run/node";
@@ -11,6 +13,7 @@ import type { Stripe } from "@stripe/stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useEffect, useState } from "react";
 import { redirect, typedjson } from "remix-typedjson";
+import invariant from "tiny-invariant";
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const user = await getUser(request);
@@ -21,11 +24,26 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		return redirect("/login");
 	}
 
+	const session = await getSession(request.headers.get("Cookie"));
+	const subType = session.get("subType") as "server" | "user";
+	invariant(subType === "server" || subType === "user", "Invalid subType");
+
+	const verifiedServers =
+		subType === "server"
+			? await db.server.findMany({
+					where: {
+						owner_id: user.id
+					}
+			  })
+			: [];
+
 	return typedjson({
 		ENV: {
 			stripeKey: process.env.STRIPE_PUBLIC_KEY,
 			mode: process.env.NODE_ENV as "production" | "development" | "test"
-		}
+		},
+		subType,
+		verifiedServers
 	});
 }
 
@@ -33,10 +51,8 @@ export function shouldRevalidate() {
 	return false;
 }
 
-const pros = ["Max livecheck slots", "No API ratelimits", "No ads & premium look of website", "More coming soon!"] as const;
-
 export default function PrimeSubscribe() {
-	const { ENV } = useAnimationLoaderData<typeof loader>();
+	const { ENV, subType, verifiedServers } = useAnimationLoaderData<typeof loader>();
 
 	// stripe promise
 	const [stripePromise, setStripePromise] = useState<Promise<Stripe | null> | null>(null);
@@ -54,7 +70,8 @@ export default function PrimeSubscribe() {
 	const planColor = "brand.900";
 
 	// price
-	const price = config.primePrice;
+	const plan = plans.find((p) => p.type === subType);
+	invariant(plan, "Invalid plan");
 
 	return (
 		<Flex w="100%" maxW={"1400px"} mx={"auto"} flexDir={"column"} gap={10} px={4} mt={20}>
@@ -68,7 +85,7 @@ export default function PrimeSubscribe() {
 			>
 				<Flex w="100%" flexDir={"column"} gap={10}>
 					<Flex flexDir={"column"} gap={5}>
-						<Heading fontSize={"2xl"}>Start your Prime subscription</Heading>
+						<Heading fontSize={"2xl"}>Start your {plan.title} subscription</Heading>
 
 						<Text>You can cancel your subscription at any time.</Text>
 					</Flex>
@@ -80,7 +97,7 @@ export default function PrimeSubscribe() {
 								<Box as="span" fontSize={"2xl"} color={planColor}>
 									$
 								</Box>
-								<Text fontSize={"5xl"}>{price}</Text>
+								<Text fontSize={"5xl"}>{plan.price}</Text>
 							</Flex>
 						</Flex>
 					</Flex>
@@ -89,7 +106,7 @@ export default function PrimeSubscribe() {
 						stripe={stripePromise}
 						options={{
 							mode: "subscription",
-							amount: toStripeAmount(price),
+							amount: toStripeAmount(plan.price),
 							currency: "usd",
 							loader: "always",
 							appearance: {
@@ -153,7 +170,7 @@ export default function PrimeSubscribe() {
 				}
 			`}
 						</style>
-						<SubscriptionForm />
+						<SubscriptionForm verifiedServers={verifiedServers} subType={subType} />
 					</Elements>
 				</Flex>
 
@@ -172,7 +189,7 @@ export default function PrimeSubscribe() {
 					</Text>
 
 					<Flex flexDir={"column"} gap={3}>
-						{pros.map((pro) => (
+						{plan.features.map((pro) => (
 							<HStack key={pro} spacing={3}>
 								<CheckIcon color={"brand"} boxSize={4} />
 								<Text>{pro}</Text>

@@ -130,7 +130,7 @@ export default function useTheme() {
 								user?.everPurchased || path.startsWith("/prime")
 									? mode(
 											"linear(145deg, #1ebc6d -100%, #ccd4ed 15%, #f7e8f7 50%, #d2c1e6 100%)",
-											"linear(145deg, #1ebc6d -100%, #0e0f16 15%, #1b032b 50%, #0c0711 100%)"
+											"linear(145deg, #1ebc6d -100%, #10091f 15%, #130d1c 50%, #1d1525 100%)"
 									  )(props)
 									: undefined,
 							backgroundAttachment: "fixed",

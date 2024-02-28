@@ -4,6 +4,7 @@ import { cachePrefetch } from "@/.server/functions/fetchHelpers.server";
 import { csrf } from "@/.server/functions/security.server";
 import { MinecraftImage, getRandomMinecarftImage } from "@/.server/minecraftImages";
 import { emitter } from "@/.server/modules/emitter";
+import { sendVoteWebhook } from "@/.server/modules/voting";
 import { getFullFileUrl } from "@/functions/storage";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import useUser from "@/hooks/useUser";
@@ -70,6 +71,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 		});
 		invariant(!nickVote, "This nickname has already voted");
 
+		// Vote yes
 		const vote = await db.vote.create({
 			data: {
 				server_id: foundServer.id,
@@ -80,6 +82,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 		emitter.emit(`vote-${foundServer.id}`, {
 			id: vote.id,
+			nick
+		});
+
+		await sendVoteWebhook(foundServer, {
+			server: foundServer.server,
+			bedrock: isBedrock,
 			nick
 		});
 

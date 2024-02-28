@@ -25,6 +25,7 @@ const envs = [
 	"R2_KEY_ID",
 	"R2_KEY_SECRET",
 	"UPLOADS_URL",
+	"ENCRYPTION_KEY",
 	// opitional
 	"DISABLE_REDIS_CACHE",
 	"REDIS_CACHE_LOGGING"

@@ -48,7 +48,9 @@ model Server {
   prime Boolean @default(false)
   subId String?
 
-  tags Tag[]
+  tags                  Tag[]
+  vote_webhook_url      String?
+  vote_webhook_password String?
 
   // --- Server data ---
   server  String

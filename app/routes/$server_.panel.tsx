@@ -1,6 +1,8 @@
 import { db } from "@/.server/db/db";
 import { getUser } from "@/.server/db/models/user";
+import { decrypt } from "@/.server/modules/encryption";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import useEventSourceCallback from "@/hooks/useEventSourceCallback";
 import useRootData from "@/hooks/useRootData";
 import Sidebar from "@/layout/routes/server/panel/Sidebar";
 import { Box, Button, Divider, Flex, Heading, useColorMode, useToast } from "@chakra-ui/react";
@@ -16,22 +18,35 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
 	const url = new URL(request.url);
 	const bedrock = url.pathname.split("/")[0] === "bedrock";
-	const server = await db.server.findFirst({
-		where: {
-			server: params.server?.toLowerCase(),
-			bedrock
-		},
-		select: {
-			owner_id: true,
-			id: true,
-			server: true,
-			bedrock: true,
-			favicon: true,
-			message_from_owner: true,
-			online: true,
-			players: true
-		}
-	});
+	const server = await db.server
+		.findFirst({
+			where: {
+				server: params.server?.toLowerCase(),
+				bedrock
+			},
+			select: {
+				owner_id: true,
+				id: true,
+				server: true,
+				bedrock: true,
+				favicon: true,
+				message_from_owner: true,
+				online: true,
+				players: true,
+				vote_webhook_url: true,
+				vote_webhook_password: true,
+				prime: true,
+				subId: true
+			}
+		})
+		.then(async (server) => {
+			if (!server) return null;
+
+			return {
+				...server,
+				vote_webhook_password: server.vote_webhook_password ? await decrypt(server.vote_webhook_password) : null
+			};
+		});
 	if (!server) throw new Response("Server not found", { status: 404 });
 	if (!server.owner_id) throw new Response("Server not verified", { status: 404 });
 
@@ -62,6 +77,24 @@ export default function ServerPanel() {
 
 	const { colorMode } = useColorMode();
 
+	useEventSourceCallback(
+		`/api/sse/vote?id=${server.id}`,
+		{
+			event: "new-vote"
+		},
+		(sourceData) => {
+			toast({
+				description: `${sourceData.nick} has voted for ${server.server}!`,
+				status: "info",
+				duration: 5000,
+				containerStyle: {
+					fontWeight: 500
+				},
+				isClosable: false
+			});
+		}
+	);
+
 	return (
 		<Flex flexDir={"column"} w="100%" gap={10} maxW={"1400px"} mx="auto" px={4} mt={5}>
 			<Flex flexDir={"column"} w="100%" gap={4}>
@@ -90,7 +123,7 @@ export default function ServerPanel() {
 					md: "row"
 				}}
 			>
-				<Sidebar server={server.server} bedrock={server.bedrock} favicon={server.favicon} />
+				<Sidebar server={server.server} bedrock={server.bedrock} favicon={server.favicon} serverPrime={server.prime} />
 				<Outlet />
 			</Flex>
 		</Flex>
