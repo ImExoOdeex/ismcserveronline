@@ -47,12 +47,13 @@ export default memo(function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 			h={{ base: "60px", md: "70px" }}
 			pos={"sticky"}
 			top={0}
-			backdropFilter={hasScrolled ? `blur(10px)` : "none"}
 			zIndex={1000}
 			borderBottom={"1px"}
 			borderBottomColor={hasScrolled ? "alpha" : "transparent"}
 			transition={"all .2s"}
+			transform={"translate3d(0,0,0)"}
 		>
+			<Flex w="100%" h="100%" backdropFilter={hasScrolled ? `blur(20px)` : "none"} pos="absolute" />
 			<Flex w="100%" maxW={"1600px"} px={4} alignItems="center" h="100%" mx="auto" justifyContent={"space-between"}>
 				<HStack spacing={5}>
 					<Link

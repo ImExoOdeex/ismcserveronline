@@ -81,8 +81,8 @@ export default memo(function ProfilePopover() {
 
 	return (
 		<>
-			<Menu placement="top-end" isLazy>
-				{({ isOpen }) => (
+			<Menu placement="top-end" isLazy closeOnSelect>
+				{({ isOpen, onClose }) => (
 					<>
 						<MenuButton
 							variant={{
@@ -140,7 +140,18 @@ export default memo(function ProfilePopover() {
 								</Flex>
 							</HStack>
 						</MenuButton>
-						<MenuList bg="bg" border={0} w="300px">
+						<MenuList
+							onMouseLeave={() => {
+								onClose();
+							}}
+							border="1px solid"
+							borderColor={"alpha"}
+							w="300px"
+							bg="transparent"
+							backdropFilter={"blur(30px)"}
+							transform={"translate3d(0,0,0)"}
+							pos="relative"
+						>
 							<Flex tabIndex={-1} w="100%" justifyContent={"space-between"} gap={4} px={2}>
 								<HStack spacing={4}>
 									<Image src={user.photo ?? "/discordLogo.png"} rounded={"full"} boxSize={"42px"} />
@@ -185,7 +196,7 @@ export default memo(function ProfilePopover() {
 								<MenuItem
 									key={button.name}
 									h={10}
-									bg="bg"
+									bg="transparent"
 									fontWeight={500}
 									icon={<Icon as={button.icon} boxSize={5} />}
 									// command={actionKey + "+" + button.command}

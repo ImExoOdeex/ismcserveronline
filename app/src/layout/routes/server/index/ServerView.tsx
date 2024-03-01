@@ -3,7 +3,7 @@ import useGlobalContext from "@/hooks/useGlobalContext";
 import { ChakraBox } from "@/layout/global/MotionComponents";
 import { AnyServer, JavaServerWoDebug } from "@/types/minecraftServer";
 import config from "@/utils/config";
-import { Badge, Flex, FlexProps, Heading, Image, Link, VStack } from "@chakra-ui/react";
+import { Badge, Flex, FlexProps, Heading, Image, Link, VStack, useColorModeValue } from "@chakra-ui/react";
 import { AnimatePresence, Transition, motion } from "framer-motion";
 import { memo, useEffect, useState } from "react";
 import StatusIndicator from "./StatusIndicator";
@@ -24,6 +24,8 @@ export default memo(function ServerView({ server, data, bedrock, image, verified
 	useEffect(() => {
 		updateData("gradientColor", data.online ? "green" : "red");
 	}, [data.online]);
+
+	const boxBg = useColorModeValue("rgba(252, 252, 252, 0.8)", "rgba(17, 17, 23, 0.8)");
 
 	return (
 		<Flex flexDir={"column"} pos="relative" {...props}>
@@ -50,6 +52,7 @@ export default memo(function ServerView({ server, data, bedrock, image, verified
 						as={motion.img}
 						onMouseEnter={() => setIsOpen(true)}
 						onMouseLeave={() => setIsOpen(false)}
+						height={36 * 4}
 						animate={{
 							height: isOpen ? "100%" : 36 * 4
 						}}
@@ -72,35 +75,37 @@ export default memo(function ServerView({ server, data, bedrock, image, verified
 						}}
 					/>
 				</AnimatePresence>
-				<Image
-					as={motion.img}
-					transition={
-						{
-							duration: 0.6,
-							ease: config.ease
-						} satisfies Transition as any
-					}
-					animate={{
-						height: isOpen ? "100%" : "110%",
-						scale: 1.02,
-						y: isOpen ? 0 : "-5%"
-					}}
-					pos={"absolute"}
-					top={0}
-					left={0}
-					right={0}
-					bottom={0}
-					h={"100%"}
-					src={image.url}
-					blur={10}
-					w="100%"
-					rounded={"lg"}
-					alt={image.name}
-					objectPosition={"center"}
-					objectFit={"cover"}
-					zIndex={-1}
-					filter={"blur(16px)"}
-				/>
+				<AnimatePresence initial={false}>
+					<Image
+						as={motion.img}
+						transition={
+							{
+								duration: 0.6,
+								ease: config.ease
+							} satisfies Transition as any
+						}
+						animate={{
+							height: isOpen ? "100%" : "110%",
+							scale: 1.02,
+							y: isOpen ? 0 : "-5%"
+						}}
+						pos={"absolute"}
+						top={0}
+						left={0}
+						right={0}
+						bottom={0}
+						h={"100%"}
+						src={image.url}
+						blur={10}
+						w="100%"
+						rounded={"lg"}
+						alt={image.name}
+						objectPosition={"center"}
+						objectFit={"cover"}
+						zIndex={-1}
+						filter={"blur(16px)"}
+					/>
+				</AnimatePresence>
 			</Flex>
 
 			<AnimatePresence initial={false}>
@@ -130,8 +135,10 @@ export default memo(function ServerView({ server, data, bedrock, image, verified
 							ease: config.ease
 						} as Transition as any
 					}
-					transform={"translateY(50%)"}
-					backdropFilter={"blur(32px) brightness(0.7)"}
+					// backdropFilter={"blur(32px) brightness(0.7)"}
+					bg={boxBg}
+					border={"1px solid"}
+					borderColor={"alpha"}
 				>
 					{!bedrock && (data as unknown as JavaServerWoDebug)?.favicon && (
 						<Image
@@ -144,13 +151,12 @@ export default memo(function ServerView({ server, data, bedrock, image, verified
 
 					<VStack spacing={4} flexDir={"column"} justifyContent="center" w="100%" align={"center"}>
 						<Flex flexDir={"row"} alignItems="center" justifyContent={"space-between"} w="100%">
-							{/* <HStack as={"a"} target="_blank" href={`http://${server}`}> */}
 							<Flex flexDir={"column"}>
 								<Heading
 									as={"a"}
 									target="_blank"
 									href={`http://${server}`}
-									color={"whiteAlpha.800"}
+									color={"alpha800"}
 									fontSize={{
 										base: "md",
 										sm: "2xl",

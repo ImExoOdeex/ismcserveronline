@@ -14,7 +14,6 @@ dayjs.extend(relativeTime);
 export default memo(function Vote() {
 	const { cookies, user } = useRootData();
 	const { vote } = useAnimationLoaderData<typeof loader>();
-	console.log(vote);
 
 	const toast = useToast();
 

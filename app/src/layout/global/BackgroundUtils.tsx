@@ -32,7 +32,7 @@ export default memo(function BackgroundUtils() {
 						exit={{ opacity: 0 }}
 						transition={{
 							ease: config.ease,
-							duration: 0.5
+							duration: 0.25
 						}}
 					>
 						<Image
@@ -64,7 +64,7 @@ export default memo(function BackgroundUtils() {
 						exit={{ opacity: 0 }}
 						transition={{
 							ease: config.ease,
-							duration: 0.5
+							duration: 0.25
 						}}
 					>
 						<Image

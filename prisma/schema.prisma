@@ -48,7 +48,6 @@ model Server {
   prime Boolean @default(false)
   subId String?
 
-  tags                  Tag[]
   vote_webhook_url      String?
   vote_webhook_password String?
 
@@ -86,6 +85,8 @@ model Server {
   SampleServer SampleServer[]
   Vote         Vote[]
   Verification Verification[]
+  Tags         Tag[]          @relation(name: "Tags")
+  TagsCreated  Tag[]          @relation(name: "TagsCreated")
 
   owner_id           Int?
   Owner              User?   @relation(fields: [owner_id], references: [id])
@@ -99,7 +100,10 @@ model Tag {
 
   name String @unique
 
-  servers Server[]
+  servers Server[] @relation(name: "Tags")
+
+  createdByServerId Int?
+  Server            Server? @relation(fields: [createdByServerId], references: [id], name: "TagsCreated")
 
   created_at DateTime @default(now())
 }

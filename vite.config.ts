@@ -14,17 +14,7 @@ export default defineConfig({
 		}),
 		tsconfigPaths()
 	],
-	optimizeDeps: {
-		noDiscovery: true
-	},
 	ssr: {
-		noExternal: [
-			/^react-icons.*/,
-			/^remix-utils.*/,
-			"intl-parse-accept-language",
-			"is-ip"
-			// "dayjs"
-			// "dayjs/plugin/relativeTime"
-		]
+		noExternal: [/^react-icons.*/, /^remix-utils.*/, "intl-parse-accept-language", "is-ip", "dayjs/plugin/relativeTime"]
 	}
 });

@@ -59,7 +59,6 @@ function Document({ children }: DocumentProps) {
 				{children}
 				<ScrollRestoration />
 				<Scripts />
-				{/* <LiveReload /> */}
 			</body>
 		</html>
 	);

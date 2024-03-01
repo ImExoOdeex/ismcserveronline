@@ -49,6 +49,7 @@ const colors = {
 const {
 	Badge,
 	Button,
+	Tag,
 	Code,
 	Divider,
 	Switch,
@@ -261,6 +262,7 @@ export default function useTheme() {
 					Code,
 					FormLabel,
 					Heading,
+					Tag,
 					Avatar,
 					Slider,
 					Form,

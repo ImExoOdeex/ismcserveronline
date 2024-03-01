@@ -4,6 +4,7 @@ import { validateServer } from "@/.server/functions/validateServer";
 import { getCookieWithoutDocument } from "@/functions/cookies";
 import Layout from "@/layout/global/Layout";
 import { GlobalContext } from "@/utils/GlobalContext";
+import config from "@/utils/config";
 import useTheme from "@/utils/theme";
 import { ChakraBaseProvider, cookieStorageManagerSSR, useConst } from "@chakra-ui/react";
 import { ActionFunctionArgs, LinksFunction, LoaderFunctionArgs, MetaFunction, json, redirect } from "@remix-run/node";
@@ -144,26 +145,27 @@ function InsideGlobal() {
 					<motion.main
 						key={animationKey}
 						initial={{
-							opacity: 0,
-							scale: 0.95
+							opacity: 0
+							// scale: 0.95
 						}}
 						animate={{
-							opacity: 1,
-							scale: 1
+							opacity: 1
+							// scale: 1
 						}}
 						exit={{
-							opacity: 0,
-							scale: 0.95
+							opacity: 0
+							// scale: 0.95
 						}}
 						transition={{
-							ease: [0.25, 0.1, 0.25, 1],
-							duration: 0.2
+							ease: config.ease,
+							duration: 0.15
 						}}
 						style={{
 							overflow: "hidden",
 							display: "flex",
 							flexDirection: "column",
-							flex: 1
+							flex: 1,
+							zIndex: 1
 						}}
 					>
 						{outlet}

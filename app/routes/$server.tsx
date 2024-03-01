@@ -24,15 +24,27 @@ import UnderServerView from "@/layout/routes/server/index/UnderServerView";
 import { AnyServer, AnyServerModel, BedrockServer, JavaServer, MinecraftServer } from "@/types/minecraftServer";
 import { Divider, Flex, HStack, Heading, Icon, Stack, Text, VStack, VisuallyHidden, useToast } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
-import type { ActionFunctionArgs, LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
+import type { ActionFunctionArgs, LinksFunction, LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { Await, type ShouldRevalidateFunction } from "@remix-run/react";
 import dayjs from "dayjs";
-import { Suspense, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { BiBug, BiInfoCircle } from "react-icons/bi";
 import { typeddefer, typedjson } from "remix-typedjson";
 import { getClientIPAddress } from "remix-utils/get-client-ip-address";
 import { InsideErrorBoundary } from "~/document";
+
+export function links() {
+	return [
+		{
+			rel: "preload",
+			href: "/Minecraft.otf",
+			as: "font",
+			type: "font/otf",
+			crossOrigin: "anonymous"
+		}
+	] as ReturnType<LinksFunction>;
+}
 
 export async function action({ request, params }: ActionFunctionArgs) {
 	const form = await request.formData();
@@ -348,7 +360,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 				version: true,
 				banner: true,
 				background: true,
-				tags: true,
+				Tags: true,
 				software: true,
 				favicon: true,
 				ping: true,
@@ -584,22 +596,29 @@ export default function $server() {
 		return user.id === data.owner_id;
 	}, [data]);
 
+	const [shouldPregenerateStyles, setShouldPregenerateStyles] = useState(true);
+	useEffect(() => {
+		setShouldPregenerateStyles(false);
+	}, [server]);
+
 	return (
 		<Flex gap={5} flexDir={"column"} maxW="1000px" mx="auto" w="100%" mt={"50px"} px={4} mb={5}>
 			{/* <Ad type={adType.small} width={"968px"} /> */}
 
-			<VisuallyHidden>
-				{/* pregenerate styles, cause emotion sucks */}
-				<ServerView
-					verified={!!data.owner_id}
-					server={server}
-					data={data as unknown as AnyServer}
-					bedrock={bedrock}
-					image={image}
-					mb={28}
-				/>
-				<Motd motd={data?.motd.html} />
-			</VisuallyHidden>
+			{shouldPregenerateStyles && (
+				<VisuallyHidden>
+					{/* pregenerate styles, cause emotion sucks */}
+					<ServerView
+						verified={!!data.owner_id}
+						server={server}
+						data={data as unknown as AnyServer}
+						bedrock={bedrock}
+						image={image}
+						mb={28}
+					/>
+					<Motd motd={data?.motd.html} />
+				</VisuallyHidden>
+			)}
 
 			<Flex w="100%" flexDir={"column"} gap={2}>
 				<Suspense

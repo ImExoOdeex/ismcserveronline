@@ -1,11 +1,16 @@
 import { db } from "@/.server/db/db";
 import { getUser } from "@/.server/db/models/user";
 import { cachePrefetch } from "@/.server/functions/fetchHelpers.server";
+import { csrf } from "@/.server/functions/security.server";
 import { getFullFileUrl } from "@/functions/storage";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import useAnyPrime from "@/hooks/useAnyPrime";
+import useFetcherCallback from "@/hooks/useFetcherCallback";
+import Link from "@/layout/global/Link";
 import DragAndDropFile from "@/layout/routes/server/panel/DragAndDropFile";
+import TagsAutocompleteInput from "@/layout/routes/server/panel/TagsAutocompleteInput";
 import { ServerModel } from "@/types/minecraftServer";
+import config from "@/utils/config";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import {
 	AlertDialog,
@@ -26,6 +31,7 @@ import {
 	StatHelpText,
 	StatLabel,
 	StatNumber,
+	Tag,
 	Text,
 	Tooltip,
 	useDisclosure
@@ -33,9 +39,10 @@ import {
 import type { LoaderFunctionArgs, MetaArgs } from "@remix-run/node";
 import { MetaFunction } from "@remix-run/react";
 import dayjs from "dayjs";
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
+import { action } from "~/routes/api.tags";
 
 export function meta({ data, matches, params }: MetaArgs) {
 	return [
@@ -46,7 +53,13 @@ export function meta({ data, matches, params }: MetaArgs) {
 	] as ReturnType<MetaFunction>;
 }
 
+export function shouldRevalidate() {
+	return false;
+}
+
 export async function loader({ params, request }: LoaderFunctionArgs) {
+	csrf(request);
+
 	const user = await getUser(request);
 	invariant(user, "User is not logged in");
 
@@ -65,6 +78,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 			players: true,
 			owner_id: true,
 			banner: true,
+			Tags: true,
 			background: true,
 			prime: true
 		}
@@ -213,6 +227,16 @@ export default function ServerPanel() {
 					</Flex>
 				</Flex>
 
+				<Flex flexDir={"column"} gap={4} w={"100%"}>
+					<Text fontSize={"2xl"} fontWeight={600}>
+						Tags
+					</Text>
+
+					<Flex gap={2} flexDir={{ base: "column", md: "row" }}>
+						<Tags serverId={server.id} tags={server.Tags.map((tag) => tag.name)} />
+					</Flex>
+				</Flex>
+
 				<Flex flexDir={"column"} gap={2}>
 					<Flex w="100%" alignItems={"center"} gap={4} justifyContent={"space-between"}>
 						<Flex flexDir={"column"}>
@@ -340,5 +364,71 @@ function TemplateAlertDialog() {
 				</AlertDialogOverlay>
 			</AlertDialog>
 		</>
+	);
+}
+
+function Tags({ tags: dbTags, serverId }: { tags: string[]; serverId: number }) {
+	const [tags, setTags] = useState<string[]>(dbTags);
+	const [search, setSearch] = useState<string>("");
+
+	const [submitting, setSubmitting] = useState<string[]>([]);
+
+	const addFetcher = useFetcherCallback<typeof action>((data) => {
+		setSubmitting((prev) => (prev = prev.filter((id) => id !== (data as any).tag.name)));
+	});
+
+	return (
+		<Flex w="100%" gap={4} flexDir={"column"}>
+			{tags.length ? (
+				<HStack w="100%" gap={2}>
+					{tags.map((tag) => (
+						<Tag
+							key={tag}
+							size={"lg"}
+							variant="solid"
+							colorScheme={"brand"}
+							as={Link}
+							to={`/search?tags=${tag}`}
+							transition={`all 0.2s ${config.cubicEase}`}
+							opacity={submitting.includes(tag) ? 0.5 : 1}
+						>
+							{tag}
+						</Tag>
+					))}
+				</HStack>
+			) : (
+				<Text color={"textSec"} fontSize={"lg"} fontWeight={600}>
+					No tags
+				</Text>
+			)}
+
+			<Flex w="100%" gap={2}>
+				<TagsAutocompleteInput
+					input={search}
+					setInput={setSearch}
+					onSubmit={(tag) => {
+						if (tags.includes(tag) || tag.length < 2) return;
+
+						setTags((prev) => [...prev, tag]);
+						setSubmitting((prev) => [...prev, tag]);
+
+						addFetcher.submit(
+							{
+								tag,
+								serverId
+							},
+							{
+								action: "/api/tags",
+								method: "PUT"
+							}
+						);
+					}}
+					inputProps={{
+						maxW: "300px",
+						placeholder: "Add tag"
+					}}
+				/>
+			</Flex>
+		</Flex>
 	);
 }

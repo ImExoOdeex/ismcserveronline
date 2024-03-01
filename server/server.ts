@@ -37,7 +37,7 @@ import pack from "../package.json";
 			  );
 
 	const remixHandler = createRequestHandler({
-		build: viteDevServer ? () => viteDevServer.ssrLoadModule("virtual:remix/server-build") : await reimportServer(),
+		build: viteDevServer ? async () => viteDevServer.ssrLoadModule("virtual:remix/server-build") : await reimportServer(),
 		mode: initialBuild.mode,
 		getLoadContext
 	});

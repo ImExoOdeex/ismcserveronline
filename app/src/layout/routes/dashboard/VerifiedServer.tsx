@@ -1,9 +1,8 @@
 import Link from "@/layout/global/Link";
 import { ServerModel } from "@/types/minecraftServer";
 import { Icon } from "@chakra-ui/icons";
-import { Badge, Flex, IconButton, Image, Text, useToast } from "@chakra-ui/react";
+import { Badge, Flex, IconButton, Image, Text } from "@chakra-ui/react";
 import { Server } from "@prisma/client";
-import { useFetcher } from "@remix-run/react";
 import { memo } from "react";
 import { FiTool } from "react-icons/fi";
 import { IoReturnDownForwardOutline } from "react-icons/io5";
@@ -13,10 +12,6 @@ interface Props {
 }
 
 export default memo(function VerifiedServer({ server }: Props) {
-	const toast = useToast();
-	const goFetcher = useFetcher();
-	const panelFetcher = useFetcher();
-
 	return (
 		<Flex key={server.id} w="100%" p={4} borderRadius={8} gap={4} bg="alpha" rounded={"xl"}>
 			<Flex w="100%" justifyContent={"space-between"}>
@@ -57,7 +52,6 @@ export default memo(function VerifiedServer({ server }: Props) {
 						aria-label={"Refresh data"}
 						icon={<Icon as={FiTool} boxSize={5} />}
 						fontWeight={"semibold"}
-						type="submit"
 						color={"green.500"}
 						_hover={{ color: "green.600", bg: "rgba(0, 255, 21, 0.05)" }}
 						_active={{ color: "green.700", bg: "rgba(0, 255, 21, 0.1)" }}
@@ -70,7 +64,6 @@ export default memo(function VerifiedServer({ server }: Props) {
 						aria-label={"Go to the server page"}
 						icon={<Icon as={IoReturnDownForwardOutline} boxSize={5} />}
 						fontWeight={"semibold"}
-						type="submit"
 						color={"brand"}
 						_hover={{ color: "brand", bg: "rgba(162, 0, 255, 0.05)" }}
 						_active={{ color: "brand", bg: "rgba(162, 0, 255, 0.1)" }}
