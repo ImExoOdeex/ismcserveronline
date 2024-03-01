@@ -5,44 +5,16 @@ import { csrf } from "@/.server/functions/security.server";
 import { getFullFileUrl } from "@/functions/storage";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import useAnyPrime from "@/hooks/useAnyPrime";
-import useFetcherCallback from "@/hooks/useFetcherCallback";
-import Link from "@/layout/global/Link";
 import DragAndDropFile from "@/layout/routes/server/panel/DragAndDropFile";
-import TagsAutocompleteInput from "@/layout/routes/server/panel/TagsAutocompleteInput";
+import { StatBox, Tags, TemplateAlertDialog } from "@/layout/routes/server/panel/ServerPanelComponents";
 import { ServerModel } from "@/types/minecraftServer";
-import config from "@/utils/config";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
-import {
-	AlertDialog,
-	AlertDialogBody,
-	AlertDialogCloseButton,
-	AlertDialogContent,
-	AlertDialogHeader,
-	AlertDialogOverlay,
-	Button,
-	Divider,
-	Flex,
-	HStack,
-	IconButton,
-	Image,
-	SimpleGrid,
-	Stat,
-	StatArrow,
-	StatHelpText,
-	StatLabel,
-	StatNumber,
-	Tag,
-	Text,
-	Tooltip,
-	useDisclosure
-} from "@chakra-ui/react";
+import { Divider, Flex, IconButton, Image, SimpleGrid, Text, Tooltip } from "@chakra-ui/react";
 import type { LoaderFunctionArgs, MetaArgs } from "@remix-run/node";
-import { MetaFunction } from "@remix-run/react";
+import { MetaFunction, ShouldRevalidateFunctionArgs } from "@remix-run/react";
 import dayjs from "dayjs";
-import { useMemo, useRef, useState } from "react";
 import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
-import { action } from "~/routes/api.tags";
 
 export function meta({ data, matches, params }: MetaArgs) {
 	return [
@@ -53,7 +25,9 @@ export function meta({ data, matches, params }: MetaArgs) {
 	] as ReturnType<MetaFunction>;
 }
 
-export function shouldRevalidate() {
+export function shouldRevalidate(args: ShouldRevalidateFunctionArgs) {
+	if (args.actionResult?.revalidate === true) return true;
+
 	return false;
 }
 
@@ -228,13 +202,7 @@ export default function ServerPanel() {
 				</Flex>
 
 				<Flex flexDir={"column"} gap={4} w={"100%"}>
-					<Text fontSize={"2xl"} fontWeight={600}>
-						Tags
-					</Text>
-
-					<Flex gap={2} flexDir={{ base: "column", md: "row" }}>
-						<Tags serverId={server.id} tags={server.Tags.map((tag) => tag.name)} />
-					</Flex>
+					<Tags tags={server.Tags.map((tag) => tag.name)} serverId={server.id} />
 				</Flex>
 
 				<Flex flexDir={"column"} gap={2}>
@@ -251,7 +219,9 @@ export default function ServerPanel() {
 						<TemplateAlertDialog />
 					</Flex>
 
-					{server.banner && <Image src={getFullFileUrl(server.banner)} alt={`${server.server}'s banner`} w="100%" />}
+					{server.banner && (
+						<Image src={getFullFileUrl(server.banner, "banner")} alt={`${server.server}'s banner`} w="100%" />
+					)}
 					<DragAndDropFile fileName="banner" serverId={server.id} />
 				</Flex>
 
@@ -283,7 +253,7 @@ export default function ServerPanel() {
 					</Flex>
 
 					{server.background && (
-						<Image src={getFullFileUrl(server.background)} alt={`${server.server}'s banner`} w="100%" />
+						<Image src={getFullFileUrl(server.background, "background")} alt={`${server.server}'s banner`} w="100%" />
 					)}
 					<Flex
 						w="100%"
@@ -297,137 +267,6 @@ export default function ServerPanel() {
 						</Flex>
 					</Flex>
 				</Flex>
-			</Flex>
-		</Flex>
-	);
-}
-
-function StatBox({ title, value, helper }: { title: string; value: number; helper?: number }) {
-	const percent = useMemo(() => {
-		if (helper !== 0 && !helper) return 0;
-
-		if (helper === 0) {
-			helper = 1;
-		}
-
-		return (value / helper) * 100;
-	}, [helper, value]);
-
-	return (
-		<Flex p={4} rounded="xl" border="1px solid" borderColor={"alpha300"} flexDir={"column"} w="100%" gap={1}>
-			<Stat>
-				<StatLabel>{title}</StatLabel>
-				<StatNumber>{value}</StatNumber>
-				{(helper === 0 || helper) && (
-					<Tooltip label={`Percentage shows the increase in this month compared to the last month.`} hasArrow>
-						<StatHelpText mb={0} w="fit-content">
-							<StatArrow type={percent > 0 ? "increase" : "decrease"} />
-							<>{percent.toFixed(0)}%</>
-						</StatHelpText>
-					</Tooltip>
-				)}
-			</Stat>
-		</Flex>
-	);
-}
-
-function TemplateAlertDialog() {
-	const { isOpen, onOpen, onClose } = useDisclosure();
-	const cancelRef = useRef(null);
-
-	return (
-		<>
-			<IconButton aria-label="Info" icon={<InfoOutlineIcon />} variant={"ghost"} onClick={onOpen} />
-
-			<AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} isCentered onClose={onClose} size="xl">
-				<AlertDialogOverlay>
-					<AlertDialogContent bg="bg">
-						<AlertDialogHeader fontSize="lg" fontWeight="bold">
-							Banner Template
-							<AlertDialogCloseButton />
-						</AlertDialogHeader>
-
-						<AlertDialogBody display={"flex"} flexDir={"column"} gap={4} pb={4}>
-							The recommended aspect ratio for the banner is 21:9. Below you can download the template for the
-							banner.
-							<Image src="/banner-template.png" alt="Banner template" />
-							<HStack w="100%">
-								<Button as="a" href="/banner-template.png" download w="100%">
-									Download PNG
-								</Button>
-								<Button as="a" href="/banner-template.psd" download w="100%">
-									Download PSD
-								</Button>
-							</HStack>
-						</AlertDialogBody>
-					</AlertDialogContent>
-				</AlertDialogOverlay>
-			</AlertDialog>
-		</>
-	);
-}
-
-function Tags({ tags: dbTags, serverId }: { tags: string[]; serverId: number }) {
-	const [tags, setTags] = useState<string[]>(dbTags);
-	const [search, setSearch] = useState<string>("");
-
-	const [submitting, setSubmitting] = useState<string[]>([]);
-
-	const addFetcher = useFetcherCallback<typeof action>((data) => {
-		setSubmitting((prev) => (prev = prev.filter((id) => id !== (data as any).tag.name)));
-	});
-
-	return (
-		<Flex w="100%" gap={4} flexDir={"column"}>
-			{tags.length ? (
-				<HStack w="100%" gap={2}>
-					{tags.map((tag) => (
-						<Tag
-							key={tag}
-							size={"lg"}
-							variant="solid"
-							colorScheme={"brand"}
-							as={Link}
-							to={`/search?tags=${tag}`}
-							transition={`all 0.2s ${config.cubicEase}`}
-							opacity={submitting.includes(tag) ? 0.5 : 1}
-						>
-							{tag}
-						</Tag>
-					))}
-				</HStack>
-			) : (
-				<Text color={"textSec"} fontSize={"lg"} fontWeight={600}>
-					No tags
-				</Text>
-			)}
-
-			<Flex w="100%" gap={2}>
-				<TagsAutocompleteInput
-					input={search}
-					setInput={setSearch}
-					onSubmit={(tag) => {
-						if (tags.includes(tag) || tag.length < 2) return;
-
-						setTags((prev) => [...prev, tag]);
-						setSubmitting((prev) => [...prev, tag]);
-
-						addFetcher.submit(
-							{
-								tag,
-								serverId
-							},
-							{
-								action: "/api/tags",
-								method: "PUT"
-							}
-						);
-					}}
-					inputProps={{
-						maxW: "300px",
-						placeholder: "Add tag"
-					}}
-				/>
 			</Flex>
 		</Flex>
 	);

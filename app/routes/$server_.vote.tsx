@@ -156,7 +156,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 		? ({
 				credits: "",
 				name: foundServer.server + "'s banner",
-				url: getFullFileUrl(foundServer.banner)
+				url: getFullFileUrl(foundServer.banner, "banner")
 		  } as MinecraftImage)
 		: getRandomMinecarftImage();
 

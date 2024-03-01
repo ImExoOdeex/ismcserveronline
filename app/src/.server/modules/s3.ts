@@ -1,7 +1,6 @@
 import { db } from "@/.server/db/db";
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
-import { writeAsyncIterableToWritable } from "@remix-run/node";
 import { PassThrough } from "stream";
 import { requireEnv } from "../functions/env.server";
 
@@ -14,13 +13,11 @@ const S3 = new S3Client({
 	}
 });
 
-export default S3;
-
 const s3Config = {
 	bucket: "ismcserveronline-uploads"
 };
 
-function uploadStream({ Key }: { Key: string }) {
+function uploadStream({ Key, total }: { Key: string; total: number }) {
 	const pass = new PassThrough();
 
 	const upload = new Upload({
@@ -29,12 +26,13 @@ function uploadStream({ Key }: { Key: string }) {
 			Bucket: s3Config.bucket,
 			Key,
 			Body: pass,
+			ContentType: "image/webp",
 			ACL: "public-read"
 		}
 	});
 
 	upload.on("httpUploadProgress", (progress) => {
-		console.log("progress", progress);
+		console.log(`Progress: ${progress.loaded}/${progress.total} ${progress.part}`);
 	});
 
 	return {
@@ -43,11 +41,16 @@ function uploadStream({ Key }: { Key: string }) {
 	};
 }
 
-export async function uploadStreamToS3(data: AsyncIterable<Uint8Array>, filename: string) {
+export async function uploadStreamToS3(data: Buffer, filename: string) {
 	const stream = uploadStream({
-		Key: filename
+		Key: filename,
+		total: data.byteLength
 	});
-	await writeAsyncIterableToWritable(data, stream.writeStream);
+
+	// write buffer to stream
+	stream.writeStream.write(data);
+	stream.writeStream.end();
+
 	const file = await stream.promise;
 	return file.Location;
 }

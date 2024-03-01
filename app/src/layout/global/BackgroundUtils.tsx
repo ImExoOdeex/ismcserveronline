@@ -18,7 +18,7 @@ export default memo(function BackgroundUtils() {
 
 	const serverLoaderData = useMatches()[1].data as any;
 	const backgroundUrl = serverLoaderData?.[isVote ? "data" : "foundServer"]?.background
-		? getFullFileUrl(serverLoaderData?.[isVote ? "data" : "foundServer"]?.background)
+		? getFullFileUrl(serverLoaderData?.[isVote ? "data" : "foundServer"]?.background, "background")
 		: null;
 
 	return (

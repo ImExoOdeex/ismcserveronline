@@ -41,51 +41,97 @@ export async function action({ request }: ActionFunctionArgs) {
 		invariant(newTag, "newTag is required");
 		invariant(serverId, "serverId is required");
 
-		const doesTagExist = await db.tag.findUnique({
-			where: {
-				name: newTag
-			}
-		});
-
-		// min length is 2 and max is 20
-		invariant(newTag.length >= 2 && newTag.length <= 20, "Tag must be between 2 and 20 characters");
-
-		// await new Promise((resolve) => setTimeout(resolve, 1000));
-
-		// check if user is the owner of the server
-		const server = await db.server.findFirstOrThrow({
-			where: {
-				id: serverId,
-				owner_id: user.id
-			}
-		});
-
-		const tag =
-			doesTagExist ||
-			(await db.tag.create({
-				data: {
-					name: newTag,
-					createdByServerId: serverId
-				}
-			}));
-
-		await db.server.update({
-			where: {
-				id: server.id
-			},
-			data: {
-				Tags: {
-					connect: {
-						id: tag.id
+		switch (request.method) {
+			case "PATCH":
+			case "POST":
+			case "PUT": {
+				const doesTagExist = await db.tag.findUnique({
+					where: {
+						name: newTag
 					}
-				}
-			}
-		});
+				});
 
-		return typedjson({
-			success: true,
-			tag
-		});
+				// min length is 2 and max is 20
+				invariant(newTag.length >= 2 && newTag.length <= 20, "Tag must be between 2 and 20 characters");
+
+				// await new Promise((resolve) => setTimeout(resolve, 1000));
+
+				// check if user is the owner of the server
+				const server = await db.server.findFirstOrThrow({
+					where: {
+						id: serverId,
+						owner_id: user.id
+					}
+				});
+
+				const tag =
+					doesTagExist ||
+					(await db.tag.create({
+						data: {
+							name: newTag,
+							createdByServerId: serverId
+						}
+					}));
+
+				await db.server.update({
+					where: {
+						id: server.id
+					},
+					data: {
+						Tags: {
+							connect: {
+								id: tag.id
+							}
+						}
+					}
+				});
+
+				return typedjson({
+					success: true,
+					tag
+				});
+			}
+			case "DELETE": {
+				const tag = await db.tag.findUnique({
+					where: {
+						name: newTag
+					}
+				});
+
+				// check if user is the owner of the server
+				const server = await db.server.findFirstOrThrow({
+					where: {
+						id: serverId,
+						owner_id: user.id
+					}
+				});
+
+				const updated = await db.server.update({
+					where: {
+						id: server.id
+					},
+					data: {
+						Tags: {
+							disconnect: {
+								id: tag?.id
+							}
+						}
+					},
+					select: {
+						Tags: {
+							select: {
+								name: true
+							}
+						}
+					}
+				});
+
+				return typedjson({
+					success: true,
+					tags: updated.Tags.map((tag) => tag.name)
+				});
+			}
+		}
 	} catch (e) {
 		return typedjson({
 			success: false,

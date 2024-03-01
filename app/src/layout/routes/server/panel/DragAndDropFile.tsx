@@ -1,5 +1,5 @@
 import { Flex, Icon, Image, Spinner, Text, useToast } from "@chakra-ui/react";
-import { useRevalidator } from "@remix-run/react";
+import { useFetcher } from "@remix-run/react";
 import { useCallback, useState } from "react";
 import { FaFileUpload } from "react-icons/fa";
 
@@ -13,7 +13,7 @@ export default function DragAndDropFile({ fileName, serverId }: Props) {
 	const [file, setFile] = useState<File | null>(null);
 	const [preview, setPreview] = useState<string | ArrayBuffer | null>(null);
 	const [isUploading, setIsUploading] = useState(false);
-	const [success, setSuccess] = useState(false);
+	const [state, setState] = useState<"idle" | "success" | "error">("idle");
 
 	const toast = useToast();
 
@@ -31,14 +31,14 @@ export default function DragAndDropFile({ fileName, serverId }: Props) {
 		e.preventDefault();
 	}, []);
 
-	const { revalidate } = useRevalidator();
+	const fetcher = useFetcher();
 	const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
 		(async () => {
 			e.preventDefault();
 			setIsDropping(false);
 			setIsUploading(true);
 			setPreview(null);
-			setSuccess(false);
+			setState("idle");
 			const file = e.dataTransfer.files[0];
 
 			// accept only images and videos
@@ -54,6 +54,7 @@ export default function DragAndDropFile({ fileName, serverId }: Props) {
 
 			// max file size is 10MB
 			const mbLimit = 10;
+
 			if (file.size > mbLimit * 1024 * 1024) {
 				toast({
 					title: "File is too large",
@@ -74,7 +75,6 @@ export default function DragAndDropFile({ fileName, serverId }: Props) {
 			reader.readAsDataURL(file);
 
 			const body = new FormData();
-			body.append("size", file.size.toString());
 			body.append(fileName, file);
 
 			const res = await fetch(`/api/s3/upload/${serverId}`, {
@@ -90,19 +90,27 @@ export default function DragAndDropFile({ fileName, serverId }: Props) {
 					description: res.message,
 					status: "error"
 				});
+
+				setIsUploading(false);
+				setState("error");
+
+				return;
 			} else {
-				revalidate();
+				fetcher.submit(null, {
+					action: "/api/revalidate",
+					method: "POST"
+				});
 			}
 
 			setIsUploading(false);
-			setSuccess(true);
+			setState("success");
 			// setAssets((prev) => [res.asset, ...prev]);
 			// console.log("upload res", res);
 		})();
 	}, []);
 
-	const color = isDropping ? "brand" : success ? "green" : "alpha300";
-	const colorInside = isDropping ? "brand" : success ? "green" : "alpha500";
+	const color = isDropping ? "brand" : state === "success" ? "green" : state === "error" ? "red" : "alpha300";
+	const colorInside = isDropping ? "brand" : state === "success" ? "green" : state === "error" ? "red" : "alpha500";
 
 	return (
 		<>

@@ -1,6 +1,6 @@
 import useDebouncedFetcherCallback from "@/hooks/useDebouncedFetcherCallback";
 import useInsideEffect from "@/hooks/useInsideEffect";
-import { Flex, HStack, Text, useToast } from "@chakra-ui/react";
+import { Flex, HStack, Text, useColorModeValue, useToast } from "@chakra-ui/react";
 import {
 	AutoComplete,
 	AutoCompleteCreatable,
@@ -46,12 +46,14 @@ export default function TagsAutocompleteInput({ input, setInput, onSubmit, input
 				search: input
 			},
 			{
-				debounceTimeout: 200,
+				debounceTimeout: 100,
 				action: "/api/tags"
 			}
 		);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [input]);
+
+	const boxBg = useColorModeValue("rgba(252, 252, 252, 0.9)", "rgba(17, 17, 23, 0.9)");
 
 	return (
 		<AutoComplete
@@ -60,6 +62,7 @@ export default function TagsAutocompleteInput({ input, setInput, onSubmit, input
 			suggestWhenEmpty
 			closeOnSelect
 			creatable
+			// isLoading={fetcher.state === "loading"}
 			onSelectOption={(option: any) => {
 				console.log("option", option);
 
@@ -80,12 +83,12 @@ export default function TagsAutocompleteInput({ input, setInput, onSubmit, input
 			<AutoCompleteList
 				p={1.5}
 				bg="transparent !important"
-				backdropFilter="blur(20px)"
 				border="1px solid"
 				borderColor={"alpha300"}
 				opacity={fetcher.state === "loading" ? 0.5 : 1}
 				{...listProps}
 			>
+				<Flex pos={"absolute"} top={0} left={0} right={0} bottom={0} bg={boxBg} zIndex={-1} />
 				{!input.length && (
 					<Flex w="100%" p={1}>
 						<Text textAlign={"center"} fontWeight={600} color={"textSec"} w="100%">

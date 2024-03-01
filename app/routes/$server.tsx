@@ -5,8 +5,8 @@ import { getUser, getUserId } from "@/.server/db/models/user";
 import { getServerInfo } from "@/.server/functions/api.server";
 import { requireEnv } from "@/.server/functions/env.server";
 import { MinecraftImage, getRandomMinecarftImage } from "@/.server/minecraftImages";
-import serverConfig from "@/.server/serverConfig";
 import { getCookieWithoutDocument } from "@/functions/cookies";
+import { getFullFileUrl } from "@/functions/storage";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import useEventSourceCallback from "@/hooks/useEventSourceCallback";
 import useUser from "@/hooks/useUser";
@@ -524,7 +524,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 	const image = foundServer.banner
 		? ({
 				name: "Server banner",
-				url: serverConfig.uploadsUrl + "/" + foundServer.banner,
+				url: getFullFileUrl(foundServer.banner, "banner"),
 				credits: ""
 		  } as MinecraftImage)
 		: getRandomMinecarftImage();
