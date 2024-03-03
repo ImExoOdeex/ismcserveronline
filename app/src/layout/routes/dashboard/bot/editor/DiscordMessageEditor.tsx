@@ -1,3 +1,4 @@
+import { FormatData } from "@/hooks/useFormattedDiscordText";
 import MessageEditor from "@/layout/routes/dashboard/bot/editor/MessageEditor";
 import Placeholders from "@/layout/routes/dashboard/bot/editor/Placeholders";
 import Preview from "@/layout/routes/dashboard/bot/editor/Preview";
@@ -41,10 +42,11 @@ export interface DiscordMessage {
 interface Props {
 	type: DiscordMessageType;
 	message: DiscordMessage;
+	data?: FormatData;
 }
 
 // This was fucking hell, but still better than svelte :)
-export default function DiscordMessageEditor({ type, message: initialMessage }: Props) {
+export default function DiscordMessageEditor({ type, message: initialMessage, data }: Props) {
 	const [message, setMessage] = useState<DiscordMessage>(initialMessage);
 
 	return (
@@ -73,7 +75,7 @@ export default function DiscordMessageEditor({ type, message: initialMessage }: 
 				h={"min"}
 				rounded={"lg"}
 			>
-				<Preview message={message} />
+				<Preview message={message} data={data} />
 			</Flex>
 		</Flex>
 	);

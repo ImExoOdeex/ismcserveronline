@@ -22,6 +22,26 @@ export const placeholders = {
 			name: "Server Icon",
 			placeholder: "{favicon}",
 			replaceWith: "https://cdn.discordapp.com/icons/1066548001025310730/9255d155f58573ad7d4fdd6cd497fdbc.webp"
+		},
+		{
+			name: "Server Name",
+			placeholder: "{serverName}"
+		},
+		{
+			name: "status",
+			placeholder: "{status}"
+		},
+		{
+			name: "Motd",
+			placeholder: "{motd}"
+		},
+		{
+			name: "Players",
+			placeholder: "{players}"
+		},
+		{
+			name: "Max Players",
+			placeholder: "{maxPlayers}"
 		}
 	],
 	alert: [

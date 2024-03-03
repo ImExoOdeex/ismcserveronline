@@ -1,4 +1,4 @@
-import useFormattedDiscordText from "@/hooks/useFormattedDiscordText";
+import useFormattedDiscordText, { FormatData } from "@/hooks/useFormattedDiscordText";
 import { DiscordMessage } from "@/layout/routes/dashboard/bot/editor/DiscordMessageEditor";
 import EmbedPreview from "@/layout/routes/dashboard/bot/editor/EmbedPreview";
 import { CheckIcon } from "@chakra-ui/icons";
@@ -6,10 +6,11 @@ import { Flex, HStack, Image, Text, Tooltip } from "@chakra-ui/react";
 
 interface Props {
 	message: DiscordMessage;
+	data?: FormatData;
 }
 
-export default function Preview({ message }: Props) {
-	const content = useFormattedDiscordText(message.content);
+export default function Preview({ message, data }: Props) {
+	const content = useFormattedDiscordText(message.content, data);
 
 	return (
 		<Flex gap={4}>

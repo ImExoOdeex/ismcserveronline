@@ -3,10 +3,25 @@ import { cachePrefetch } from "@/.server/functions/fetchHelpers.server";
 import { csrf } from "@/.server/functions/security.server";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import Link from "@/layout/global/Link";
-import { Badge, Button, Divider, HStack, Heading, Icon, Image, SimpleGrid, Text, VStack } from "@chakra-ui/react";
+import config from "@/utils/config";
+import {
+	Badge,
+	Button,
+	Divider,
+	Flex,
+	HStack,
+	Heading,
+	Icon,
+	Image,
+	LightMode,
+	SimpleGrid,
+	Text,
+	VStack
+} from "@chakra-ui/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
+import { memo } from "react";
 import { HiRefresh } from "react-icons/hi";
 import { typedjson } from "remix-typedjson";
 
@@ -68,76 +83,7 @@ export default function Index() {
 								}
 							})
 							.map((guild) => (
-								<VStack
-									key={guild.id}
-									as={Link}
-									to={guild.id}
-									prefetch="intent"
-									rounded={"xl"}
-									transform={"auto-gpu"}
-									_hover={{
-										scale: 1.05,
-										textDecor: "none"
-									}}
-									_active={{
-										scale: 0.95
-									}}
-									w="100%"
-									align={"center"}
-									justifyContent={"center"}
-									flexDir={"column"}
-									p={5}
-									transition={"background .2s, transform .2s"}
-									pos="relative"
-									overflow={"hidden"}
-								>
-									<Image
-										pos={"absolute"}
-										top={0}
-										right={0}
-										left={0}
-										bottom={0}
-										w="100%"
-										h="100%"
-										objectFit="cover"
-										filter={"blur(10px)"}
-										alt="background"
-										zIndex={-1}
-										src={
-											guild?.icon
-												? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=96`
-												: "/banner.jpg"
-										}
-									/>
-
-									<Image
-										border={"2px solid white"}
-										rounded={"full"}
-										src={
-											guild?.icon
-												? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=96`
-												: "/discordLogo.png"
-										}
-										alt={guild.name + "'s name"}
-										boxSize={16}
-									/>
-									<HStack>
-										<Text
-											fontWeight={800}
-											fontSize={"xl"}
-											color={"white"}
-											noOfLines={1}
-											// sx={{
-											// 	"-webkit-text-stroke": "0.5px #1a1a1a"
-											// }}
-											textShadow={"0px 1px 2px #000000"}
-										>
-											{guild.name}
-										</Text>
-										{guild.owner && <Badge colorScheme="orange">Admin</Badge>}
-									</HStack>
-									{/* {(guild.permissions & 0x20) == 0x20 ? "lmaooooooooooo" : "NOP"} */}
-								</VStack>
+								<OneServer key={guild.id} guild={guild} />
 							))}
 					</SimpleGrid>
 				) : (
@@ -165,3 +111,66 @@ export default function Index() {
 		</VStack>
 	);
 }
+
+const OneServer = memo(function OneServer({ guild }: { guild: Guild }) {
+	return (
+		<Flex
+			rounded={"xl"}
+			w="100%"
+			p={4}
+			overflow={"hidden"}
+			gap={2}
+			pos="relative"
+			as={Link}
+			to={`/dashboard/bot/${guild.id}`}
+			transform={"auto-gpu"}
+			_hover={{
+				textDecoration: "none"
+			}}
+			_active={{
+				scale: 0.95
+			}}
+			transition={`transform 0.2s ${config.cubicEase}`}
+		>
+			<Image
+				pos={"absolute"}
+				top={0}
+				right={0}
+				left={0}
+				bottom={0}
+				w="100%"
+				h="100%"
+				objectFit="cover"
+				filter={"blur(25px)"}
+				alt="background"
+				zIndex={-1}
+				src={guild?.icon ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=96` : "/banner.jpg"}
+			/>
+
+			<Image
+				// border={"2px solid white"}
+				rounded={"md"}
+				src={guild?.icon ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=96` : "/discordLogo.png"}
+				alt={guild.name + "'s name"}
+				boxSize={12}
+			/>
+			<Flex flexDir={"column"}>
+				<Text fontWeight={600} fontSize={"xl"} color={"white"} noOfLines={1} textShadow={"0px 0px 2px #000000"}>
+					{guild.name}
+				</Text>
+				<LightMode>
+					{guild.owner ? (
+						<Badge colorScheme="green" w="fit-content">
+							Admin
+						</Badge>
+					) : (
+						<Badge colorScheme="brand" w="fit-content">
+							Mod
+						</Badge>
+					)}
+				</LightMode>
+			</Flex>
+			{/* {(guild.permissions & 0x20) == 0x20 ? "lmaooooooooooo" : "NOP"} */}
+		</Flex>
+	);
+});

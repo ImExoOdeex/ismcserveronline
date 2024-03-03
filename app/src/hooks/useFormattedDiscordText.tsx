@@ -1,6 +1,7 @@
 import { Placeholder } from "@/layout/routes/dashboard/bot/editor/Placeholders";
 import type { CodeProps } from "@chakra-ui/react";
 import { Box, Code, Image, Text, useColorModeValue } from "@chakra-ui/react";
+import Color from "color";
 import type { ReactNode } from "react";
 import React, { memo, useMemo } from "react";
 import config from "../utils/config";
@@ -9,7 +10,7 @@ export interface FormatData {
 	guildData: {
 		roles: Record<string, string>;
 		channels: Record<string, string>;
-		emotes: string[];
+		// emotes: string[];
 	};
 }
 
@@ -21,6 +22,7 @@ function processLine(line: string, mentionBg: string, data?: FormatData) {
 		textColor: "white",
 		_hover: { bg: "#5865f2" },
 		cursor: "pointer",
+		fontWeight: 500,
 		w: "max",
 		fontFamily: "Montserrat",
 		transition: `all 0.2s ${config.ease.join(", ")}`
@@ -28,10 +30,18 @@ function processLine(line: string, mentionBg: string, data?: FormatData) {
 
 	function findKeyFromValue(value: string, type: "channels" | "roles") {
 		if (!value) return null;
-		const found = Object.entries(data?.guildData?.[type] as any)?.find(([v]) => v === value)?.[1];
+		if (!data?.guildData?.[type]) return null;
+
+		console.log(data.guildData[type], value);
+
+		const foundObject = (data.guildData[type] as any).find((v: any) => v.id === value);
+		if (!foundObject) return null;
+
+		const found = foundObject.name;
+
 		if (!found) return null;
 
-		return found;
+		return foundObject as Record<string, string>;
 	}
 
 	function processWord(word: string, index: number, isFirstInLine: boolean) {
@@ -43,6 +53,7 @@ function processLine(line: string, mentionBg: string, data?: FormatData) {
 		else if (word.match(/\*\*([^*]+?)\*\*/g)) words.push(<Text as="b">{word?.replaceAll("**", "")}</Text>);
 		else if (word.match(/__([^_]+?)__/g)) words.push(<Text as="i">{word?.replaceAll("__", "")}</Text>);
 		else if (word.match(/\*([^*\n]+?)\*/g)) words.push(<Text as="em">{word?.replaceAll("*", "")}</Text>);
+		else if (word.match(/\_([^_\n]+?)\_/g)) words.push(<Text as="em">{word?.replaceAll("_", "")}</Text>);
 		else if (word.match(/~~([^~]+?)~~/g)) words.push(<Text as="s">{word?.replaceAll("~~", "")}</Text>);
 		else if (word.match(/\|\|([^|\n]+?)\|\|/g))
 			words.push(
@@ -74,23 +85,31 @@ function processLine(line: string, mentionBg: string, data?: FormatData) {
 					{"@user"}
 				</Code>
 			);
-		else if (word.match(/@&(\d+)/g))
+		else if (word.match(/@&(\d+)/g)) {
+			const obj = findKeyFromValue(word?.split("&")[1]?.replaceAll(">", ""), "roles");
+
 			words.push(
-				<Code key={index} {...mentionStyles}>
-					{findKeyFromValue(word?.split("&")[1]?.replaceAll(">", ""), "roles")
-						? `@${findKeyFromValue(word?.split("&")[1]?.replaceAll(">", ""), "roles")}`
-						: "@role"}
+				<Code
+					key={index}
+					{...mentionStyles}
+					{...{
+						color: obj ? obj.color : undefined,
+						bg: obj ? `${Color(obj.color).alpha(0.2).string()}` : undefined,
+						_hover: obj ? { bg: `${Color(obj.color).alpha(0.3).string()}` } : undefined
+					}}
+				>
+					{obj ? `@${obj.name}` : "@role"}
 				</Code>
 			);
-		else if (word.match(/#(\d+)/g))
+		} else if (word.match(/#(\d+)/g)) {
+			const obj = findKeyFromValue(word?.split("#")[1]?.replaceAll(">", ""), "channels");
+
 			words.push(
 				<Code key={index} {...mentionStyles}>
-					{findKeyFromValue(word?.split("#")[1]?.replaceAll(">", ""), "channels")
-						? `#${findKeyFromValue(word?.split("#")[1]?.replaceAll(">", ""), "channels")}`
-						: "#channel"}
+					{obj ? `#${obj.name}` : "#channel"}
 				</Code>
 			);
-		else if (word.match(/<a?:(\d+)>/g))
+		} else if (word.match(/<a?:(\d+)>/g))
 			words.push(
 				<Image
 					src={`https://cdn.discordapp.com/emojis/${word?.split(":")[2]?.replaceAll(">", "")}.webp`}

@@ -22,6 +22,8 @@ export default function MessageEditor({ message, setMessage }: Props) {
 
 	const inputID = useId();
 
+	console.log("message", message);
+
 	return (
 		<Flex
 			w={{
@@ -39,7 +41,7 @@ export default function MessageEditor({ message, setMessage }: Props) {
 				bg={"alpha"}
 				value={message.content}
 				variant={"filled"}
-				onChange={(e) => setMessage({ ...message, content: e.target.value })}
+				onChange={(e) => setMessage((prev) => ({ ...prev, content: e.target.value }))}
 				name="content"
 			/>
 
@@ -52,6 +54,9 @@ export default function MessageEditor({ message, setMessage }: Props) {
 				{/* Author */}
 				<Flex flexDir={"column"} w="100%">
 					<Button
+						_active={{
+							bg: "transparent"
+						}}
 						variant={"unstyled"}
 						display={"flex"}
 						alignItems={"center"}
@@ -76,11 +81,12 @@ export default function MessageEditor({ message, setMessage }: Props) {
 						<FormControl>
 							<FormLabel>Author</FormLabel>
 							<Input
+								variant={"filled"}
 								placeholder={"Author"}
 								value={message.embed?.author?.name || ""}
 								onChange={(e) =>
-									setMessage({
-										...message,
+									setMessage((prev) => ({
+										...prev,
 										embed: {
 											...message.embed,
 											author: {
@@ -88,7 +94,7 @@ export default function MessageEditor({ message, setMessage }: Props) {
 												name: e.target.value
 											}
 										}
-									})
+									}))
 								}
 								name="authorName"
 							/>
@@ -103,6 +109,7 @@ export default function MessageEditor({ message, setMessage }: Props) {
 							<FormControl>
 								<FormLabel>Author URL</FormLabel>
 								<Input
+									variant={"filled"}
 									placeholder="Author URL"
 									value={message.embed?.author?.url || ""}
 									onChange={(e) => {
@@ -123,6 +130,7 @@ export default function MessageEditor({ message, setMessage }: Props) {
 							<FormControl>
 								<FormLabel>Author Icon URL</FormLabel>
 								<Input
+									variant={"filled"}
 									placeholder="Author Icon URL"
 									value={message.embed?.author?.icon_url || ""}
 									onChange={(e) => {
@@ -149,6 +157,9 @@ export default function MessageEditor({ message, setMessage }: Props) {
 				{/* Body */}
 				<Flex flexDir={"column"} w="100%">
 					<Button
+						_active={{
+							bg: "transparent"
+						}}
 						variant={"unstyled"}
 						display={"flex"}
 						alignItems={"center"}
@@ -173,6 +184,7 @@ export default function MessageEditor({ message, setMessage }: Props) {
 						<FormControl>
 							<FormLabel>Title</FormLabel>
 							<Input
+								variant={"filled"}
 								placeholder={"Author"}
 								value={message.embed?.title || ""}
 								onChange={(e) =>
@@ -191,6 +203,7 @@ export default function MessageEditor({ message, setMessage }: Props) {
 						<FormControl>
 							<FormLabel>Description</FormLabel>
 							<Textarea
+								variant={"filled"}
 								placeholder={"Description"}
 								value={message.embed?.description || ""}
 								onChange={(e) =>
@@ -215,6 +228,7 @@ export default function MessageEditor({ message, setMessage }: Props) {
 							<FormControl>
 								<FormLabel>URL</FormLabel>
 								<Input
+									variant={"filled"}
 									placeholder="Author URL"
 									value={message.embed?.url || ""}
 									onChange={(e) => {
@@ -233,6 +247,7 @@ export default function MessageEditor({ message, setMessage }: Props) {
 								<FormLabel>Color</FormLabel>
 								<Flex gap={2} alignItems={"center"}>
 									<Input
+										variant={"filled"}
 										placeholder="#ffffff"
 										value={message.embed?.color ? decimalToHex(message.embed.color) : ""}
 										onChange={(e) => {
@@ -292,6 +307,9 @@ export default function MessageEditor({ message, setMessage }: Props) {
 				{/* Fields */}
 				<Flex flexDir={"column"} w="100%">
 					<Button
+						_active={{
+							bg: "transparent"
+						}}
 						variant={"unstyled"}
 						display={"flex"}
 						alignItems={"center"}
@@ -321,7 +339,7 @@ export default function MessageEditor({ message, setMessage }: Props) {
 										base: 2,
 										md: 4
 									}}
-									key={(field?.name || "") + i}
+									key={"field-" + i}
 									w="100%"
 									gap={0}
 									py={0}
@@ -333,6 +351,9 @@ export default function MessageEditor({ message, setMessage }: Props) {
 									flexDir={"column"}
 								>
 									<Button
+										_active={{
+											bg: "transparent"
+										}}
 										display={"flex"}
 										w="100%"
 										justifyContent={"space-between"}
@@ -355,7 +376,7 @@ export default function MessageEditor({ message, setMessage }: Props) {
 										<ChevronDownIcon
 											transform={"auto-gpu"}
 											rotate={field.isOpen ? "180deg" : "0deg"}
-											transition={`transform 0.2s cubic-bezier(${config.ease.join(", ")})`}
+											transition={`transform 0.2s ${config.cubicEase}`}
 										/>
 									</Button>
 
@@ -363,7 +384,7 @@ export default function MessageEditor({ message, setMessage }: Props) {
 										<FormControl>
 											<FormLabel fontSize={"sm"}>Name</FormLabel>
 											<Input
-												bg={"alpha"}
+												variant={"filled"}
 												placeholder="Name"
 												value={field.name || ""}
 												onChange={(e) => {
@@ -371,7 +392,10 @@ export default function MessageEditor({ message, setMessage }: Props) {
 													fields[i].name = e.target.value;
 													setMessage((prev) => ({
 														...prev,
-														fields
+														embed: {
+															...prev.embed,
+															fields
+														}
 													}));
 												}}
 											/>
@@ -380,7 +404,7 @@ export default function MessageEditor({ message, setMessage }: Props) {
 										<FormControl>
 											<FormLabel fontSize={"sm"}>Value</FormLabel>
 											<Input
-												bg={"alpha"}
+												variant={"filled"}
 												placeholder="Value"
 												value={field?.value || ""}
 												onChange={(e) => {
@@ -388,7 +412,10 @@ export default function MessageEditor({ message, setMessage }: Props) {
 													fields[i].value = e.target.value;
 													setMessage((prev) => ({
 														...prev,
-														fields
+														embed: {
+															...prev.embed,
+															fields
+														}
 													}));
 												}}
 											/>
@@ -404,7 +431,10 @@ export default function MessageEditor({ message, setMessage }: Props) {
 
 													setMessage((prev) => ({
 														...prev,
-														fields
+														embed: {
+															...prev.embed,
+															fields
+														}
 													}));
 												}}
 											>
@@ -419,7 +449,10 @@ export default function MessageEditor({ message, setMessage }: Props) {
 
 													setMessage((prev) => ({
 														...prev,
-														fields
+														embed: {
+															...prev.embed,
+															fields
+														}
 													}));
 												}}
 											>
@@ -432,14 +465,14 @@ export default function MessageEditor({ message, setMessage }: Props) {
 						</Flex>
 
 						<Button
-							variant={"brand"}
+							variant={"solid"}
 							onClick={() => {
 								setMessage((prev) => ({
 									...prev,
 									embed: {
 										...prev.embed,
 										fields: [
-											...prev.embed.fields,
+											...(prev.embed?.fields || []),
 											{
 												name: "New Field",
 												value: "Empty",
@@ -460,6 +493,9 @@ export default function MessageEditor({ message, setMessage }: Props) {
 				{/* Images */}
 				<Flex flexDir={"column"} w="100%">
 					<Button
+						_active={{
+							bg: "transparent"
+						}}
 						variant={"unstyled"}
 						display={"flex"}
 						alignItems={"center"}
@@ -484,6 +520,7 @@ export default function MessageEditor({ message, setMessage }: Props) {
 						<FormControl>
 							<FormLabel>Image URL</FormLabel>
 							<Input
+								variant={"filled"}
 								placeholder={"Image URL"}
 								value={message.embed?.image?.url || ""}
 								onChange={(e) =>
@@ -505,6 +542,7 @@ export default function MessageEditor({ message, setMessage }: Props) {
 						<FormControl>
 							<FormLabel>Thumbnail URL</FormLabel>
 							<Input
+								variant={"filled"}
 								placeholder={"Thumbnail URL"}
 								value={message.embed?.thumbnail?.url || ""}
 								onChange={(e) =>
@@ -530,6 +568,9 @@ export default function MessageEditor({ message, setMessage }: Props) {
 				{/* Footer */}
 				<Flex flexDir={"column"} w="100%">
 					<Button
+						_active={{
+							bg: "transparent"
+						}}
 						variant={"unstyled"}
 						display={"flex"}
 						alignItems={"center"}
@@ -554,6 +595,7 @@ export default function MessageEditor({ message, setMessage }: Props) {
 						<FormControl>
 							<FormLabel>Footer</FormLabel>
 							<Input
+								variant={"filled"}
 								placeholder={"Footer"}
 								value={message.embed?.footer?.text || ""}
 								onChange={(e) =>
@@ -596,6 +638,7 @@ export default function MessageEditor({ message, setMessage }: Props) {
 							<FormControl>
 								<FormLabel>Footer Icon URL</FormLabel>
 								<Input
+									variant={"filled"}
 									placeholder="Author Icon URL"
 									value={message.embed?.footer?.icon_url || ""}
 									onChange={(e) => {
@@ -629,7 +672,7 @@ function FieldsEditor({ children, isOpen }: { children: React.ReactNode; isOpen:
 			<motion.div
 				initial={{ height: 0 }}
 				animate={{ height: isOpen ? "auto" : 0 }}
-				transition={{ duration: 0.4, ease: config.ease }}
+				transition={{ duration: 0.3, ease: config.ease }}
 				style={{
 					overflow: "hidden"
 				}}

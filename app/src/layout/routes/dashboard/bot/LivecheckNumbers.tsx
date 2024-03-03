@@ -1,5 +1,6 @@
 import useUser from "@/hooks/useUser";
 import Link from "@/layout/global/Link";
+import config from "@/utils/config";
 import { Button, Flex, HStack, Text, Tooltip } from "@chakra-ui/react";
 import { useSearchParams } from "@remix-run/react";
 import { motion } from "framer-motion";
@@ -30,14 +31,14 @@ export default function LivecheckNumbers() {
 					isDisabled={item < 3 || user?.prime}
 				>
 					<Button
-						as={item >= 3 && !user?.prime ? "button" : Link}
 						{...linkButtonProps(item)}
+						as={item >= 3 && !user?.prime ? "button" : Link}
 						isDisabled={item >= 3 && !user?.prime}
 						variant={"ghost"}
 						p={3}
 						pos={"relative"}
 						_hover={{ borderBottomRadius: item === number ? "none" : "", bg: "alpha", textDecoration: "none" }}
-						transition={"border-bottom-left-radius 0.2s ease-in-out, border-bottom-right-radius 0.2s ease-in-out"}
+						transition={`border-bottom-left-radius 0.2s ${config.cubicEase}, border-bottom-right-radius 0.2s ${config.cubicEase}, transform 0.2s ${config.cubicEase}`}
 					>
 						<Text fontWeight={500} fontSize={"xl"}>
 							{item}

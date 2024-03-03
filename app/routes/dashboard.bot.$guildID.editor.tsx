@@ -57,7 +57,16 @@ export default function Config() {
 	return (
 		<fetcher.Form method="POST" style={{ width: "100%" }}>
 			<VStack w="100%" align={"start"} spacing={7}>
-				<DiscordMessageEditor message={messages[0]} type="livecheck" />
+				<DiscordMessageEditor
+					message={messages[0]}
+					type="livecheck"
+					data={{
+						guildData: {
+							channels,
+							roles
+						}
+					}}
+				/>
 			</VStack>
 
 			<Divider my={10} />

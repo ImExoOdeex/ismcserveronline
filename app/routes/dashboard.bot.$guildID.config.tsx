@@ -35,7 +35,6 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 			})
 				.then((res) => res.json())
 				.then((res) => {
-					console.log(res);
 					return res.name.value as string;
 				});
 		})
