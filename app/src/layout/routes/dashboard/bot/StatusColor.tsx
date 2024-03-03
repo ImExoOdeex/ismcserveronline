@@ -1,16 +1,26 @@
 import useGlobalContext from "@/hooks/useGlobalContext";
+import useInsideEffect from "@/hooks/useInsideEffect";
 import { Flex, Heading, Icon, Skeleton, Text, VisuallyHiddenInput, VStack } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { Await } from "@remix-run/react";
+import { Suspense, useState } from "react";
 import { BiColorFill } from "react-icons/bi";
 
-export default function StatusColor({ config, type }: { config: any; type: "online" | "offline" }) {
+export default function StatusColor({
+	config,
+	type,
+	colorPromises
+}: {
+	config: any;
+	type: "online" | "offline";
+	colorPromises: Promise<string[]>;
+}) {
 	const configColorDecimal: number = config[type === "online" ? "online_color" : "offline_color"];
 
 	const [color, setColor] = useState<string>(`#${configColorDecimal === 0 ? "000000" : configColorDecimal.toString(16)}`);
 	const [colorName, setColorName] = useState<string>("");
 	const [colorFetching, setColorFetching] = useState<boolean>(false);
 
-	useEffect(() => {
+	useInsideEffect(() => {
 		const url = `https://www.thecolorapi.com/id?hex=${color.replace("#", "")}`;
 
 		setColorFetching(true);
@@ -51,7 +61,13 @@ export default function StatusColor({ config, type }: { config: any; type: "onli
 						{colorName ? (
 							colorName
 						) : (
-							<Skeleton h="36px" w="125px" rounded={"xl"} startColor="alpha200" endColor="transparent" />
+							<Suspense
+								fallback={
+									<Skeleton h="36px" w="125px" rounded={"xl"} startColor="alpha200" endColor="transparent" />
+								}
+							>
+								<Await resolve={colorPromises}>{(data) => <Text>{data[type === "online" ? 0 : 1]}</Text>}</Await>
+							</Suspense>
 						)}
 					</Heading>
 

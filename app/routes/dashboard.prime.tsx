@@ -1,7 +1,9 @@
 import { getUser } from "@/.server/db/models/user";
 import { csrf } from "@/.server/functions/security.server";
 import { paymentHandlers, subscriptionHandlers } from "@/.server/modules/stripe";
+import { capitalize } from "@/functions/utils";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import useFetcherCallback from "@/hooks/useFetcherCallback";
 import useUser from "@/hooks/useUser";
 import {
 	Alert,
@@ -18,15 +20,15 @@ import {
 	Divider,
 	Flex,
 	Heading,
+	Spinner,
 	Text,
 	VStack,
 	useDisclosure
 } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { useFetcher } from "@remix-run/react";
-import { useEffect, useRef } from "react";
-import { FaHeartBroken } from "react-icons/fa";
-import { typedjson } from "remix-typedjson";
+import { Await } from "@remix-run/react";
+import { Suspense, useEffect, useRef } from "react";
+import { typeddefer, typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -59,12 +61,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	const url = new URL(request.url);
 	const paymentIntentId = url.searchParams.get("payment_intent");
 
-	const [subscription, paymentIntent] = await Promise.all([
-		user.subId ? subscriptionHandlers.retrieveSubscription(user.subId) : null,
-		paymentIntentId ? paymentHandlers.retrievePaymentIntent(paymentIntentId).catch(() => null) : Promise.resolve(null)
-	]);
+	const subscription = user.subId ? subscriptionHandlers.retrieveSubscription(user.subId) : null;
+	const paymentIntent = paymentIntentId ? await paymentHandlers.retrievePaymentIntent(paymentIntentId).catch(() => null) : null;
 
-	return typedjson({
+	return typeddefer({
 		subscription,
 		paymentIntent
 	});
@@ -75,14 +75,6 @@ export default function DashboardPrime() {
 
 	const user = useUser();
 
-	const isCancelled = subscription?.cancel_at;
-
-	const intlDate = new Intl.DateTimeFormat("en-US", {
-		year: "numeric",
-		month: "long",
-		day: "numeric"
-	});
-
 	useEffect(() => {
 		if (paymentIntent && !user?.everPurchased) {
 			setTimeout(() => {
@@ -92,7 +84,7 @@ export default function DashboardPrime() {
 	}, []);
 
 	return (
-		<Flex flexDir={"column"} gap={4} alignItems={"flex-start"}>
+		<Flex flexDir={"column"} gap={4} alignItems={"flex-start"} w="100%">
 			<VStack align="start">
 				<Heading fontSize={"2xl"}>Your Prime subscription</Heading>
 				<Text>Thank you for supporting us!</Text>
@@ -135,102 +127,145 @@ export default function DashboardPrime() {
 			)}
 
 			{subscription && (
-				<Flex
-					w="100%"
-					justifyContent={"space-between"}
-					flexDir={{
-						base: "column",
-						md: "row"
-					}}
-					gap={4}
+				<Suspense
+					fallback={
+						<Flex alignItems={"center"} justifyContent={"center"} p={4} w="100%">
+							<Spinner />
+						</Flex>
+					}
 				>
-					<Flex flexDir={"column"} gap={0.5}>
-						<Text fontWeight={500}>Prime Subscription Status</Text>
-						<Text fontWeight={600} fontSize={"xl"} color={isCancelled ? "orange" : "green.600"}>
-							{subscription?.cancel_at
-								? "Your subscription is cancelled and will end on " +
-								  intlDate.format(new Date(subscription.cancel_at! * 1000))
-								: "Your subscription is active. Thanks <3"}
-						</Text>
-					</Flex>
+					<Await resolve={subscription}>
+						{(data) => (
+							<Flex flexDir={"column"} w="100%" gap={4}>
+								<Flex
+									p={4}
+									rounded={"xl"}
+									border={"1px solid"}
+									borderColor={"alpha300"}
+									flexDir={"column"}
+									gap={2}
+								>
+									<Text fontSize={"xl"} fontWeight={500}>
+										Current Subscription
+									</Text>
 
-					{!isCancelled && <CancelButton />}
-				</Flex>
-			)}
+									<Flex
+										w="100%"
+										justifyContent={"space-between"}
+										gap={4}
+										flexDir={{ base: "column", md: "row" }}
+									>
+										<Flex flexDir={"column"} gap={1}>
+											<Text fontWeight={500}>Next billing date</Text>
 
-			{isCancelled && (
-				<Text>
-					Your subscription has been cancelled. You won't be charged anymore. You can still use Prime until{" "}
-					{intlDate.format(new Date(subscription.cancel_at! * 1000))}. If you want to reactivate your subscription, you
-					will be able to do that when your subscription ends. Thanks for supporting us!
-				</Text>
+											<Text fontSize={"lg"} fontWeight={600}>
+												{data?.current_period_end
+													? new Date(data.current_period_end * 1000).toLocaleDateString()
+													: "No active subscription"}
+											</Text>
+										</Flex>
+
+										<Flex flexDir={"column"} gap={1}>
+											<Text fontWeight={500}>Status</Text>
+
+											<Text
+												fontSize={"lg"}
+												fontWeight={600}
+												color={
+													data?.cancel_at_period_end
+														? "orange"
+														: data?.status === "active"
+														? "green"
+														: "orange"
+												}
+											>
+												{data?.cancel_at_period_end
+													? "Cancelled"
+													: data?.status && capitalize(data?.status)}
+											</Text>
+										</Flex>
+
+										<Flex
+											flexDir={"column"}
+											gap={1}
+											opacity={data?.cancel_at_period_end ? 0.5 : 1}
+											pointerEvents={data?.cancel_at_period_end ? "none" : "auto"}
+										>
+											<Text fontWeight={500}>Cancel Subscription</Text>
+											<CancelSubscriptionAlertDialog />
+										</Flex>
+									</Flex>
+								</Flex>
+
+								<Divider my={6} />
+
+								<Text>
+									Hi, thank you for supporting us!
+									{data?.cancel_at_period_end &&
+										`Your subscription has been cancelled and will end on
+									${new Date(data.current_period_end * 1000).toLocaleDateString()}. You won't be charged
+									anymore.`}
+								</Text>
+							</Flex>
+						)}
+					</Await>
+				</Suspense>
 			)}
 		</Flex>
 	);
 }
 
-function CancelButton() {
-	const fetcher = useFetcher();
-	const { isOpen, onOpen, onClose } = useDisclosure();
+function CancelSubscriptionAlertDialog() {
+	const { isOpen, onClose, onOpen } = useDisclosure();
 	const cancelRef = useRef(null);
+
+	const fetcher = useFetcherCallback((data) => {
+		console.log(data);
+	});
 
 	return (
 		<>
 			<Button
 				colorScheme="red"
-				rightIcon={<FaHeartBroken />}
+				variant={"unstyled"}
+				h="min-content"
+				p={0}
+				color="textSec"
+				fontSize={"lg"}
+				fontWeight={600}
+				textAlign={"left"}
 				onClick={onOpen}
-				color={"white"}
-				bg="red.500"
-				_hover={{
-					bg: "red.600"
-				}}
-				_active={{
-					scale: 0.9
-				}}
-				transform={"auto-gpu"}
 			>
-				Cancel Subscription
+				Cancel
 			</Button>
-
-			<AlertDialog isCentered isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose} size={"lg"}>
+			<AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose} isCentered size={"lg"}>
 				<AlertDialogOverlay>
 					<AlertDialogContent bg="bg">
 						<AlertDialogHeader fontSize="lg" fontWeight="bold">
 							Cancel Subscription
 						</AlertDialogHeader>
 
-						<AlertDialogBody>Are you sure? You can't undo this action afterwards.</AlertDialogBody>
+						<AlertDialogBody>
+							Are you sure you want to cancel your subscription? You will still have access to prime features until
+							the end of your current billing period.
+						</AlertDialogBody>
 
 						<AlertDialogFooter display={"flex"} gap={2}>
-							<Button
-								ref={cancelRef}
-								onClick={onClose}
-								_active={{
-									scale: 0.9
-								}}
-								transform={"auto-gpu"}
-							>
+							<Button ref={cancelRef} onClick={onClose}>
 								Cancel
 							</Button>
-							<fetcher.Form method="DELETE">
-								<Button
-									colorScheme="red"
-									isLoading={fetcher.state !== "idle"}
-									type="submit"
-									color={"white"}
-									bg="red.500"
-									_hover={{
-										bg: "red.600"
-									}}
-									_active={{
-										scale: 0.9
-									}}
-									transform={"auto-gpu"}
-								>
-									Cancel
-								</Button>
-							</fetcher.Form>
+							<Button
+								bg="red.500"
+								color={"white"}
+								onClick={() => {
+									fetcher.submit(null, {
+										method: "DELETE"
+									});
+								}}
+								isLoading={fetcher.state !== "idle"}
+							>
+								Confirm
+							</Button>
 						</AlertDialogFooter>
 					</AlertDialogContent>
 				</AlertDialogOverlay>

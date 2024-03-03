@@ -5,6 +5,7 @@ import { useLocation } from "@remix-run/react";
 import { useCallback, useMemo } from "react";
 import { FiSettings } from "react-icons/fi";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
+import { PiCrownSimpleDuotone } from "react-icons/pi";
 import { RxDiscordLogo } from "react-icons/rx";
 import { TbCodeDots } from "react-icons/tb";
 
@@ -32,6 +33,15 @@ export default function Sidebar({}: Props) {
 				icon: TbCodeDots
 			}
 		];
+
+		if (user.prime) {
+			buttons.push({
+				name: "Prime",
+				to: "/prime",
+				icon: PiCrownSimpleDuotone
+			});
+		}
+
 		if (user.role === "ADMIN") {
 			buttons.push({
 				name: "Admin",

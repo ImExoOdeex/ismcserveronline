@@ -11,18 +11,15 @@ interface Props {
 export default function EmbedPreview({ message }: Props) {
 	const description = useFormattedDiscordText(message.embed?.description ?? "");
 	const title = useFormattedDiscordText(message.embed?.title ?? "");
+	const author = useFormattedDiscordText(message.embed?.author?.name ?? "");
+	const footer = useFormattedDiscordText(message.embed?.footer?.text ?? "");
 
 	const thumbnail = usePlaceholdersReplaced(message.embed?.thumbnail?.url ?? "", placeholders[message.type]);
-
 	const image = usePlaceholdersReplaced(message.embed?.image?.url ?? "", placeholders[message.type]);
-
-	const author = useFormattedDiscordText(message.embed?.author?.name ?? "");
-
-	const footer = useFormattedDiscordText(message.embed?.footer?.text ?? "");
 
 	return (
 		<Flex
-			rounded={1}
+			rounded={4}
 			flexDir={"column"}
 			borderLeftWidth={"4px"}
 			borderColor={decimalToHex(message.embed.color ?? 0)}
@@ -33,6 +30,7 @@ export default function EmbedPreview({ message }: Props) {
 			bg={"blackAlpha.200"}
 			p={2}
 			gap={2}
+			fontSize={"16px"}
 		>
 			<Flex flexDir={"row"} w="100%">
 				<VStack w="100%" align={"start"} spacing={1}>

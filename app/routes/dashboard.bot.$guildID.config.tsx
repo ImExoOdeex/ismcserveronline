@@ -4,6 +4,7 @@ import { requireEnv } from "@/.server/functions/env.server";
 import { requireUserGuild } from "@/.server/functions/secureDashboard.server";
 import { csrf } from "@/.server/functions/security.server";
 import serverConfig from "@/.server/serverConfig";
+import { decimalToHex } from "@/functions/colors";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import StatusColor from "@/layout/routes/dashboard/bot/StatusColor";
 import { Button, Divider, HStack, Icon, Stack, Text, VStack, Wrap, WrapItem } from "@chakra-ui/react";
@@ -11,7 +12,7 @@ import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { useFetcher, useRevalidator } from "@remix-run/react";
 import { BiSave } from "react-icons/bi";
 import { HiRefresh } from "react-icons/hi";
-import { typedjson } from "remix-typedjson";
+import { typeddefer, typedjson } from "remix-typedjson";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
 	csrf(request);
@@ -25,7 +26,22 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 		}
 	}).then((res) => res.json());
 
-	return typedjson({ config });
+	const colorPromises = Promise.all(
+		[config.online_color, config.offline_color].map((color: number) => {
+			return fetch(`https://www.thecolorapi.com/id?hex=${decimalToHex(color).replace("#", "")}`, {
+				headers: {
+					"Content-Type": "application/json"
+				}
+			})
+				.then((res) => res.json())
+				.then((res) => {
+					console.log(res);
+					return res.name.value as string;
+				});
+		})
+	);
+
+	return typeddefer({ config, colorPromises });
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -65,7 +81,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function Config() {
-	const { config } = useAnimationLoaderData<typeof loader>();
+	const { config, colorPromises } = useAnimationLoaderData<typeof loader>();
+	// console.log("colorPromises", colorPromises);
 
 	const fetcher = useFetcher();
 	const { revalidate, state } = useRevalidator();
@@ -76,8 +93,8 @@ export default function Config() {
 		<fetcher.Form method="POST" style={{ width: "100%" }}>
 			<VStack w="100%" align={"start"} spacing={7}>
 				<Stack direction={{ base: "column", md: "row" }} spacing={5} w={{ base: "100%", md: "xl" }}>
-					<StatusColor config={config} type="online" />
-					<StatusColor config={config} type="offline" />
+					<StatusColor config={config} type="online" colorPromises={colorPromises} />
+					<StatusColor config={config} type="offline" colorPromises={colorPromises} />
 				</Stack>
 				<VStack w="100%" align={"start"}>
 					<Wrap>

@@ -26,15 +26,15 @@ function processLine(line: string, mentionBg: string, data?: FormatData) {
 		transition: `all 0.2s ${config.ease.join(", ")}`
 	} as CodeProps;
 
-	const findKeyFromValue = (value: string, type: "channels" | "roles") => {
+	function findKeyFromValue(value: string, type: "channels" | "roles") {
 		if (!value) return null;
 		const found = Object.entries(data?.guildData?.[type] as any)?.find(([v]) => v === value)?.[1];
 		if (!found) return null;
 
 		return found;
-	};
+	}
 
-	const processWord = (word: string, index: number, isFirstInLine: boolean) => {
+	function processWord(word: string, index: number, isFirstInLine: boolean) {
 		if (!word) return words.push(<></>);
 
 		if (word.startsWith(">") && isFirstInLine)
@@ -115,7 +115,7 @@ function processLine(line: string, mentionBg: string, data?: FormatData) {
 				/>
 			);
 		else words.push(<>{word}</>);
-	};
+	}
 
 	const wordArray = line.split(
 		/(```[^`]+?```|\*\*[^*]+?\*\*|__[^_]+?__|\*[^*\n]+?\*|~~[^~]+?~~|\|\|[^|\n]+?\|\||`[^`\n]+?`|\s+)/
@@ -163,12 +163,11 @@ const Line = memo(function Line({ line, data }: { line: string; data?: FormatDat
 		return processLine(line, mentionBg, data);
 	}, [line]);
 
-	return (
-		<>
-			{processedWords.map((word, wordIndex) => (
-				<React.Fragment key={"word-" + word + "-" + wordIndex}>{word}</React.Fragment>
-			))}
-			<br />
-		</>
-	);
+	const words = useMemo(() => {
+		return processedWords.map((word, wordIndex) => (
+			<React.Fragment key={"word-" + word + "-" + wordIndex}>{word}</React.Fragment>
+		));
+	}, [processedWords]);
+
+	return words;
 });

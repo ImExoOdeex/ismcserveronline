@@ -13,7 +13,7 @@ export default function Preview({ message }: Props) {
 
 	return (
 		<Flex gap={4}>
-			<Image boxSize={10} rounded={"full"} src="/favicon.png" />
+			<Image boxSize={10} rounded={"full"} src="/webp/statusbotlogo512.webp" />
 			<Flex flexDir={"column"} gap={2}>
 				<Flex flexDir={"column"}>
 					<HStack>
@@ -24,7 +24,7 @@ export default function Preview({ message }: Props) {
 							cursor={"pointer"}
 							id={"username"}
 						>
-							Noti
+							Is Minecraft Server Online
 						</Text>
 						<Flex gap={1} alignItems={"center"} px={1.5} rounded={"3px"} bg="#5961ec">
 							<Tooltip
