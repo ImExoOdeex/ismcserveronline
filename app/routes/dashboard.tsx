@@ -6,7 +6,7 @@ import Sidebar from "@/layout/routes/dashboard/Sidebar";
 import { Box, Button, Divider, Flex, HStack, Heading, VStack, useColorMode } from "@chakra-ui/react";
 import type { LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { Outlet, useFetcher } from "@remix-run/react";
+import { Outlet, useFetcher, useMatches } from "@remix-run/react";
 import { FiLogOut } from "react-icons/fi";
 import { PiCrownSimpleDuotone } from "react-icons/pi";
 
@@ -51,6 +51,9 @@ export default function Dashboard() {
 	const user = useUser(true);
 
 	const logoutFetcher = useFetcher();
+
+	const matches = useMatches();
+	const shouldShowSidebar = !matches.some((m) => m.handle && (m.handle as any)?.showSidebar === false);
 
 	if (!user) return null;
 	return (
@@ -117,7 +120,8 @@ export default function Dashboard() {
 					md: "row"
 				}}
 			>
-				<Sidebar />
+				{shouldShowSidebar && <Sidebar />}
+				{/* <Sidebar /> */}
 				<Outlet />
 			</Flex>
 		</VStack>

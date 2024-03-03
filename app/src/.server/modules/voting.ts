@@ -1,3 +1,4 @@
+import serverConfig from "@/.server/serverConfig";
 import { decrypt } from "./encryption";
 
 export async function sendVoteWebhook(
@@ -10,7 +11,10 @@ export async function sendVoteWebhook(
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
-			Authorization: await decrypt(foundServer.vote_webhook_password)
+			Authorization: await decrypt(foundServer.vote_webhook_password),
+			"X-Forwarded-For": "",
+			"X-Real-IP": "",
+			Origin: serverConfig.redirectUrl
 		},
 		body: JSON.stringify({
 			message: `User ${nick} has voted for ${server}!`,

@@ -13,7 +13,7 @@ export async function getServerInfo<T extends boolean = false, K extends boolean
 ): Promise<T extends true ? MinecraftServer : K extends true ? BedrockServer : MinecraftServerWoQuery> {
 	if (query && bedrock) throw new Error("Cannot query bedrock servers.");
 
-	const str = `${serverConfig.api}/${bedrock ? "bedrock/" : query ? "/query" : ""}${address}`;
+	const str = `${serverConfig.api}/${bedrock ? "bedrock/" : query ? "query/" : ""}${address}`;
 
 	return fetch(str, {
 		headers: {

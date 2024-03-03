@@ -4,7 +4,7 @@ const plans = [
 	{
 		type: "server",
 		title: "Server Prime",
-		description: "For invidual servers",
+		description: "For invidual server",
 		price: 3.49,
 		color: "sec.900" as const,
 		features: [

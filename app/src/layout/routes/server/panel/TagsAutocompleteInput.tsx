@@ -26,7 +26,7 @@ export default function TagsAutocompleteInput({ input, setInput, onSubmit, input
 	const [elements, setElements] = useState<string[]>([]);
 
 	const fetcher = useDebouncedFetcherCallback<typeof loader>((data) => {
-		if ((data && !Array.isArray(data.tags)) || !data.tags.every((t) => typeof t === "string")) {
+		if ((data && !Array.isArray(data.tags)) || !data.tags.every((t: any) => typeof t === "string")) {
 			toast({
 				title: "Tags API returned invalid data!",
 				status: "error"

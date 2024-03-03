@@ -2,6 +2,7 @@ import { db } from "@/.server/db/db";
 import { getUser } from "@/.server/db/models/user";
 import { csrf } from "@/.server/functions/security.server";
 import { encrypt } from "@/.server/modules/encryption";
+import { sendVoteWebhook } from "@/.server/modules/voting";
 import useFetcherCallback from "@/hooks/useFetcherCallback";
 import useServerPanelData from "@/hooks/useServerPanelData";
 import { Button, Code, Divider, Flex, Input, Text, useToast } from "@chakra-ui/react";
@@ -27,38 +28,88 @@ export async function action({ request, params }: ActionFunctionArgs) {
 	invariant(user, "User not found");
 
 	const form = await request.formData();
-	const webhookUrl = form.get("webhookUrl") as string;
-	const webhookPassword = form.get("webhookPassword") as string;
 
-	invariant(webhookUrl, "Webhook URL is required");
-	invariant(webhookPassword, "Webhook Password is required");
+	const intent = form.get("intent") as "update" | "test";
 
-	const path = new URL(request.url).pathname;
-	const serverAddress = params.server;
-	const isBedrock = path.split("/")[0] === "bedrock";
+	switch (intent) {
+		case "update": {
+			try {
+				const webhookUrl = form.get("webhookUrl") as string;
+				const webhookPassword = form.get("webhookPassword") as string;
 
-	const server = await db.server.findFirst({
-		where: {
-			server: serverAddress,
-			bedrock: isBedrock,
-			owner_id: user.id
+				invariant(webhookUrl, "Webhook URL is required");
+				invariant(webhookPassword, "Webhook Password is required");
+
+				// min length 5, max length 256
+				invariant(webhookUrl.length >= 5, "Webhook URL is too short");
+				invariant(webhookUrl.length <= 256, "Webhook URL is too long");
+				// make sure it's valid URL
+				invariant(webhookUrl.match(/^(https?):\/\/[^\s$.?#].[^\s]*$/), "Invalid URL");
+				// min length 2, max length 32
+				invariant(webhookPassword.length >= 2, "Webhook Password is too short");
+				invariant(webhookPassword.length <= 32, "Webhook Password is too long");
+
+				const path = new URL(request.url).pathname;
+				const serverAddress = params.server;
+				const isBedrock = path.split("/")[0] === "bedrock";
+
+				const server = await db.server.findFirst({
+					where: {
+						server: serverAddress,
+						bedrock: isBedrock,
+						owner_id: user.id
+					}
+				});
+				invariant(server, "Server not found");
+
+				await db.server.update({
+					where: {
+						id: server.id
+					},
+					data: {
+						vote_webhook_url: webhookUrl,
+						vote_webhook_password: await encrypt(webhookPassword)
+					}
+				});
+
+				return typedjson({
+					success: true
+				});
+			} catch (e) {
+				console.error(e);
+				return typedjson({
+					success: false,
+					message: (e as Error).message
+				});
+			}
 		}
-	});
-	invariant(server, "Server not found");
+		case "test": {
+			const path = new URL(request.url).pathname;
+			const serverAddress = params.server;
+			const isBedrock = path.split("/")[0] === "bedrock";
 
-	await db.server.update({
-		where: {
-			id: server.id
-		},
-		data: {
-			vote_webhook_url: webhookUrl,
-			vote_webhook_password: await encrypt(webhookPassword)
+			const server = await db.server.findFirst({
+				where: {
+					server: serverAddress,
+					bedrock: isBedrock,
+					owner_id: user.id
+				}
+			});
+			invariant(server, "Server not found");
+
+			await sendVoteWebhook(server, {
+				server: server.server,
+				nick: user.nick,
+				bedrock: server.bedrock
+			});
+
+			return typedjson({
+				success: true
+			});
 		}
-	});
-
-	return typedjson({
-		success: true
-	});
+		default:
+			throw new Error("Invalid intent");
+	}
 }
 
 export default function ServerPanel() {
@@ -66,11 +117,18 @@ export default function ServerPanel() {
 
 	const toast = useToast();
 	const fetcher = useFetcherCallback((data) => {
-		toast({
-			title: data.success ? "Webhook updated" : "Failed to update webhook",
-			status: data.success ? "success" : "error",
-			isClosable: true
-		});
+		if (fetcher.formData?.get("intent") === "update") {
+			toast({
+				title: data.success ? "Webhook has been updated" : "Failed to update webhook",
+				description: data.success ? null : data.message,
+				status: data.success ? "success" : "error"
+			});
+		} else {
+			toast({
+				title: data.success ? "Test has been sent" : "Failed to send test",
+				status: data.success ? "info" : "error"
+			});
+		}
 	});
 
 	const [webhookUrl, setWebhookUrl] = useState(data.vote_webhook_url || "");
@@ -101,7 +159,6 @@ export default function ServerPanel() {
 					</Flex>
 
 					<Input
-						isRequired
 						name="webhookUrl"
 						value={webhookUrl}
 						onChange={(e) => setWebhookUrl(e.target.value)}
@@ -140,7 +197,6 @@ export default function ServerPanel() {
 					</Flex>
 
 					<Input
-						isRequired
 						name="webhookPassword"
 						defaultValue={data.vote_webhook_password ?? ""}
 						minLength={2}
@@ -155,9 +211,28 @@ export default function ServerPanel() {
 					/>
 				</Flex>
 
-				<Button alignSelf={"flex-end"} px={6} type="submit" variant={"brand"} isLoading={fetcher.state !== "idle"}>
-					Save
-				</Button>
+				<Flex gap={2} alignItems={"center"} w="100%" justifyContent={"flex-end"}>
+					<Button
+						px={6}
+						type="submit"
+						isLoading={fetcher.state !== "idle" && fetcher.formData?.get("intent") === "test"}
+						name="intent"
+						value="test"
+					>
+						Send test
+					</Button>
+
+					<Button
+						px={6}
+						type="submit"
+						variant={"brand"}
+						isLoading={fetcher.state !== "idle" && fetcher.formData?.get("intent") === "update"}
+						name="intent"
+						value="update"
+					>
+						Save
+					</Button>
+				</Flex>
 			</Flex>
 
 			<Divider />

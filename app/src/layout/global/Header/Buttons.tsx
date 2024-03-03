@@ -1,7 +1,7 @@
 import useUser from "@/hooks/useUser";
 import Link from "@/layout/global/Link";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
-import { Button, Icon } from "@chakra-ui/react";
+import { Badge, Button, HStack, Icon } from "@chakra-ui/react";
 import { useFetcher } from "@remix-run/react";
 import { BiCode, BiLineChart } from "react-icons/bi";
 import DiscordIcon from "../icons/DiscordIcon";
@@ -16,21 +16,19 @@ export function PopularServersButton() {
 			}}
 			_active={{ bg: "alpha100", scale: 0.9 }}
 			transform={"auto-gpu"}
-			to={"/popular-servers"}
+			to={"/search"}
 			as={Link}
 			rounded={"xl"}
 			bg={"transparent"}
-			color="green"
+			pos={"relative"}
 			rightIcon={
-				<Icon
-					as={BiLineChart}
-					color="green"
-					// filter={"drop-shadow(0 0 5px #5cc877)"}
-				/>
+				<HStack>
+					<Icon as={BiLineChart} />
+					<Badge colorScheme="green">New</Badge>
+				</HStack>
 			}
-			// textShadow={"0 0 12px #5cc877"}
 		>
-			Top Voted Servers
+			Servers
 		</Button>
 	);
 }

@@ -6,7 +6,7 @@ import { csrf } from "@/.server/functions/security.server";
 import serverConfig from "@/.server/serverConfig";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import useFetcherCallback from "@/hooks/useFetcherCallback";
-import LivecheckNumbers from "@/layout/routes/dashboard/LivecheckNumbers";
+import LivecheckNumbers from "@/layout/routes/dashboard/bot/LivecheckNumbers";
 import { AddIcon, EditIcon } from "@chakra-ui/icons";
 import {
 	Box,
@@ -632,7 +632,15 @@ export default function Index() {
 							</Flex>
 
 							{alertEnabled && (
-								<Flex flexDir={"row"} w="100%" justifyContent={"space-between"}>
+								<Flex
+									flexDir={{
+										base: "column",
+										md: "row"
+									}}
+									gap={2}
+									w="100%"
+									justifyContent={"space-between"}
+								>
 									<Flex flexDir={"column"} gap={0}>
 										<Text fontWeight={600}>Alert Channel</Text>
 										<Text color={"textSec"}>Select a channel you'd like to be notified in.</Text>
@@ -677,7 +685,7 @@ export default function Index() {
 												...provided,
 												borderRadius: "xl",
 												w: "100%",
-												maxW: "md",
+												maxW: "xs",
 												bg: "transparent"
 											}),
 											input: (provided) => ({

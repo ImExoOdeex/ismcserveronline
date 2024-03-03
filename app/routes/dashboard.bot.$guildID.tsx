@@ -5,7 +5,7 @@ import { csrf } from "@/.server/functions/security.server";
 import serverConfig from "@/.server/serverConfig";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import Link from "@/layout/global/Link";
-import BotNotOnServer from "@/layout/routes/dashboard/BotNotOnServer";
+import BotNotOnServer from "@/layout/routes/dashboard/bot/BotNotOnServer";
 import { Button, Flex, HStack, Heading, Image, Stack } from "@chakra-ui/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
@@ -13,6 +13,10 @@ import { useLocation, useOutlet } from "@remix-run/react";
 import { typedjson } from "remix-typedjson";
 import { InsideErrorBoundary } from "~/document";
 import { Guild } from "./dashboard.bot._index";
+
+export const handle = {
+	showSidebar: false
+};
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
 	csrf(request);
@@ -60,11 +64,11 @@ export default function $guildID() {
 		{
 			name: "Config",
 			path: `/dashboard/bot/${guild.id}/config`
+		},
+		{
+			name: "Editor",
+			path: `/dashboard/bot/${guild.id}/editor`
 		}
-		// {
-		// 	name: "Alerts",
-		// 	path: `/dashboard/bot/${guild.id}/alerts`
-		// }
 	];
 
 	return (

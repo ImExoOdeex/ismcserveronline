@@ -5,7 +5,7 @@ import { requireUserGuild } from "@/.server/functions/secureDashboard.server";
 import { csrf } from "@/.server/functions/security.server";
 import serverConfig from "@/.server/serverConfig";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
-import StatusColor from "@/layout/routes/dashboard/StatusColor";
+import StatusColor from "@/layout/routes/dashboard/bot/StatusColor";
 import { Button, Divider, HStack, Icon, Stack, Text, VStack, Wrap, WrapItem } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { useFetcher, useRevalidator } from "@remix-run/react";

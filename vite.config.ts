@@ -6,7 +6,6 @@ export default defineConfig({
 	plugins: [
 		remix({
 			ignoredRouteFiles: ["**/.*"],
-			manifest: true,
 			future: {
 				v3_throwAbortReason: true,
 				v3_fetcherPersist: true

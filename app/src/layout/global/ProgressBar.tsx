@@ -19,8 +19,8 @@ export default memo(function ProgressBar({
 	height = 2,
 	heightDuration = 0.4,
 	initialProgress = 10,
-	trickleAmount = 4,
-	trickleTime = 150,
+	trickleAmount = 3,
+	trickleTime = 175,
 	widthDuration = 0.4
 }: Partial<Props>) {
 	const { progress, onHide, hasBeenStarted } = useProgressBar({
