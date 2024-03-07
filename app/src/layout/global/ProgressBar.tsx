@@ -1,4 +1,3 @@
-import { useProgressBar } from "@/hooks/useProgressBar";
 import config from "@/utils/config";
 import { Flex, useColorModeValue } from "@chakra-ui/react";
 import { TargetAndTransition, motion, useAnimationControls } from "framer-motion";
@@ -10,25 +9,21 @@ interface Props {
 	heightDuration: number;
 	height: number;
 	initialProgress: number;
-	trickleAmount: number;
-	trickleTime: number;
+	progress: number;
+	onHide: () => void;
+	hasBeenStarted: boolean;
 }
 
 export default memo(function ProgressBar({
-	doneWidthDuration = 0.2,
-	height = 2,
-	heightDuration = 0.4,
-	initialProgress = 10,
-	trickleAmount = 3,
-	trickleTime = 175,
-	widthDuration = 0.4
-}: Partial<Props>) {
-	const { progress, onHide, hasBeenStarted } = useProgressBar({
-		initialProgress,
-		trickleAmount,
-		trickleTime
-	});
-
+	doneWidthDuration,
+	height,
+	heightDuration,
+	initialProgress,
+	widthDuration,
+	progress,
+	onHide,
+	hasBeenStarted
+}: Props) {
 	const [completed, setCompleted] = useState(false);
 	const color = useColorModeValue("brand", "gray.100");
 

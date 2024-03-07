@@ -1,5 +1,6 @@
 import useDebouncedFetcherCallback from "@/hooks/useDebouncedFetcherCallback";
 import useInsideEffect from "@/hooks/useInsideEffect";
+import { useProgressBarContext } from "@/layout/global/ProgressBarContext";
 import { Flex, HStack, Text, useColorModeValue, useToast } from "@chakra-ui/react";
 import {
 	AutoComplete,
@@ -53,7 +54,9 @@ export default function TagsAutocompleteInput({ input, setInput, onSubmit, input
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [input]);
 
-	const boxBg = useColorModeValue("rgba(252, 252, 252, 0.9)", "rgba(17, 17, 23, 0.9)");
+	const boxBg = useColorModeValue("rgba(252, 252, 252, 0.9) !important", "rgba(17, 17, 23, 0.9)");
+
+	const { start } = useProgressBarContext();
 
 	return (
 		<AutoComplete
@@ -62,9 +65,8 @@ export default function TagsAutocompleteInput({ input, setInput, onSubmit, input
 			suggestWhenEmpty
 			closeOnSelect
 			creatable
-			// isLoading={fetcher.state === "loading"}
 			onSelectOption={(option: any) => {
-				console.log("option", option);
+				start();
 
 				onSubmit?.(option.item.value, option.item.creatable);
 				setInput("");
@@ -96,13 +98,14 @@ export default function TagsAutocompleteInput({ input, setInput, onSubmit, input
 						</Text>
 					</Flex>
 				)}
-				{elements.map((element, cid) => (
-					<AutoCompleteItem key={`option-${cid}`} mx={0} value={element}>
-						<HStack>
-							<Text>{element}</Text>
-						</HStack>
-					</AutoCompleteItem>
-				))}
+				{!!input.length &&
+					elements.map((element, cid) => (
+						<AutoCompleteItem key={`option-${cid}`} mx={0} value={element}>
+							<HStack>
+								<Text>{element}</Text>
+							</HStack>
+						</AutoCompleteItem>
+					))}
 
 				{!elements.includes(input) && <AutoCompleteCreatable mx={0} />}
 			</AutoCompleteList>

@@ -43,6 +43,19 @@ export async function action({ request, params }: ActionFunctionArgs) {
 			where: {
 				server,
 				bedrock: isBedrock
+			},
+			select: {
+				id: true,
+				server: true,
+				vote_webhook_password: true,
+				vote_webhook_url: true,
+				prime: true,
+				Owner: {
+					select: {
+						id: true,
+						prime: true
+					}
+				}
 			}
 		});
 		invariant(foundServer, "Server not found");
@@ -79,6 +92,31 @@ export async function action({ request, params }: ActionFunctionArgs) {
 				nick
 			}
 		});
+
+		// create second vote if it's weekend and server or owner have prime. weekend starts at 3pm on friday and ends at the end of sunday
+		const day = dayjs().day();
+		const hour = dayjs().hour();
+		const isFriday = day === 5 && hour >= 15;
+		const isWeekend = day === 6 || day === 0 || isFriday;
+		console.table({
+			day,
+			hour,
+			isFriday,
+			isWeekend,
+			prime: foundServer.prime,
+			ownerPrime: foundServer?.Owner?.prime,
+			is: isWeekend && (foundServer.prime || foundServer?.Owner?.prime)
+		});
+
+		if (isWeekend && (foundServer.prime || foundServer?.Owner?.prime)) {
+			await db.vote.create({
+				data: {
+					server_id: foundServer.id,
+					user_id: user.id,
+					nick
+				}
+			});
+		}
 
 		emitter.emit(`vote-${foundServer.id}`, {
 			id: vote.id,
@@ -203,7 +241,10 @@ export default function ServerVote() {
 					verified={!!data.owner_id}
 					bedrock={data.bedrock}
 					image={image}
-					mb={28}
+					mb={{
+						base: 44,
+						md: 28
+					}}
 				/>
 			</Flex>
 

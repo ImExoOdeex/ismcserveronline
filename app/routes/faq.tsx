@@ -144,7 +144,8 @@ export default function Faq() {
 			<VStack align={"start"}>
 				<Heading fontSize={"md"}>Is it really real-time data?</Heading>
 				<Text color={"textSec"} fontWeight={500}>
-					Yes, our API <b>does not</b> cache any responses!
+					Yes, our API <b>caches</b> responses for only <b>15 seconds</b> to prevent spamming requests to servers, so
+					API does not get ratelimited!
 				</Text>
 			</VStack>
 
@@ -206,7 +207,7 @@ export default function Faq() {
 
 			<SystemInfo system={system} />
 
-			<Ad type={adType.multiplex} />
+			<Ad type={adType.responsive} />
 		</VStack>
 	);
 }

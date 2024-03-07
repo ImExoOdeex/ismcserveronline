@@ -32,18 +32,30 @@ export function meta() {
 			name: "description",
 			content: desc
 		},
+		{
+			name: "image",
+			content: `${config.dashUrl}/logo-wallpaper.png`
+		},
 		// og tags
+		{
+			property: "og:title",
+			content: "#1 Minecraft server list & status checker | IsMcServer.online"
+		},
 		{
 			property: "og:description",
 			content: desc
 		},
 		{
 			property: "og:image",
-			content: "https://ismcserver.online/webp/statusbotlogo512.webp"
+			content: `${config.dashUrl}/logo-wallpaper.png`
 		},
 		{
 			property: "og:url",
-			content: "https://ismcserver.online/"
+			content: config.dashUrl
+		},
+		{
+			property: "og:site_name",
+			content: "IsMcServer.online"
 		},
 		{
 			property: "og:type",
@@ -193,12 +205,13 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
 	const user = await getUser(request);
 
-	const showAds = user?.everPurchased
-		? false
-		: getCookieWithoutDocument("no_ads", request.headers.get("cookie") ?? "") !== requireEnv("NO_ADS_PARAM_VALUE");
+	const isBot = isbot(request.headers.get("user-agent"));
+	const showAds =
+		user?.everPurchased || isBot
+			? false
+			: getCookieWithoutDocument("no_ads", request.headers.get("cookie") ?? "") !== requireEnv("NO_ADS_PARAM_VALUE");
 	// ^^^ code for no ads up there uwu ^^^
 
-	const isBot = isbot(request.headers.get("user-agent"));
 	const start = Number(context.start ?? Date.now());
 	const locales = getClientLocales(request);
 

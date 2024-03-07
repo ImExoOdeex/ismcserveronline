@@ -60,7 +60,10 @@ export default memo(function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 						to="/"
 						alignItems={"center"}
 						_hover={{ textDecor: "none" }}
-						fontSize="2xl"
+						fontSize={{
+							base: "xl",
+							md: "2xl"
+						}}
 						transition={"all .2s"}
 						transform={"auto-gpu"}
 						_active={{ scale: 0.95 }}

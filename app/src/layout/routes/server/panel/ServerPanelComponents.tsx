@@ -1,4 +1,5 @@
 import useFetcherCallback from "@/hooks/useFetcherCallback";
+import { useProgressBarContext } from "@/layout/global/ProgressBarContext";
 import TagsAutocompleteInput from "@/layout/routes/server/panel/TagsAutocompleteInput";
 import config from "@/utils/config";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
@@ -23,10 +24,13 @@ import {
 	Tag,
 	Text,
 	Tooltip,
+	Wrap,
 	useDisclosure
 } from "@chakra-ui/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { memo, useCallback, useMemo, useRef, useState } from "react";
+import { PiFilePngBold } from "react-icons/pi";
+import { SiAdobephotoshop } from "react-icons/si";
 import { action } from "~/routes/api.tags";
 
 export const StatBox = memo(function StatBox({ title, value, helper }: { title: string; value: number; helper?: number }) {
@@ -79,10 +83,10 @@ export const TemplateAlertDialog = memo(function TemplateAlertDialog() {
 							banner.
 							<Image src="/banner-template.png" alt="Banner template" />
 							<HStack w="100%">
-								<Button as="a" href="/banner-template.png" download w="100%">
+								<Button as="a" href="/banner-template.png" download w="100%" rightIcon={<PiFilePngBold />}>
 									Download PNG
 								</Button>
-								<Button as="a" href="/banner-template.psd" download w="100%">
+								<Button as="a" href="/banner-template.psd" download w="100%" rightIcon={<SiAdobephotoshop />}>
 									Download PSD
 								</Button>
 							</HStack>
@@ -101,7 +105,10 @@ export const Tags = memo(function Tags({ tags: dbTags, serverId }: { tags: strin
 
 	const [submitting, setSubmitting] = useState<string[]>([]);
 
+	const { done } = useProgressBarContext();
+
 	const addFetcher = useFetcherCallback<typeof action>((data) => {
+		done();
 		setSubmitting((prev) => (prev = prev.filter((id) => id !== (data as any).tag.name)));
 	});
 
@@ -126,7 +133,10 @@ export const Tags = memo(function Tags({ tags: dbTags, serverId }: { tags: strin
 							input={search}
 							setInput={setSearch}
 							onSubmit={(tag) => {
-								if (tags.includes(tag) || tag.length < 2) return;
+								if (tags.includes(tag) || tag.length < 2) {
+									done();
+									return;
+								}
 
 								setTags((prev) => [...prev, tag]);
 								setOptimisticTags((prev) => [...prev, tag]);
@@ -151,7 +161,7 @@ export const Tags = memo(function Tags({ tags: dbTags, serverId }: { tags: strin
 					</Flex>
 
 					{optimisticTags.length ? (
-						<Flex w="100%">
+						<Wrap as="div" w="100%">
 							{tags.map((tag) => (
 								<ServerTag
 									key={"tag-" + tag}
@@ -162,7 +172,7 @@ export const Tags = memo(function Tags({ tags: dbTags, serverId }: { tags: strin
 									serverId={serverId}
 								/>
 							))}
-						</Flex>
+						</Wrap>
 					) : (
 						<Text color={"textSec"} fontSize={"lg"} fontWeight={600}>
 							No tags
@@ -188,14 +198,19 @@ export const ServerTag = memo(function ServerTag({
 	submitting: string[];
 }) {
 	const [isDragging, setIsDragging] = useState(false);
+
+	const { done, start } = useProgressBarContext();
+
 	const deleteFetcher = useFetcherCallback<typeof action>((data) => {
-		console.log("data", data);
+		done();
+		console.log("delete tag fetcher", data);
 	});
 
 	const deleteTag = useCallback(() => {
 		(async () => {
 			setTags((prev) => prev.filter((t) => t !== tag));
 
+			start();
 			deleteFetcher.submit(
 				{
 					tag,
@@ -216,7 +231,6 @@ export const ServerTag = memo(function ServerTag({
 					drag="y"
 					dragSnapToOrigin
 					style={{
-						marginRight: "8px",
 						overflow: "hidden"
 					}}
 					transition={{
@@ -224,8 +238,7 @@ export const ServerTag = memo(function ServerTag({
 					}}
 					exit={{
 						width: 0,
-						opacity: 0,
-						marginRight: 0
+						opacity: 0
 					}}
 					onDragEnd={(e, info) => {
 						setIsDragging(false);
@@ -238,8 +251,11 @@ export const ServerTag = memo(function ServerTag({
 					<Tag
 						w="fit-content"
 						size={"lg"}
-						variant="solid"
-						colorScheme={"brand"}
+						bg="brand.900"
+						color={"whiteAlpha.900"}
+						_hover={{
+							bg: "#563B9Fca"
+						}}
 						cursor={isDragging ? "grabbing" : "grab"}
 						opacity={submitting.includes(tag) ? 0.5 : 1}
 					>

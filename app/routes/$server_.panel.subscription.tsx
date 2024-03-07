@@ -197,7 +197,7 @@ export default function ServerPanel() {
 									<Text>
 										Hi, thank you for supporting us!
 										{data?.cancel_at_period_end &&
-											`Your subscription has been cancelled and will end on
+											` Your subscription has been cancelled and will end on
 											${new Date(data.current_period_end * 1000).toLocaleDateString()}. You won't be charged
 											anymore.`}
 									</Text>

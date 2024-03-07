@@ -128,10 +128,7 @@ export default memo(function Vote() {
 					type="submit"
 					isLoading={fetcher.state !== "idle"}
 					isDisabled={vote !== null || secondsToVote !== 0 || fetcher.data?.success}
-					w={{
-						base: "100%",
-						md: "auto"
-					}}
+					w={"auto"}
 				>
 					Vote{fetcher.data?.success ? "d!" : ""}
 				</Button>

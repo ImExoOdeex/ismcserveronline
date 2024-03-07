@@ -1,7 +1,7 @@
 import useFetcherCallback from "@/hooks/useFetcherCallback";
+import Link from "@/layout/global/Link";
 import { Icon } from "@chakra-ui/icons";
 import { Badge, Flex, IconButton, Image, Text, Tooltip, useToast, VisuallyHiddenInput } from "@chakra-ui/react";
-import { useFetcher } from "@remix-run/react";
 import { memo } from "react";
 import { BiRefresh } from "react-icons/bi";
 import { FiTrash2 } from "react-icons/fi";
@@ -14,25 +14,16 @@ interface Props {
 
 export default memo(function SavedServer({ server }: Props) {
 	const toast = useToast();
-	const goFetcher = useFetcher();
 	const refreshFetcher = useFetcherCallback((data) => {
 		toast({
 			title: data?.success ? "Server refreshed!" : "Server not refreshed!",
-			status: data?.success ? "success" : "error",
-			duration: 9000,
-			variant: "subtle",
-			position: "bottom-right",
-			isClosable: true
+			status: data?.success ? "success" : "error"
 		});
 	});
 	const deleteFetcher = useFetcherCallback((data) => {
 		toast({
 			title: data?.success ? "Server deleted!" : "Server not deleted!",
-			status: data?.success ? "success" : "error",
-			duration: 9000,
-			variant: "subtle",
-			position: "bottom-right",
-			isClosable: true
+			status: data?.success ? "success" : "error"
 		});
 	});
 
@@ -116,25 +107,19 @@ export default memo(function SavedServer({ server }: Props) {
 						</Tooltip>
 					</refreshFetcher.Form>
 
-					<goFetcher.Form method="POST">
-						<VisuallyHiddenInput name="server" value={server.Server.server} readOnly />
-						<VisuallyHiddenInput name="bedrock" value={server.Server.bedrock ? "true" : "false"} readOnly />
-						<Tooltip label="Go to the server page" openDelay={200} hasArrow>
-							<IconButton
-								aria-label={"Go to the server page"}
-								icon={<Icon as={IoReturnDownForwardOutline} boxSize={5} />}
-								fontWeight={"semibold"}
-								type="submit"
-								color={"brand"}
-								_hover={{ color: "brand", bg: "rgba(162, 0, 255, 0.05)" }}
-								_active={{ color: "brand", bg: "rgba(162, 0, 255, 0.1)" }}
-								bg="transparent"
-								isLoading={goFetcher.state !== "idle"}
-								name="action"
-								value="go"
-							/>
-						</Tooltip>
-					</goFetcher.Form>
+					{/* <Tooltip label="Go to the server page" openDelay={200} hasArrow> */}
+					<IconButton
+						as={Link}
+						to={`/${server.Server.bedrock ? "bedrock/" : ""}${server.Server.server}`}
+						aria-label={"Go to the server page"}
+						icon={<Icon as={IoReturnDownForwardOutline} boxSize={5} />}
+						fontWeight={"semibold"}
+						color={"brand"}
+						_hover={{ color: "brand", bg: "rgba(162, 0, 255, 0.05)" }}
+						_active={{ color: "brand", bg: "rgba(162, 0, 255, 0.1)" }}
+						bg="transparent"
+					/>
+					{/* </Tooltip> */}
 				</Flex>
 			</Flex>
 		</Flex>

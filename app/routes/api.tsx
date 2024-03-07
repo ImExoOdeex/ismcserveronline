@@ -1,3 +1,4 @@
+import { cachePrefetch } from "@/.server/functions/fetchHelpers.server";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import useUser from "@/hooks/useUser";
 import Link from "@/layout/global/Link";
@@ -22,7 +23,7 @@ import {
 	useClipboard,
 	useColorModeValue
 } from "@chakra-ui/react";
-import { MetaArgs, type MetaFunction } from "@remix-run/node";
+import { LoaderFunctionArgs, MetaArgs, type MetaFunction } from "@remix-run/node";
 import crypto from "crypto";
 import { FaCode } from "react-icons/fa";
 import { typedjson } from "remix-typedjson";
@@ -36,10 +37,10 @@ export function meta({ matches }: MetaArgs) {
 	] as ReturnType<MetaFunction>;
 }
 
-export async function loader() {
+export async function loader({ request }: LoaderFunctionArgs) {
 	const sampleToken = crypto.randomUUID();
 
-	return typedjson({ sampleToken });
+	return typedjson({ sampleToken }, cachePrefetch(request));
 }
 
 const data: Omit<MinecraftServerWoQuery, "favicon"> = {
@@ -74,11 +75,11 @@ export default function Api() {
 	const { sampleToken } = useAnimationLoaderData<typeof loader>();
 	const user = useUser();
 
-	const { onCopy, hasCopied } = useClipboard(`await request("https://api.ismcserver.online/hypixel.net", {
+	const { onCopy, hasCopied, value } = useClipboard(`await fetch("https://api.ismcserver.online/hypixel.net", {
         headers: {
             "Authorization": "${sampleToken}"
         }
-      })`);
+      }).then(res => res.json())`);
 
 	const teal = useColorModeValue("teal.600", "teal.300");
 
@@ -128,7 +129,7 @@ export default function Api() {
 											</Text>
 										</Flex>
 									</Tooltip>
-									<Text fontSize={"12px"} opacity={0.7} fontWeight={100}>
+									<Text fontSize={"12px"} color="textSec" fontWeight={400}>
 										Sample token*
 									</Text>
 								</Flex>

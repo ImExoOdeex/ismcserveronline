@@ -1,6 +1,7 @@
 import { db } from "@/.server/db/db";
 import { getUserId } from "@/.server/db/models/user";
 import { getServerInfo } from "@/.server/functions/api.server";
+import { csrf } from "@/.server/functions/security.server";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import SavedServer from "@/layout/routes/dashboard/SavedServer";
 import VerifiedServer from "@/layout/routes/dashboard/VerifiedServer";
@@ -25,6 +26,7 @@ export interface Guild {
 }
 
 export async function action({ request }: ActionFunctionArgs) {
+	csrf(request);
 	const formData = await request.formData();
 	const action = formData.get("action")?.toString() as string;
 
@@ -92,12 +94,6 @@ export async function action({ request }: ActionFunctionArgs) {
 				success: true
 			});
 		}
-		case "go": {
-			const server = formData.get("server")?.toString() as string;
-			const bedrock = formData.get("bedrock")?.toString() === "true";
-
-			return redirect(`/${bedrock ? "bedrock/" : ""}${server}`);
-		}
 		default: {
 			throw new Error("Invalid action");
 		}
@@ -105,6 +101,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
+	csrf(request);
 	const userId = await getUserId(request);
 
 	if (!userId) {
@@ -249,7 +246,7 @@ const VerifiedServerDisplay = memo(function VerifiedServerDisplay({
 					alignItems={"center"}
 					justifyContent="center"
 				>
-					<Text fontWeight={600}>You don't have any servers bookmarked.</Text>
+					<Text fontWeight={600}>You don't have any verified servers.</Text>
 				</Flex>
 			)}
 		</>

@@ -26,16 +26,17 @@ model User {
   guilds        Json?
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
+  ad_credits    Int      @default(0)
 
   Comment      Comment[]
   SavedServer  SavedServer[]
-  SampleServer SampleServer[]
   Vote         Vote[]
   OwnedServers Server[]
   Verification Verification[]
   Token        Token?
+  PromotedView PromotedView[]
 
-  @@index([email])
+  @@index([email, id])
 }
 
 model Server {
@@ -82,17 +83,69 @@ model Server {
   Check        Check[]
   Comment      Comment[]
   SavedServer  SavedServer[]
-  SampleServer SampleServer[]
   Vote         Vote[]
   Verification Verification[]
   Tags         Tag[]          @relation(name: "Tags")
   TagsCreated  Tag[]          @relation(name: "TagsCreated")
+  ServerToken  ServerToken[]
+  Promoted     Promoted[]
 
   owner_id           Int?
   Owner              User?   @relation(fields: [owner_id], references: [id])
   message_from_owner String?
+  language           String?
 
-  @@index([id, server])
+  created_at DateTime @default(now())
+
+  @@index([id, server, bedrock])
+}
+
+model Promoted {
+  id Int @id @unique @default(autoincrement())
+
+  views_limit  Int
+  color        String
+  status       PromotedStatus @default(Active)
+  PromotedView PromotedView[]
+  Tags         Tag[]          @relation(name: "PromotedTags")
+
+  server_id Int
+  Server    Server @relation(fields: [server_id], references: [id])
+
+  updated_at DateTime @updatedAt
+  created_at DateTime @default(now())
+
+  @@index([id, server_id])
+}
+
+enum PromotedStatus {
+  Active
+  Disabled
+  OutOfViews
+}
+
+model PromotedView {
+  id Int @id @unique @default(autoincrement())
+
+  type       PromotedViewType @default(Impression)
+  client_ip  String
+  user_agent String?
+
+  promoted_id Int
+  Promoted    Promoted @relation(fields: [promoted_id], references: [id])
+
+  user_id Int?
+  User    User? @relation(fields: [user_id], references: [id])
+
+  updated_at DateTime @updatedAt
+  created_at DateTime @default(now())
+
+  @@index([promoted_id, id])
+}
+
+enum PromotedViewType {
+  Impression
+  Click
 }
 
 model Tag {
@@ -105,7 +158,11 @@ model Tag {
   createdByServerId Int?
   Server            Server? @relation(fields: [createdByServerId], references: [id], name: "TagsCreated")
 
+  Promoted Promoted[] @relation(name: "PromotedTags")
+
   created_at DateTime @default(now())
+
+  @@index([name, id])
 }
 
 model Verification {
@@ -122,6 +179,8 @@ model Verification {
 
   verified_at DateTime?
   created_at  DateTime  @default(now())
+
+  @@index([user_id, server_id])
 }
 
 model SavedServer {
@@ -134,6 +193,8 @@ model SavedServer {
   User    User @relation(fields: [user_id], references: [id])
 
   created_at DateTime @default(now())
+
+  @@index([user_id, server_id, id])
 }
 
 enum SOURCE {
@@ -142,7 +203,6 @@ enum SOURCE {
   API
 }
 
-// comments are not related to any of server of check, cuz there is no server creating when someone checks it. it's determinated via address and port
 model Comment {
   id      Int  @id @unique @default(autoincrement())
   user_id Int
@@ -155,22 +215,8 @@ model Comment {
 
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
-}
 
-model SampleServer {
-  id Int @id @unique @default(autoincrement())
-
-  server_id Int
-  Server    Server @relation(fields: [server_id], references: [id])
-
-  user    User? @relation(fields: [user_id], references: [id])
-  user_id Int?
-
-  payment_id     String?
-  payment_status PaymentStatus @default(PROCESSING)
-
-  add_date DateTime  @default(now())
-  end_date DateTime?
+  @@index([user_id, server_id])
 }
 
 enum PaymentStatus {
@@ -178,15 +224,6 @@ enum PaymentStatus {
   CANCELLED
   PROCESSING
   PAID
-}
-
-// this server is for popular servers
-model PopularServer {
-  id         Int      @id @unique @default(autoincrement())
-  server     String
-  icon       String?
-  tags       Json?
-  created_at DateTime @default(now())
 }
 
 model Check {
@@ -210,8 +247,7 @@ model Check {
 model Token {
   id Int @id @unique @default(autoincrement())
 
-  token     String  @unique
-  client_ip String?
+  token String @unique
 
   user    User? @relation(fields: [user_id], references: [id])
   user_id Int?  @unique
@@ -220,12 +256,31 @@ model Token {
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  @@index([token, id])
+}
+
+model ServerToken {
+  id Int @id @unique @default(autoincrement())
+
+  token String @unique
+  calls Int    @default(0)
+
+  server_id Int    @unique
+  Server    Server @relation(fields: [server_id], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([token, id])
 }
 
 model Vote {
   id Int @id @unique @default(autoincrement())
 
-  nick String
+  nick                String
+  reward_collected    Boolean   @default(false)
+  reward_collected_at DateTime?
 
   user_id   Int
   user      User   @relation(fields: [user_id], references: [id])
@@ -234,4 +289,6 @@ model Vote {
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  @@index([user_id, nick, server_id])
 }

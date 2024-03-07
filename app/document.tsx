@@ -17,8 +17,10 @@ function Document({ children }: DocumentProps) {
 	const clientStyleData = useContext(ClientStyleContext);
 	const reinjectStylesRef = useRef(true);
 
+	let { cookies, showAds, isBot } = useTypedLoaderData<typeof loader>();
+
 	// run this only on client, cause the warning shits whole server
-	if (clientStyleData)
+	if (typeof document !== "undefined") {
 		useLayoutEffect(() => {
 			if (!reinjectStylesRef.current) return;
 
@@ -27,9 +29,6 @@ function Document({ children }: DocumentProps) {
 			reinjectStylesRef.current = false;
 		}, []);
 
-	let { cookies, showAds } = useTypedLoaderData<typeof loader>();
-
-	if (typeof document !== "undefined") {
 		cookies = document.cookie;
 	}
 
@@ -131,7 +130,7 @@ export function InsideErrorBoundary() {
 	}, [error]);
 
 	return (
-		<VStack m="auto" spacing={5}>
+		<VStack m="auto" spacing={5} px={4}>
 			<Heading>Oops... Something unexpected has just happend</Heading>
 			<Heading fontSize={"lg"}>Please try refreshing the page, if error still occurs please contact admin</Heading>
 			{error instanceof Error ? (

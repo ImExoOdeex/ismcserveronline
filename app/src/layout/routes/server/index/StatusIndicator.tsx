@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, keyframes, useToken } from "@chakra-ui/react";
+import { Box, Flex, FlexProps, Heading, keyframes, useToken } from "@chakra-ui/react";
 import { useMemo } from "react";
 
 interface Props {
@@ -7,7 +7,12 @@ interface Props {
 	offlineColor?: string;
 }
 
-export default function StatusIndicator({ online, onlineColor = "green", offlineColor = "red.500" }: Props) {
+export default function StatusIndicator({
+	online,
+	onlineColor = "green",
+	offlineColor = "red.500",
+	...props
+}: Props & FlexProps) {
 	[onlineColor, offlineColor] = useToken("colors", [onlineColor, offlineColor]);
 
 	const boxShadowInfinityPulse = useMemo(() => {
@@ -31,6 +36,7 @@ export default function StatusIndicator({ online, onlineColor = "green", offline
 			rounded={"lg"}
 			bg={online ? `rgba(0, 255, 17, 0.1)` : `rgba(255, 38, 0, 0.1)`}
 			h="min-content"
+			{...props}
 		>
 			<Box
 				boxSize={3}
@@ -42,15 +48,6 @@ export default function StatusIndicator({ online, onlineColor = "green", offline
 			<Heading fontSize="lg" letterSpacing={"3px"} color={online ? onlineColor : offlineColor}>
 				{online ? "Online" : "Offline"}
 			</Heading>
-			{/* <Flex
-					pos="absolute"
-					right={0}
-					bottom={0}
-					left={0}
-					h={"2px"}
-					bg={online ? onlineColor : offlineColor}
-					rounded={"1px"}
-				/> */}
 		</Flex>
 	);
 }

@@ -1,4 +1,4 @@
-import { inputAnatomy } from "@chakra-ui/anatomy";
+import { inputAnatomy, tableAnatomy, tagAnatomy } from "@chakra-ui/anatomy";
 import {
 	theme as chakraTheme,
 	createMultiStyleConfigHelpers,
@@ -51,6 +51,7 @@ const {
 	Button,
 	Tag,
 	Code,
+	Drawer,
 	Divider,
 	Switch,
 	Menu,
@@ -76,6 +77,8 @@ const {
 } = chakraTheme.components;
 
 const inputHelpers = createMultiStyleConfigHelpers(inputAnatomy.keys);
+const tagHelpers = createMultiStyleConfigHelpers(tagAnatomy.keys);
+const tableHelpers = createMultiStyleConfigHelpers(tableAnatomy.keys);
 
 const multipartComponents = {
 	input: inputHelpers.defineMultiStyleConfig({
@@ -108,6 +111,35 @@ const multipartComponents = {
 				_focusVisible: {
 					// boxShadow: `0 0 0 3px rgba(90, 53, 215, 0.6)`,
 					borderColor: "brand !important"
+				}
+			}
+		}
+	}),
+	tag: tagHelpers.defineMultiStyleConfig({
+		baseStyle: {
+			container: {
+				bg: "alpha100",
+				transform: "auto-gpu",
+				transition: `transform .2s ${config.cubicEase}, background .2s ${config.cubicEase}, color .2s ${config.cubicEase}`,
+				_hover: {
+					textDecor: "none",
+					bg: "alpha200"
+				},
+				_active: {
+					scale: 0.9,
+					bg: "alpha300"
+				}
+			}
+		}
+	}),
+	table: tableHelpers.defineMultiStyleConfig({
+		variants: {
+			simple: {
+				td: {
+					borderColor: "alpha300"
+				},
+				th: {
+					borderColor: "alpha300"
 				}
 			}
 		}
@@ -262,7 +294,7 @@ export default function useTheme() {
 					Code,
 					FormLabel,
 					Heading,
-					Tag,
+					Drawer,
 					Avatar,
 					Slider,
 					Form,
@@ -276,9 +308,10 @@ export default function useTheme() {
 					Accordion,
 					Spinner,
 					Textarea,
-					Table,
 					Select,
 					List,
+					Table: mergeThemeOverride(Table, multipartComponents.table),
+					Tag: mergeThemeOverride(Tag, multipartComponents.tag),
 					Divider: mergeThemeOverride(Divider, {
 						baseStyle: {
 							borderColor: "alpha300"

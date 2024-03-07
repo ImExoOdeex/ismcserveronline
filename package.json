@@ -38,6 +38,7 @@
 		"dayjs": "^1.11.10",
 		"express": "^4.18.2",
 		"fast-average-color": "^9.3.0",
+		"fast-average-color-node": "^3.0.0",
 		"framer-motion": "^7.8.1",
 		"intl-parse-accept-language": "^1.0.0",
 		"isbot": "^4.3.0",
@@ -47,13 +48,15 @@
 		"react-dom": "^18.2.0",
 		"react-icons": "^4.11.0",
 		"react-time-ago": "^7.2.1",
+		"recharts": "^2.12.2",
 		"remix": "2.8.0",
 		"remix-auth-discord": "^1.2.1",
 		"remix-typedjson": "^0.4.1",
 		"remix-utils": "^7.5.0",
 		"sharp": "^0.33.2",
 		"stripe": "^14.10.0",
-		"tiny-invariant": "^1.3.1"
+		"tiny-invariant": "^1.3.1",
+		"ws": "^8.16.0"
 	},
 	"devDependencies": {
 		"@chakra-ui/cli": "^2.3.0",
@@ -67,6 +70,7 @@
 		"@types/react": "^18.0.25",
 		"@types/react-dom": "^18.0.8",
 		"@types/source-map-support": "^0.5.10",
+		"@types/ws": "^8.5.10",
 		"chokidar": "^3.5.3",
 		"cross-env": "^7.0.3",
 		"dotenv": "^16.0.3",

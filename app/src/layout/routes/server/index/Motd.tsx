@@ -45,9 +45,24 @@ export default memo(function Motd({ motd, ...props }: Props & FlexProps) {
 					alignItems={"center"}
 					fontFamily={font}
 					fontWeight={500}
-					fontSize={font === "Minecraft" ? "xl" : "sm"}
+					fontSize={
+						font === "Minecraft"
+							? {
+									base: "sm",
+									md: "lg",
+									xl: "xl"
+							  }
+							: {
+									base: "10px",
+									md: "sm"
+							  }
+					}
 					dangerouslySetInnerHTML={{ __html: line }}
 					gap={1}
+					flexWrap={"nowrap"}
+					flexDir={"row"}
+					wrap={"nowrap"}
+					rel="ugc"
 				/>
 			))}
 		</Flex>

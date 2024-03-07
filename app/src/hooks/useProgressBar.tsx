@@ -91,6 +91,9 @@ export function useProgressBar({ trickleTime = 250, trickleAmount = 3, initialPr
 	return {
 		progress,
 		onHide,
-		hasBeenStarted
+		hasBeenStarted,
+		startAndDone,
+		start,
+		done
 	};
 }

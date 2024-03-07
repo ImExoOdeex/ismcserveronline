@@ -6,17 +6,19 @@ import { getFullFileUrl } from "@/functions/storage";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import useAnyPrime from "@/hooks/useAnyPrime";
 import DragAndDropFile from "@/layout/routes/server/panel/DragAndDropFile";
+import LanguageChanger from "@/layout/routes/server/panel/LanguageChanger";
 import { StatBox, Tags, TemplateAlertDialog } from "@/layout/routes/server/panel/ServerPanelComponents";
 import { ServerModel } from "@/types/minecraftServer";
+import languages from "@/utils/languages";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import { Divider, Flex, IconButton, Image, SimpleGrid, Text, Tooltip } from "@chakra-ui/react";
-import type { LoaderFunctionArgs, MetaArgs } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaArgs } from "@remix-run/node";
 import { MetaFunction, ShouldRevalidateFunctionArgs } from "@remix-run/react";
 import dayjs from "dayjs";
 import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
 
-export function meta({ data, matches, params }: MetaArgs) {
+export function meta({ matches, params }: MetaArgs) {
 	return [
 		{
 			title: params.server + "'s panel | IsMcServer.online"
@@ -26,7 +28,7 @@ export function meta({ data, matches, params }: MetaArgs) {
 }
 
 export function shouldRevalidate(args: ShouldRevalidateFunctionArgs) {
-	if (args.actionResult?.revalidate === true) return true;
+	if (args.actionResult?.revalidate === true || args.currentUrl.pathname !== args.nextUrl.pathname) return true;
 
 	return false;
 }
@@ -54,7 +56,8 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 			banner: true,
 			Tags: true,
 			background: true,
-			prime: true
+			prime: true,
+			language: true
 		}
 	});
 	if (!server) throw new Response("Server not found", { status: 404 });
@@ -138,15 +141,70 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 	);
 }
 
+// updating server's language only. tags are in /api/tags
+export async function action({ request, params }: ActionFunctionArgs) {
+	csrf(request);
+
+	const user = await getUser(request);
+	invariant(user, "User is not logged in");
+
+	const url = new URL(request.url);
+	const bedrock = url.pathname.split("/")[0] === "bedrock";
+
+	const server = await db.server.findFirst({
+		where: {
+			server: params.server?.toLowerCase(),
+			bedrock
+		},
+		select: {
+			owner_id: true,
+			id: true
+		}
+	});
+
+	invariant(server, "Server not found");
+	invariant(server.owner_id === user.id, "You are not the owner of the server");
+
+	try {
+		const form = await request.formData();
+		let language = form.get("language")?.toString().toLowerCase() as string | undefined;
+		invariant(language, "Language is required");
+
+		language = language === "en" ? "us" : language;
+		// check if language is valid
+		const codes = languages.map((lang) => lang.countryCode.toLowerCase());
+		invariant(codes.includes(language), "Language is not valid");
+		language = language === "us" ? "en" : language;
+
+		await db.server.update({
+			where: {
+				id: server.id
+			},
+			data: {
+				language
+			}
+		});
+
+		return typedjson({
+			success: true
+		});
+	} catch (e) {
+		throw typedjson({
+			success: false,
+			error: (e as Error).message
+		});
+	}
+}
+
 export default function ServerPanel() {
 	const { server, checks, checksInThisMonth, comments, votes, votesInThisMonth, checksInLastMonth, votesInLastMonth } =
 		useAnimationLoaderData<typeof loader>();
 
 	const hasPrime = useAnyPrime(server);
-	// const hasPrime = false;
 
 	return (
-		<Flex gap={10} w="100%" flexDir={"column"}>
+		// setting a key, so it rerenders when the server changes
+		<Flex gap={10} w="100%" flexDir={"column"} key={server.server}>
 			<Flex gap={4} w="100%" flexDir={"column"}>
 				<Text fontSize={"2xl"} fontWeight={600}>
 					Statistics
@@ -199,6 +257,14 @@ export default function ServerPanel() {
 							</Text>
 						</Flex>
 					</Flex>
+				</Flex>
+
+				<Flex flexDir={"column"} gap={4} w={"100%"}>
+					<Text fontSize={"2xl"} fontWeight={600}>
+						Language
+					</Text>
+
+					<LanguageChanger locale={server.language} />
 				</Flex>
 
 				<Flex flexDir={"column"} gap={4} w={"100%"}>

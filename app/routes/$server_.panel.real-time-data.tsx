@@ -1,6 +1,7 @@
 import useAnyPrime from "@/hooks/useAnyPrime";
 import useServerPanelData from "@/hooks/useServerPanelData";
 import Link from "@/layout/global/Link";
+import RealTimeServerDataWrapper from "@/layout/routes/server/panel/realtime/RealTimeServerDataWrapper";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import { Alert, AlertDescription, AlertTitle, Button, Flex, HStack } from "@chakra-ui/react";
 import { MetaArgs, MetaFunction } from "@remix-run/react";
@@ -20,7 +21,7 @@ export default function ServerPanel() {
 
 	return (
 		<Flex gap={10} w="100%" flexDir={"column"}>
-			{hasPrime && <RealTimeServerData />}
+			{hasPrime && <RealTimeServerDataWrapper />}
 			{!hasPrime && (
 				<Alert
 					status="warning"
@@ -68,8 +69,4 @@ export default function ServerPanel() {
 			)}
 		</Flex>
 	);
-}
-
-function RealTimeServerData() {
-	return <>aaa</>;
 }

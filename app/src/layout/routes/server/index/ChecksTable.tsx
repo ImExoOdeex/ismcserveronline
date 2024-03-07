@@ -200,14 +200,7 @@ function Check({ check, borderColor }: { check: Check; borderColor: string }) {
 	const apiColor = useColorModeValue("blue.500", "blue.200");
 
 	return (
-		<Tr
-			key={check.id + check.checked_at.toString()}
-			_hover={{ bg: "alpha" }}
-			transition="background .05s"
-			sx={{
-				"> *": { borderColor }
-			}}
-		>
+		<Tr key={check.id + check.checked_at.toString()} _hover={{ bg: "alpha" }} transition="background .05s">
 			<Td>{new Date(check.checked_at).toLocaleString()}</Td>
 			<Td>
 				{check.online ? (

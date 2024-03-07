@@ -73,7 +73,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 				}
 
 				const random = Math.random().toString(36).substring(7);
-				const extention = filename?.split(".").pop();
+				// const extention = filename?.split(".").pop();
+				const extention = "webp";
 
 				function getFilename(ext: string) {
 					return `${random}.${ext}`;

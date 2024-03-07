@@ -3,8 +3,10 @@ import Link from "@/layout/global/Link";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import { Button, Flex, HStack, Icon, Image, Text, Tooltip } from "@chakra-ui/react";
 import { useLocation } from "@remix-run/react";
+import { FaHashtag } from "react-icons/fa";
 import { FiCpu, FiCreditCard, FiSettings } from "react-icons/fi";
 import { MdOutlineWebhook } from "react-icons/md";
+import { TbCodeDots } from "react-icons/tb";
 import VerifiedServersListModal from "./VerifiedServersListModal";
 
 const buttons = [
@@ -25,6 +27,18 @@ const buttons = [
 		to: "/webhook",
 		requiresSubscription: false,
 		icon: MdOutlineWebhook
+	},
+	{
+		name: "API Token",
+		to: "/token",
+		requiresSubscription: false,
+		icon: TbCodeDots
+	},
+	{
+		name: "Promote",
+		to: "/promote",
+		requiresSubscription: false,
+		icon: FaHashtag
 	},
 	{
 		name: "Subscription",

@@ -59,45 +59,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	if (!cacheServers || !cacheCount) {
 		console.log("[Loader] No cache");
 
-		[sampleServers, count] = (await Promise.all([
-			db.sampleServer.findMany({
-				select: {
-					Server: {
-						select: {
-							server: true,
-							favicon: true,
-							bedrock: true
-						}
-					}
-				},
-				orderBy: {
-					add_date: "desc"
-				},
-				// get only servers that end dates are greater than now or null
-				where: {
-					AND: [
-						{
-							OR: [
-								{
-									end_date: {
-										gte: new Date()
-									}
-								},
-								{
-									end_date: {
-										equals: null
-									}
-								}
-							]
-						},
-						{
-							payment_status: "PAID"
-						}
-					]
-				}
-			}),
-			db.check.count()
-		])) as [any[], number];
+		[sampleServers, count] = (await Promise.all([[], db.check.count()])) as [any[], number];
 		setCache(Object.keys(serverConfig.cache)[0], count, serverConfig.cache.count);
 		setCache(Object.keys(serverConfig.cache)[1], sampleServers, serverConfig.cache.sampleServers);
 	} else {

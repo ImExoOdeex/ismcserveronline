@@ -1,11 +1,12 @@
 import { MinecraftImage } from "@/.server/minecraftImages";
 import useGlobalContext from "@/hooks/useGlobalContext";
+import useInsideEffect from "@/hooks/useInsideEffect";
 import { ChakraBox } from "@/layout/global/MotionComponents";
 import { AnyServer, JavaServerWoDebug } from "@/types/minecraftServer";
 import config from "@/utils/config";
 import { Badge, Flex, FlexProps, Heading, Image, Link, VStack, useColorModeValue } from "@chakra-ui/react";
 import { AnimatePresence, Transition, motion } from "framer-motion";
-import { memo, useEffect, useState } from "react";
+import { memo, useState } from "react";
 import StatusIndicator from "./StatusIndicator";
 
 interface Props {
@@ -21,7 +22,7 @@ export default memo(function ServerView({ server, data, bedrock, image, verified
 
 	const { updateData } = useGlobalContext();
 
-	useEffect(() => {
+	useInsideEffect(() => {
 		updateData("gradientColor", data.online ? "green" : "red");
 	}, [data.online]);
 
@@ -150,7 +151,19 @@ export default memo(function ServerView({ server, data, bedrock, image, verified
 					)}
 
 					<VStack spacing={4} flexDir={"column"} justifyContent="center" w="100%" align={"center"}>
-						<Flex flexDir={"row"} alignItems="center" justifyContent={"space-between"} w="100%">
+						<Flex
+							flexDir={{
+								base: "column",
+								md: "row"
+							}}
+							gap={2}
+							alignItems={{
+								base: "flex-start",
+								md: "center"
+							}}
+							justifyContent={"space-between"}
+							w="100%"
+						>
 							<Flex flexDir={"column"}>
 								<Heading
 									as={"a"}
@@ -173,7 +186,14 @@ export default memo(function ServerView({ server, data, bedrock, image, verified
 									</Badge>
 								)}
 							</Flex>
-							<StatusIndicator online={data.online} />
+							<StatusIndicator
+								online={data.online}
+								w={{
+									base: "100%",
+									md: "auto"
+								}}
+								justifyContent={"center"}
+							/>
 						</Flex>
 					</VStack>
 				</ChakraBox>

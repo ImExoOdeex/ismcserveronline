@@ -8,44 +8,8 @@ import { Guild } from "./dashboard.bot._index";
 export async function action({ request }: ActionFunctionArgs) {
 	secureBotRoute(request);
 
-	async function saveDatabase() {
-		// write a script that will migrate the database to the new schema. new schema will have new Model named Server and it will be related to other models like Check, Comment, SavedServer etc
-		// the script will be run once and will be deleted after running
-
-		// get the whole database in json format
-		const [user, savedServer, sampleServer, comment, check, token] = await Promise.all([
-			db.user.findMany(),
-			db.savedServer.findMany(),
-			db.sampleServer.findMany(),
-			db.comment.findMany(),
-			db.check.findMany(),
-			db.token.findMany()
-		]);
-
-		const wholeDatabase = {
-			user,
-			savedServer,
-			sampleServer,
-			comment,
-			check,
-			token
-		};
-
-		const now = new Date()
-			.toLocaleString()
-			.replaceAll("/", "-")
-			.replaceAll(":", "-")
-			.replaceAll(" ", "-")
-			.replaceAll(",", "");
-		await fs.writeFile(`migration/migration-${now}.json`, JSON.stringify(wholeDatabase, null, 2)).then(() => {
-			console.log("migration.json has been created");
-		});
-
-		return wholeDatabase;
-	}
-
 	async function loadDatabaseFile() {
-		const file = await fs.readFile(`migration/migration-2-10-2024-7-04-58-PM.json`, "utf-8");
+		const file = await fs.readFile(`migration/migration.json`, "utf-8");
 		const json = JSON.parse(file) as {
 			user: {
 				id: number;
@@ -188,7 +152,6 @@ export async function action({ request }: ActionFunctionArgs) {
 				id: token.id,
 				token: token.token,
 				user_id: token.user_id,
-				client_ip: token.client_ip,
 				created_at: token.created_at,
 				updated_at: token.updated_at
 			}
@@ -266,5 +229,7 @@ export async function action({ request }: ActionFunctionArgs) {
 		});
 	}
 
-	return json({});
+	return json({
+		success: true
+	});
 }

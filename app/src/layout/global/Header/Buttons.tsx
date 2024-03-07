@@ -1,9 +1,10 @@
 import useUser from "@/hooks/useUser";
 import Link from "@/layout/global/Link";
-import { QuestionOutlineIcon } from "@chakra-ui/icons";
+import { InfoOutlineIcon } from "@chakra-ui/icons";
 import { Badge, Button, HStack, Icon } from "@chakra-ui/react";
 import { useFetcher } from "@remix-run/react";
-import { BiCode, BiLineChart } from "react-icons/bi";
+import { BiCode } from "react-icons/bi";
+import { PiAlignLeftBold } from "react-icons/pi";
 import DiscordIcon from "../icons/DiscordIcon";
 import ProfilePopover from "./ProfilePopover";
 
@@ -23,7 +24,7 @@ export function PopularServersButton() {
 			pos={"relative"}
 			rightIcon={
 				<HStack>
-					<Icon as={BiLineChart} />
+					<Icon as={PiAlignLeftBold} />
 					<Badge colorScheme="green">New</Badge>
 				</HStack>
 			}
@@ -46,7 +47,7 @@ export function FAQButton() {
 			_active={{ bg: "alpha100", scale: 0.9 }}
 			rounded={"xl"}
 			bg={"transparent"}
-			rightIcon={<QuestionOutlineIcon />}
+			rightIcon={<InfoOutlineIcon />}
 		>
 			FAQ
 		</Button>

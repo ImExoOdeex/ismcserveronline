@@ -6,12 +6,15 @@ import morgan from "morgan";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as url from "node:url";
+import { startWsServer } from "server/wsserver";
 import sourceMapSupport from "source-map-support";
 import pack from "../package.json";
 
 (async () => {
 	sourceMapSupport.install();
 	installGlobals();
+
+	startWsServer();
 
 	const BUILD_PATH = path.resolve("build/server/index.js");
 	// const VERSION_PATH = path.resolve("version.txt");
