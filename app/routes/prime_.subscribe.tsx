@@ -1,5 +1,7 @@
 import { db } from "@/.server/db/db";
 import { getUser } from "@/.server/db/models/user";
+import { requireEnv } from "@/.server/functions/env.server";
+import { csrf } from "@/.server/functions/security.server";
 import { getSession } from "@/.server/session";
 import { toStripeAmount } from "@/functions/payments";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
@@ -16,6 +18,7 @@ import { redirect, typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
 
 export async function loader({ request }: LoaderFunctionArgs) {
+	csrf(request);
 	const user = await getUser(request);
 
 	if (user?.prime) {
@@ -39,7 +42,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 	return typedjson({
 		ENV: {
-			stripeKey: process.env.STRIPE_PUBLIC_KEY,
+			stripeKey: requireEnv("STRIPE_PUBLIC_KEY"),
 			mode: process.env.NODE_ENV as "production" | "development" | "test"
 		},
 		subType,

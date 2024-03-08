@@ -14,11 +14,12 @@ const components = {
 		return (
 			<chakraComponents.Control {...props}>
 				<Flex gap={2} alignItems={"center"} w="100%">
-					{props?.icon && typeof props?.icon === "string" ? (
-						<Image src={props?.icon} h={6} ml={3} mr={-4} />
-					) : (
-						<Icon as={props?.icon as any} ml={3} mr={-4} boxSize={5} />
-					)}
+					{props?.icon &&
+						(typeof props?.icon === "string" ? (
+							<Image src={props?.icon} h={6} ml={3} mr={-4} />
+						) : (
+							<Icon as={props?.icon as any} ml={3} mr={-4} boxSize={5} />
+						))}
 					{children}
 				</Flex>
 			</chakraComponents.Control>
@@ -27,11 +28,12 @@ const components = {
 	Option: ({ children, ...props }: any) => (
 		<chakraComponents.Option {...props}>
 			<Flex gap={3} alignItems={"center"} w="100%">
-				{props.data?.icon && typeof props.data?.icon === "string" ? (
-					<Image src={props.data?.icon} h={6} />
-				) : (
-					<Icon as={props.data?.icon} boxSize={5} />
-				)}{" "}
+				{props.data?.icon &&
+					(typeof props.data?.icon === "string" ? (
+						<Image src={props.data?.icon} h={6} />
+					) : (
+						<Icon as={props.data?.icon} boxSize={5} />
+					))}{" "}
 				{children}
 			</Flex>
 		</chakraComponents.Option>
@@ -40,8 +42,9 @@ const components = {
 
 export default function Select<Option, IsMulti extends boolean = false, Group extends GroupBase<Option> = GroupBase<Option>>({
 	container,
+	list,
 	...props
-}: { container?: any } & Props<Option, IsMulti, Group> & CustomSelectProps) {
+}: { container?: any; list?: any } & Props<Option, IsMulti, Group> & CustomSelectProps) {
 	const ref = useRef<SelectInstance<Option, IsMulti, Group>>(null);
 	const listBg = useColorModeValue("rgba(252, 252, 252, 0.9)", "rgba(17, 17, 23, 0.9)");
 
@@ -59,8 +62,7 @@ export default function Select<Option, IsMulti extends boolean = false, Group ex
 					bg: "alpha",
 					border: "none",
 					rounded: "lg",
-					fontWeight: 600,
-					...container
+					fontWeight: 600
 				}),
 				dropdownIndicator: (provided, { selectProps: { menuIsOpen } }) => ({
 					...provided,
@@ -77,7 +79,8 @@ export default function Select<Option, IsMulti extends boolean = false, Group ex
 				}),
 				container: (provided) => ({
 					...provided,
-					bg: "transparent"
+					bg: "transparent",
+					...container
 				}),
 				indicatorSeparator: (provided) => ({
 					...provided,
@@ -91,7 +94,8 @@ export default function Select<Option, IsMulti extends boolean = false, Group ex
 				menuList: (provided) => ({
 					...provided,
 					bg: listBg,
-					borderColor: "alpha300"
+					borderColor: "alpha300",
+					...list
 				}),
 				option: (provided) => ({
 					...provided,

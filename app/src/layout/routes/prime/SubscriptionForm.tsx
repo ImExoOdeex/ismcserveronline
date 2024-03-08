@@ -1,8 +1,8 @@
+import Select from "@/layout/global/Select";
 import { Button, Flex, Icon, Image, Link, Text, VStack } from "@chakra-ui/react";
 import { Server } from "@prisma/client";
 import { useFetcher } from "@remix-run/react";
 import { PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
-import { Select } from "chakra-react-select";
 import { useState } from "react";
 import { FiCreditCard } from "react-icons/fi";
 
@@ -30,7 +30,7 @@ export default function SubscriptionForm({
 
 		const { error: submitError } = await elements.submit();
 		if (submitError) {
-			console.error(submitError.message);
+			console.error("submitError.message", submitError.message);
 			setSubmitting(false);
 			return;
 		}
@@ -44,12 +44,14 @@ export default function SubscriptionForm({
 
 		const confirmIntent = type === "setup" ? stripe.confirmSetup : stripe.confirmPayment;
 
+		const redirectTo = window.location.origin + (subType === "server" ? `/server/${serverId}` : "/dashboard/prime");
+
 		const { error } = await confirmIntent({
 			elements,
 			clientSecret,
 			redirect: "if_required", // redirecting manually, since webhooks are delayed and yes
 			confirmParams: {
-				return_url: `${window.location.origin}/dashboard`
+				return_url: redirectTo
 			}
 		});
 
@@ -62,27 +64,33 @@ export default function SubscriptionForm({
 			console.info("Redirecting manually...");
 
 			// check if user has prime delivered by webhooks
-			setTimeout(async () => {
-				const res = await fetch("/api/user/prime", {
-					method: "POST"
-				}).then((res) => res.json());
-				console.log("res", res);
+			if (subType === "user") {
+				setTimeout(async () => {
+					const res = await fetch("/api/user/prime", {
+						method: "POST"
+					}).then((res) => res.json());
+					console.log("res", res);
 
-				const newUrl =
-					window.location.origin +
-					"/dashboard/prime" +
-					`?payment_intent=${paymentIntentId}&payment_intent_client_secret=${clientSecret}&redirect_status=succeeded`;
+					const newUrl =
+						redirectTo +
+						`?payment_intent=${paymentIntentId}&payment_intent_client_secret=${clientSecret}&redirect_status=succeeded`;
 
-				if (res.prime) {
-					console.log("redirecting immediately");
-					window.location.href = newUrl;
-				} else {
-					console.log("redirecting in 1.5s");
-					setTimeout(() => {
+					if (res.prime) {
+						console.log("redirecting immediately");
 						window.location.href = newUrl;
-					}, 1500);
-				}
-			}, 500);
+					} else {
+						console.log("redirecting in 1.5s");
+						setTimeout(() => {
+							window.location.href = newUrl;
+						}, 1500);
+					}
+				}, 500);
+			} else {
+				const newUrl =
+					redirectTo +
+					`?payment_intent=${paymentIntentId}&payment_intent_client_secret=${clientSecret}&redirect_status=succeeded&prime=yes`;
+				window.location.href = newUrl;
+			}
 		}
 	}
 
@@ -103,52 +111,6 @@ export default function SubscriptionForm({
 							onChange={(server) => {
 								setServerId((server as any)?.value as number);
 							}}
-							variant={"filled"}
-							chakraStyles={{
-								control: (provided) => ({
-									...provided,
-									w: "100%",
-									cursor: "pointer",
-									alignItems: "center",
-									h: "30px",
-									borderColor: "alpha100",
-									display: "flex"
-								}),
-								dropdownIndicator: (provided, { selectProps: { menuIsOpen } }) => ({
-									...provided,
-									"> svg": {
-										transitionDuration: "normal",
-										transform: `rotate(${menuIsOpen ? -180 : 0}deg)`
-									},
-									background: "transparent",
-									padding: "0 5px"
-								}),
-								container: (provided) => ({
-									...provided,
-									h: "30px",
-									w: "100%",
-									bg: "transparent"
-								}),
-								input: (provided) => ({
-									...provided,
-									h: "30px",
-									bg: "transparent"
-								}),
-								menuList: (provided) => ({
-									...provided,
-									mt: 2,
-									rounded: "lg",
-									bg: "bg"
-								}),
-								option: (provided) => ({
-									...provided,
-									bg: "bg",
-									color: "text",
-									_hover: {
-										bg: "alpha100"
-									}
-								})
-							}}
 							noOptionsMessage={() =>
 								"It looks like you have no verified servers. Before you buy prime, verify the server you want to buy prime for."
 							}
@@ -160,6 +122,12 @@ export default function SubscriptionForm({
 									  }))
 									: []) as any
 							}
+							container={{
+								maxW: "300px"
+							}}
+							list={{
+								maxW: "300px"
+							}}
 						/>
 					</Flex>
 				)}

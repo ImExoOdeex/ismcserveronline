@@ -255,7 +255,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	const cachePromotedServersStr = await cache.get(promotedServersCacheKey);
 	const cachePromotedServers = cachePromotedServersStr ? JSON.parse(cachePromotedServersStr) : null;
 
-	let randomPromoted: { Server: SearchServer; color: string }[] = cachePromotedServers || [];
+	let randomPromoted: { Server: SearchServer; color: string; id: number }[] = cachePromotedServers || [];
 
 	if (!cachePromotedServers) {
 		console.log("no cache promoted");
@@ -272,6 +272,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		randomPromoted = (await db.promoted.findMany({
 			take: 2,
 			select: {
+				id: true,
 				Server: {
 					select: {
 						id: true,
@@ -316,7 +317,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Search() {
 	const { tags, servers, locale, randomPromoted } = useAnimationLoaderData<typeof loader>();
-	console.log("servers", servers);
 
 	const versions = ["java", "bedrock"] as const;
 	const [searchParams, setSearchParams] = useSearchParams();
@@ -408,7 +408,7 @@ export default function Search() {
 				>
 					<Flex flexDir={"column"} w={{ base: "100%", md: "75%" }} gap={4}>
 						<Flex flexDir={"column"} gap="1px">
-							<Flex mb={2} flexDir={"column"} gap={"1px"}>
+							<Flex mb={1} flexDir={"column"} gap={"1px"}>
 								{randomPromoted.map((server, i) => (
 									<PromotedServerCard
 										key={"promoted-" + server.Server.id}

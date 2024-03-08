@@ -1,13 +1,16 @@
 import Link from "@/layout/global/Link";
 import { Badge, Button, Image as ChakraImage, Flex, HStack, Icon, Tag, Text } from "@chakra-ui/react";
+import { PromotedViewType } from "@prisma/client";
 import Color from "color";
-import { memo, useMemo } from "react";
+import { useInView } from "framer-motion";
+import { memo, useCallback, useEffect, useMemo, useRef } from "react";
 import { BiUser } from "react-icons/bi";
 import { FaChevronUp, FaHashtag } from "react-icons/fa";
 import { SearchServer } from "~/routes/search";
 
 interface Props {
 	promoted: {
+		id: number;
 		Server: SearchServer;
 		color: string;
 	};
@@ -15,17 +18,57 @@ interface Props {
 	length: number;
 }
 
-export default memo(function PromotedServerCard({ promoted: { color, Server: server }, index, length }: Props) {
+export default memo(function PromotedServerCard({ promoted: { color, Server: server, id }, index, length }: Props) {
 	const bgColor = useMemo(() => {
 		console.log("memo color");
 
 		return Color(color).alpha(0.1).string();
 	}, []);
 
+	const ref = useRef<HTMLDivElement>(null);
+	const isInView = useInView(ref, { once: true });
+
+	useEffect(() => {
+		if (!isInView) return;
+
+		console.log("in view");
+		fetch("/api/promoted/view", {
+			method: "PUT",
+			body: new URLSearchParams({
+				id: id.toString(),
+				type: "Impression" as PromotedViewType
+			})
+		})
+			.then((res) => {
+				if (res.ok) {
+					return res.json().then(console.info);
+				}
+			})
+			.catch(console.error);
+	}, [isInView]);
+
+	const handleClick = useCallback(() => {
+		console.log("click");
+
+		fetch("/api/promoted/click", {
+			method: "PUT",
+			body: new URLSearchParams({
+				id: id.toString(),
+				type: "Click" as PromotedViewType
+			})
+		})
+			.then((res) => {
+				if (res.ok) {
+					return res.json().then(console.info);
+				}
+			})
+			.catch(console.error);
+	}, [id]);
+
 	const buttons = useMemo(() => {
 		return (
 			<>
-				<Button as={Link} to={`/${server.server}`} variant={"solid"} bg={bgColor}>
+				<Button as={Link} to={`/${server.server}`} variant={"solid"} bg={bgColor} onClick={handleClick}>
 					View
 				</Button>
 				<Button
@@ -34,6 +77,7 @@ export default memo(function PromotedServerCard({ promoted: { color, Server: ser
 					variant={"solid"}
 					leftIcon={<Icon as={FaChevronUp} />}
 					bg={bgColor}
+					onClick={handleClick}
 				>
 					Vote ({server._count.Vote})
 				</Button>
@@ -43,6 +87,7 @@ export default memo(function PromotedServerCard({ promoted: { color, Server: ser
 
 	return (
 		<Flex
+			ref={ref}
 			w="100%"
 			bg={bgColor}
 			roundedTop={index === 0 ? "xl" : undefined}
@@ -71,7 +116,12 @@ export default memo(function PromotedServerCard({ promoted: { color, Server: ser
 					<Flex flexDir={"column"} gap={1} overflow={"hidden"} w="100%">
 						<Flex w="100%" justifyContent={"space-between"}>
 							<Flex flexDir={"column"} gap={1}>
-								<Link to={`/${server.bedrock ? "bedrock/" : ""}${server.server}`} fontSize="lg" fontWeight="bold">
+								<Link
+									to={`/${server.bedrock ? "bedrock/" : ""}${server.server}`}
+									fontSize="lg"
+									fontWeight="bold"
+									onClick={handleClick}
+								>
 									{server.server}{" "}
 									{server.owner_id && (
 										<Badge colorScheme={"green"} ml={1}>

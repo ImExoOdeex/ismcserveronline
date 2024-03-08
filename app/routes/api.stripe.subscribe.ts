@@ -35,6 +35,8 @@ export async function action({ request }: ActionFunctionArgs) {
 			});
 
 			invariant(server, "This server does not exist");
+			invariant(server.owner_id === user.id, "You are not the owner of this server");
+			invariant(!server.prime, "This server is already subscribed");
 		}
 
 		const subscription = await subscriptionHandlers.createSubscription(user, plan.price, serverId);
