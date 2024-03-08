@@ -1,3 +1,4 @@
+import useDebouncedFetcherCallback from "@/hooks/useDebouncedFetcherCallback";
 import { CheckIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import {
 	Badge,
@@ -19,9 +20,8 @@ import {
 } from "@chakra-ui/react";
 import { type SOURCE } from "@prisma/client";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useDebounceFetcher } from "remix-utils/use-debounce-fetcher";
 
-interface Check {
+export interface ICheck {
 	id: number;
 	source: SOURCE;
 	online: boolean;
@@ -32,13 +32,12 @@ interface Check {
 interface Props {
 	serverId: number;
 	server: string;
-	checks: Check[];
+	checks: ICheck[] | null;
+	setChecks: React.Dispatch<React.SetStateAction<ICheck[] | null>>;
 }
 
-export default memo(function ChecksTable({ server, checks, serverId }: Props) {
+export default memo(function ChecksTable({ server, serverId, checks, setChecks }: Props) {
 	const borderColor = useColorModeValue("#2f2e32", "#2f2e32 !important");
-
-	const [checksState, setChecksState] = useState(checks);
 
 	// positions states
 	const [scrollPosition, setScrollPosition] = useState(0);
@@ -58,7 +57,6 @@ export default memo(function ChecksTable({ server, checks, serverId }: Props) {
 	}, []);
 
 	const divHeight = useRef<HTMLTableSectionElement>(null);
-
 	const tableReactPosFromTop = divHeight?.current?.getBoundingClientRect()?.top ?? 0 + scrollPosition;
 
 	const pos = useMemo(() => {
@@ -68,9 +66,20 @@ export default memo(function ChecksTable({ server, checks, serverId }: Props) {
 	const [shouldFetch, setShouldFetch] = useState(true);
 
 	// skip elements state (step by 20)
-	const [skip, setSkip] = useState(20);
+	const [skip, setSkip] = useState(0);
 	// fetcher to fetch data
-	const fetcher = useDebounceFetcher();
+	const fetcher = useDebouncedFetcherCallback((data) => {
+		if (data && (data as any).checks.length === 0) {
+			setShouldFetch(false);
+			return;
+		}
+
+		if ((data as any)?.checks) {
+			setChecks((prev) => [...(prev || []), ...(data as any)?.checks]);
+			setSkip((skip: number) => skip + 20);
+			setShouldFetch(true);
+		}
+	});
 
 	const loadDebounced = useCallback(() => {
 		setShouldFetch(false);
@@ -91,6 +100,18 @@ export default memo(function ChecksTable({ server, checks, serverId }: Props) {
 
 	useEffect(() => {
 		if (inital.current) {
+			fetcher.submit(
+				{
+					c: skip,
+					serverId
+				},
+				{
+					debounceTimeout: 300,
+					action: `/api/checks/get`,
+					method: "POST"
+				}
+			);
+
 			inital.current = false;
 			return;
 		}
@@ -104,97 +125,80 @@ export default memo(function ChecksTable({ server, checks, serverId }: Props) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [clientHeight, scrollPosition]);
 
-	useEffect(() => {
-		if (fetcher.data && (fetcher.data as any).checks.length === 0) {
-			setShouldFetch(false);
-			return;
-		}
-
-		// if our fetcher is not empty, we add items to state
-		if ((fetcher.data as any)?.checks) {
-			setChecksState((prev) => [...prev, ...(fetcher?.data as any)?.checks]);
-			setSkip((skip: number) => skip + 20);
-			setShouldFetch(true);
-			window.scrollTo(0, scrollPosition - 200);
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [fetcher.data]);
-
 	return (
 		<>
-			{checks.length ? (
-				<TableContainer w="100%" __css={{ clear: "both" }}>
-					<Table variant="simple" size={"sm"}>
-						<TableCaption>Last status checks for {server}</TableCaption>
-						<Thead>
-							<Tr sx={{ "> *": { borderColor: borderColor } }}>
-								<Th>Date</Th>
-								<Th>Status</Th>
-								<Th>Platform</Th>
-								<Th isNumeric>Players</Th>
-							</Tr>
-						</Thead>
-						<Tbody>
-							{checksState.map((c: Check) => {
-								return <MemoCheck key={c.id + c.checked_at.toString()} check={c} borderColor={borderColor} />;
-							})}
-
-							{fetcher.state !== "idle" && (
-								<>
-									{Array.from({ length: 20 }, (v, i) => i).map((c: number) => {
-										return (
-											<Tr
-												key={c}
-												_hover={{ bg: "alpha" }}
-												transition="background .05s"
-												sx={{
-													"> *": {
-														borderColor: borderColor
-													}
-												}}
-											>
-												<Td>
-													<Skeleton h={3} w="45%" startColor="alpha200" endColor="alpha" />
-												</Td>
-												<Td>
-													<Skeleton h={3} w="43%" startColor="alpha200" endColor="alpha" />
-												</Td>
-												<Td>
-													<Skeleton h={3} w="45%" startColor="alpha200" endColor="alpha" />
-												</Td>
-												<Td isNumeric>
-													<Flex w="100%" alignItems={"end"} justifyContent={"end"}>
-														<Skeleton h={3} w="30%" startColor="alpha200" endColor="alpha" />
-													</Flex>
-												</Td>
-											</Tr>
-										);
+			{checks ? (
+				<>
+					{checks.length ? (
+						<TableContainer w="100%" __css={{ clear: "both" }}>
+							<Table variant="simple" size={"sm"}>
+								<TableCaption>Last status checks for {server}</TableCaption>
+								<Thead>
+									<Tr sx={{ "> *": { borderColor: borderColor } }}>
+										<Th>Date</Th>
+										<Th>Status</Th>
+										<Th>Platform</Th>
+										<Th isNumeric>Players</Th>
+									</Tr>
+								</Thead>
+								<Tbody>
+									{checks.map((c) => {
+										return <Check key={c.id + c.checked_at.toString()} check={c} />;
 									})}
-								</>
-							)}
-						</Tbody>
-						<Tfoot ref={divHeight} __css={{ clear: "both" }}>
-							<Tr>
-								<Th>Date</Th>
-								<Th>Status</Th>
-								<Th>Platform</Th>
-								<Th isNumeric>Players</Th>
-							</Tr>
-						</Tfoot>
-					</Table>
-				</TableContainer>
+
+									{fetcher.state !== "idle" && <SkeletonChecks />}
+								</Tbody>
+								<Tfoot ref={divHeight} __css={{ clear: "both" }}>
+									<Tr>
+										<Th>Date</Th>
+										<Th>Status</Th>
+										<Th>Platform</Th>
+										<Th isNumeric>Players</Th>
+									</Tr>
+								</Tfoot>
+							</Table>
+						</TableContainer>
+					) : (
+						<Flex w="100%">
+							<Heading fontSize={"md"} justifySelf="center" textAlign="center" color={"red"} mx="auto">
+								There were no checks
+							</Heading>
+						</Flex>
+					)}
+				</>
 			) : (
-				<Flex w="100%">
-					<Heading fontSize={"md"} justifySelf="center" textAlign="center" color={"red"} mx="auto">
-						There were no checks
-					</Heading>
-				</Flex>
+				<>
+					<TableContainer w="100%" __css={{ clear: "both" }}>
+						<Table variant="simple" size={"sm"}>
+							<TableCaption>Last status checks for {server}</TableCaption>
+							<Thead>
+								<Tr sx={{ "> *": { borderColor: borderColor } }}>
+									<Th>Date</Th>
+									<Th>Status</Th>
+									<Th>Platform</Th>
+									<Th isNumeric>Players</Th>
+								</Tr>
+							</Thead>
+							<Tbody>
+								<SkeletonChecks />
+							</Tbody>
+							<Tfoot ref={divHeight} __css={{ clear: "both" }}>
+								<Tr>
+									<Th>Date</Th>
+									<Th>Status</Th>
+									<Th>Platform</Th>
+									<Th isNumeric>Players</Th>
+								</Tr>
+							</Tfoot>
+						</Table>
+					</TableContainer>
+				</>
 			)}
 		</>
 	);
 });
 
-function Check({ check, borderColor }: { check: Check; borderColor: string }) {
+const Check = memo(function Check({ check }: { check: ICheck }) {
 	const discordBg = useColorModeValue("rgba(88, 101, 242, 0.16)", "rgba(88, 147, 242, 0.12)");
 	const discordColor = useColorModeValue("discord.100", "#6f9ce6");
 	const apiColor = useColorModeValue("blue.500", "blue.200");
@@ -232,6 +236,31 @@ function Check({ check, borderColor }: { check: Check; borderColor: string }) {
 			<Td isNumeric>{check.players}</Td>
 		</Tr>
 	);
-}
+});
 
-const MemoCheck = memo(Check);
+const SkeletonChecks = memo(function SkeletonChecks() {
+	return (
+		<>
+			{Array.from({ length: 20 }, (v, i) => i).map((c: number) => {
+				return (
+					<Tr key={c} _hover={{ bg: "alpha" }} transition="background .05s">
+						<Td>
+							<Skeleton h={3} w="45%" startColor="alpha200" endColor="alpha" />
+						</Td>
+						<Td>
+							<Skeleton h={3} w="43%" startColor="alpha200" endColor="alpha" />
+						</Td>
+						<Td>
+							<Skeleton h={3} w="45%" startColor="alpha200" endColor="alpha" />
+						</Td>
+						<Td isNumeric>
+							<Flex w="100%" alignItems={"end"} justifyContent={"end"}>
+								<Skeleton h={3} w="30%" startColor="alpha200" endColor="alpha" />
+							</Flex>
+						</Td>
+					</Tr>
+				);
+			})}
+		</>
+	);
+});

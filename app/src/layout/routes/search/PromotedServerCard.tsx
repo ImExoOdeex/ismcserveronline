@@ -94,6 +94,7 @@ export default memo(function PromotedServerCard({ promoted: { color, Server: ser
 			roundedBottom={index === length - 1 ? "xl" : undefined}
 			p={4}
 			gap={4}
+			minH={"133px"}
 		>
 			<Flex
 				w="100%"
@@ -111,6 +112,7 @@ export default memo(function PromotedServerCard({ promoted: { color, Server: ser
 							imageRendering: "pixelated"
 						}}
 						rounded="md"
+						alignSelf={"center"}
 					/>
 
 					<Flex flexDir={"column"} gap={1} overflow={"hidden"} w="100%">
@@ -153,6 +155,10 @@ export default memo(function PromotedServerCard({ promoted: { color, Server: ser
 										Promoted
 									</Tag>
 								</HStack>
+
+								<Text fontSize={"sm"} color={"textSec"} noOfLines={2}>
+									{server.description}
+								</Text>
 							</Flex>
 
 							<HStack

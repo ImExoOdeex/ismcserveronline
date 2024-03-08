@@ -52,6 +52,10 @@ model Server {
   vote_webhook_url      String?
   vote_webhook_password String?
 
+  description        String?
+  language           String?
+  message_from_owner String?
+
   // --- Server data ---
   server  String
   host    String?
@@ -90,10 +94,8 @@ model Server {
   ServerToken  ServerToken[]
   Promoted     Promoted[]
 
-  owner_id           Int?
-  Owner              User?   @relation(fields: [owner_id], references: [id])
-  message_from_owner String?
-  language           String?
+  owner_id Int?
+  Owner    User? @relation(fields: [owner_id], references: [id])
 
   created_at DateTime @default(now())
 

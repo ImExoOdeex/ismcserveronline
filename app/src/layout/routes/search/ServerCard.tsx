@@ -20,6 +20,7 @@ export default memo(function ServerCard({ server, index, length }: Props) {
 			roundedBottom={index === length - 1 ? "xl" : undefined}
 			p={4}
 			gap={4}
+			minH={"133px"}
 		>
 			<Flex
 				w="100%"
@@ -37,11 +38,12 @@ export default memo(function ServerCard({ server, index, length }: Props) {
 							imageRendering: "pixelated"
 						}}
 						rounded="md"
+						alignSelf={"center"}
 					/>
 
 					<Flex flexDir={"column"} gap={1} overflow={"hidden"} w="100%">
 						<Flex w="100%" justifyContent={"space-between"}>
-							<Flex flexDir={"column"} gap={1}>
+							<Flex flexDir={"column"} gap={1} maxW={"70%"}>
 								<Link to={`/${server.bedrock ? "bedrock/" : ""}${server.server}`} fontSize="lg" fontWeight="bold">
 									{server.server}{" "}
 									{server.owner_id && (
@@ -55,12 +57,38 @@ export default memo(function ServerCard({ server, index, length }: Props) {
 										</Badge>
 									)}
 								</Link>
-								<HStack spacing={1}>
-									<Icon as={BiUser} color={"brand"} />
-									<Text fontSize={"sm"}>
-										{server.players.online}/{server.players.max}
-									</Text>
+
+								<HStack>
+									<HStack spacing={1}>
+										<Icon as={BiUser} color={"brand"} />
+										<Text fontSize={"sm"}>
+											{server.players.online}/{server.players.max}
+										</Text>
+									</HStack>
+
+									<HStack spacing={1} overflow={"hidden"} w="100%" overflowX={"hidden"}>
+										{server.Tags.map((tag) => (
+											<Tag
+												key={tag.name}
+												fontSize={"sm"}
+												flexWrap={"nowrap"}
+												w="fit-content"
+												flexShrink={0}
+												whiteSpace={"none"}
+												display={"inline-flex"}
+												sx={{
+													textWrap: "nowrap"
+												}}
+											>
+												{tag.name}
+											</Tag>
+										))}
+									</HStack>
 								</HStack>
+
+								<Text fontSize={"sm"} color={"textSec"} noOfLines={2}>
+									{server.description}
+								</Text>
 							</Flex>
 
 							<HStack
@@ -82,25 +110,6 @@ export default memo(function ServerCard({ server, index, length }: Props) {
 								</Button>
 							</HStack>
 						</Flex>
-
-						<HStack spacing={1} overflow={"hidden"} w="100%" overflowX={"hidden"}>
-							{server.Tags.map((tag) => (
-								<Tag
-									key={tag.name}
-									fontSize={"sm"}
-									flexWrap={"nowrap"}
-									w="fit-content"
-									flexShrink={0}
-									whiteSpace={"none"}
-									display={"inline-flex"}
-									sx={{
-										textWrap: "nowrap"
-									}}
-								>
-									{tag.name}
-								</Tag>
-							))}
-						</HStack>
 					</Flex>
 				</Flex>
 

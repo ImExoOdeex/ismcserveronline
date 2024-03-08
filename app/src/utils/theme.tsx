@@ -307,9 +307,38 @@ export default function useTheme() {
 					Switch,
 					Accordion,
 					Spinner,
-					Textarea,
 					Select,
 					List,
+					Textarea: mergeThemeOverride(Textarea, {
+						variants: {
+							filled: {
+								bg: "alpha",
+								_hover: {
+									bg: "alpha100"
+								},
+								_active: {
+									bg: "alpha200"
+								}
+							},
+							ghost: {
+								bg: "transparent",
+								_hover: {
+									bg: "alpha100"
+								},
+								_active: {
+									bg: "alpha200"
+								}
+							}
+						},
+						baseStyle: {
+							field: {
+								_focusVisible: {
+									// boxShadow: `0 0 0 3px rgba(90, 53, 215, 0.6)`,
+									borderColor: "brand !important"
+								}
+							}
+						}
+					}),
 					Table: mergeThemeOverride(Table, multipartComponents.table),
 					Tag: mergeThemeOverride(Tag, multipartComponents.tag),
 					Divider: mergeThemeOverride(Divider, {

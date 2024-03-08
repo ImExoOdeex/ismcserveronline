@@ -9,7 +9,8 @@ import { action } from "~/routes/$server";
 import Comment from "./Comment";
 
 interface Props {
-	comments: CustomComment[];
+	comments: CustomComment[] | null;
+	freshComments: CustomComment[];
 	setComments: React.Dispatch<React.SetStateAction<CustomComment[] | null>>;
 }
 
@@ -28,7 +29,7 @@ export interface CustomComment {
 	};
 }
 
-export default memo(function Comments({ comments, setComments }: Props) {
+export default memo(function Comments({ comments, freshComments, setComments }: Props) {
 	const user = useUser();
 
 	const fetcher = useFetcher<typeof action>();
@@ -41,24 +42,24 @@ export default memo(function Comments({ comments, setComments }: Props) {
 			setComments((comments) => (comments ? [fetcher.data.comment, ...comments] : comments));
 			setNewComment("");
 			toast({
-				title: "Comment added.",
-				status: "success",
-				duration: 5000,
-				position: "bottom-right",
-				variant: "subtle",
-				isClosable: true
+				title: "Comment has been added.",
+				status: "success"
 			});
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [fetcher.data]);
 
 	const hasCommented = useMemo(() => {
-		return comments.some((comment) => comment.user.nick === user?.nick);
+		return (comments || freshComments).some((comment) => comment.user.nick === user?.nick);
 	}, [comments, user?.nick]);
+
+	useEffect(() => {
+		setComments(freshComments);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	return (
 		<Flex flexDir={"column"} gap={user !== null && !hasCommented ? 10 : 4} w="100%">
-			{/* create comment component */}
 			{user !== null ? (
 				<>
 					{hasCommented ? (
@@ -131,7 +132,7 @@ export default memo(function Comments({ comments, setComments }: Props) {
 			)}
 
 			<VStack w="100%" alignItems={"flex-start"}>
-				{comments.map((comment) => (
+				{(comments || freshComments).map((comment) => (
 					<Comment key={comment.id} comment={comment} setComments={setComments} />
 				))}
 			</VStack>

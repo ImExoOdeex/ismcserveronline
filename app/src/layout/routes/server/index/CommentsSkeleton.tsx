@@ -1,14 +1,5 @@
 import { Flex, FlexProps, VStack, keyframes, useToken } from "@chakra-ui/react";
-import { memo, useEffect, useMemo } from "react";
-import { UseDataFunctionReturn } from "remix-typedjson";
-import { action } from "~/routes/api.comments";
-
-interface Props {
-	comments: CustomComment[] | null;
-	setComments: React.Dispatch<React.SetStateAction<CustomComment[] | null>>;
-	serverId: number;
-}
-
+import { memo, useMemo } from "react";
 export interface CustomComment {
 	id: number;
 	content: string;
@@ -25,7 +16,7 @@ function getRandomBetween(min: number, max: number) {
 	return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-export default memo(function CommentsSkeleton({ comments, setComments, serverId }: Props) {
+export default memo(function CommentsSkeleton() {
 	const skeletonComments = useMemo(() => {
 		const arr = [];
 		for (let i = 0; i < 5; i++) {
@@ -36,24 +27,6 @@ export default memo(function CommentsSkeleton({ comments, setComments, serverId 
 			});
 		}
 		return arr;
-	}, []);
-
-	useEffect(() => {
-		(async () => {
-			if (comments) return console.info("Comments already fetched");
-			const res = await fetch("/api/comments", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/x-www-form-urlencoded"
-				},
-				body: new URLSearchParams({ serverId: serverId.toString() })
-			}).then((res) => {
-				if (!res.ok) throw new Error("Error fetching comments");
-				return res.json() as Promise<UseDataFunctionReturn<typeof action>>;
-			});
-
-			setComments(res.comments);
-		})();
 	}, []);
 
 	return (

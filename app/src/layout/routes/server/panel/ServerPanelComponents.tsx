@@ -115,7 +115,7 @@ export const Tags = memo(function Tags({ tags: dbTags, serverId }: { tags: strin
 	return (
 		<>
 			<Flex flexDir="column">
-				<Text fontSize={"2xl"} fontWeight={600}>
+				<Text fontSize={"xl"} fontWeight={600}>
 					Tags{" "}
 					<Box as="span" fontSize={"md"} fontWeight={500}>
 						{optimisticTags.length}/15

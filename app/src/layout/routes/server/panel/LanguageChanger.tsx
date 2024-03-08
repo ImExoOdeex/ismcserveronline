@@ -58,6 +58,7 @@ export default memo(function LanguageChanger({ locale }: Props) {
 
 					fetcher.submit(
 						{
+							intent: "language",
 							language: option.item.value
 						},
 						{

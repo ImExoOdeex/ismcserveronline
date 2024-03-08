@@ -31,6 +31,7 @@ export interface SearchServer {
 	id: number;
 	server: string;
 	bedrock: boolean;
+	description: string | null;
 	favicon: string | null;
 	players: ServerModel.Players<any>;
 	prime: boolean;
@@ -126,6 +127,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 					players: true,
 					prime: true,
 					motd: true,
+					description: true,
 					owner_id: true,
 					Owner: {
 						select: {
@@ -278,6 +280,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 						id: true,
 						favicon: true,
 						server: true,
+						description: true,
 						bedrock: true,
 						players: true,
 						Tags: {

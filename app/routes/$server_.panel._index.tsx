@@ -5,16 +5,19 @@ import { csrf } from "@/.server/functions/security.server";
 import { getFullFileUrl } from "@/functions/storage";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import useAnyPrime from "@/hooks/useAnyPrime";
+import useDebouncedFetcherCallback from "@/hooks/useDebouncedFetcherCallback";
+import { useProgressBarContext } from "@/layout/global/ProgressBarContext";
 import DragAndDropFile from "@/layout/routes/server/panel/DragAndDropFile";
 import LanguageChanger from "@/layout/routes/server/panel/LanguageChanger";
 import { StatBox, Tags, TemplateAlertDialog } from "@/layout/routes/server/panel/ServerPanelComponents";
 import { ServerModel } from "@/types/minecraftServer";
 import languages from "@/utils/languages";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
-import { Divider, Flex, IconButton, Image, SimpleGrid, Text, Tooltip } from "@chakra-ui/react";
+import { Divider, Flex, IconButton, Image, SimpleGrid, Text, Textarea, Tooltip, useToast } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaArgs } from "@remix-run/node";
 import { MetaFunction, ShouldRevalidateFunctionArgs } from "@remix-run/react";
 import dayjs from "dayjs";
+import { useState } from "react";
 import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
 
@@ -57,6 +60,8 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 			Tags: true,
 			background: true,
 			prime: true,
+			description: true,
+			message_from_owner: true,
 			language: true
 		}
 	});
@@ -141,9 +146,13 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 	);
 }
 
-// updating server's language only. tags are in /api/tags
+// updating server's language & descriptions. tags are in /api/tags
 export async function action({ request, params }: ActionFunctionArgs) {
 	csrf(request);
+
+	const form = await request.formData();
+
+	const intent = form.get("intent")?.toString() as "description" | "message" | "language" | undefined;
 
 	const user = await getUser(request);
 	invariant(user, "User is not logged in");
@@ -166,32 +175,70 @@ export async function action({ request, params }: ActionFunctionArgs) {
 	invariant(server.owner_id === user.id, "You are not the owner of the server");
 
 	try {
-		const form = await request.formData();
-		let language = form.get("language")?.toString().toLowerCase() as string | undefined;
-		invariant(language, "Language is required");
+		switch (intent) {
+			case "language": {
+				let language = form.get("language")?.toString().toLowerCase() as string | undefined;
+				invariant(language, "Language is required");
 
-		language = language === "en" ? "us" : language;
-		// check if language is valid
-		const codes = languages.map((lang) => lang.countryCode.toLowerCase());
-		invariant(codes.includes(language), "Language is not valid");
-		language = language === "us" ? "en" : language;
+				language = language === "en" ? "us" : language;
+				// check if language is valid
+				const codes = languages.map((lang) => lang.countryCode.toLowerCase());
+				invariant(codes.includes(language), "Language is not valid");
+				language = language === "us" ? "en" : language;
 
-		await db.server.update({
-			where: {
-				id: server.id
-			},
-			data: {
-				language
+				await db.server.update({
+					where: {
+						id: server.id
+					},
+					data: {
+						language
+					}
+				});
+
+				return typedjson({
+					success: true
+				});
 			}
-		});
-
-		return typedjson({
-			success: true
-		});
+			case "description": {
+				let description = form.get("description")?.toString() as string | undefined;
+				// allow description to be 0 - 100 characters
+				invariant(
+					description?.length && description.length <= 150,
+					"Description is required and must be less than 150 characters"
+				);
+				await db.server.update({
+					where: {
+						id: server.id
+					},
+					data: {
+						description
+					}
+				});
+				return typedjson({
+					success: true
+				});
+			}
+			case "message": {
+				let message = form.get("message")?.toString() as string | undefined;
+				// allow message to be 0 - 1000 characters
+				invariant(message?.length && message.length <= 1000, "Message is required and must be less than 1000 characters");
+				await db.server.update({
+					where: {
+						id: server.id
+					},
+					data: {
+						message_from_owner: message
+					}
+				});
+				return typedjson({
+					success: true
+				});
+			}
+		}
 	} catch (e) {
-		throw typedjson({
+		return typedjson({
 			success: false,
-			error: (e as Error).message
+			message: (e as Error).message
 		});
 	}
 }
@@ -202,6 +249,34 @@ export default function ServerPanel() {
 
 	const hasPrime = useAnyPrime(server);
 
+	const { startAndDone } = useProgressBarContext();
+	const toast = useToast();
+	const descriptionFetcher = useDebouncedFetcherCallback((data) => {
+		startAndDone();
+		if (data.success) {
+			console.log("description updated", data);
+		} else {
+			toast({
+				title: data.message,
+				status: "error"
+			});
+		}
+	});
+	const messageFetcher = useDebouncedFetcherCallback((data) => {
+		startAndDone();
+		if (data.success) {
+			console.log("message updated", data);
+		} else {
+			toast({
+				title: data.message,
+				status: "error"
+			});
+		}
+	});
+
+	const [description, setDescription] = useState(server.description);
+	const [message, setMessage] = useState(server.message_from_owner);
+
 	return (
 		// setting a key, so it rerenders when the server changes
 		<Flex gap={10} w="100%" flexDir={"column"} key={server.server}>
@@ -210,6 +285,7 @@ export default function ServerPanel() {
 					Statistics
 				</Text>
 
+				{/* Stats in this month */}
 				<Flex flexDir={"column"} gap={2}>
 					<Text color={"textSec"} fontSize={"lg"} fontWeight={600}>
 						This month
@@ -220,6 +296,7 @@ export default function ServerPanel() {
 					</SimpleGrid>
 				</Flex>
 
+				{/* Stats lifetime */}
 				<Flex flexDir={"column"} gap={2}>
 					<Text color={"textSec"} fontSize={"lg"} fontWeight={600}>
 						Total
@@ -235,6 +312,7 @@ export default function ServerPanel() {
 			<Divider />
 
 			<Flex gap={10} w="100%" flexDir={"column"}>
+				{/* Server info */}
 				<Flex flexDir={"column"} gap={4} w={"100%"}>
 					<Text fontSize={"2xl"} fontWeight={600}>
 						Server Information
@@ -259,22 +337,92 @@ export default function ServerPanel() {
 					</Flex>
 				</Flex>
 
+				{/* Language */}
 				<Flex flexDir={"column"} gap={4} w={"100%"}>
-					<Text fontSize={"2xl"} fontWeight={600}>
+					<Text fontSize={"xl"} fontWeight={600}>
 						Language
 					</Text>
 
 					<LanguageChanger locale={server.language} />
 				</Flex>
 
+				{/* Tags */}
 				<Flex flexDir={"column"} gap={4} w={"100%"}>
 					<Tags tags={server.Tags.map((tag) => tag.name)} serverId={server.id} />
 				</Flex>
 
+				{/* Description */}
+				<Flex flexDir={"column"} gap={4} w={"100%"}>
+					<Flex flexDir="column">
+						<Text fontSize={"xl"} fontWeight={600}>
+							Short Description
+						</Text>
+						<Text color={"textSec"}>
+							Short description will be showed in search results and in the server's page.
+						</Text>
+					</Flex>
+
+					<Textarea
+						value={description || ""}
+						variant={"filled"}
+						onChange={(e) => {
+							setDescription(e.target.value);
+							descriptionFetcher.submit(
+								{
+									intent: "description",
+									description: e.target.value
+								},
+								{
+									debounceTimeout: 1000,
+									method: "PATCH"
+								}
+							);
+						}}
+					/>
+					<Text color={"textSec"} fontSize={"sm"} mt={-3} textAlign={"end"}>
+						{description?.length || 0}/150
+					</Text>
+				</Flex>
+
+				{/* Message from the owner */}
+				<Flex flexDir={"column"} gap={4} w={"100%"}>
+					<Flex flexDir="column">
+						<Text fontSize={"xl"} fontWeight={600}>
+							Message from the owner
+						</Text>
+						<Text color={"textSec"}>
+							This message will be shown on voting page. You can use it to inform players about how they can receive
+							rewards for voting on your server!
+						</Text>
+					</Flex>
+
+					<Textarea
+						value={message || ""}
+						variant={"filled"}
+						onChange={(e) => {
+							setMessage(e.target.value);
+							messageFetcher.submit(
+								{
+									intent: "message",
+									message: e.target.value
+								},
+								{
+									debounceTimeout: 1000,
+									method: "PATCH"
+								}
+							);
+						}}
+					/>
+					<Text color={"textSec"} fontSize={"sm"} mt={-3} textAlign={"end"}>
+						{message?.length || 0}/1000
+					</Text>
+				</Flex>
+
+				{/* Banner */}
 				<Flex flexDir={"column"} gap={2}>
 					<Flex w="100%" alignItems={"center"} gap={4} justifyContent={"space-between"}>
 						<Flex flexDir={"column"}>
-							<Text fontSize={"lg"} fontWeight={600}>
+							<Text fontSize={"xl"} fontWeight={600}>
 								Banner
 							</Text>
 							<Text color={"textSec"}>
@@ -291,6 +439,7 @@ export default function ServerPanel() {
 					<DragAndDropFile fileName="banner" serverId={server.id} />
 				</Flex>
 
+				{/* Background */}
 				<Flex flexDir={"column"} gap={2}>
 					<Flex w="100%" alignItems={"center"} gap={4} justifyContent={"space-between"}>
 						<Flex flexDir={"column"}>

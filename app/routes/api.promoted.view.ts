@@ -72,7 +72,7 @@ export async function action({ request }: ActionFunctionArgs) {
 			view
 		});
 	} catch (e) {
-		console.error(e);
+		console.error((e as Error)?.message);
 		return typedjson({
 			success: false,
 			message: (e as Error).message

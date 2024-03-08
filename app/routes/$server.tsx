@@ -13,7 +13,7 @@ import useEventSourceCallback from "@/hooks/useEventSourceCallback";
 import useUser from "@/hooks/useUser";
 import Link from "@/layout/global/Link";
 import { Ad, adType } from "@/layout/global/ads/Yes";
-import ChecksTable from "@/layout/routes/server/index/ChecksTable";
+import ChecksTable, { ICheck } from "@/layout/routes/server/index/ChecksTable";
 import Comments from "@/layout/routes/server/index/Comments";
 import CommentsSkeleton from "@/layout/routes/server/index/CommentsSkeleton";
 import McFonts from "@/layout/routes/server/index/McFonts";
@@ -337,7 +337,6 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 	}
 
 	const url = new URL(request.url);
-	const c = url.searchParams.get("page") || 0;
 	const query = url.searchParams.get("query") === "";
 	const pathStrArr = url.pathname.split("/");
 	const bedrock = pathStrArr.length === 2 && pathStrArr[0] === "bedrock";
@@ -375,6 +374,33 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 			}
 		})
 		.catch(() => null)) as unknown as AnyServerModel | null;
+
+	const comments = new Promise((r) => {
+		// await new Promise((re) => setTimeout(re, 1000));
+		r(
+			db.comment.findMany({
+				where: {
+					server_id: foundServer?.id
+				},
+				select: {
+					id: true,
+					content: true,
+					created_at: true,
+					updated_at: true,
+					user: {
+						select: {
+							nick: true,
+							photo: true,
+							id: true
+						}
+					}
+				},
+				orderBy: {
+					created_at: "desc"
+				}
+			})
+		);
+	}) as Promise<any[]>;
 
 	let data = !foundServer
 		? await getServerInfo(server, query, bedrock)
@@ -478,7 +504,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 	const serverId = foundServer.id;
 
 	const isAuth = await authenticator.isAuthenticated(request);
-	const [votes, checks, isSaved] = await Promise.all([
+	const [votes, isSaved] = await Promise.all([
 		db.vote.count({
 			where: {
 				server_id: serverId,
@@ -487,29 +513,29 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 				}
 			}
 		}),
-		db.check.findMany({
-			where: {
-				server_id: serverId
-			},
-			select: {
-				id: true,
-				online: true,
-				players: true,
-				source: true,
-				Server: {
-					select: {
-						server: true,
-						bedrock: true
-					}
-				},
-				checked_at: true
-			},
-			orderBy: {
-				id: "desc"
-			},
-			take: 20,
-			skip: Number(c) || 0
-		}),
+		// db.check.findMany({
+		// 	where: {
+		// 		server_id: serverId
+		// 	},
+		// 	select: {
+		// 		id: true,
+		// 		online: true,
+		// 		players: true,
+		// 		source: true,
+		// 		Server: {
+		// 			select: {
+		// 				server: true,
+		// 				bedrock: true
+		// 			}
+		// 		},
+		// 		checked_at: true
+		// 	},
+		// 	orderBy: {
+		// 		id: "desc"
+		// 	},
+		// 	take: 20,
+		// 	skip: Number(c) || 0
+		// }),
 		isAuth
 			? db.savedServer
 					.findFirst({
@@ -531,7 +557,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 		: getRandomMinecarftImage();
 
 	return typeddefer(
-		{ server, data, checks, query, isSaved, foundServer, bedrock, serverId, image, votes },
+		{ server, data, query, isSaved, foundServer, bedrock, serverId, image, votes, comments },
 		cachePrefetch(request)
 	);
 }
@@ -556,18 +582,18 @@ export const shouldRevalidate: ShouldRevalidateFunction = ({ formData, currentPa
 export default function $server() {
 	const {
 		server,
-		checks,
 		image,
 		query,
 		isSaved,
 		bedrock,
 		serverId,
 		votes: dbVotes,
+		comments: commentsPromise,
 		data: promiseData, // data is there promise data, cause it's streaming, so "foundServer" is a data rn.
 		foundServer: data
 	} = useAnimationLoaderData<typeof loader>();
 
-	const [tab, setTab] = useState<(typeof tabs)[number]["value"]>("checks");
+	const [tab, setTab] = useState<(typeof tabs)[number]["value"]>("comments");
 	const [comments, setComments] = useState<any[] | null>(null);
 
 	const [votes, setVotes] = useState<number>(dbVotes);
@@ -604,6 +630,8 @@ export default function $server() {
 	useEffect(() => {
 		setShouldPregenerateStyles(false);
 	}, [server]);
+
+	const [checks, setChecks] = useState<ICheck[] | null>(null);
 
 	return (
 		<Flex gap={5} flexDir={"column"} maxW="1000px" mx="auto" w="100%" mt={"50px"} px={4} mb={5}>
@@ -695,14 +723,17 @@ export default function $server() {
 						Last checks
 					</Heading>
 
-					<ChecksTable checks={checks} server={server} serverId={serverId} />
+					<ChecksTable server={server} serverId={serverId} checks={checks} setChecks={setChecks} />
 				</VStack>
 			)}
 			{tab === "comments" && (
-				<>
-					{comments !== null && <Comments comments={comments} setComments={setComments} />}
-					{comments === null && <CommentsSkeleton serverId={serverId} comments={comments} setComments={setComments} />}
-				</>
+				<Suspense fallback={<CommentsSkeleton />}>
+					<Await resolve={commentsPromise}>
+						{(freshComments) => (
+							<Comments freshComments={freshComments} comments={comments} setComments={setComments} />
+						)}
+					</Await>
+				</Suspense>
 			)}
 
 			<Stack direction={{ base: "column", md: "row" }} spacing={{ base: "auto", md: 7 }}>

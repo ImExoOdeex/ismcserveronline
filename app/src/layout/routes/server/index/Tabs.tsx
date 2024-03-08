@@ -8,12 +8,12 @@ import { BiBookmark } from "react-icons/bi";
 
 export const tabs = [
 	{
-		name: "Checks",
-		value: "checks"
-	},
-	{
 		name: "Comments",
 		value: "comments"
+	},
+	{
+		name: "Checks",
+		value: "checks"
 	}
 ] as const;
 
@@ -33,12 +33,8 @@ export default memo(function Tabs({ tab, setTab, isSaved }: Props) {
 	const saveFetcher = useFetcherCallback((data) => {
 		if (data?.success) {
 			toast({
-				title: "Successfully saved server!",
-				duration: 5000,
-				variant: "subtle",
-				isClosable: true,
-				status: "success",
-				position: "bottom-right"
+				title: saved ? "Successfully bookmarked server!" : "Successfully removed server from bookmarks!",
+				status: "success"
 			});
 		}
 	});
