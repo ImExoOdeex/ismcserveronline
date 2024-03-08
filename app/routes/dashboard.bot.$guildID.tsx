@@ -6,6 +6,7 @@ import serverConfig from "@/.server/serverConfig";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import Link from "@/layout/global/Link";
 import BotNotOnServer from "@/layout/routes/dashboard/bot/BotNotOnServer";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 import { Button, Flex, HStack, Heading, Image, Stack } from "@chakra-ui/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
@@ -73,6 +74,10 @@ export default function $guildID() {
 
 	return (
 		<>
+			<Button as={Link} to="/dashboard/bot" leftIcon={<ArrowBackIcon />} mb={4}>
+				Go back
+			</Button>
+
 			<Stack direction={{ base: "column", md: "row" }} spacing={10}>
 				<HStack spacing={5}>
 					<Image

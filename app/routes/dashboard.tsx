@@ -52,8 +52,8 @@ export default function Dashboard() {
 
 	const logoutFetcher = useFetcher();
 
-	const matches = useMatches();
-	const shouldShowSidebar = !matches.some((m) => m.handle && (m.handle as any)?.showSidebar === false);
+	const botDashboardLayoutMatches = useMatches().find((m) => m.id === "routes/dashboard.bot.$guildID");
+	const shouldShowSidebar = (botDashboardLayoutMatches?.handle as any)?.showSidebar !== false;
 
 	if (!user) return null;
 	return (
@@ -121,7 +121,6 @@ export default function Dashboard() {
 				}}
 			>
 				{shouldShowSidebar && <Sidebar />}
-				{/* <Sidebar /> */}
 				<Outlet />
 			</Flex>
 		</VStack>

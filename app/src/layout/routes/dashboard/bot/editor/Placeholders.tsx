@@ -24,11 +24,11 @@ export const placeholders = {
 			replaceWith: "https://cdn.discordapp.com/icons/1066548001025310730/9255d155f58573ad7d4fdd6cd497fdbc.webp"
 		},
 		{
-			name: "Server Name",
-			placeholder: "{serverName}"
+			name: "Status Icon",
+			placeholder: "{icon}"
 		},
 		{
-			name: "status",
+			name: "Server Status",
 			placeholder: "{status}"
 		},
 		{
@@ -48,6 +48,10 @@ export const placeholders = {
 		{
 			name: "Server",
 			placeholder: "{server}"
+		},
+		{
+			name: "Date and Time",
+			placeholder: "{datetime}"
 		}
 	]
 } as Record<DiscordMessageType, Placeholder[]>;

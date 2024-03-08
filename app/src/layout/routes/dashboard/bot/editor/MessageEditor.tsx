@@ -1,10 +1,9 @@
-import { decimalToHex, hexToDecimal } from "@/functions/colors";
 import { DiscordMessage } from "@/layout/routes/dashboard/bot/editor/DiscordMessageEditor";
 import config from "@/utils/config";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { Button, Divider, Flex, FormControl, FormLabel, Heading, Input, Text, Textarea } from "@chakra-ui/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { startTransition, useId, useState } from "react";
+import { useState } from "react";
 
 interface Props {
 	message: DiscordMessage;
@@ -20,9 +19,7 @@ export default function MessageEditor({ message, setMessage }: Props) {
 		footer: false
 	});
 
-	const inputID = useId();
-
-	console.log("message", message);
+	// const inputID = useId();
 
 	return (
 		<Flex
@@ -243,7 +240,7 @@ export default function MessageEditor({ message, setMessage }: Props) {
 									name="url"
 								/>
 							</FormControl>
-							<FormControl>
+							{/* <FormControl>
 								<FormLabel>Color</FormLabel>
 								<Flex gap={2} alignItems={"center"}>
 									<Input
@@ -297,7 +294,7 @@ export default function MessageEditor({ message, setMessage }: Props) {
 										/>
 									</Flex>
 								</Flex>
-							</FormControl>
+							</FormControl> */}
 						</Flex>
 					</FieldsEditor>
 

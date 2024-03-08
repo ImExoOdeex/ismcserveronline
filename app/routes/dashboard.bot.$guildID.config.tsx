@@ -1,18 +1,17 @@
 import { Info, sendActionWebhook } from "@/.server/auth/webhooks";
 import { getUser } from "@/.server/db/models/user";
 import { requireEnv } from "@/.server/functions/env.server";
+import { cachePrefetch } from "@/.server/functions/fetchHelpers.server";
 import { requireUserGuild } from "@/.server/functions/secureDashboard.server";
 import { csrf } from "@/.server/functions/security.server";
 import serverConfig from "@/.server/serverConfig";
 import { decimalToHex } from "@/functions/colors";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import StatusColor from "@/layout/routes/dashboard/bot/StatusColor";
-import { Button, Divider, HStack, Icon, Stack, Text, VStack, Wrap, WrapItem } from "@chakra-ui/react";
+import { Divider, Stack, Text, VStack } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { useFetcher, useRevalidator } from "@remix-run/react";
-import { BiSave } from "react-icons/bi";
-import { HiRefresh } from "react-icons/hi";
 import { typeddefer, typedjson } from "remix-typedjson";
+import invariant from "tiny-invariant";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
 	csrf(request);
@@ -40,7 +39,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 		})
 	);
 
-	return typeddefer({ config, colorPromises });
+	return typeddefer({ config, colorPromises }, cachePrefetch(request));
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -50,14 +49,17 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 	const formData = await request.formData();
 
+	const updatedValue = formData.get("onlineColor")?.toString() || formData.get("offlineColor")?.toString();
+	invariant(updatedValue, "No color provided");
+	const updatedColor = formData.get("onlineColor")?.toString() ? "onlineColor" : "offlineColor";
+
 	const res = await fetch(`${serverConfig.botApi}/${guildID}/config/edit`, {
 		method: "POST",
 		headers: {
 			Authorization: requireEnv("SUPER_DUPER_API_ACCESS_TOKEN")
 		},
 		body: new URLSearchParams({
-			onlineColor: formData.get("onlineColor")?.toString() ?? "#00ff00",
-			offlineColor: formData.get("offlineColor")?.toString() ?? "#ff0000"
+			[updatedColor]: updatedValue
 		})
 	}).then((res) => res.json());
 
@@ -81,62 +83,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 export default function Config() {
 	const { config, colorPromises } = useAnimationLoaderData<typeof loader>();
-	// console.log("colorPromises", colorPromises);
-
-	const fetcher = useFetcher();
-	const { revalidate, state } = useRevalidator();
-
-	const data = fetcher.data as any;
-
 	return (
-		<fetcher.Form method="POST" style={{ width: "100%" }}>
+		<>
 			<VStack w="100%" align={"start"} spacing={7}>
 				<Stack direction={{ base: "column", md: "row" }} spacing={5} w={{ base: "100%", md: "xl" }}>
 					<StatusColor config={config} type="online" colorPromises={colorPromises} />
 					<StatusColor config={config} type="offline" colorPromises={colorPromises} />
 				</Stack>
-				<VStack w="100%" align={"start"}>
-					<Wrap>
-						<WrapItem>
-							<Button
-								transform={"auto-gpu"}
-								_active={{ scale: 0.9 }}
-								isLoading={state === "loading"}
-								onClick={revalidate}
-								variant={"brand"}
-							>
-								<HStack>
-									<Icon as={HiRefresh} />
-									<Text>{"Refresh data"}</Text>
-								</HStack>
-							</Button>
-						</WrapItem>
-
-						<WrapItem>
-							<Button
-								transform={"auto-gpu"}
-								isLoading={fetcher.state !== "idle"}
-								type="submit"
-								variant={"brand"}
-								colorScheme={"green"}
-								_hover={{ bg: "green.600" }}
-								_active={{ bg: "green.700", scale: 0.9 }}
-								bg={"green.500"}
-								color={"white"}
-							>
-								<HStack>
-									<Icon as={BiSave} />
-									<Text>Update</Text>
-								</HStack>
-							</Button>
-						</WrapItem>
-					</Wrap>
-					{data && (
-						<Text color={data.success ? "green" : "red"} fontWeight={600}>
-							{data.message}
-						</Text>
-					)}
-				</VStack>
 			</VStack>
 
 			<Divider my={10} />
@@ -145,6 +98,6 @@ export default function Config() {
 				To edit status colors for the bot's embed responses, click on the "Color Fill" icon located on the bottom right
 				corner of the color box. This will open up the color picker. To save your changes, click on the "Update" button.
 			</Text>
-		</fetcher.Form>
+		</>
 	);
 }

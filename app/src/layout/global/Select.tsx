@@ -59,9 +59,10 @@ export default function Select<Option, IsMulti extends boolean = false, Group ex
 				control: (provided) => ({
 					...provided,
 					cursor: "pointer",
-					bg: "alpha",
-					border: "none",
-					rounded: "lg",
+					bg: props?.variant === "flushed" ? "transparent" : "alpha",
+					border: props?.variant === "flushed" ? undefined : "none",
+					borderColor: "alpha200",
+					rounded: props?.variant === "flushed" ? "none" : "lg",
 					fontWeight: 600
 				}),
 				dropdownIndicator: (provided, { selectProps: { menuIsOpen } }) => ({

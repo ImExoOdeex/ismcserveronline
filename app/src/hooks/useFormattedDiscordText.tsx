@@ -51,7 +51,7 @@ function processLine(line: string, mentionBg: string, data?: FormatData) {
 			words.push(<Box key={index} as="span" borderLeft="7px" bgColor={"#4e5058"} pl={1} mr={1} borderRadius="md" />);
 		else if (word.match(/```([^`]+?)```/g)) words.push(word?.replaceAll("```", ""));
 		else if (word.match(/\*\*([^*]+?)\*\*/g)) words.push(<Text as="b">{word?.replaceAll("**", "")}</Text>);
-		else if (word.match(/__([^_]+?)__/g)) words.push(<Text as="i">{word?.replaceAll("__", "")}</Text>);
+		else if (word.match(/__([^_]+?)__/g)) words.push(<Text textDecor={"underline"}>{word?.replaceAll("__", "")}</Text>);
 		else if (word.match(/\*([^*\n]+?)\*/g)) words.push(<Text as="em">{word?.replaceAll("*", "")}</Text>);
 		else if (word.match(/\_([^_\n]+?)\_/g)) words.push(<Text as="em">{word?.replaceAll("_", "")}</Text>);
 		else if (word.match(/~~([^~]+?)~~/g)) words.push(<Text as="s">{word?.replaceAll("~~", "")}</Text>);
@@ -136,7 +136,7 @@ function processLine(line: string, mentionBg: string, data?: FormatData) {
 		else words.push(<>{word}</>);
 	}
 
-	const wordArray = line.split(
+	const wordArray = line?.split(
 		/(```[^`]+?```|\*\*[^*]+?\*\*|__[^_]+?__|\*[^*\n]+?\*|~~[^~]+?~~|\|\|[^|\n]+?\|\||`[^`\n]+?`|\s+)/
 	);
 	for (let i = 0; i < wordArray.length; i++) {
@@ -160,7 +160,7 @@ export function usePlaceholdersReplaced(text: string, placeholders: Placeholder[
 
 export default function useFormattedDiscordText(text: string, data?: FormatData) {
 	const lines = useMemo(() => {
-		return text.split("\n");
+		return text?.split("\n");
 	}, [text]);
 
 	const mapped = useMemo(() => {
@@ -183,7 +183,7 @@ const Line = memo(function Line({ line, data }: { line: string; data?: FormatDat
 	}, [line]);
 
 	const words = useMemo(() => {
-		return processedWords.map((word, wordIndex) => (
+		return processedWords?.map((word, wordIndex) => (
 			<React.Fragment key={"word-" + word + "-" + wordIndex}>{word}</React.Fragment>
 		));
 	}, [processedWords]);

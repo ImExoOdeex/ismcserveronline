@@ -1,5 +1,7 @@
+import useDebouncedFetcherCallback from "@/hooks/useDebouncedFetcherCallback";
 import useGlobalContext from "@/hooks/useGlobalContext";
 import useInsideEffect from "@/hooks/useInsideEffect";
+import { useProgressBarContext } from "@/layout/global/ProgressBarContext";
 import { Flex, Heading, Icon, Skeleton, Text, VisuallyHiddenInput, VStack } from "@chakra-ui/react";
 import { Await } from "@remix-run/react";
 import { Suspense, useState } from "react";
@@ -41,12 +43,27 @@ export default function StatusColor({
 	}, [color]);
 
 	const { updateData } = useGlobalContext();
+	const { startAndDone } = useProgressBarContext();
+
+	const fetcher = useDebouncedFetcherCallback((data) => {
+		startAndDone();
+	});
 
 	function handleColorChange(e: React.ChangeEvent<HTMLInputElement>) {
 		const value = e.currentTarget.value;
 
 		setColor(value);
 		updateData("gradientColor", value);
+
+		fetcher.submit(
+			{
+				[type === "online" ? "onlineColor" : "offlineColor"]: value
+			},
+			{
+				debounceTimeout: 300,
+				method: "PATCH"
+			}
+		);
 	}
 
 	return (

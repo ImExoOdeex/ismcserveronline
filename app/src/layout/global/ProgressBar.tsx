@@ -43,7 +43,6 @@ export default memo(function ProgressBar({
 
 	return (
 		<motion.div
-			id="progress-bar"
 			animate={{
 				height: (completed && progress >= 100) || progress === 0 ? 0 : height,
 				opacity: (completed && progress >= 100) || progress === 0 ? 0 : 1

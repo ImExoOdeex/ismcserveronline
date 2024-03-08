@@ -1,10 +1,11 @@
 import { requireEnv } from "@/.server/functions/env.server";
+import { cachePrefetch } from "@/.server/functions/fetchHelpers.server";
 import { requireUserGuild } from "@/.server/functions/secureDashboard.server";
 import { csrf } from "@/.server/functions/security.server";
 import serverConfig from "@/.server/serverConfig";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
-import useFetcherCallback from "@/hooks/useFetcherCallback";
-import DiscordMessageEditor from "@/layout/routes/dashboard/bot/editor/DiscordMessageEditor";
+import AlertEditor from "@/layout/routes/dashboard/bot/editor/AlertEditor";
+import LivecheckEditor from "@/layout/routes/dashboard/bot/editor/LivecheckEditor";
 import { Divider, Text, VStack } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { typedjson } from "remix-typedjson";
@@ -34,7 +35,8 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 			}
 		}).then((res) => res.json())
 	]);
-	return typedjson({ messages, channels, roles });
+
+	return typedjson({ messages, channels, roles }, cachePrefetch(request));
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -43,30 +45,34 @@ export async function action({ request, params }: ActionFunctionArgs) {
 	await requireUserGuild(request, guildID);
 
 	const formData = await request.formData();
+	const type = formData.get("type") as "livecheck" | "alert";
+	const message = formData.get("message") as string;
 
-	return typedjson({});
+	const { success, message: resMessage } = await fetch(`${serverConfig.botApi}/${guildID}/custom-messages`, {
+		method: "PATCH",
+		headers: {
+			Authorization: requireEnv("SUPER_DUPER_API_ACCESS_TOKEN")
+		},
+		body: new URLSearchParams({
+			type,
+			message
+		})
+	}).then((res) => res.json());
+
+	return typedjson({
+		success,
+		message: resMessage
+	});
 }
 
-export default function Config() {
+export default function Editor() {
 	const { messages, channels, roles } = useAnimationLoaderData<typeof loader>();
 
-	const fetcher = useFetcherCallback((data) => {
-		return null;
-	});
-
 	return (
-		<fetcher.Form method="POST" style={{ width: "100%" }}>
+		<>
 			<VStack w="100%" align={"start"} spacing={7}>
-				<DiscordMessageEditor
-					message={messages[0]}
-					type="livecheck"
-					data={{
-						guildData: {
-							channels,
-							roles
-						}
-					}}
-				/>
+				<LivecheckEditor channels={channels} messages={messages} roles={roles} />
+				<AlertEditor channels={channels} messages={messages} roles={roles} />
 			</VStack>
 
 			<Divider my={10} />
@@ -75,6 +81,6 @@ export default function Config() {
 				To edit status colors for the bot's embed responses, click on the "Color Fill" icon located on the bottom right
 				corner of the color box. This will open up the color picker. To save your changes, click on the "Update" button.
 			</Text>
-		</fetcher.Form>
+		</>
 	);
 }

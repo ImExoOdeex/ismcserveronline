@@ -1,11 +1,13 @@
 import { Info, sendActionWebhook } from "@/.server/auth/webhooks";
 import { getUser } from "@/.server/db/models/user";
 import { requireEnv } from "@/.server/functions/env.server";
+import { cachePrefetch } from "@/.server/functions/fetchHelpers.server";
 import { requireUserGuild } from "@/.server/functions/secureDashboard.server";
 import { csrf } from "@/.server/functions/security.server";
 import serverConfig from "@/.server/serverConfig";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import useFetcherCallback from "@/hooks/useFetcherCallback";
+import Select from "@/layout/global/Select";
 import LivecheckNumbers from "@/layout/routes/dashboard/bot/LivecheckNumbers";
 import { AddIcon, EditIcon } from "@chakra-ui/icons";
 import {
@@ -15,7 +17,6 @@ import {
 	Divider,
 	Flex,
 	FormLabel,
-	HStack,
 	Heading,
 	Icon,
 	Input,
@@ -33,7 +34,6 @@ import {
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useRevalidator } from "@remix-run/react";
-import { Select } from "chakra-react-select";
 import { useEffect, useState } from "react";
 import { BiSave } from "react-icons/bi";
 import { HiRefresh } from "react-icons/hi";
@@ -71,7 +71,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 		}).then((res) => res.json())
 	]);
 
-	return typedjson({ livecheck, channels });
+	return typedjson({ livecheck, channels }, cachePrefetch(request));
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -190,9 +190,10 @@ export default function Index() {
 												variant={"flushed"}
 												name="address"
 												defaultValue={livecheck.address}
+												fontWeight={600}
 											/>
 										) : (
-											<Text fontWeight={600} fontSize={"xl"}>
+											<Text fontWeight={600} fontSize={"xl"} minH={"40px"}>
 												{livecheck.address}
 											</Text>
 										)}
@@ -209,52 +210,6 @@ export default function Index() {
 												label: livecheck.bedrock ? "Bedrock" : "Java",
 												value: livecheck.bedrock ? "bedrock" : "java"
 											}}
-											chakraStyles={{
-												control: (provided) => ({
-													...provided,
-													borderRadius: "none",
-													w: "100%",
-													cursor: "pointer",
-													alignItems: "center",
-													h: "30px",
-													borderColor: "alpha100",
-													display: "flex"
-												}),
-												dropdownIndicator: (provided, { selectProps: { menuIsOpen } }) => ({
-													...provided,
-													"> svg": {
-														transitionDuration: "normal",
-														transform: `rotate(${menuIsOpen ? -180 : 0}deg)`
-													},
-													background: "transparent",
-													padding: "0 5px"
-												}),
-												container: (provided) => ({
-													...provided,
-													h: "30px",
-													w: "100%",
-													bg: "transparent"
-												}),
-												input: (provided) => ({
-													...provided,
-													h: "30px",
-													bg: "transparent"
-												}),
-												menuList: (provided) => ({
-													...provided,
-													mt: 2,
-													rounded: "lg",
-													bg: "bg"
-												}),
-												option: (provided) => ({
-													...provided,
-													bg: "bg",
-													color: "text",
-													_hover: {
-														bg: "alpha100"
-													}
-												})
-											}}
 											options={
 												[
 													{
@@ -267,16 +222,19 @@ export default function Index() {
 													}
 												] as any[]
 											}
+											container={{
+												w: "100%"
+											}}
 										/>
 									) : (
-										<Text fontWeight={600} fontSize={"xl"}>
+										<Text fontWeight={600} fontSize={"xl"} minH={"40px"}>
 											{livecheck.bedrock ? "Bedrock" : "Java"}
 										</Text>
 									)}
 								</VStack>
 							</Stack>
 
-							<VStack w="100%" align={"start"} spacing={0}>
+							<VStack align={"start"} spacing={0} w={{ base: "100%", md: "lg" }}>
 								<FormLabel>Channel Id</FormLabel>
 								{isEditing ? (
 									<Select
@@ -289,59 +247,16 @@ export default function Index() {
 											}`,
 											value: livecheck.channel_id
 										}}
-										chakraStyles={{
-											control: (provided) => ({
-												...provided,
-												borderRadius: "none",
-												cursor: "pointer",
-												alignItems: "center",
-												h: "30px",
-												w: "512px",
-												borderColor: "alpha100",
-												display: "flex"
-											}),
-											dropdownIndicator: (provided, { selectProps: { menuIsOpen } }) => ({
-												...provided,
-												"> svg": {
-													transitionDuration: "normal",
-													transform: `rotate(${menuIsOpen ? -180 : 0}deg)`
-												},
-												background: "transparent",
-												padding: "0 5px"
-											}),
-											container: (provided) => ({
-												...provided,
-												h: "30px",
-												w: "100%",
-												bg: "transparent"
-											}),
-											input: (provided) => ({
-												...provided,
-												h: "30px",
-												bg: "transparent"
-											}),
-											menuList: (provided) => ({
-												...provided,
-												mt: 2,
-												rounded: "lg",
-												bg: "bg"
-											}),
-											option: (provided) => ({
-												...provided,
-												bg: "bg",
-												color: "text",
-												_hover: {
-													bg: "alpha100"
-												}
-											})
-										}}
 										options={channels.map((channel: { name: string; id: string }) => ({
 											label: `#${channel.name}`,
 											value: channel.id
 										}))}
+										container={{
+											w: "100%"
+										}}
 									/>
 								) : (
-									<Text fontWeight={600} fontSize={"xl"}>
+									<Text fontWeight={600} fontSize={"xl"} minH={"40px"}>
 										{`#${
 											channels.find((c: { name: string; id: string }) => c.id === livecheck.channel_id)
 												?.name
@@ -402,7 +317,6 @@ export default function Index() {
 									<Input
 										bg="alpha"
 										name="address"
-										rounded={"xl"}
 										variant={"filled"}
 										min={3}
 										max={100}
@@ -417,50 +331,6 @@ export default function Index() {
 									<Select
 										name="edition"
 										variant={"filled"}
-										chakraStyles={{
-											control: (provided) => ({
-												...provided,
-												borderRadius: "xl",
-												w: "100%",
-												cursor: "pointer",
-												bg: "alpha",
-												_hover: {
-													bg: "alpha200"
-												}
-											}),
-											dropdownIndicator: (provided, { selectProps: { menuIsOpen } }) => ({
-												...provided,
-												"> svg": {
-													transitionDuration: "normal",
-													transform: `rotate(${menuIsOpen ? -180 : 0}deg)`
-												},
-												background: "transparent",
-												padding: "0 5px"
-											}),
-											container: (provided) => ({
-												...provided,
-												borderRadius: "xl",
-												w: "100%",
-												bg: "transparent"
-											}),
-											input: (provided) => ({
-												...provided,
-												rounded: "xl",
-												bg: "transparent"
-											}),
-											menuList: (provided) => ({
-												...provided,
-												bg: "bg"
-											}),
-											option: (provided) => ({
-												...provided,
-												bg: "bg",
-												color: "text",
-												_hover: {
-													bg: "alpha100"
-												}
-											})
-										}}
 										options={[
 											{
 												label: "Java",
@@ -471,6 +341,9 @@ export default function Index() {
 												value: "bedrock"
 											}
 										]}
+										container={{
+											w: "100%"
+										}}
 									/>
 								</VStack>
 							</Stack>
@@ -484,50 +357,8 @@ export default function Index() {
 										label: `#${channel.name}`,
 										value: channel.id
 									}))}
-									chakraStyles={{
-										control: (provided) => ({
-											...provided,
-											borderRadius: "xl",
-											cursor: "pointer",
-											w: "100%",
-											bg: "alpha",
-											_hover: {
-												bg: "alpha200"
-											}
-										}),
-										dropdownIndicator: (provided, { selectProps: { menuIsOpen } }) => ({
-											...provided,
-											"> svg": {
-												transitionDuration: "normal",
-												transform: `rotate(${menuIsOpen ? -180 : 0}deg)`
-											},
-											background: "transparent",
-											padding: "0 5px"
-										}),
-										container: (provided) => ({
-											...provided,
-											borderRadius: "xl",
-											w: "100%",
-											bg: "transparent"
-										}),
-										input: (provided) => ({
-											...provided,
-											rounded: "xl",
-											w: "100%",
-											bg: "transparent"
-										}),
-										menuList: (provided) => ({
-											...provided,
-											bg: "bg"
-										}),
-										option: (provided) => ({
-											...provided,
-											bg: "bg",
-											color: "text",
-											_hover: {
-												bg: "alpha100"
-											}
-										})
+									container={{
+										w: "100%"
 									}}
 								/>
 							</VStack>
@@ -552,11 +383,9 @@ export default function Index() {
 								}
 								onClick={isEditing ? undefined : revalidate}
 								variant={"brand"}
+								leftIcon={<Icon as={isEditing ? BiSave : HiRefresh} />}
 							>
-								<HStack>
-									<Icon as={isEditing ? BiSave : HiRefresh} />
-									<Text>{isEditing ? "Save data" : "Refresh data"}</Text>
-								</HStack>
+								{isEditing ? "Save data" : "Refresh data"}
 							</Button>
 						</WrapItem>
 						{/* )} */}
@@ -576,11 +405,9 @@ export default function Index() {
 								_active={{ bg: livecheck ? "red.800" : "green.700", scale: 0.9 }}
 								bg={livecheck ? "red.500" : "green.500"}
 								color={livecheck ? "white" : "white"}
+								leftIcon={<Icon as={livecheck ? TbTrash : AddIcon} />}
 							>
-								<HStack>
-									{livecheck ? <Icon as={TbTrash} /> : <AddIcon />}
-									<Text>{livecheck ? "Disable" : "Enable"} livecheck</Text>
-								</HStack>
+								{livecheck ? "Disable" : "Enable"} livecheck
 							</Button>
 						</WrapItem>
 						{livecheck && (
@@ -591,11 +418,9 @@ export default function Index() {
 									_active={{ scale: 0.9 }}
 									_hover={{ bg: "alpha200" }}
 									bg="alpha100"
+									leftIcon={<EditIcon />}
 								>
-									<HStack>
-										<EditIcon />
-										<Text>{isEditing ? "Cancel editing" : "Edit livecheck"}</Text>
-									</HStack>
+									{isEditing ? "Cancel editing" : "Edit livecheck"}
 								</Button>
 							</WrapItem>
 						)}
@@ -649,63 +474,25 @@ export default function Index() {
 									<Select
 										name="alertChannel"
 										variant={"filled"}
-										defaultValue={{
-											label: `#${
-												channels.find(
-													(c: { name: string; id: string }) => c.id === livecheck?.alert_channel
-												)?.name
-											}`,
-											value: livecheck?.alert_channel
-										}}
+										defaultValue={
+											livecheck?.alert_channel
+												? {
+														label: `#${
+															channels.find(
+																(c: { name: string; id: string }) =>
+																	c.id === livecheck?.alert_channel
+															)?.name
+														}`,
+														value: livecheck?.alert_channel
+												  }
+												: undefined
+										}
 										options={channels.map((channel: { name: string; id: string }) => ({
 											label: `#${channel.name}`,
 											value: channel.id
 										}))}
-										chakraStyles={{
-											control: (provided) => ({
-												...provided,
-												borderRadius: "xl",
-												cursor: "pointer",
-												w: "100%",
-												bg: "alpha",
-												_hover: {
-													bg: "alpha200"
-												}
-											}),
-											dropdownIndicator: (provided, { selectProps: { menuIsOpen } }) => ({
-												...provided,
-												"> svg": {
-													transitionDuration: "normal",
-													transform: `rotate(${menuIsOpen ? -180 : 0}deg)`
-												},
-												background: "transparent",
-												padding: "0 5px"
-											}),
-											container: (provided) => ({
-												...provided,
-												borderRadius: "xl",
-												w: "100%",
-												maxW: "xs",
-												bg: "transparent"
-											}),
-											input: (provided) => ({
-												...provided,
-												rounded: "xl",
-												w: "100%",
-												bg: "transparent"
-											}),
-											menuList: (provided) => ({
-												...provided,
-												bg: "bg"
-											}),
-											option: (provided) => ({
-												...provided,
-												bg: "bg",
-												color: "text",
-												_hover: {
-													bg: "alpha100"
-												}
-											})
+										container={{
+											w: "300px"
 										}}
 									/>
 								</Flex>

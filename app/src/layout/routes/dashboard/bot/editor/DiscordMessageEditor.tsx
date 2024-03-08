@@ -3,7 +3,6 @@ import MessageEditor from "@/layout/routes/dashboard/bot/editor/MessageEditor";
 import Placeholders from "@/layout/routes/dashboard/bot/editor/Placeholders";
 import Preview from "@/layout/routes/dashboard/bot/editor/Preview";
 import { Flex } from "@chakra-ui/react";
-import { useState } from "react";
 
 export type DiscordMessageType = "livecheck" | "alert";
 
@@ -42,13 +41,12 @@ export interface DiscordMessage {
 interface Props {
 	type: DiscordMessageType;
 	message: DiscordMessage;
+	setMessage: React.Dispatch<React.SetStateAction<DiscordMessage>>;
 	data?: FormatData;
 }
 
 // This was fucking hell, but still better than svelte :)
-export default function DiscordMessageEditor({ type, message: initialMessage, data }: Props) {
-	const [message, setMessage] = useState<DiscordMessage>(initialMessage);
-
+export default function DiscordMessageEditor({ type, message, setMessage, data }: Props) {
 	return (
 		<Flex
 			flexDir={{

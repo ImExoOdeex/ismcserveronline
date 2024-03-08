@@ -68,7 +68,7 @@ export default function EmbedPreview({ message }: Props) {
 					)}
 				</VStack>
 				{/* thumbnail */}
-				{message.embed.thumbnail.url && (
+				{message.embed?.thumbnail?.url && (
 					<Image
 						ml={2}
 						maxW={"80px"}
