@@ -4,7 +4,7 @@ import useUser from "@/hooks/useUser";
 import Link from "@/layout/global/Link";
 import { Ad, adType } from "@/layout/global/ads/Yes";
 import DiscordIcon from "@/layout/global/icons/DiscordIcon";
-import { MinecraftServerWoQuery } from "@/types/minecraftServer";
+import type { MinecraftServerWoQuery } from "@/types/minecraftServer";
 import { CheckIcon, CopyIcon } from "@chakra-ui/icons";
 import {
 	Badge,
@@ -23,7 +23,7 @@ import {
 	useClipboard,
 	useColorModeValue
 } from "@chakra-ui/react";
-import { LoaderFunctionArgs, MetaArgs, type MetaFunction } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
 import crypto from "crypto";
 import { FaCode } from "react-icons/fa";
 import { typedjson } from "remix-typedjson";
@@ -75,7 +75,7 @@ export default function Api() {
 	const { sampleToken } = useAnimationLoaderData<typeof loader>();
 	const user = useUser();
 
-	const { onCopy, hasCopied, value } = useClipboard(`await fetch("https://api.ismcserver.online/hypixel.net", {
+	const { onCopy, hasCopied } = useClipboard(`await fetch("https://api.ismcserver.online/hypixel.net", {
         headers: {
             "Authorization": "${sampleToken}"
         }

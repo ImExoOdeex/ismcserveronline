@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import { UseDataFunctionReturn, useTypedRouteLoaderData } from "remix-typedjson";
+import type { UseDataFunctionReturn } from "remix-typedjson";
+import { useTypedRouteLoaderData } from "remix-typedjson";
 import type { loader } from "~/root";
 
 export default function useRootData() {

@@ -1,4 +1,4 @@
-import { AnyServerModel, JavaServerWoDebug } from "@/types/minecraftServer";
+import type { AnyServerModel, JavaServerWoDebug } from "@/types/minecraftServer";
 import { Flex, Heading, Image, Stack, Text, VStack } from "@chakra-ui/react";
 import { memo } from "react";
 import StatusIndicator from "../index/StatusIndicator";

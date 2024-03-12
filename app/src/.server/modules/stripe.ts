@@ -1,7 +1,6 @@
 import { PaymentIntentMetadata } from "@/types/typings";
 import { User } from "@prisma/client";
 import { json } from "@remix-run/node";
-import dayjs from "dayjs";
 import Stripe from "stripe";
 import invariant from "tiny-invariant";
 import { toStripeAmount } from "../../functions/payments";
@@ -85,32 +84,32 @@ export const webhookHandlers = {
 				const { sampleServerId, days } = paymentIntent.metadata as unknown as PaymentIntentMetadata;
 				invariant(sampleServerId, "Missing sample server id");
 
-				const currentServer = await db.sampleServer.findUnique({
-					where: {
-						id: Number(sampleServerId)
-					}
-				});
-				invariant(currentServer, "Missing current sample server");
+				// const currentServer = await db.sampleServer.findUnique({
+				// 	where: {
+				// 		id: Number(sampleServerId)
+				// 	}
+				// });
+				// invariant(currentServer, "Missing current sample server");
 
-				const newDate = dayjs(currentServer.end_date ?? dayjs())
-					.add(days, "day")
-					.toDate();
+				// const newDate = dayjs(currentServer.end_date ?? dayjs())
+				// 	.add(days, "day")
+				// 	.toDate();
 
-				await db.sampleServer.update({
-					where: {
-						id: Number(sampleServerId)
-					},
-					data: {
-						payment_id: paymentIntent.id,
-						payment_status: "PAID",
-						end_date: newDate,
-						user: {
-							update: {
-								everPurchased: true
-							}
-						}
-					}
-				});
+				// await db.sampleServer.update({
+				// 	where: {
+				// 		id: Number(sampleServerId)
+				// 	},
+				// 	data: {
+				// 		payment_id: paymentIntent.id,
+				// 		payment_status: "PAID",
+				// 		end_date: newDate,
+				// 		user: {
+				// 			update: {
+				// 				everPurchased: true
+				// 			}
+				// 		}
+				// 	}
+				// });
 
 				return json(null, { status: 200 });
 			}
@@ -121,14 +120,14 @@ export const webhookHandlers = {
 		const { sampleServerId } = paymentIntent.metadata as unknown as PaymentIntentMetadata;
 		invariant(sampleServerId, "Missing sample server id");
 
-		await db.sampleServer.update({
-			where: {
-				id: Number(sampleServerId)
-			},
-			data: {
-				payment_status: "PROCESSING"
-			}
-		});
+		// await db.sampleServer.update({
+		// 	where: {
+		// 		id: Number(sampleServerId)
+		// 	},
+		// 	data: {
+		// 		payment_status: "PROCESSING"
+		// 	}
+		// });
 
 		return json(null, { status: 200 });
 	},
@@ -159,14 +158,14 @@ export const webhookHandlers = {
 					const { sampleServerId } = paymentIntent.metadata as unknown as PaymentIntentMetadata;
 					invariant(sampleServerId, "Missing sample server id");
 
-					await db.sampleServer.update({
-						where: {
-							id: Number(sampleServerId)
-						},
-						data: {
-							payment_status: "FAILED"
-						}
-					});
+					// await db.sampleServer.update({
+					// 	where: {
+					// 		id: Number(sampleServerId)
+					// 	},
+					// 	data: {
+					// 		payment_status: "FAILED"
+					// 	}
+					// });
 				}
 				return json(null, { status: 200 });
 		}
@@ -176,14 +175,14 @@ export const webhookHandlers = {
 		const { sampleServerId } = paymentIntent.metadata as unknown as PaymentIntentMetadata;
 
 		if (sampleServerId) {
-			await db.sampleServer.update({
-				where: {
-					id: Number(sampleServerId)
-				},
-				data: {
-					payment_status: "CANCELLED"
-				}
-			});
+			// await db.sampleServer.update({
+			// 	where: {
+			// 		id: Number(sampleServerId)
+			// 	},
+			// 	data: {
+			// 		payment_status: "CANCELLED"
+			// 	}
+			// });
 		} else {
 			console.error("Someone cancelled the payment intent");
 		}

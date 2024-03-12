@@ -1,4 +1,4 @@
-import { DiscordMessageType } from "@/layout/routes/dashboard/bot/editor/DiscordMessageEditor";
+import type { DiscordMessageType } from "@/layout/routes/dashboard/bot/editor/DiscordMessageEditor";
 import { Code, Divider, Flex, Heading, ListItem, Text, UnorderedList } from "@chakra-ui/react";
 import { useMemo } from "react";
 

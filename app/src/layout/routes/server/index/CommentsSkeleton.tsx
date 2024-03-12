@@ -1,4 +1,5 @@
-import { Flex, FlexProps, VStack, keyframes, useToken } from "@chakra-ui/react";
+import type { FlexProps } from "@chakra-ui/react";
+import { Flex, VStack, keyframes, useToken } from "@chakra-ui/react";
 import { memo, useMemo } from "react";
 export interface CustomComment {
 	id: number;

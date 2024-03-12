@@ -1,5 +1,5 @@
 import { ChakraBox } from "@/layout/global/MotionComponents";
-import { Transition } from "framer-motion";
+import type { Transition } from "framer-motion";
 
 export function VersionChangeComp() {
 	return (

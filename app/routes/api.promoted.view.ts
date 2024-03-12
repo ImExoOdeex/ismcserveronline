@@ -5,16 +5,19 @@ import dayjs from "dayjs";
 import { typedjson } from "remix-typedjson";
 import { getClientIPAddress } from "remix-utils/get-client-ip-address";
 import invariant from "tiny-invariant";
+import { csrf } from "../src/.server/functions/security.server";
 
 export async function action({ request }: ActionFunctionArgs) {
+	csrf(request);
+
 	try {
 		const form = await request.formData();
 
 		const id = Number(form.get("id"));
 		invariant(id, "Invalid id");
 
-		const ip = getClientIPAddress(request);
-		invariant(ip, "Invalid ip");
+		const ip = getClientIPAddress(request) || "";
+		// invariant(ip, "Invalid ip");
 		const userAgent = request.headers.get("User-Agent");
 		invariant(userAgent, "Invalid userAgent");
 

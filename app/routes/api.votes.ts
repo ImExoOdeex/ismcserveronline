@@ -1,5 +1,6 @@
 import { db } from "@/.server/db/db";
-import { LoaderFunctionArgs, json } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import dayjs from "dayjs";
 import invariant from "tiny-invariant";
 

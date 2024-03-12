@@ -1,4 +1,4 @@
-import { IPlan } from "@/types/typings";
+import type { IPlan } from "@/types/typings";
 
 const plans = [
 	{

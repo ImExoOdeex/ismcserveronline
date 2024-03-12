@@ -444,6 +444,7 @@ export default function useTheme() {
 					})
 				}
 			}) as ThemeOverride,
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[path]
 	);
 

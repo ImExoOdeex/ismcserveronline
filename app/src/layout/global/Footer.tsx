@@ -7,7 +7,7 @@ import Link from "./Link";
 
 export default function Footer() {
 	const name = "tracking";
-	const { cookies, timings, version, repoVersion } = useRootData();
+	const { cookies, timings, version } = useRootData();
 
 	const [cookieState, setCookieState] = useState<"track" | "no-track">(
 		getCookieWithoutDocument(name, cookies) == "no-track" ? "no-track" : "track"
@@ -17,6 +17,7 @@ export default function Footer() {
 
 	const requestStartToHydration = useMemo(() => {
 		return (clientContext ? clientContext.hydrationTime : Date.now()) - timings.start;
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [timings.start]);
 
 	const toggleTracking = useCallback(() => {

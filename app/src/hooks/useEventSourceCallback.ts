@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { EventSourceOptions, useEventSource } from "remix-utils/sse/react";
+import type { EventSourceOptions } from "remix-utils/sse/react";
+import { useEventSource } from "remix-utils/sse/react";
 
 export default function useEventSourceCallback(
 	url: string | URL,
@@ -21,6 +22,7 @@ export default function useEventSourceCallback(
 		}
 
 		callback?.(e);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [eventSource]);
 
 	return eventSource;

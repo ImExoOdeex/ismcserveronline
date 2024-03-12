@@ -2,12 +2,13 @@ import { getCookieWithoutDocument } from "@/functions/cookies";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import useFetcherCallback from "@/hooks/useFetcherCallback";
 import useRootData from "@/hooks/useRootData";
-import { Button, Flex, FlexProps, Heading, Input, Text, useToast } from "@chakra-ui/react";
+import type { FlexProps } from "@chakra-ui/react";
+import { Button, Flex, Heading, Input, Text, useToast } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { memo, useEffect, useRef, useState } from "react";
 import { useCountUp } from "react-countup";
-import { action, loader } from "~/routes/$server_.vote";
+import type { action, loader } from "~/routes/$server_.vote";
 
 dayjs.extend(relativeTime);
 
@@ -58,6 +59,7 @@ export default memo(function Vote() {
 			}, 1000);
 			return () => clearInterval(interval);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const [nick, setNick] = useState(getCookieWithoutDocument("last-minecraft-nickname", cookies) || "");

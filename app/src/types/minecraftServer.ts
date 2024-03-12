@@ -97,6 +97,7 @@ export type AnyServerModel = Omit<AnyServer, "debug"> & {
 	message_from_owner: string | null;
 	banner: string | null;
 	background: string | null;
+	language: string | null;
 	// _count?: {
 	// 	Check: number;
 	// 	Comment: number;

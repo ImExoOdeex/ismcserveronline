@@ -4,7 +4,7 @@ import Link from "@/layout/global/Link";
 import RealTimeServerDataWrapper from "@/layout/routes/server/panel/realtime/RealTimeServerDataWrapper";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import { Alert, AlertDescription, AlertTitle, Button, Flex, HStack } from "@chakra-ui/react";
-import { MetaArgs, MetaFunction } from "@remix-run/react";
+import type { MetaArgs, MetaFunction } from "@remix-run/react";
 
 export function meta({ params, matches }: MetaArgs) {
 	return [

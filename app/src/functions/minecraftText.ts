@@ -15,11 +15,6 @@ type ParseResult = ParseItem[];
 
 type FormattingProperties = "bold" | "italics" | "underline" | "strikethrough" | "obfuscated";
 
-interface FormatOptions {
-	formattingCharacter?: string;
-	replaceNearestColor?: boolean;
-}
-
 interface SerializerElementOption {
 	classes?: string[];
 	styles?: Record<string, string>;

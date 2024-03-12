@@ -1,4 +1,4 @@
-import { Placeholder } from "@/layout/routes/dashboard/bot/editor/Placeholders";
+import type { Placeholder } from "@/layout/routes/dashboard/bot/editor/Placeholders";
 import type { CodeProps } from "@chakra-ui/react";
 import { Box, Code, Image, Text, useColorModeValue } from "@chakra-ui/react";
 import Color from "color";
@@ -170,6 +170,7 @@ export default function useFormattedDiscordText(text: string, data?: FormatData)
 				{lineIndex < lines.length - 1 && <br />}
 			</>
 		));
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [lines]);
 
 	return mapped;
@@ -180,6 +181,7 @@ const Line = memo(function Line({ line, data }: { line: string; data?: FormatDat
 
 	const processedWords = useMemo(() => {
 		return processLine(line, mentionBg, data);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [line]);
 
 	const words = useMemo(() => {

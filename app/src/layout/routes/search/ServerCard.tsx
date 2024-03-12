@@ -3,7 +3,7 @@ import { Badge, Button, Flex, HStack, Icon, Image, Tag, Text } from "@chakra-ui/
 import { memo } from "react";
 import { BiUser } from "react-icons/bi";
 import { FaChevronUp } from "react-icons/fa";
-import { SearchServer } from "~/routes/search";
+import type { SearchServer } from "~/routes/search";
 
 interface Props {
 	server: SearchServer;

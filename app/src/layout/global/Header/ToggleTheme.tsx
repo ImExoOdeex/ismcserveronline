@@ -1,4 +1,5 @@
 import { useActionKey } from "@/hooks/useActionKey";
+import config from "@/utils/config";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { DarkMode, IconButton, Text, Tooltip, useColorMode, useColorModeValue, useEventListener } from "@chakra-ui/react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -45,22 +46,35 @@ export default function ThemeToggle() {
 					openDelay={1000}
 				>
 					<IconButton
-						role={"group"}
-						_hover={{ bg: bgColor, color: color }}
+						className="group"
+						_hover={{
+							bg: bgColor,
+							color: color
+						}}
 						_active={{ bg: bgColorActive, scale: 0.9 }}
 						rounded={"xl"}
 						bg={"transparent"}
 						transform={"auto-gpu"}
 						icon={
 							colorMode == "light" ? (
-								<MoonIcon _groupHover={{ rotate: "-100deg" }} transition={"transform .4s"} transform="auto" />
+								<MoonIcon
+									sx={{
+										".group:hover &": {
+											rotate: "-100deg"
+										}
+									}}
+									transition={`transform .4s ${config.cubicEase}`}
+									transform="auto"
+								/>
 							) : (
 								<SunIcon
-									_groupHover={{
-										rotate: "50deg",
-										scale: 1.05
+									sx={{
+										".group:hover &": {
+											rotate: "50deg",
+											scale: 1.05
+										}
 									}}
-									transition={"transform .4s"}
+									transition={`transform .4s ${config.cubicEase}`}
 									transform="auto"
 								/>
 							)

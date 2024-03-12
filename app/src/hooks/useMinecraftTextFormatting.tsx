@@ -26,6 +26,7 @@ export default function useMinecraftTextFormatting(text: string) {
 			console.error(e);
 			return text;
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [text]);
 
 	return formattedText;

@@ -1,12 +1,12 @@
 import Link from "@/layout/global/Link";
 import { Badge, Button, Image as ChakraImage, Flex, HStack, Icon, Tag, Text } from "@chakra-ui/react";
-import { PromotedViewType } from "@prisma/client";
+import type { PromotedViewType } from "@prisma/client";
 import Color from "color";
 import { useInView } from "framer-motion";
 import { memo, useCallback, useEffect, useMemo, useRef } from "react";
 import { BiUser } from "react-icons/bi";
 import { FaChevronUp, FaHashtag } from "react-icons/fa";
-import { SearchServer } from "~/routes/search";
+import type { SearchServer } from "~/routes/search";
 
 interface Props {
 	promoted: {
@@ -23,6 +23,7 @@ export default memo(function PromotedServerCard({ promoted: { color, Server: ser
 		console.log("memo color");
 
 		return Color(color).alpha(0.1).string();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const ref = useRef<HTMLDivElement>(null);
@@ -45,6 +46,7 @@ export default memo(function PromotedServerCard({ promoted: { color, Server: ser
 				}
 			})
 			.catch(console.error);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isInView]);
 
 	const handleClick = useCallback(() => {
@@ -83,6 +85,7 @@ export default memo(function PromotedServerCard({ promoted: { color, Server: ser
 				</Button>
 			</>
 		);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [server._count.Vote, server.server]);
 
 	return (

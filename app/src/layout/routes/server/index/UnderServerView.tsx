@@ -1,5 +1,5 @@
 import Link from "@/layout/global/Link";
-import { AnyServer } from "@/types/minecraftServer";
+import type { AnyServer } from "@/types/minecraftServer";
 import { CheckIcon, CopyIcon } from "@chakra-ui/icons";
 import { Button, Flex, HStack, Icon, Spinner, Text, useToast } from "@chakra-ui/react";
 import { Await } from "@remix-run/react";

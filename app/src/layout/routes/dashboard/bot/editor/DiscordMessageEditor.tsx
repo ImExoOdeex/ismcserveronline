@@ -1,4 +1,4 @@
-import { FormatData } from "@/hooks/useFormattedDiscordText";
+import type { FormatData } from "@/hooks/useFormattedDiscordText";
 import MessageEditor from "@/layout/routes/dashboard/bot/editor/MessageEditor";
 import Placeholders from "@/layout/routes/dashboard/bot/editor/Placeholders";
 import Preview from "@/layout/routes/dashboard/bot/editor/Preview";

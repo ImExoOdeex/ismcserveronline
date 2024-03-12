@@ -1,7 +1,8 @@
 import { otherRootRouteHandlers } from "@/.server/otherRootRoutes";
 import { createEmotionCache } from "@/utils/ClientContext";
 import { CacheProvider } from "@emotion/react";
-import { AppLoadContext, createReadableStreamFromReadable, type EntryContext } from "@remix-run/node";
+import type { AppLoadContext, EntryContext } from "@remix-run/node";
+import { createReadableStreamFromReadable } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
 import { renderToPipeableStream } from "react-dom/server";
 import { PassThrough } from "stream";

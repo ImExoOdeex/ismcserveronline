@@ -4,8 +4,9 @@ import { db } from "@/.server/db/db";
 import { getUser, getUserId } from "@/.server/db/models/user";
 import { getServerInfo } from "@/.server/functions/api.server";
 import { requireEnv } from "@/.server/functions/env.server";
-import { cachePrefetch } from "@/.server/functions/fetchHelpers.server";
-import { MinecraftImage, getRandomMinecarftImage } from "@/.server/minecraftImages";
+import { cachePrefetchHeaders } from "@/.server/functions/fetchHelpers.server";
+import type { MinecraftImage } from "@/.server/minecraftImages";
+import { getRandomMinecarftImage } from "@/.server/minecraftImages";
 import { getCookieWithoutDocument } from "@/functions/cookies";
 import { getFullFileUrl } from "@/functions/storage";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
@@ -13,19 +14,22 @@ import useEventSourceCallback from "@/hooks/useEventSourceCallback";
 import useUser from "@/hooks/useUser";
 import Link from "@/layout/global/Link";
 import { Ad, adType } from "@/layout/global/ads/Yes";
-import ChecksTable, { ICheck } from "@/layout/routes/server/index/ChecksTable";
+import type { ICheck } from "@/layout/routes/server/index/ChecksTable";
+import ChecksTable from "@/layout/routes/server/index/ChecksTable";
 import Comments from "@/layout/routes/server/index/Comments";
 import CommentsSkeleton from "@/layout/routes/server/index/CommentsSkeleton";
 import McFonts from "@/layout/routes/server/index/McFonts";
+import MoreLikeThisServer from "@/layout/routes/server/index/MoreLikeThisServer";
 import Motd from "@/layout/routes/server/index/Motd";
 import ServerInfo from "@/layout/routes/server/index/ServerInfo";
 import ServerView from "@/layout/routes/server/index/ServerView";
-import Tabs, { tabs } from "@/layout/routes/server/index/Tabs";
+import type { tabs } from "@/layout/routes/server/index/Tabs";
+import Tabs from "@/layout/routes/server/index/Tabs";
 import UnderServerView from "@/layout/routes/server/index/UnderServerView";
-import { AnyServer, AnyServerModel, BedrockServer, JavaServer, MinecraftServer } from "@/types/minecraftServer";
+import type { AnyServer, AnyServerModel, BedrockServer, JavaServer, MinecraftServer } from "@/types/minecraftServer";
 import { Divider, Flex, HStack, Heading, Icon, Stack, Text, VStack, VisuallyHidden, useToast } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
-import type { ActionFunctionArgs, LinksFunction, LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
+import type { ActionFunctionArgs, HeadersArgs, LinksFunction, LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { Await, type ShouldRevalidateFunction } from "@remix-run/react";
 import dayjs from "dayjs";
@@ -324,6 +328,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
+	const start = Date.now();
+
 	const server = params.server?.toString().toLowerCase().trim();
 	if (!server?.includes("."))
 		throw new Response("Not found", {
@@ -354,6 +360,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 				online: true,
 				players: true,
 				host: true,
+				language: true,
 				port: true,
 				protocol: true,
 				motd: true,
@@ -556,10 +563,26 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 		  } as MinecraftImage)
 		: getRandomMinecarftImage();
 
+	console.log("TIME", Date.now() - start);
+
 	return typeddefer(
 		{ server, data, query, isSaved, foundServer, bedrock, serverId, image, votes, comments },
-		cachePrefetch(request)
+		{
+			headers: {
+				"Cache-Control": "public, max-age=2",
+				...(cachePrefetchHeaders(request) || ({} as Headers))
+			}
+		}
 	);
+}
+
+export function headers({ loaderHeaders }: HeadersArgs) {
+	const cache = loaderHeaders.get("Cache-Control");
+
+	const headers = new Headers();
+	if (cache) headers.set("Cache-Control", cache);
+
+	return headers;
 }
 
 export function meta({ data, matches }: MetaArgs) {
@@ -624,6 +647,7 @@ export default function $server() {
 		if (!user) return false;
 		if (!data?.owner_id) return false;
 		return user.id === data.owner_id;
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [data]);
 
 	const [shouldPregenerateStyles, setShouldPregenerateStyles] = useState(true);
@@ -735,6 +759,8 @@ export default function $server() {
 					</Await>
 				</Suspense>
 			)}
+
+			<MoreLikeThisServer players={data?.players.online} bedrock={bedrock} language={data.language} my={10} />
 
 			<Stack direction={{ base: "column", md: "row" }} spacing={{ base: "auto", md: 7 }}>
 				<HStack

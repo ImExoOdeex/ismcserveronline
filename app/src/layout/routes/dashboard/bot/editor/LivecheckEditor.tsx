@@ -1,7 +1,8 @@
 import useDebouncedFetcherCallback from "@/hooks/useDebouncedFetcherCallback";
 import useInsideEffect from "@/hooks/useInsideEffect";
 import { useProgressBarContext } from "@/layout/global/ProgressBarContext";
-import DiscordMessageEditor, { DiscordMessage } from "@/layout/routes/dashboard/bot/editor/DiscordMessageEditor";
+import type { DiscordMessage } from "@/layout/routes/dashboard/bot/editor/DiscordMessageEditor";
+import DiscordMessageEditor from "@/layout/routes/dashboard/bot/editor/DiscordMessageEditor";
 import { Flex, Text } from "@chakra-ui/react";
 import { memo, useState } from "react";
 

@@ -1,6 +1,6 @@
 import { getCache, setCache } from "@/.server/db/redis";
 import config from "@/utils/config";
-import { redirect, type EntryContext } from "@remix-run/node";
+import { json, redirect, type EntryContext } from "@remix-run/node";
 import { db } from "./db/db";
 
 type Handler = (request: Request, remixContext: EntryContext) => Promise<Response | null> | null;
@@ -91,6 +91,59 @@ export const otherRootRoutes: Record<string, Handler> = {
 			{
 				headers: {
 					"Content-Type": "text/plain",
+					"Cache-Control": "public, max-age=86400"
+				}
+			}
+		);
+	},
+	"/manifest.json": async () => {
+		const mainImage = "/webp/statusbotlogo512.webp";
+		// const mainImagePng = "/webp/statusbotlogo512.png";
+
+		return json(
+			{
+				name: "IsMcServer.online",
+				short_name: "ismcserver.online",
+				description: "Check Minecraft server status and data by real-time. #1 Minecraft server list & status checker.",
+				scope: "/",
+				start_url: "/",
+				form_factor: "wide",
+				display: "standalone",
+				background_color: "#18191c",
+				theme_color: "#18191c",
+				orientation: "portrait-primary",
+				icons: [
+					{
+						src: mainImage,
+						type: "image/png",
+						sizes: "144x144"
+					},
+					{
+						src: mainImage,
+						type: "image/png",
+						sizes: "64x64"
+					},
+					{
+						src: mainImage,
+						type: "image/png",
+						sizes: "192x192"
+					},
+					{
+						src: mainImage,
+						type: "image/png",
+						sizes: "256x256"
+					},
+					{
+						src: mainImage,
+						type: "image/png",
+						sizes: "512x512",
+						purpose: "any maskable"
+					}
+				]
+			},
+
+			{
+				headers: {
 					"Cache-Control": "public, max-age=86400"
 				}
 			}

@@ -5,7 +5,7 @@ import { useFetcher } from "@remix-run/react";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en.json";
 import { memo, useEffect, useMemo, useState } from "react";
-import { action } from "~/routes/$server";
+import type { action } from "~/routes/$server";
 import Comment from "./Comment";
 
 interface Props {
@@ -51,6 +51,7 @@ export default memo(function Comments({ comments, freshComments, setComments }: 
 
 	const hasCommented = useMemo(() => {
 		return (comments || freshComments).some((comment) => comment.user.nick === user?.nick);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [comments, user?.nick]);
 
 	useEffect(() => {

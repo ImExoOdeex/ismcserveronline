@@ -13,7 +13,7 @@ import { redirect } from "@remix-run/node";
 import { useLocation, useOutlet } from "@remix-run/react";
 import { typedjson } from "remix-typedjson";
 import { InsideErrorBoundary } from "~/document";
-import { Guild } from "./dashboard.bot._index";
+import type { Guild } from "./dashboard.bot._index";
 
 export const handle = {
 	showSidebar: false

@@ -94,6 +94,7 @@ export default memo(function ChecksTable({ server, serverId, checks, setChecks }
 				method: "POST"
 			}
 		);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [fetcher, server, skip]);
 
 	const inital = useRef(true);

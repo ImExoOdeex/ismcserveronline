@@ -1,7 +1,7 @@
 import { useLocation } from "@remix-run/react";
 import React, { createContext, useCallback, useEffect, useState } from "react";
 import { useTypedRouteLoaderData } from "remix-typedjson";
-import { loader } from "~/routes/$server";
+import type { loader } from "~/routes/$server";
 import { useAdBlock } from "../hooks/useAdBlock";
 import useUser from "../hooks/useUser";
 

@@ -30,6 +30,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	}
 
 	const redirectURL = await session.get("redirect");
+	console.log("redirectURL", redirectURL);
+
 	const guildID = await session.get("guild");
 
 	if (redirectURL) {

@@ -29,6 +29,8 @@ import {
 } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
+import { useRef, useState } from "react";
+import { useCountUp } from "react-countup";
 import { typedjson } from "remix-typedjson";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -64,8 +66,114 @@ export default function DashboardAdmin() {
 
 	const flushFetcher = useFetcher();
 
+	const cpuRef = useRef(null);
+	const cpuCount = useCountUp({
+		start: 0,
+		end: 0,
+		ref: cpuRef,
+		duration: 0.5
+	});
+
+	const [cpuHistory, setCpuHistory] = useState([
+		{
+			name: new Date().toLocaleTimeString(),
+			percent: 0
+		}
+	]);
+
+	const [usage, setUsage] = useState({
+		cpu: 0,
+		memory: {
+			total: 0,
+			used: 0
+		}
+	});
+
+	// useEventSourceCallback(
+	// 	"/api/admin/sse/usage",
+	// 	{
+	// 		event: "usage"
+	// 	},
+	// 	(e) => {
+	// 		console.log("e", e);
+	// 		setUsage(e);
+	// 		cpuCount.update(e.cpu);
+	// 		setCpuHistory((prev) => {
+	// 			if (prev.length > 10) {
+	// 				return [...prev.slice(1), { name: new Date().toLocaleTimeString(), percent: e.cpu }];
+	// 			}
+	// 			return [...prev, { name: new Date().toLocaleTimeString(), percent: e.cpu }];
+	// 		});
+	// 	}
+	// );
+
 	return (
 		<Flex w="100%" flexDir={"column"} gap={10}>
+			{/* <Flex border="1px solid" borderColor={"alpha300"} rounded={"xl"} p={4} w="100%" flexDir={"column"}>
+				<Flex w="100%" justifyContent={"space-between"}>
+					<Flex flexDir={"column"}>
+						<Text fontSize={"lg"}>CPU Usage</Text>
+						<Text fontSize={"2xl"}>
+							<Box as="span" ref={cpuRef} />%
+						</Text>
+					</Flex>
+
+					<Icon as={FiCpu} boxSize={20} />
+				</Flex>
+
+				<AreaChart
+					key={Math.random()}
+					width={700}
+					height={200}
+					data={cpuHistory}
+					margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+				>
+					<defs>
+						<linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
+							<stop offset="5%" stopColor="#40cf77" stopOpacity={0.8} />
+							<stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
+						</linearGradient>
+					</defs>
+					<YAxis domain={[0, 100]} includeHidden />
+					<Tooltip
+						animationEasing="ease-in-out"
+						animationDuration={400}
+						content={({ active, payload, label }) => {
+							if (active) {
+								return (
+									<Flex p={2} bg={"rgba(255,255,255,0.9)"} rounded={"md"} color={"black"}>
+										{payload![0].value}%
+									</Flex>
+								);
+							}
+							return null;
+						}}
+					/>
+
+					<ReferenceLine y={25} stroke="#6a6a6a" strokeDasharray="3 10" />
+					<ReferenceLine y={50} stroke="#6a6a6a" strokeDasharray="3 10" />
+					<ReferenceLine y={75} stroke="#6a6a6a" strokeDasharray="3 10" />
+					<ReferenceLine y={100} stroke="#6a6a6a" strokeDasharray="3 10" />
+					<Area
+						isAnimationActive={false}
+						baseValue={0}
+						max={100}
+						min={0}
+						type="natural"
+						dataKey="percent"
+						stroke="#82ca9d"
+						fillOpacity={1}
+						fill="url(#colorPv)"
+						animationEasing="ease-out"
+						animationDuration={1000}
+					/>
+				</AreaChart>
+			</Flex>
+
+			<Text fontSize={"2xl"}>
+				{usage.memory.used} / {usage.memory.total} MB
+			</Text> */}
+
 			<Flex w="100%" justify={"flex-end"}>
 				<Text>Flush Redis Cache</Text>
 

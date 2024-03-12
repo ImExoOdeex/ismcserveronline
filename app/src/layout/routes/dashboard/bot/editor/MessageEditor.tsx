@@ -1,4 +1,4 @@
-import { DiscordMessage } from "@/layout/routes/dashboard/bot/editor/DiscordMessageEditor";
+import type { DiscordMessage } from "@/layout/routes/dashboard/bot/editor/DiscordMessageEditor";
 import config from "@/utils/config";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { Button, Divider, Flex, FormControl, FormLabel, Heading, Input, Text, Textarea } from "@chakra-ui/react";
@@ -601,8 +601,8 @@ export default function MessageEditor({ message, setMessage }: Props) {
 										embed: {
 											...message.embed,
 											footer: {
-												...message.embed?.footer!,
-												text: e.target.value
+												...message.embed!.footer!,
+												text: e.target.value || null
 											}
 										}
 									})
@@ -644,8 +644,8 @@ export default function MessageEditor({ message, setMessage }: Props) {
 											embed: {
 												...prev.embed,
 												footer: {
-													...prev.embed?.footer!,
-													icon_url: e.target.value
+													...prev.embed.footer!,
+													icon_url: e.target.value || null
 												}
 											}
 										}));

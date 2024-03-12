@@ -9,10 +9,11 @@ import PromotedServerCard from "@/layout/routes/search/PromotedServerCard";
 import SearchForm from "@/layout/routes/search/SearchForm";
 import ServerCard from "@/layout/routes/search/ServerCard";
 import SideFilters from "@/layout/routes/search/SideFilters";
-import { ServerModel } from "@/types/minecraftServer";
+import type { ServerModel } from "@/types/minecraftServer";
 import { Button, Divider, Flex, HStack, Heading, Tag } from "@chakra-ui/react";
-import { LoaderFunctionArgs } from "@remix-run/node";
-import { MetaArgs, MetaFunction, useSearchParams } from "@remix-run/react";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { MetaArgs, MetaFunction } from "@remix-run/react";
+import { useSearchParams } from "@remix-run/react";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { redirect, typedjson } from "remix-typedjson";
@@ -58,7 +59,6 @@ export interface SearchPromotedServer {
 		_count: { Vote: number };
 	};
 }
-[];
 
 export interface SearchTag {
 	name: string;
@@ -91,7 +91,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	const sort = url.searchParams.get("sort") as "hot" | "newest" | "oldest" | undefined;
 	const queryLetters = query?.split("");
 	const paramsTags = url.searchParams.getAll("tag");
-	console.log("paramsTags", paramsTags);
 
 	const cacheServersKey = `servers-${isBedrock}-${sort ?? "hot"}-${finalLocale}-${paramsTags.join(",")}-${query ?? ""}`;
 	const cacheServersStr = await cache.get(cacheServersKey);

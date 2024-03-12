@@ -1,6 +1,6 @@
 import Select from "@/layout/global/Select";
 import { Button, Flex, Icon, Image, Link, Text, VStack } from "@chakra-ui/react";
-import { Server } from "@prisma/client";
+import type { Server } from "@prisma/client";
 import { useFetcher } from "@remix-run/react";
 import { PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { useState } from "react";

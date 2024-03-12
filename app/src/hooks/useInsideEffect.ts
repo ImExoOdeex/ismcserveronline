@@ -1,4 +1,5 @@
-import { DependencyList, EffectCallback, useEffect, useRef } from "react";
+import type { DependencyList, EffectCallback } from "react";
+import { useEffect, useRef } from "react";
 
 export default function useInsideEffect(effect: EffectCallback, deps: DependencyList) {
 	const init = useRef(true);
@@ -9,5 +10,6 @@ export default function useInsideEffect(effect: EffectCallback, deps: Dependency
 			return;
 		}
 		return effect();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, deps);
 }

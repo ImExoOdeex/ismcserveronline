@@ -10,7 +10,7 @@ import {
 } from "@choc-ui/chakra-autocomplete";
 import { useSearchParams } from "@remix-run/react";
 import { memo, useState } from "react";
-import { loader } from "~/routes/api.tags";
+import type { loader } from "~/routes/api.tags";
 
 export default memo(function CategoryAutoComplete() {
 	const toast = useToast();

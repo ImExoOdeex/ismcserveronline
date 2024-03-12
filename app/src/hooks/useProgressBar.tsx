@@ -40,6 +40,7 @@ export function useProgressBar({ trickleTime = 250, trickleAmount = 3, initialPr
 		return () => {
 			clearInterval(interval);
 		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isTrickling]);
 
 	const start = useCallback(() => {
@@ -47,6 +48,7 @@ export function useProgressBar({ trickleTime = 250, trickleAmount = 3, initialPr
 
 		setIsTrickling(true);
 		setHasBeenStarted(true);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [progress, setProgress, initialProgress, setIsTrickling]);
 
 	const done = useCallback(

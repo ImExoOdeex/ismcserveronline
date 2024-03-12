@@ -1,11 +1,13 @@
-import { MinecraftImage } from "@/.server/minecraftImages";
+import type { MinecraftImage } from "@/.server/minecraftImages";
 import useGlobalContext from "@/hooks/useGlobalContext";
 import useInsideEffect from "@/hooks/useInsideEffect";
 import { ChakraBox } from "@/layout/global/MotionComponents";
-import { AnyServer, JavaServerWoDebug } from "@/types/minecraftServer";
+import type { AnyServer, JavaServerWoDebug } from "@/types/minecraftServer";
 import config from "@/utils/config";
-import { Badge, Flex, FlexProps, Heading, Image, Link, VStack, useColorModeValue } from "@chakra-ui/react";
-import { AnimatePresence, Transition, motion } from "framer-motion";
+import type { FlexProps } from "@chakra-ui/react";
+import { Badge, Flex, Heading, Image, Link, VStack, useColorModeValue } from "@chakra-ui/react";
+import type { Transition } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { memo, useState } from "react";
 import StatusIndicator from "./StatusIndicator";
 

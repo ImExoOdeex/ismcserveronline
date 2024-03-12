@@ -9,9 +9,7 @@ import { PiCrownSimpleDuotone } from "react-icons/pi";
 import { RxDiscordLogo } from "react-icons/rx";
 import { TbCodeDots } from "react-icons/tb";
 
-interface Props {}
-
-export default function Sidebar({}: Props) {
+export default function Sidebar() {
 	const path = useLocation().pathname;
 	const user = useUser(true);
 
@@ -51,6 +49,7 @@ export default function Sidebar({}: Props) {
 		}
 
 		return buttons;
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const prefetchGuildIcons = useCallback(() => {

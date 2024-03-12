@@ -1,7 +1,8 @@
 import { db } from "@/.server/db/db";
 import { getUser } from "@/.server/db/models/user";
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import { json, type ActionFunctionArgs } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
+
 import invariant from "tiny-invariant";
 
 export async function action({ request }: ActionFunctionArgs) {

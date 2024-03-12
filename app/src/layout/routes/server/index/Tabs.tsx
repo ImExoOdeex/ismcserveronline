@@ -3,7 +3,8 @@ import useUser from "@/hooks/useUser";
 import { ChakraBox } from "@/layout/global/MotionComponents";
 import { Button, Flex, Icon, useToast } from "@chakra-ui/react";
 import { useNavigate } from "@remix-run/react";
-import { Dispatch, SetStateAction, memo, useCallback, useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
+import { memo, useCallback, useState } from "react";
 import { BiBookmark } from "react-icons/bi";
 
 export const tabs = [

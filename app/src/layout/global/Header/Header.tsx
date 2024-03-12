@@ -35,6 +35,7 @@ export default memo(function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 		return () => {
 			window.removeEventListener("scroll", () => handleScroll());
 		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const path = useLocation().pathname;

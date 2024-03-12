@@ -1,5 +1,6 @@
 import config from "@/utils/config";
-import { AnimatePresence, Transition, motion } from "framer-motion";
+import type { Transition } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface AnimateFromTopProps {
 	delay?: number;

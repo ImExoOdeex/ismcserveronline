@@ -1,6 +1,7 @@
 import config from "@/utils/config";
 import { Flex, useColorModeValue } from "@chakra-ui/react";
-import { TargetAndTransition, motion, useAnimationControls } from "framer-motion";
+import type { TargetAndTransition } from "framer-motion";
+import { motion, useAnimationControls } from "framer-motion";
 import { memo, useEffect, useState } from "react";
 
 interface Props {
@@ -39,6 +40,7 @@ export default memo(function ProgressBar({
 		} else {
 			animateWidth.start({ width: `${progress}%` });
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [progress]);
 
 	return (

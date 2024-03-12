@@ -9,7 +9,7 @@ import SubscriptionForm from "@/layout/routes/prime/SubscriptionForm";
 import plans from "@/utils/plans";
 import { CheckIcon } from "@chakra-ui/icons";
 import { Box, Flex, HStack, Heading, Text, useColorMode, useColorModeValue } from "@chakra-ui/react";
-import { LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 import { Elements } from "@stripe/react-stripe-js";
 import type { Stripe } from "@stripe/stripe-js";
 import { loadStripe } from "@stripe/stripe-js";

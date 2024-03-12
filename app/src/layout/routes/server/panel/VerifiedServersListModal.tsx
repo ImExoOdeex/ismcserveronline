@@ -15,17 +15,15 @@ import {
 	ModalOverlay,
 	Spinner,
 	Text,
-	useDisclosure,
-	useToast
+	useDisclosure
 } from "@chakra-ui/react";
 import { memo, useState } from "react";
 import { CgArrowsExchange } from "react-icons/cg";
-import { APIVerifiedServer, loader } from "~/routes/api.verified-servers";
+import type { APIVerifiedServer, loader } from "~/routes/api.verified-servers";
 
 export default memo(function VerifiedServersListModal() {
 	const [servers, setServers] = useState<APIVerifiedServer[]>([]);
 
-	const toast = useToast();
 	const fetcher = useFetcherCallback<typeof loader>((data) => {
 		setServers(data.servers);
 	});

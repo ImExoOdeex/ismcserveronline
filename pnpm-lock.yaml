@@ -62,6 +62,9 @@ dependencies:
   '@remix-run/server-runtime':
     specifier: ^2.8.1
     version: 2.8.1(typescript@5.4.2)
+  '@remix-sse/server':
+    specifier: ^1.0.1
+    version: 1.0.1(@remix-run/node@2.8.1)(@remix-run/react@2.8.1)(@remix-run/serve@2.8.1)(react-dom@18.2.0)(react@18.2.0)(regenerator-runtime@0.14.1)
   '@stripe/react-stripe-js':
     specifier: ^2.4.0
     version: 2.5.1(@stripe/stripe-js@2.4.0)(react-dom@18.2.0)(react@18.2.0)
@@ -101,6 +104,9 @@ dependencies:
   javascript-time-ago:
     specifier: ^2.5.9
     version: 2.5.9
+  os-utils:
+    specifier: ^0.0.14
+    version: 0.0.14
   react:
     specifier: ^18.2.0
     version: 18.2.0
@@ -169,6 +175,9 @@ devDependencies:
   '@types/morgan':
     specifier: ^1.9.4
     version: 1.9.9
+  '@types/os-utils':
+    specifier: ^0.0.4
+    version: 0.0.4
   '@types/react':
     specifier: ^18.0.25
     version: 18.2.64
@@ -3916,6 +3925,24 @@ packages:
     dependencies:
       web-streams-polyfill: 3.3.3
 
+  /@remix-sse/server@1.0.1(@remix-run/node@2.8.1)(@remix-run/react@2.8.1)(@remix-run/serve@2.8.1)(react-dom@18.2.0)(react@18.2.0)(regenerator-runtime@0.14.1):
+    resolution: {integrity: sha512-Da/GgUEsI+ntj8UG4sAjqXVVNHR0zQ4uK/2gZgJWWt/L1HwzfOksW7Swr84ryWIDVb9HDPtHRPDH1XcKJ/zrUA==}
+    peerDependencies:
+      '@remix-run/node': ^2.x
+      '@remix-run/react': ^2.x
+      '@remix-run/serve': ^2.x
+      react: '*'
+      react-dom: '*'
+      regenerator-runtime: '*'
+    dependencies:
+      '@remix-run/node': 2.8.1(typescript@5.4.2)
+      '@remix-run/react': 2.8.1(react-dom@18.2.0)(react@18.2.0)(typescript@5.4.2)
+      '@remix-run/serve': 2.8.1(typescript@5.4.2)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      regenerator-runtime: 0.14.1
+    dev: false
+
   /@rollup/rollup-android-arm-eabi@4.12.1:
     resolution: {integrity: sha512-iU2Sya8hNn1LhsYyf0N+L4Gf9Qc+9eBTJJJsaOGUp+7x4n2M9dxTt8UvhJl3oeftSjblSlpCfvjA/IfP3g5VjQ==}
     cpu: [arm]
@@ -4738,6 +4765,10 @@ packages:
     dependencies:
       undici-types: 5.26.5
 
+  /@types/os-utils@0.0.4:
+    resolution: {integrity: sha512-TdQ/6GHzq8YMsDOXHfit8sDD1VjLnqC61sI7ICocwREw/68V5C/bjex+/Jya3XRD3FgGyj6fhTqhbVrXeh8UJg==}
+    dev: true
+
   /@types/parse-json@4.0.2:
     resolution: {integrity: sha512-dISoDXWWQwUquiKsyZ4Ng+HX2KsPL7LyHKHQwgGFEA3IaKac4Obd+h2a/a6waisAoepJlBcx9paWqjA8/HVjCw==}
     dev: false
@@ -4975,7 +5006,7 @@ packages:
       '@babel/plugin-syntax-typescript': 7.23.3(@babel/core@7.24.0)
       '@vanilla-extract/babel-plugin-debug-ids': 1.0.5
       '@vanilla-extract/css': 1.14.1
-      esbuild: 0.17.6
+      esbuild: 0.19.12
       eval: 0.1.8
       find-up: 5.0.0
       javascript-stringify: 2.1.0
@@ -9004,6 +9035,10 @@ packages:
       strip-ansi: 6.0.1
       wcwidth: 1.0.1
     dev: true
+
+  /os-utils@0.0.14:
+    resolution: {integrity: sha512-ajB8csaHLBvJOYsHJkp8YdO2FvlBbf/ZxaYQwXXRDyQ84UoE+uTuLXxqd0shekXMX6Qr/pt/DDyLMRAMsgfWzg==}
+    dev: false
 
   /outdent@0.8.0:
     resolution: {integrity: sha512-KiOAIsdpUTcAXuykya5fnVVT+/5uS0Q1mrkRHcF89tpieSmY33O/tmc54CqwA+bfhbtEfZUNLHaPUiB9X3jt1A==}

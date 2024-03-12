@@ -1,5 +1,6 @@
-import useFormattedDiscordText, { FormatData } from "@/hooks/useFormattedDiscordText";
-import { DiscordMessage } from "@/layout/routes/dashboard/bot/editor/DiscordMessageEditor";
+import type { FormatData } from "@/hooks/useFormattedDiscordText";
+import useFormattedDiscordText from "@/hooks/useFormattedDiscordText";
+import type { DiscordMessage } from "@/layout/routes/dashboard/bot/editor/DiscordMessageEditor";
 import EmbedPreview from "@/layout/routes/dashboard/bot/editor/EmbedPreview";
 import { CheckIcon } from "@chakra-ui/icons";
 import { Flex, HStack, Image, Text, Tooltip } from "@chakra-ui/react";

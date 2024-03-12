@@ -1,5 +1,5 @@
 import useMinecraftTextFormatting from "@/hooks/useMinecraftTextFormatting";
-import { AnyServer, AnyServerModel, JavaServer, MinecraftServer, ServerModel } from "@/types/minecraftServer";
+import type { AnyServer, AnyServerModel, JavaServer, MinecraftServer, ServerModel } from "@/types/minecraftServer";
 import { Button, Flex, Heading, Spinner, Table, TableContainer, Tbody, Td, Text, Tr, VStack } from "@chakra-ui/react";
 import { useFetcher } from "@remix-run/react";
 import { memo, useMemo } from "react";

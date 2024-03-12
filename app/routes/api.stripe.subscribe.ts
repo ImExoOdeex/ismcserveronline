@@ -4,8 +4,9 @@ import { csrf } from "@/.server/functions/security.server";
 import stripe, { subscriptionHandlers } from "@/.server/modules/stripe";
 import { getSession } from "@/.server/session";
 import plans from "@/utils/plans";
-import { ActionFunctionArgs, json } from "@remix-run/node";
-import Stripe from "stripe";
+import type { ActionFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import type Stripe from "stripe";
 import invariant from "tiny-invariant";
 
 export async function action({ request }: ActionFunctionArgs) {

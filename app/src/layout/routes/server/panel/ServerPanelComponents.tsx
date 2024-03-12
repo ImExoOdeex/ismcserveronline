@@ -31,13 +31,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import { memo, useCallback, useMemo, useRef, useState } from "react";
 import { PiFilePngBold } from "react-icons/pi";
 import { SiAdobephotoshop } from "react-icons/si";
-import { action } from "~/routes/api.tags";
+import type { action } from "~/routes/api.tags";
 
 export const StatBox = memo(function StatBox({ title, value, helper }: { title: string; value: number; helper?: number }) {
 	const percent = useMemo(() => {
 		if (helper !== 0 && !helper) return 0;
 
 		if (helper === 0) {
+			// eslint-disable-next-line
 			helper = 1;
 		}
 
@@ -222,6 +223,7 @@ export const ServerTag = memo(function ServerTag({
 				}
 			);
 		})();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (

@@ -28,7 +28,8 @@ import {
 	useDisclosure
 } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { Await, MetaArgs, MetaFunction } from "@remix-run/react";
+import type { MetaArgs, MetaFunction } from "@remix-run/react";
+import { Await } from "@remix-run/react";
 import { Suspense, useRef } from "react";
 import { typeddefer, typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";

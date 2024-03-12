@@ -5,7 +5,8 @@ import { Ad, adType } from "@/layout/global/ads/Yes";
 import SystemInfo from "@/layout/routes/faq/SystemInfo";
 import config from "@/utils/config";
 import { Badge, Code, Divider, Heading, Link, Text, VStack } from "@chakra-ui/react";
-import { MetaArgs, type MetaFunction } from "@remix-run/node";
+import type { MetaArgs, MetaFunction } from "@remix-run/node";
+
 import os from "os";
 import { useEffect, useState } from "react";
 import { typedjson } from "remix-typedjson";

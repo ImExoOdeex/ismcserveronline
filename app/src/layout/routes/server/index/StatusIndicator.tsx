@@ -1,4 +1,5 @@
-import { Box, Flex, FlexProps, Heading, keyframes, useToken } from "@chakra-ui/react";
+import type { FlexProps } from "@chakra-ui/react";
+import { Box, Flex, Heading, keyframes, useToken } from "@chakra-ui/react";
 import { useMemo } from "react";
 
 interface Props {
@@ -24,6 +25,7 @@ export default function StatusIndicator({
 				boxShadow: `0px 0px 12px 6px ${online ? onlineColor : offlineColor}`
 			}
 		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (

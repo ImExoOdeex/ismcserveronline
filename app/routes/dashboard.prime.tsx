@@ -77,10 +77,15 @@ export default function DashboardPrime() {
 
 	useEffect(() => {
 		if (paymentIntent && !user?.everPurchased) {
-			setTimeout(() => {
+			var timeout = setTimeout(() => {
 				window.location.reload();
 			}, 500);
 		}
+
+		return () => {
+			clearTimeout(timeout);
+		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (

@@ -1,6 +1,6 @@
 import { decimalToHex } from "@/functions/colors";
 import useFormattedDiscordText, { usePlaceholdersReplaced } from "@/hooks/useFormattedDiscordText";
-import { DiscordMessage } from "@/layout/routes/dashboard/bot/editor/DiscordMessageEditor";
+import type { DiscordMessage } from "@/layout/routes/dashboard/bot/editor/DiscordMessageEditor";
 import { placeholders } from "@/layout/routes/dashboard/bot/editor/Placeholders";
 import { Flex, GridItem, Heading, Image, Link, SimpleGrid, Text, VStack } from "@chakra-ui/react";
 

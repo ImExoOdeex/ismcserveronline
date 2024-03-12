@@ -1,3 +1,5 @@
+import config from "@/utils/config";
+
 export function isObject(value: any): value is Record<string, unknown> {
 	return value !== null && typeof value === "object";
 }
@@ -16,4 +18,17 @@ export function copyObjectWithoutKeys<T extends Record<string, unknown>, K exten
 
 export function capitalize(str: string): string {
 	return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function invariant(condition: unknown, message?: string): asserts condition {
+	if (!condition) {
+		throw new Error(message);
+	}
+}
+
+export function getResizedUrl(path: string, width?: number, height?: number): string {
+	// return path;
+	return `${config.dashUrl}/cdn-cgi/image/${width ? `width=${width},` : ""}${
+		height ? `height=${height},` : ""
+	}quality=100${path}`;
 }

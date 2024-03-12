@@ -1,5 +1,5 @@
 import { commitSession, getSession } from "@/.server/session";
-import { IPlan } from "@/types/typings";
+import type { IPlan } from "@/types/typings";
 import config from "@/utils/config";
 import plans from "@/utils/plans";
 import { CheckCircleIcon } from "@chakra-ui/icons";
@@ -18,7 +18,7 @@ import {
 	VisuallyHiddenInput,
 	useColorMode
 } from "@chakra-ui/react";
-import { ActionFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
+import type { ActionFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import React from "react";
 import { FiCreditCard } from "react-icons/fi";

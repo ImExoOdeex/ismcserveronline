@@ -23,7 +23,7 @@ import {
 	Tr
 } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { MetaArgs, MetaFunction } from "@remix-run/react";
+import type { MetaArgs, MetaFunction } from "@remix-run/react";
 import { getAverageColor } from "fast-average-color-node";
 import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";

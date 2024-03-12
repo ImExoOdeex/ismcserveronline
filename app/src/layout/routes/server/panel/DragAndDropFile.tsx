@@ -107,6 +107,7 @@ export default function DragAndDropFile({ fileName, serverId }: Props) {
 			// setAssets((prev) => [res.asset, ...prev]);
 			// console.log("upload res", res);
 		})();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const color = isDropping ? "brand" : state === "success" ? "green" : state === "error" ? "red" : "alpha300";

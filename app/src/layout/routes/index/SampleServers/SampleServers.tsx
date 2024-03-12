@@ -1,5 +1,5 @@
 import { Flex, Grid, GridItem, HStack, Heading, Image, Text } from "@chakra-ui/react";
-import { Server } from "@prisma/client";
+import type { Server } from "@prisma/client";
 import AddServerPopover from "./AddServerPopover";
 
 interface server {

@@ -1,5 +1,5 @@
-import { Redis, type RedisOptions } from "ioredis";
-import { requireEnv } from "../functions/env.server";
+import { requireEnv } from "@/.server/functions/env.server";
+import { Redis, RedisOptions } from "ioredis";
 
 export let redis: Redis;
 
@@ -14,16 +14,16 @@ const options = {
 	maxRetriesPerRequest: 3
 } as RedisOptions;
 
-if (process.env.NODE_ENV === "production") {
-	console.log("[Redis] Connecting to Redis | Production");
-	redis = new Redis(options);
-} else {
-	if (!global.__redis) {
-		console.log("[Redis] Connecting to Redis | Development");
-		global.__redis = new Redis(options);
-	}
-	redis = global.__redis;
+// if (process.env.NODE_ENV === "production") {
+// 	console.log("[Redis] Connecting to Redis | Production");
+// 	redis = new Redis(options);
+// } else {
+if (!global.__redis) {
+	console.log(`[Redis] Connecting to Redis | ${process.env.NODE_ENV}`);
+	global.__redis = new Redis(options);
 }
+redis = global.__redis;
+// }
 
 // ttl = time to live = 60 * 60 * 24 = 1 day
 export async function setCache(key: string, value: string | object | number, ttl: number = 60 * 60 * 24) {

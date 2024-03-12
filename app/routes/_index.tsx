@@ -36,7 +36,7 @@ export async function action({ request }: ActionFunctionArgs) {
 export function meta({ matches }: MetaArgs) {
 	return [
 		{
-			title: "Minecraft server status | Get info of any Java and Bedrock servers"
+			title: "#1 Minecraft server list & status checker | IsMcServer.online"
 		},
 		...matches[0].meta
 	] as ReturnType<MetaFunction>;

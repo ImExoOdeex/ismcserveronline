@@ -1,8 +1,8 @@
 import Link from "@/layout/global/Link";
-import { ServerModel } from "@/types/minecraftServer";
+import type { ServerModel } from "@/types/minecraftServer";
 import { Icon } from "@chakra-ui/icons";
 import { Badge, Flex, IconButton, Image, Text } from "@chakra-ui/react";
-import { Server } from "@prisma/client";
+import type { Server } from "@prisma/client";
 import { memo } from "react";
 import { FiTool } from "react-icons/fi";
 import { IoReturnDownForwardOutline } from "react-icons/io5";

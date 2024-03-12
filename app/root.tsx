@@ -7,7 +7,8 @@ import { GlobalContext } from "@/utils/GlobalContext";
 import config from "@/utils/config";
 import useTheme from "@/utils/theme";
 import { ChakraBaseProvider, cookieStorageManagerSSR, useConst } from "@chakra-ui/react";
-import { ActionFunctionArgs, LinksFunction, LoaderFunctionArgs, MetaFunction, json, redirect } from "@remix-run/node";
+import type { ActionFunctionArgs, LinksFunction, LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import type { ShouldRevalidateFunctionArgs } from "@remix-run/react";
 import { useLocation, useOutlet } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -25,6 +26,9 @@ export function meta() {
 
 	return [
 		{
+			charSet: "utf-8"
+		},
+		{
 			name: "robots",
 			content: "all"
 		},
@@ -39,7 +43,7 @@ export function meta() {
 		// og tags
 		{
 			property: "og:title",
-			content: "#1 Minecraft server list & status checker | IsMcServer.online"
+			content: "#1 Minecraft server list & status checker"
 		},
 		{
 			property: "og:description",
@@ -48,6 +52,15 @@ export function meta() {
 		{
 			property: "og:image",
 			content: `${config.dashUrl}/logo-wallpaper.png`
+		},
+		// set sizes for image
+		{
+			property: "og:image:width",
+			content: "3840"
+		},
+		{
+			property: "og:image:height",
+			content: "2160"
 		},
 		{
 			property: "og:url",
@@ -67,15 +80,79 @@ export function meta() {
 				"Minecraft server check, Server status check, Minecraft server status, Online server status, Minecraft server monitor, Server checker tool, Minecraft server checker, Real-time server status, Minecraft server status checker, Server uptime checker, Minecraft server monitor tool, Minecraft server status monitor, Real-time server monitoring, Server availability checker, Minecraft server uptime checker"
 		},
 		{
-			charSet: "utf-8"
-		},
-		{
 			name: "viewport",
 			content: "width=device-width,initial-scale=1"
 		},
 		{
 			name: "author",
 			content: "imexoodeex"
+		},
+		// pwa
+		{
+			name: "theme-color",
+			content: "#563B9F"
+		},
+		{
+			name: "apple-mobile-web-app-capable",
+			content: "yes"
+		},
+		{
+			name: "apple-mobile-web-app-status-bar-style",
+			content: "black"
+		},
+		{
+			name: "apple-mobile-web-app-title",
+			content: "IsMcServer.online"
+		},
+		{
+			name: "application-name",
+			content: "IsMcServer.online"
+		},
+		{
+			name: "msapplication-TileColor",
+			content: "#563B9F"
+		},
+		{
+			name: "msapplication-TileImage",
+			content: "/mstile-144x144.png"
+		},
+		{
+			name: "msapplication-config",
+			content: "/browserconfig.xml"
+		},
+
+		// twitter
+		{
+			name: "twitter:card",
+			content: "summary_large_image"
+		},
+		{
+			name: "twitter:site",
+			content: "@imexoodeex"
+		},
+		{
+			name: "twitter:creator",
+			content: "@imexoodeex"
+		},
+		{
+			name: "twitter:title",
+			content: "#1 Minecraft server list & status checker"
+		},
+		{
+			name: "twitter:description",
+			content: desc
+		},
+		{
+			name: "twitter:image",
+			content: `${config.dashUrl}/logo-wallpaper.png`
+		},
+		{
+			name: "twitter:url",
+			content: config.dashUrl
+		},
+		{
+			name: "twitter:domain",
+			content: config.dashUrl
 		}
 	] as ReturnType<MetaFunction>;
 }
@@ -106,6 +183,11 @@ export function links() {
 			type: "image/png",
 			href: "/favicon.ico",
 			sizes: "20x20"
+		},
+		// manifest
+		{
+			rel: "manifest",
+			href: "/manifest.json"
 		}
 	] as ReturnType<LinksFunction>;
 }

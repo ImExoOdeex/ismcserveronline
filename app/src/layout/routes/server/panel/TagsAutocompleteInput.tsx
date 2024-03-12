@@ -2,17 +2,16 @@ import useDebouncedFetcherCallback from "@/hooks/useDebouncedFetcherCallback";
 import useInsideEffect from "@/hooks/useInsideEffect";
 import { useProgressBarContext } from "@/layout/global/ProgressBarContext";
 import { Flex, HStack, Text, useColorModeValue, useToast } from "@chakra-ui/react";
+import type { AutoCompleteInputProps, AutoCompleteListProps } from "@choc-ui/chakra-autocomplete";
 import {
 	AutoComplete,
 	AutoCompleteCreatable,
 	AutoCompleteInput,
-	AutoCompleteInputProps,
 	AutoCompleteItem,
-	AutoCompleteList,
-	AutoCompleteListProps
+	AutoCompleteList
 } from "@choc-ui/chakra-autocomplete";
 import { useState, type Dispatch } from "react";
-import { loader } from "~/routes/api.tags";
+import type { loader } from "~/routes/api.tags";
 
 interface Props {
 	input: string;

@@ -107,7 +107,7 @@ export default memo(function Comment({
 
 					<Flex gap={1}>
 						<reportFetcher.Form method="POST">
-							<VisuallyHiddenInput name="id" value={comment.id} />
+							<VisuallyHiddenInput name="id" value={comment.id} readOnly />
 							<IconButton
 								aria-label={"Report comment"}
 								icon={<Icon as={TbMessageReport} boxSize={"18px"} />}
@@ -125,7 +125,7 @@ export default memo(function Comment({
 						{isOwner && (
 							<>
 								<fetcher.Form method="delete">
-									<VisuallyHiddenInput name="id" value={comment.id} />
+									<VisuallyHiddenInput name="id" value={comment.id} readOnly />
 									<IconButton
 										aria-label={"Delete comment"}
 										icon={<FiTrash2 />}
@@ -172,7 +172,7 @@ export default memo(function Comment({
 							}}
 						>
 							<Flex flexDir={"column"} w="100%" gap={2}>
-								<VisuallyHiddenInput name="id" value={comment.id} />
+								<VisuallyHiddenInput name="id" value={comment.id} readOnly />
 								<Textarea
 									value={editingData.content}
 									onChange={(e) =>

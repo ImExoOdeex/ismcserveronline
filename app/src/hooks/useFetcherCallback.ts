@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { UseDataFunctionReturn, useTypedFetcher } from "remix-typedjson";
+import type { UseDataFunctionReturn } from "remix-typedjson";
+import { useTypedFetcher } from "remix-typedjson";
 
 export default function useFetcherCallback<T = any>(
 	callback: (data: UseDataFunctionReturn<T>) => void,
@@ -13,6 +14,7 @@ export default function useFetcherCallback<T = any>(
 		if (fetcher.data) {
 			callback(fetcher.data);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [fetcher.data]);
 
 	return fetcher;

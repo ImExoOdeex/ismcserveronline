@@ -9,7 +9,7 @@ import {
 	AutoCompleteTag
 } from "@choc-ui/chakra-autocomplete";
 import { memo, useState } from "react";
-import { loader } from "~/routes/api.tags";
+import type { loader } from "~/routes/api.tags";
 
 export default memo(function ({ hasAdCredits }: { hasAdCredits: boolean }) {
 	const toast = useToast();

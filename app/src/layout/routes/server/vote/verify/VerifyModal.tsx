@@ -55,6 +55,7 @@ export default memo(function VerifyModal({ server, bedrock }: Props) {
 		if (url.searchParams.get("verify") === "") {
 			onOpen();
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (

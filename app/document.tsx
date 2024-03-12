@@ -13,20 +13,22 @@ interface DocumentProps {
 	children: React.ReactNode;
 }
 
-function Document({ children }: DocumentProps) {
+export function Document({ children }: DocumentProps) {
 	const clientStyleData = useContext(ClientStyleContext);
 	const reinjectStylesRef = useRef(true);
 
-	let { cookies, showAds, isBot } = useTypedLoaderData<typeof loader>();
+	let { cookies, showAds } = useTypedLoaderData<typeof loader>();
 
 	// run this only on client, cause the warning shits whole server
 	if (typeof document !== "undefined") {
+		// eslint-disable-next-line
 		useLayoutEffect(() => {
 			if (!reinjectStylesRef.current) return;
 
 			clientStyleData?.reset();
 
 			reinjectStylesRef.current = false;
+			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, []);
 
 		cookies = document.cookie;
@@ -69,17 +71,19 @@ const links = [
 	{ name: "API", icon: BiCode, to: "/api" }
 ];
 
-function ErrorBoundary() {
+export function ErrorBoundary() {
 	const clientStyleData = useContext(ClientStyleContext);
 	const reinjectStylesRef = useRef(true);
 
 	if (clientStyleData)
+		// eslint-disable-next-line
 		useLayoutEffect(() => {
 			if (!reinjectStylesRef.current) return;
 
 			clientStyleData?.reset();
 
 			reinjectStylesRef.current = false;
+			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, []);
 
 	return (
@@ -165,5 +169,3 @@ export function InsideErrorBoundary() {
 		</VStack>
 	);
 }
-
-export { Document, ErrorBoundary };

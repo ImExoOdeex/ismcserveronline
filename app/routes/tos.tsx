@@ -12,7 +12,7 @@ import {
 	VStack,
 	type ListItemProps
 } from "@chakra-ui/react";
-import { MetaArgs, MetaFunction } from "@remix-run/node";
+import type { MetaArgs, MetaFunction } from "@remix-run/node";
 
 export function meta({ matches }: MetaArgs) {
 	return [
