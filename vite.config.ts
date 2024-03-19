@@ -16,5 +16,10 @@ export default defineConfig({
 	],
 	ssr: {
 		noExternal: [/^react-icons.*/, /^remix-utils.*/, "intl-parse-accept-language", "is-ip", "dayjs/plugin/relativeTime"]
+	},
+	build: {
+		rollupOptions: {
+			external: ["sharp"]
+		}
 	}
 });

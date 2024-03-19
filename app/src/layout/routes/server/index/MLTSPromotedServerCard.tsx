@@ -1,32 +1,27 @@
 import { sendPromotedAction } from "@/functions/promoted";
 import Link from "@/layout/global/Link";
-import { Badge, Button, Image as ChakraImage, Flex, HStack, Icon, Tag, Text } from "@chakra-ui/react";
+import config from "@/utils/config";
+import { Badge, Image as ChakraImage, Flex, HStack, Icon, Tag, Text } from "@chakra-ui/react";
 import Color from "color";
 import { useInView } from "framer-motion";
 import { memo, useCallback, useEffect, useMemo, useRef } from "react";
 import { BiUser } from "react-icons/bi";
-import { FaChevronUp, FaHashtag } from "react-icons/fa";
-import type { SearchServer } from "~/routes/search";
+import { FaHashtag } from "react-icons/fa";
+import type { MLTSPromoted } from "~/routes/api.mlts";
 
 interface Props {
-	promoted: {
-		id: number;
-		Server: SearchServer;
-		color: string;
-	};
+	promoted: MLTSPromoted;
 	index: number;
 	length: number;
-	defaultWrap?: boolean;
 }
 
-export default memo(function PromotedServerCard({
-	promoted: { color, Server: server, id },
-	index,
-	length,
-	defaultWrap = false
-}: Props) {
+export default memo(function MLTSPromotedServerCard({ promoted: { color, Server: server, id }, index, length }: Props) {
 	const bgColor = useMemo(() => {
 		return Color(color).alpha(0.1).string();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+	const bgColorHover = useMemo(() => {
+		return Color(color).alpha(0.2).string();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
@@ -44,53 +39,39 @@ export default memo(function PromotedServerCard({
 		sendPromotedAction("Click", id);
 	}, [id]);
 
-	const buttons = useMemo(() => {
-		return (
-			<>
-				<Button as={Link} to={`/${server.server}`} variant={"solid"} bg={bgColor} onClick={handleClick}>
-					View
-				</Button>
-				<Button
-					as={Link}
-					to={`/${server.server}/vote`}
-					variant={"solid"}
-					leftIcon={<Icon as={FaChevronUp} />}
-					bg={bgColor}
-					onClick={handleClick}
-				>
-					Vote ({server._count.Vote})
-				</Button>
-			</>
-		);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [server._count.Vote, server.server]);
-
 	return (
 		<Flex
 			ref={ref}
 			w="100%"
 			bg={bgColor}
-			roundedTop={index === 0 ? "xl" : undefined}
-			roundedBottom={index === length - 1 ? "xl" : undefined}
+			roundedTop={index === 0 ? "lg" : undefined}
+			roundedBottom={index === length - 1 ? "lg" : undefined}
 			p={4}
 			gap={4}
 			minH={"133px"}
+			as={Link}
+			to={`/${server.bedrock ? "bedrock/" : ""}${server.server}`}
+			_hover={{
+				textDecoration: "none",
+				bg: bgColorHover
+			}}
+			onClick={handleClick}
+			_active={{
+				scale: 0.9
+			}}
+			transition={`all 0.2s ${config.cubicEase}`}
+			transform={"auto-gpu"}
 		>
 			<Flex
 				w="100%"
-				flexDir={
-					defaultWrap
-						? "column"
-						: {
-								base: "column",
-								md: "row"
-						  }
-				}
+				flexDir={{
+					base: "column",
+					md: "row"
+				}}
 				gap={4}
 			>
 				<Flex gap={4} w="100%">
 					<ChakraImage
-						alt={server.server + "'s icon"}
 						src={server.favicon ?? "/mc-icon.png"}
 						boxSize={24}
 						sx={{
@@ -103,12 +84,7 @@ export default memo(function PromotedServerCard({
 					<Flex flexDir={"column"} gap={1} overflow={"hidden"} w="100%">
 						<Flex w="100%" justifyContent={"space-between"}>
 							<Flex flexDir={"column"} gap={1}>
-								<Link
-									to={`/${server.bedrock ? "bedrock/" : ""}${server.server}`}
-									fontSize="lg"
-									fontWeight="bold"
-									onClick={handleClick}
-								>
+								<Text fontSize="lg" fontWeight="bold">
 									{server.server}{" "}
 									{server.owner_id && (
 										<Badge colorScheme={"green"} ml={1}>
@@ -120,7 +96,7 @@ export default memo(function PromotedServerCard({
 											Prime
 										</Badge>
 									)}
-								</Link>
+								</Text>
 								<HStack spacing={1}>
 									<Icon as={BiUser} color={color} />
 									<Text fontSize={"sm"}>
@@ -135,6 +111,14 @@ export default memo(function PromotedServerCard({
 										whiteSpace={"none"}
 										display={"inline-flex"}
 										bg={bgColor}
+										scale={1}
+										_hover={{
+											bg: bgColorHover
+										}}
+										_active={{
+											bg: bgColorHover,
+											scale: 1
+										}}
 									>
 										<Icon as={FaHashtag} color={color} mr={1} />
 										Promoted
@@ -145,36 +129,9 @@ export default memo(function PromotedServerCard({
 									{server.description}
 								</Text>
 							</Flex>
-
-							{!defaultWrap && (
-								<HStack
-									display={{
-										base: "none",
-										md: "flex"
-									}}
-									alignItems={"flex-start"}
-								>
-									{buttons}
-								</HStack>
-							)}
 						</Flex>
 					</Flex>
 				</Flex>
-
-				<HStack
-					display={
-						defaultWrap
-							? "flex"
-							: {
-									base: "flex",
-									md: "none"
-							  }
-					}
-					justifyContent={"flex-end"}
-					w="100%"
-				>
-					{buttons}
-				</HStack>
 			</Flex>
 		</Flex>
 	);

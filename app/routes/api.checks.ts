@@ -1,7 +1,7 @@
 import { db } from "@/.server/db/db";
 import { csrf } from "@/.server/functions/security.server";
 import type { ActionFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import { typedjson } from "remix-typedjson";
 
 export async function action({ request }: ActionFunctionArgs) {
 	csrf(request);
@@ -29,5 +29,5 @@ export async function action({ request }: ActionFunctionArgs) {
 		skip: Number(c) ?? 0
 	});
 
-	return json({ checks });
+	return typedjson({ checks });
 }

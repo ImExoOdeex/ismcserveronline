@@ -1,36 +1,33 @@
 import { db } from "@/.server/db/db";
-import { getCache, setCache } from "@/.server/db/redis";
-import { validateServer } from "@/.server/functions/validateServer";
+import { cache } from "@/.server/db/redis";
+import { isAddress } from "@/.server/functions/validateServer";
 import serverConfig from "@/.server/serverConfig";
 import { getCookieWithoutDocument } from "@/functions/cookies";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
-import { Ad, adType } from "@/layout/global/ads/Yes";
-import BotInfo from "@/layout/routes/index/BotInfo";
-import HowToUse from "@/layout/routes/index/HowToUse";
 import Main from "@/layout/routes/index/Main";
-import PopularServers from "@/layout/routes/index/PopularServers";
-import SampleServers from "@/layout/routes/index/SampleServers/SampleServers";
-import WARWF from "@/layout/routes/index/WARWF";
-import { Divider, VStack } from "@chakra-ui/react";
+import TopServers from "@/layout/routes/index/TopServers";
+import { Flex } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
+import dayjs from "dayjs";
 import { useState } from "react";
 import { typedjson } from "remix-typedjson";
+import { getClientLocales } from "remix-utils/locales/server";
+import type { SearchServer, SearchTag } from "~/routes/search";
 
 export async function action({ request }: ActionFunctionArgs) {
 	const formData = await request.formData();
-	const bedrock = getCookieWithoutDocument("bedrock", request.headers.get("cookie") ?? "") === "true";
-	const query = getCookieWithoutDocument("query", request.headers.get("cookie") ?? "") === "true";
-	const server = formData.get("server")?.toString().toLowerCase();
 
+	const bedrock = getCookieWithoutDocument("bedrock", request.headers.get("cookie") ?? "") === "true";
+	const server = formData.get("server")?.toString().toLowerCase();
 	if (!server) {
 		return null;
 	}
 
-	const error = validateServer(server);
-	if (error) return json({ error });
-
-	return redirect(`/${bedrock ? "bedrock/" : ""}${server}${query && !bedrock ? "?query" : ""}`);
+	if (isAddress(server)) {
+		return redirect(`/${bedrock ? "bedrock/" : ""}${server}`);
+	}
+	return redirect("/search?q=" + server);
 }
 
 export function meta({ matches }: MetaArgs) {
@@ -47,39 +44,191 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	const bedrock = getCookieWithoutDocument("bedrock", cookies ?? "") === "true";
 	const query = getCookieWithoutDocument("query", cookies ?? "") === "true";
 
-	const start = Date.now();
+	let cookieLocale = getCookieWithoutDocument("locale", request.headers.get("Cookie") ?? "");
+	cookieLocale = cookieLocale === "us" ? "en" : cookieLocale;
+	const locales = getClientLocales(request);
+	const locale = locales ? (locales[0].split("-")[0] === "us" ? "en" : locales[0].split("-")[0]) : "en";
 
-	let sampleServers: any[], count: number;
+	const url = new URL(request.url);
+	const spLocale = url.searchParams.get("lang");
 
-	let [cacheCount, cacheServers] = (await Promise.all([
-		getCache(Object.keys(serverConfig.cache)[0]), // count
-		getCache(Object.keys(serverConfig.cache)[1]) // sampleServers
-	])) as [string | null, string | null];
+	let finalLocale = spLocale || cookieLocale || locale;
+	finalLocale = finalLocale === "us" ? "en" : finalLocale;
 
-	if (!cacheServers || !cacheCount) {
-		console.log("[Loader] No cache");
+	const cacheServersKey = `servers-${bedrock}-hot-${finalLocale}`;
+	const cacheServersStr = await cache.get(cacheServersKey);
+	const cacheServers = cacheServersStr ? JSON.parse(cacheServersStr) : null;
+	const cacheTagsStr = await cache.get(`tags`);
+	const cacheTags = cacheTagsStr ? JSON.parse(cacheTagsStr) : null;
 
-		[sampleServers, count] = (await Promise.all([[], db.check.count()])) as [any[], number];
-		setCache(Object.keys(serverConfig.cache)[0], count, serverConfig.cache.count);
-		setCache(Object.keys(serverConfig.cache)[1], sampleServers, serverConfig.cache.sampleServers);
+	let servers: SearchServer[] = cacheServers || [];
+	let tags: SearchTag[] = cacheTags || [];
+
+	if (!cacheServers || !cacheTags) {
+		console.log("no cache");
+
+		const promises = [
+			db.tag.findMany({
+				take: 8,
+				select: {
+					name: true
+				},
+				orderBy: {
+					servers: {
+						_count: "desc"
+					}
+				}
+			}) as Promise<SearchTag[]>,
+			db.server.findMany({
+				take: 4,
+				select: {
+					id: true,
+					server: true,
+					bedrock: true,
+					favicon: true,
+					players: true,
+					prime: true,
+					motd: true,
+					description: true,
+					owner_id: true,
+					Owner: {
+						select: {
+							prime: true
+						}
+					},
+					Tags: {
+						select: {
+							name: true
+						}
+					},
+					_count: {
+						select: {
+							Vote: {
+								where: {
+									created_at: {
+										gte: dayjs().startOf("month").toDate()
+									}
+								}
+							}
+						}
+					}
+				},
+				where: {
+					AND: {
+						bedrock,
+						AND: {
+							OR: [
+								{
+									language: finalLocale === "en" ? "en" : finalLocale
+								},
+								{
+									language: finalLocale === "en" ? null : finalLocale
+								}
+							]
+						},
+						server: {
+							startsWith: "%.%",
+							not: {
+								startsWith: "%.%.%.%"
+							}
+						}
+					}
+				},
+				orderBy: {
+					Vote: {
+						_count: "desc"
+					}
+				}
+			}) as unknown as Promise<SearchServer[]>
+		] as const;
+
+		const [fetchedTags, fetchedServers] = await Promise.all(promises);
+		servers = fetchedServers;
+		tags = fetchedTags;
+
+		const cacheTTL = serverConfig.cache.searchServersNTags;
+		await Promise.all([
+			cache.set(cacheServersKey, JSON.stringify(fetchedServers), cacheTTL),
+			cache.set(`tags`, JSON.stringify(fetchedTags), cacheTTL)
+		]);
 	} else {
-		console.log("[Loader] Using Cache");
-		[sampleServers, count] = [JSON.parse(cacheServers ?? "[]"), Number(cacheCount)];
+		console.log("cache");
 	}
 
-	console.log(`[Loader] Sample servers and count took ${Date.now() - start}ms`);
+	// promoted-bedrock-locale-tags
+	const promotedServersCacheKey = `promoted-${bedrock}-${finalLocale}`;
+	const cachePromotedServersStr = await cache.get(promotedServersCacheKey);
+	const cachePromotedServers = cachePromotedServersStr ? JSON.parse(cachePromotedServersStr) : null;
 
-	return typedjson({ bedrock, query, sampleServers, count });
+	let randomPromoted: { Server: SearchServer; color: string; id: number }[] = cachePromotedServers || [];
+
+	if (!cachePromotedServers) {
+		console.log("no cache promoted");
+
+		const promotedCount = await db.promoted.count({
+			where: {
+				Server: {
+					bedrock,
+					language: finalLocale
+				}
+			}
+		});
+		const skip = Math.floor(Math.random() * promotedCount);
+		randomPromoted = (await db.promoted.findMany({
+			take: 2,
+			select: {
+				id: true,
+				Server: {
+					select: {
+						id: true,
+						favicon: true,
+						server: true,
+						description: true,
+						bedrock: true,
+						players: true,
+						Tags: {
+							select: {
+								name: true
+							}
+						},
+						_count: {
+							select: {
+								Vote: true
+							}
+						}
+					}
+				},
+				color: true
+			},
+			skip,
+			where: {
+				Server: {
+					bedrock,
+					language: finalLocale
+				},
+				status: "Active"
+			},
+			orderBy: {
+				created_at: "desc"
+			}
+		})) as any;
+
+		await cache.set(promotedServersCacheKey, JSON.stringify(randomPromoted), serverConfig.cache.promotedServers);
+	} else {
+		console.log("cache promoted");
+	}
+
+	return typedjson({ bedrock, query, servers, tags, randomPromoted, count: 0 });
 }
 
 export default function Index() {
-	const { bedrock, sampleServers, query, count } = useAnimationLoaderData<typeof loader>();
+	const { bedrock, query, count, servers, randomPromoted, tags } = useAnimationLoaderData<typeof loader>();
 
 	const [bedrockChecked, setBedrockChecked] = useState<boolean>(bedrock ? bedrock : false);
 	const [serverValue, setServerValue] = useState<string>("");
 
 	return (
-		<VStack flexDir={"column"} maxW="1200px" mx="auto" w="100%" mt={"75px"} mb={10} px="4" spacing={14}>
+		<Flex flexDir={"column"} maxW="1400px" mx="auto" w="100%" mt={"75px"} mb={10} px="4" gap={10}>
 			<Main
 				bedrockChecked={bedrockChecked}
 				query={query}
@@ -87,24 +236,20 @@ export default function Index() {
 				setBedrockChecked={setBedrockChecked}
 				setServerValue={setServerValue}
 				count={count}
+				tags={tags}
 			/>
 
-			<SampleServers sampleServers={sampleServers} setServerValue={setServerValue} setBedrock={setBedrockChecked} />
+			<TopServers servers={servers} promoted={randomPromoted} />
 
+			{/* <SampleServers sampleServers={sampleServers} setServerValue={setServerValue} setBedrock={setBedrockChecked} />
 			<Divider />
 			<BotInfo />
 			<Divider />
-
 			<VStack spacing={"28"} w="100%" align={"start"}>
 				<HowToUse />
-
 				<PopularServers />
-
-				{/* What are you waiting for? */}
 				<WARWF />
-			</VStack>
-
-			<Ad type={adType.multiplex} />
-		</VStack>
+			</VStack> */}
+		</Flex>
 	);
 }

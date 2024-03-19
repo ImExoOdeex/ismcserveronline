@@ -1,4 +1,5 @@
 import useUser from "@/hooks/useUser";
+import { LoginButton } from "@/layout/global/Header/Buttons";
 import { ChatIcon } from "@chakra-ui/icons";
 import { Alert, AlertIcon, AlertTitle, Button, Flex, HStack, Image, Text, Textarea, useToast, VStack } from "@chakra-ui/react";
 import { useFetcher } from "@remix-run/react";
@@ -126,9 +127,12 @@ export default memo(function Comments({ comments, freshComments, setComments }: 
 					)}
 				</>
 			) : (
-				<Alert status="error" borderRadius={"md"} w="100%">
-					<AlertIcon />
-					<AlertTitle mr={2}>You must be logged in to comment.</AlertTitle>
+				<Alert status="info" rounded={"md"} w="100%" justifyContent={"space-between"}>
+					<HStack spacing={0}>
+						<AlertIcon />
+						<AlertTitle mr={2}>You must be logged in to comment.</AlertTitle>
+					</HStack>
+					<LoginButton />
 				</Alert>
 			)}
 

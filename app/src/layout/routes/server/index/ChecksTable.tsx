@@ -1,4 +1,5 @@
 import useDebouncedFetcherCallback from "@/hooks/useDebouncedFetcherCallback";
+import InfiniteScroller from "@/layout/global/InfiniteScroller";
 import { CheckIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import {
 	Badge,
@@ -19,7 +20,8 @@ import {
 	useColorModeValue
 } from "@chakra-ui/react";
 import { type SOURCE } from "@prisma/client";
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
+import type { action } from "~/routes/api.checks";
 
 export interface ICheck {
 	id: number;
@@ -34,131 +36,101 @@ interface Props {
 	server: string;
 	checks: ICheck[] | null;
 	setChecks: React.Dispatch<React.SetStateAction<ICheck[] | null>>;
+	skip: number;
+	setSkip: React.Dispatch<React.SetStateAction<number>>;
+	doneInit: boolean;
+	setDoneInit: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default memo(function ChecksTable({ server, serverId, checks, setChecks }: Props) {
+export default memo(function ChecksTable({ server, serverId, checks, setChecks, setSkip, skip, doneInit, setDoneInit }: Props) {
 	const borderColor = useColorModeValue("#2f2e32", "#2f2e32 !important");
 
-	// positions states
-	const [scrollPosition, setScrollPosition] = useState(0);
-	const [clientHeight, setClientHeight] = useState(0);
-
-	// use effet to run event that will update our scroll position
-	useEffect(() => {
-		function scrollListener() {
-			setClientHeight(window.innerHeight);
-			setScrollPosition(window.scrollY);
-		}
-		window.addEventListener("scroll", scrollListener);
-
-		return () => {
-			window.removeEventListener("scroll", scrollListener);
-		};
-	}, []);
-
-	const divHeight = useRef<HTMLTableSectionElement>(null);
-	const tableReactPosFromTop = divHeight?.current?.getBoundingClientRect()?.top ?? 0 + scrollPosition;
-
-	const pos = useMemo(() => {
-		return clientHeight + scrollPosition;
-	}, [clientHeight, scrollPosition]);
-
-	const [shouldFetch, setShouldFetch] = useState(true);
-
-	// skip elements state (step by 20)
-	const [skip, setSkip] = useState(0);
 	// fetcher to fetch data
-	const fetcher = useDebouncedFetcherCallback((data) => {
-		if (data && (data as any).checks.length === 0) {
-			setShouldFetch(false);
+	const fetcher = useDebouncedFetcherCallback<typeof action>((data) => {
+		if (data && data.checks.length === 0) {
 			return;
 		}
 
-		if ((data as any)?.checks) {
-			setChecks((prev) => [...(prev || []), ...(data as any)?.checks]);
-			setSkip((skip: number) => skip + 20);
-			setShouldFetch(true);
+		if (data.checks) {
+			setChecks((prev) => [...(prev || []), ...data.checks]);
+			setSkip((skip) => skip + 20);
+
+			if (data.checks.length < 20) {
+				setEnded(true);
+			}
 		}
 	});
 
-	const loadDebounced = useCallback(() => {
-		setShouldFetch(false);
+	const load = useCallback(() => {
 		fetcher.submit(
 			{
 				c: skip,
 				serverId
 			},
 			{
-				debounceTimeout: 300,
-				action: `/api/checks/get`,
+				action: `/api/checks`,
 				method: "POST"
 			}
 		);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [fetcher, server, skip]);
 
-	const inital = useRef(true);
-
 	useEffect(() => {
-		if (inital.current) {
+		if (!doneInit) {
 			fetcher.submit(
 				{
 					c: skip,
 					serverId
 				},
 				{
-					debounceTimeout: 300,
-					action: `/api/checks/get`,
+					action: `/api/checks`,
 					method: "POST"
 				}
 			);
 
-			inital.current = false;
+			setDoneInit(true);
 			return;
 		}
-
-		// if our position if greater than expected, we'll fetch the data from our API route
-		if (!tableReactPosFromTop || !shouldFetch) return;
-		if (pos - 500 < tableReactPosFromTop) return;
-
-		loadDebounced();
-
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [clientHeight, scrollPosition]);
+	}, [checks]);
+
+	const [ended, setEnded] = useState(false);
 
 	return (
 		<>
 			{checks ? (
 				<>
 					{checks.length ? (
-						<TableContainer w="100%" __css={{ clear: "both" }}>
-							<Table variant="simple" size={"sm"}>
-								<TableCaption>Last status checks for {server}</TableCaption>
-								<Thead>
-									<Tr sx={{ "> *": { borderColor: borderColor } }}>
-										<Th>Date</Th>
-										<Th>Status</Th>
-										<Th>Platform</Th>
-										<Th isNumeric>Players</Th>
-									</Tr>
-								</Thead>
-								<Tbody>
-									{checks.map((c) => {
-										return <Check key={c.id + c.checked_at.toString()} check={c} />;
-									})}
+						<InfiniteScroller loading={fetcher.state !== "idle"} loadNext={load} ended={ended}>
+							<TableContainer w="100%" __css={{ clear: "both" }}>
+								<Table variant="simple" size={"sm"}>
+									<TableCaption>Last status checks for {server}</TableCaption>
+									<Thead>
+										<Tr sx={{ "> *": { borderColor: borderColor } }}>
+											<Th>Date</Th>
+											<Th>Status</Th>
+											<Th>Platform</Th>
+											<Th isNumeric>Players</Th>
+										</Tr>
+									</Thead>
+									<Tbody>
+										{checks.map((c) => {
+											return <Check key={c.id + c.checked_at.toString()} check={c} />;
+										})}
 
-									{fetcher.state !== "idle" && <SkeletonChecks />}
-								</Tbody>
-								<Tfoot ref={divHeight} __css={{ clear: "both" }}>
-									<Tr>
-										<Th>Date</Th>
-										<Th>Status</Th>
-										<Th>Platform</Th>
-										<Th isNumeric>Players</Th>
-									</Tr>
-								</Tfoot>
-							</Table>
-						</TableContainer>
+										{fetcher.state !== "idle" && <SkeletonChecks />}
+									</Tbody>
+									<Tfoot __css={{ clear: "both" }}>
+										<Tr>
+											<Th>Date</Th>
+											<Th>Status</Th>
+											<Th>Platform</Th>
+											<Th isNumeric>Players</Th>
+										</Tr>
+									</Tfoot>
+								</Table>
+							</TableContainer>
+						</InfiniteScroller>
 					) : (
 						<Flex w="100%">
 							<Heading fontSize={"md"} justifySelf="center" textAlign="center" color={"red"} mx="auto">
@@ -183,7 +155,7 @@ export default memo(function ChecksTable({ server, serverId, checks, setChecks }
 							<Tbody>
 								<SkeletonChecks />
 							</Tbody>
-							<Tfoot ref={divHeight} __css={{ clear: "both" }}>
+							<Tfoot __css={{ clear: "both" }}>
 								<Tr>
 									<Th>Date</Th>
 									<Th>Status</Th>

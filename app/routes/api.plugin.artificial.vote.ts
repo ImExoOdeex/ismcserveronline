@@ -13,13 +13,21 @@ export async function action({ request }: ActionFunctionArgs) {
 
 		const form = await request.formData();
 		const nick = form.get("nick")?.toString().trim();
+		const serverToken = form.get("token")?.toString().trim();
 		invariant(nick, "Nick not found in search params.");
+		invariant(serverToken, "Token not found in search params.");
+
+		const server = await db.serverToken.findUniqueOrThrow({
+			where: {
+				token: serverToken
+			}
+		});
 
 		await db.vote.create({
 			data: {
 				nick,
 				user_id: 1,
-				server_id: 1
+				server_id: server.server_id
 			}
 		});
 

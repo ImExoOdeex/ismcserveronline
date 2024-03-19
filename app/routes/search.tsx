@@ -1,23 +1,28 @@
 import { db } from "@/.server/db/db";
 import { cache } from "@/.server/db/redis";
+import { csrf } from "@/.server/functions/security.server";
 import serverConfig from "@/.server/serverConfig";
 import { getCookieWithoutDocument } from "@/functions/cookies";
 import { capitalize } from "@/functions/utils";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import useFetcherCallback from "@/hooks/useFetcherCallback";
+import useInsideEffect from "@/hooks/useInsideEffect";
+import InfiniteScroller from "@/layout/global/InfiniteScroller";
 import { ChakraBox } from "@/layout/global/MotionComponents";
 import PromotedServerCard from "@/layout/routes/search/PromotedServerCard";
 import SearchForm from "@/layout/routes/search/SearchForm";
 import ServerCard from "@/layout/routes/search/ServerCard";
 import SideFilters from "@/layout/routes/search/SideFilters";
 import type { ServerModel } from "@/types/minecraftServer";
-import { Button, Divider, Flex, HStack, Heading, Tag } from "@chakra-ui/react";
+import { Button, Divider, Flex, HStack, Heading, Spinner, Tag } from "@chakra-ui/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
-import type { MetaArgs, MetaFunction } from "@remix-run/react";
+import type { MetaArgs, MetaFunction, ShouldRevalidateFunctionArgs } from "@remix-run/react";
 import { useSearchParams } from "@remix-run/react";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { redirect, typedjson } from "remix-typedjson";
 import { getClientLocales } from "remix-utils/locales/server";
+import type { action as apiSearchAction } from "./api.search";
 
 export function meta({ matches }: MetaArgs) {
 	return [
@@ -50,14 +55,9 @@ export interface SearchServer {
 }
 
 export interface SearchPromotedServer {
-	Server: {
-		favicon: string | null;
-		server: string;
-		bedrock: boolean;
-		players: ServerModel.Players<any>;
-		Tags: { name: string }[];
-		_count: { Vote: number };
-	};
+	id: number;
+	color: string;
+	Server: SearchServer;
 }
 
 export interface SearchTag {
@@ -65,6 +65,7 @@ export interface SearchTag {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
+	csrf(request);
 	let cookieLocale = getCookieWithoutDocument("locale", request.headers.get("Cookie") ?? "");
 	cookieLocale = cookieLocale === "us" ? "en" : cookieLocale;
 	const locales = getClientLocales(request);
@@ -317,13 +318,64 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	return typedjson({ tags, servers, locale: finalLocale, randomPromoted });
 }
 
+export function shouldRevalidate(args: ShouldRevalidateFunctionArgs) {
+	if (args.currentUrl.toString() !== args.nextUrl.toString()) {
+		console.log("revalidating");
+
+		return true;
+	}
+
+	return false;
+}
+
 export default function Search() {
-	const { tags, servers, locale, randomPromoted } = useAnimationLoaderData<typeof loader>();
+	const { tags, servers: dbServers, locale, randomPromoted } = useAnimationLoaderData<typeof loader>();
 
 	const versions = ["java", "bedrock"] as const;
 	const [searchParams, setSearchParams] = useSearchParams();
 
 	const [version, setVersion] = useState<(typeof versions)[number]>(searchParams.get("bedrock") === "" ? "bedrock" : "java");
+
+	useInsideEffect(() => {
+		setServers(dbServers);
+	}, [dbServers]);
+
+	const [servers, setServers] = useState<SearchServer[]>(dbServers);
+	const [skip, setSkip] = useState(10);
+	const [ended, setEnded] = useState(false);
+
+	// fetcher to fetch data
+	const fetcher = useFetcherCallback<typeof apiSearchAction>((data) => {
+		if (data.servers) {
+			setServers((prev) => [...(prev || []), ...data.servers]);
+			setSkip((skip: number) => skip + 10);
+			console.log(data.servers);
+
+			if (data.servers.length < 10) {
+				setEnded(true);
+			}
+		}
+	});
+
+	const loadNewServers = useCallback(() => {
+		console.log('searchParams.getAll("tag")', searchParams.getAll("tag"));
+
+		fetcher.submit(
+			{
+				version,
+				locale,
+				q: searchParams.get("q") ?? "",
+				sort: searchParams.get("sort") ?? "hot",
+				skip,
+				tags: JSON.stringify(searchParams.getAll("tags"))
+			},
+			{
+				action: `/api/search`,
+				method: "POST"
+			}
+		);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [fetcher, skip]);
 
 	return (
 		<Flex flexDir={"column"} maxW="1200px" mx="auto" w="100%" mt={"75px"} mb={10} px="4" gap={10}>
@@ -409,21 +461,29 @@ export default function Search() {
 					justifyContent="space-between"
 				>
 					<Flex flexDir={"column"} w={{ base: "100%", md: "75%" }} gap={4}>
-						<Flex flexDir={"column"} gap="1px">
-							<Flex mb={1} flexDir={"column"} gap={"1px"}>
-								{randomPromoted.map((server, i) => (
-									<PromotedServerCard
-										key={"promoted-" + server.Server.id}
-										promoted={server}
-										index={i}
-										length={randomPromoted.length}
-									/>
+						<InfiniteScroller loadNext={loadNewServers} loading={fetcher.state !== "idle"} ended={ended}>
+							<Flex flexDir={"column"} gap="1px">
+								<Flex mb={1} flexDir={"column"} gap={"1px"}>
+									{randomPromoted.map((server, i) => (
+										<PromotedServerCard
+											key={"promoted-" + server.Server.id}
+											promoted={server}
+											index={i}
+											length={randomPromoted.length}
+										/>
+									))}
+								</Flex>
+								{servers.map((server, i) => (
+									<ServerCard key={server.id} server={server} index={i} length={servers.length} />
 								))}
+
+								{fetcher.state !== "idle" && (
+									<Flex mx="auto" py={4}>
+										<Spinner speed="0.45s" size={"lg"} />
+									</Flex>
+								)}
 							</Flex>
-							{servers.map((server, i) => (
-								<ServerCard key={server.id} server={server} index={i} length={servers.length} />
-							))}
-						</Flex>
+						</InfiniteScroller>
 					</Flex>
 
 					<SideFilters locale={locale} />

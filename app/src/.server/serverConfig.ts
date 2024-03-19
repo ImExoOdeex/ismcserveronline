@@ -8,7 +8,6 @@ const serverConfig = {
 	uploadsUrl: requireEnv("UPLOADS_URL"),
 	cache: {
 		count: 60 * 60 * 12, // 12 hours
-		sampleServers: 60 * 60, // 1 hour
 		searchServersNTags: 60 * 15, // 15 minutes
 		promotedServers: 60 * 5 // 5 minutes
 	},

@@ -18,7 +18,7 @@ dependencies:
     specifier: ^2.1.1
     version: 2.1.1(@chakra-ui/system@2.6.2)(react@18.2.0)
   '@chakra-ui/react':
-    specifier: ^2.5.5
+    specifier: ^2.8.2
     version: 2.8.2(@emotion/react@11.11.4)(@emotion/styled@11.11.0)(@types/react@18.2.64)(framer-motion@7.10.3)(react-dom@18.2.0)(react@18.2.0)
   '@chakra-ui/react-use-size':
     specifier: ^2.0.9
@@ -104,6 +104,9 @@ dependencies:
   javascript-time-ago:
     specifier: ^2.5.9
     version: 2.5.9
+  optional:
+    specifier: ^0.1.4
+    version: 0.1.4
   os-utils:
     specifier: ^0.0.14
     version: 0.0.14
@@ -143,6 +146,9 @@ dependencies:
   stripe:
     specifier: ^14.10.0
     version: 14.19.0
+  three:
+    specifier: ^0.162.0
+    version: 0.162.0
   tiny-invariant:
     specifier: ^1.3.1
     version: 1.3.3
@@ -187,6 +193,9 @@ devDependencies:
   '@types/source-map-support':
     specifier: ^0.5.10
     version: 0.5.10
+  '@types/three':
+    specifier: ^0.162.0
+    version: 0.162.0
   '@types/ws':
     specifier: ^8.5.10
     version: 8.5.10
@@ -4574,6 +4583,10 @@ packages:
       pretty-format: 27.5.1
     dev: true
 
+  /@tweenjs/tween.js@23.1.1:
+    resolution: {integrity: sha512-ZpboH7pCPPeyBWKf8c7TJswtCEQObFo3bOBYalm99NzZarATALYCo5OhbCa/n4RQyJyHfhkdx+hNrdL5ByFYDw==}
+    dev: true
+
   /@types/acorn@4.0.6:
     resolution: {integrity: sha512-veQTnWP+1D/xbxVrPC3zHnCZRjSrKfhbMUlEA43iMZLu7EsnTtkJklIuwrCPbOi8YkvDQAiW05VQQFvvz9oieQ==}
     dependencies:
@@ -4831,8 +4844,26 @@ packages:
       source-map: 0.6.1
     dev: true
 
+  /@types/stats.js@0.17.3:
+    resolution: {integrity: sha512-pXNfAD3KHOdif9EQXZ9deK82HVNaXP5ZIF5RP2QG6OQFNTaY2YIetfrE9t528vEreGQvEPRDDc8muaoYeK0SxQ==}
+    dev: true
+
+  /@types/three@0.162.0:
+    resolution: {integrity: sha512-0j5yZcVukVIhrhSIC7+LmBPkkMoMuEJ1AfYBZfgNytdYqYREMuiyXWhYOMeZLBElTEAlJIZn7r2W3vqTIgjWlg==}
+    dependencies:
+      '@tweenjs/tween.js': 23.1.1
+      '@types/stats.js': 0.17.3
+      '@types/webxr': 0.5.14
+      fflate: 0.6.10
+      meshoptimizer: 0.18.1
+    dev: true
+
   /@types/unist@2.0.10:
     resolution: {integrity: sha512-IfYcSBWE3hLpBg8+X2SEa8LVkJdJEkT2Ese2aaLs3ptGdVtABxndrMaxuFlQ1qdFf9Q5rDvDpxI3WwgvKFAsQA==}
+    dev: true
+
+  /@types/webxr@0.5.14:
+    resolution: {integrity: sha512-UEMMm/Xn3DtEa+gpzUrOcDj+SJS1tk5YodjwOxcqStNhCfPcwgyC5Srg2ToVKyg2Fhq16Ffpb0UWUQHqoT9AMA==}
     dev: true
 
   /@types/ws@8.5.10:
@@ -7033,6 +7064,10 @@ packages:
       format: 0.2.2
     dev: true
 
+  /fflate@0.6.10:
+    resolution: {integrity: sha512-IQrh3lEPM93wVCEczc9SaAOvkmcoQn/G8Bo1e8ZPlY3X3bnAxWaBdvTdvM1hP62iZp0BXWDy4vTAy4fF0+Dlpg==}
+    dev: true
+
   /file-entry-cache@6.0.1:
     resolution: {integrity: sha512-7Gps/XWymbLk2QLYK4NzpMOrYjMhdIxXuIvy2QBsLE6ljuodKvdkWs/cpyJJ3CVIVpH0Oi1Hvg1ovbMzLdFBBg==}
     engines: {node: ^10.12.0 || >=12.0.0}
@@ -8307,6 +8342,10 @@ packages:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
     engines: {node: '>= 8'}
 
+  /meshoptimizer@0.18.1:
+    resolution: {integrity: sha512-ZhoIoL7TNV4s5B6+rx5mC//fw8/POGyNxS/DZyCJeiZ12ScLfVwRE/GfsxwiTkMYYD5DmK2/JXnEVXqL4rF+Sw==}
+    dev: true
+
   /methods@1.1.2:
     resolution: {integrity: sha512-iclAHeNqNm68zFtnZ0e+1L2yUIdvzNoauKU4WBA3VvH/vPFieF7qfRlwUZU+DA9P9bPXIS90ulxoUoCH23sV2w==}
     engines: {node: '>= 0.6'}
@@ -9007,6 +9046,10 @@ packages:
       define-lazy-prop: 2.0.0
       is-docker: 2.2.1
       is-wsl: 2.2.0
+    dev: false
+
+  /optional@0.1.4:
+    resolution: {integrity: sha512-gtvrrCfkE08wKcgXaVwQVgwEQ8vel2dc5DDBn9RLQZ3YtmtkBss6A2HY6BnJH4N/4Ku97Ri/SF8sNWE2225WJw==}
     dev: false
 
   /optionator@0.9.3:
@@ -10581,6 +10624,10 @@ packages:
   /text-table@0.2.0:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}
     dev: true
+
+  /three@0.162.0:
+    resolution: {integrity: sha512-xfCYj4RnlozReCmUd+XQzj6/5OjDNHBy5nT6rVwrOKGENAvpXe2z1jL+DZYaMu4/9pNsjH/4Os/VvS9IrH7IOQ==}
+    dev: false
 
   /through2@0.4.2:
     resolution: {integrity: sha512-45Llu+EwHKtAZYTPPVn3XZHBgakWMN3rokhEv5hu596XP+cNgplMg+Gj+1nmAvj+L0K7+N49zBKx5rah5u0QIQ==}

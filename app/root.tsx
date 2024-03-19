@@ -1,6 +1,6 @@
 import { getUser } from "@/.server/db/models/user";
 import { requireEnv } from "@/.server/functions/env.server";
-import { validateServer } from "@/.server/functions/validateServer";
+import { isAddress } from "@/.server/functions/validateServer";
 import { getCookieWithoutDocument } from "@/functions/cookies";
 import Layout from "@/layout/global/Layout";
 import { GlobalContext } from "@/utils/GlobalContext";
@@ -8,7 +8,7 @@ import config from "@/utils/config";
 import useTheme from "@/utils/theme";
 import { ChakraBaseProvider, cookieStorageManagerSSR, useConst } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LinksFunction, LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import type { ShouldRevalidateFunctionArgs } from "@remix-run/react";
 import { useLocation, useOutlet } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -161,15 +161,15 @@ export function meta() {
 
 export function links() {
 	return [
-		{ rel: "preconnect", href: "https://fonts.googleapis.com" },
+		// { rel: "preconnect", href: "https://fonts.googleapis.com" },
+		// {
+		// 	rel: "stylesheet",
+		// 	href: "https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=block"
+		// },
 		{
 			rel: "preconnect",
 			href: "https://fonts.gstatic.com",
 			crossOrigin: "anonymous"
-		},
-		{
-			rel: "stylesheet",
-			href: "https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=block"
 		},
 		{
 			rel: "preload",
@@ -330,10 +330,10 @@ export async function action({ request }: ActionFunctionArgs) {
 		return null;
 	}
 
-	const error = validateServer(server);
-	if (error) return json({ error });
-
-	return redirect(`/${bedrock == "true" ? "bedrock/" : ""}${server}`);
+	if (isAddress(server)) {
+		return redirect(`/${bedrock ? "bedrock/" : ""}${server}`);
+	}
+	return redirect("/search?q=" + server);
 }
 
 // ----------------------------- ERROR -----------------------------

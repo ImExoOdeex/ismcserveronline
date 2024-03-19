@@ -40,8 +40,20 @@ export async function action({ request }: ActionFunctionArgs) {
 			}
 		});
 
-		invariant(!hasVotedInLast12Hours?.reward_collected, "User has already collected the reward for the last vote.");
-		invariant(hasVotedInLast12Hours, "User has not voted in the last 12 hours.");
+		if (hasVotedInLast12Hours?.reward_collected) {
+			return json({
+				success: false,
+				message: `User has already collected the reward for the last vote.`,
+				code: "collected"
+			});
+		}
+		if (!hasVotedInLast12Hours) {
+			return json({
+				success: false,
+				message: `User has not voted in the last 12 hours.`,
+				code: "not_voted"
+			});
+		}
 
 		await db.vote.update({
 			where: {
@@ -57,9 +69,14 @@ export async function action({ request }: ActionFunctionArgs) {
 			message: `Collected reward for ${nick}.`
 		});
 	} catch (e) {
-		return json({
-			success: false,
-			message: "message" in (e as any) ? (e as Error).message : "An error occurred."
-		});
+		return json(
+			{
+				success: false,
+				message: "message" in (e as any) ? (e as Error).message : "An error occurred."
+			},
+			{
+				status: 200
+			}
+		);
 	}
 }

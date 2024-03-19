@@ -13,7 +13,6 @@ import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import useEventSourceCallback from "@/hooks/useEventSourceCallback";
 import useUser from "@/hooks/useUser";
 import Link from "@/layout/global/Link";
-import { Ad, adType } from "@/layout/global/ads/Yes";
 import type { ICheck } from "@/layout/routes/server/index/ChecksTable";
 import ChecksTable from "@/layout/routes/server/index/ChecksTable";
 import Comments from "@/layout/routes/server/index/Comments";
@@ -331,12 +330,15 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 	const start = Date.now();
 
 	const server = params.server?.toString().toLowerCase().trim();
-	if (!server?.includes("."))
-		throw new Response("Not found", {
-			status: 404
-		});
 
-	if (server.endsWith(".php")) {
+	const notAllowedEndings = [".php", ".html", ".htm", ".js", ".css", ".json", ".xml", ".txt", ".md", ".log", ".map"];
+	if (
+		!server?.includes(".") ||
+		server?.length > 35 ||
+		notAllowedEndings.some((ending) => {
+			return server.endsWith(ending);
+		})
+	) {
 		throw new Response("Not found", {
 			status: 404
 		});
@@ -655,6 +657,10 @@ export default function $server() {
 		setShouldPregenerateStyles(false);
 	}, [server]);
 
+	// checks table data
+	// skip elements state (step by 20)
+	const [doneInit, setDoneInit] = useState(false);
+	const [skip, setSkip] = useState(0);
 	const [checks, setChecks] = useState<ICheck[] | null>(null);
 
 	return (
@@ -747,7 +753,16 @@ export default function $server() {
 						Last checks
 					</Heading>
 
-					<ChecksTable server={server} serverId={serverId} checks={checks} setChecks={setChecks} />
+					<ChecksTable
+						server={server}
+						serverId={serverId}
+						checks={checks}
+						setChecks={setChecks}
+						skip={skip}
+						setSkip={setSkip}
+						doneInit={doneInit}
+						setDoneInit={setDoneInit}
+					/>
 				</VStack>
 			)}
 			{tab === "comments" && (
@@ -760,7 +775,13 @@ export default function $server() {
 				</Suspense>
 			)}
 
-			<MoreLikeThisServer players={data?.players.online} bedrock={bedrock} language={data.language} my={10} />
+			<MoreLikeThisServer
+				server={server}
+				players={data?.players.online}
+				bedrock={bedrock}
+				language={data.language}
+				my={10}
+			/>
 
 			<Stack direction={{ base: "column", md: "row" }} spacing={{ base: "auto", md: 7 }}>
 				<HStack
@@ -778,8 +799,6 @@ export default function $server() {
 					<Icon as={BiInfoCircle} />
 				</HStack>
 			</Stack>
-
-			<Ad type={adType.multiplex} />
 		</Flex>
 	);
 }

@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { memo, useEffect, useRef, useState } from "react";
 import { useCountUp } from "react-countup";
+import { flushSync } from "react-dom";
 import type { action, loader } from "~/routes/$server_.vote";
 
 dayjs.extend(relativeTime);
@@ -48,6 +49,16 @@ export default memo(function Vote() {
 
 	useEffect(() => {
 		if (vote === null) {
+			flushSync(() => {
+				setSecondsToVote((prev) => {
+					let newSeconds = prev - 1;
+					if (newSeconds < 0) newSeconds = 0;
+					update(newSeconds - 1);
+					if (newSeconds === 0) clearInterval(interval);
+					return newSeconds;
+				});
+			});
+
 			const interval = setInterval(() => {
 				setSecondsToVote((prev) => {
 					let newSeconds = prev - 1;

@@ -33,6 +33,7 @@ export default memo(function ServerCard({ server, index, length }: Props) {
 				<Flex gap={4} w="100%">
 					<Image
 						src={server.favicon ?? "/mc-icon.png"}
+						alt={server.server + "'s icon"}
 						boxSize={24}
 						sx={{
 							imageRendering: "pixelated"
@@ -43,7 +44,7 @@ export default memo(function ServerCard({ server, index, length }: Props) {
 
 					<Flex flexDir={"column"} gap={1} overflow={"hidden"} w="100%">
 						<Flex w="100%" justifyContent={"space-between"}>
-							<Flex flexDir={"column"} gap={1} maxW={"70%"}>
+							<Flex flexDir={"column"} gap={1} maxW={"60%"}>
 								<Link to={`/${server.bedrock ? "bedrock/" : ""}${server.server}`} fontSize="lg" fontWeight="bold">
 									{server.server}{" "}
 									{server.owner_id && (
@@ -96,6 +97,8 @@ export default memo(function ServerCard({ server, index, length }: Props) {
 									base: "none",
 									md: "flex"
 								}}
+								alignItems={"flex-start"}
+								w="fit-content"
 							>
 								<Button as={Link} to={`/${server.server}`} variant={"solid"}>
 									View
@@ -118,8 +121,8 @@ export default memo(function ServerCard({ server, index, length }: Props) {
 						base: "flex",
 						md: "none"
 					}}
-					justifyContent={"flex-end"}
 					w="100%"
+					alignItems={"flex-start"}
 				>
 					<Button as={Link} to={`/${server.server}`} variant={"solid"}>
 						View

@@ -1,5 +1,6 @@
 import { useActionKey } from "@/hooks/useActionKey";
 import useUser from "@/hooks/useUser";
+import Link from "@/layout/global/Link";
 import config from "@/utils/config";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import {
@@ -199,9 +200,10 @@ export default memo(function ProfilePopover() {
 									bg="transparent"
 									fontWeight={500}
 									icon={<Icon as={button.icon} boxSize={5} />}
-									// command={actionKey + "+" + button.command}
 									commandSpacing={2}
-									onClick={() => navigate(button.path)}
+									// onClick={() => navigate(button.path)}
+									as={Link}
+									to={button.path}
 									_hover={{
 										bg: "alpha",
 										textDecor: "none"

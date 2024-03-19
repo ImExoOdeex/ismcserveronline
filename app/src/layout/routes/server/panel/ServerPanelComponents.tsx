@@ -259,6 +259,10 @@ export const ServerTag = memo(function ServerTag({
 							bg: "#563B9Fca"
 						}}
 						cursor={isDragging ? "grabbing" : "grab"}
+						_active={{
+							cursor: "grabbing",
+							scale: 0.9
+						}}
 						opacity={submitting.includes(tag) ? 0.5 : 1}
 					>
 						{tag}

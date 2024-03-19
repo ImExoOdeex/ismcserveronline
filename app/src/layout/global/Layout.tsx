@@ -1,4 +1,5 @@
 import { useProgressBar } from "@/hooks/useProgressBar";
+import Fonts from "@/layout/global/Fonts";
 import { Flex } from "@chakra-ui/react";
 import type { Transition } from "framer-motion";
 import { memo, useMemo, useState } from "react";
@@ -74,10 +75,12 @@ const Inside = memo(function Inside({
 				x: isMenuOpen ? "-80vw" : 0
 			}}
 			transition={mobileMenuTransition as Transition as any}
+			display={"flex"}
 			flexDir={"column"}
 			h="100%"
 			w="100%"
 		>
+			<Fonts />
 			<BackgroundUtils />
 
 			<Header isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
