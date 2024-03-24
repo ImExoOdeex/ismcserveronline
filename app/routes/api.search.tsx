@@ -72,14 +72,14 @@ export async function action({ request }: ActionFunctionArgs) {
 			AND: {
 				bedrock: isBedrock,
 				AND: {
-					// OR: [
-					// 	{
-					// 		language: locale === "en" ? null : locale
-					// 	},
-					// 	{
-					// 		language: locale
-					// 	}
-					// ],
+					OR: [
+						{
+							language: locale === "en" || locale === "us" ? "en" : locale
+						},
+						{
+							language: locale === "en" || locale === "us" ? null : locale
+						}
+					],
 					...(() => {
 						if (tags.length > 0) {
 							return {

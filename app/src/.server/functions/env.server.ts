@@ -27,6 +27,7 @@ const envs = [
 	"UPLOADS_URL",
 	"ENCRYPTION_KEY",
 	"TESTING_KEY",
+	"WS_URL",
 	// opitional
 	"DISABLE_REDIS_CACHE",
 	"REDIS_CACHE_LOGGING"

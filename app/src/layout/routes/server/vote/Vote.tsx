@@ -29,6 +29,7 @@ export default memo(function Vote() {
 			});
 		}
 	});
+
 	const initialSeconds = user?.prime ? 0 : 6;
 	const [secondsToVote, setSecondsToVote] = useState(initialSeconds);
 

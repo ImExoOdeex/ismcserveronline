@@ -22,11 +22,11 @@ export default function PopularServers() {
 
 			<VStack w="100%" spacing={5}>
 				<Text fontSize={"lg"} lineHeight={"175%"} fontWeight={600} textAlign={"center"} color={"textSec"}>
-					Explore over hunderts of available servers in our database with our{" "}
-					<Link variant={"link"} to="/popular-servers">
-						popular-servers
+					Explore over hunderts of available servers in our database on{" "}
+					<Link variant={"link"} to="/search">
+						Servers
 					</Link>{" "}
-					route! Our database contains the most played servers from around the world, ensuring that you'll find the most
+					page! Our database contains the most played servers from around the world, ensuring that you'll find the most
 					popular and exciting servers to join. Whether you're looking for a new community to join or a new challenge to
 					take on, our popular servers route has got you covered. So start exploring now and join in on the fun!
 				</Text>

@@ -11,7 +11,7 @@ interface Props {
 
 export default memo(function TopServers({ servers, promoted }: Props) {
 	return (
-		<Flex flexDir="column" gap={4} zIndex={1}>
+		<Flex flexDir="column" gap={2} zIndex={1}>
 			<Stack direction={{ base: "column", md: "row" }} spacing={2}>
 				{promoted.map((server, index) => {
 					return <PromotedServerCard key={index} promoted={server} index={0} length={1} />;

@@ -5,3 +5,5 @@ export function isAddress(address: string) {
 	const isValidDomain = address.match(/^(?:(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})?(:[0-9]{1,5})?$/);
 	return isValidAddress || isValidDomain;
 }
+
+export const notAllowedEndings = [".php", ".html", ".htm", ".js", ".css", ".json", ".xml", ".txt", ".md", ".log", ".map"];

@@ -1,1 +1,1 @@
-export { loader as action, loader } from "./api.auth.discord";
+export { action, action as loader } from "./api.auth.discord";

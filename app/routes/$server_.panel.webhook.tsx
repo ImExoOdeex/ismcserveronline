@@ -51,12 +51,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 				const path = new URL(request.url).pathname;
 				const serverAddress = params.server;
-				const isBedrock = path.split("/")[0] === "bedrock";
+				const bedrock = path.split("/")[1] === "bedrock";
 
 				const server = await db.server.findFirst({
 					where: {
 						server: serverAddress,
-						bedrock: isBedrock,
+						bedrock,
 						owner_id: user.id
 					}
 				});
@@ -86,12 +86,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
 		case "test": {
 			const path = new URL(request.url).pathname;
 			const serverAddress = params.server;
-			const isBedrock = path.split("/")[0] === "bedrock";
+			const bedrock = path.split("/")[1] === "bedrock";
 
 			const server = await db.server.findFirst({
 				where: {
 					server: serverAddress,
-					bedrock: isBedrock,
+					bedrock,
 					owner_id: user.id
 				}
 			});

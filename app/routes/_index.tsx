@@ -4,13 +4,17 @@ import { isAddress } from "@/.server/functions/validateServer";
 import serverConfig from "@/.server/serverConfig";
 import { getCookieWithoutDocument } from "@/functions/cookies";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import BotInfo from "@/layout/routes/index/BotInfo";
+import HowToUse from "@/layout/routes/index/HowToUse";
 import Main from "@/layout/routes/index/Main";
+import PopularServers from "@/layout/routes/index/PopularServers";
 import TopServers from "@/layout/routes/index/TopServers";
+import WARWF from "@/layout/routes/index/WARWF";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 import { Flex } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import dayjs from "dayjs";
-import { useState } from "react";
 import { typedjson } from "remix-typedjson";
 import { getClientLocales } from "remix-utils/locales/server";
 import type { SearchServer, SearchTag } from "~/routes/search";
@@ -151,8 +155,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 			cache.set(cacheServersKey, JSON.stringify(fetchedServers), cacheTTL),
 			cache.set(`tags`, JSON.stringify(fetchedTags), cacheTTL)
 		]);
-	} else {
-		console.log("cache");
 	}
 
 	// promoted-bedrock-locale-tags
@@ -163,8 +165,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	let randomPromoted: { Server: SearchServer; color: string; id: number }[] = cachePromotedServers || [];
 
 	if (!cachePromotedServers) {
-		console.log("no cache promoted");
-
 		const promotedCount = await db.promoted.count({
 			where: {
 				Server: {
@@ -214,42 +214,52 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		})) as any;
 
 		await cache.set(promotedServersCacheKey, JSON.stringify(randomPromoted), serverConfig.cache.promotedServers);
-	} else {
-		console.log("cache promoted");
 	}
 
-	return typedjson({ bedrock, query, servers, tags, randomPromoted, count: 0 });
+	return typedjson({ bedrock, query, servers, tags, randomPromoted });
 }
 
 export default function Index() {
-	const { bedrock, query, count, servers, randomPromoted, tags } = useAnimationLoaderData<typeof loader>();
-
-	const [bedrockChecked, setBedrockChecked] = useState<boolean>(bedrock ? bedrock : false);
-	const [serverValue, setServerValue] = useState<string>("");
+	const { servers, randomPromoted, tags } = useAnimationLoaderData<typeof loader>();
 
 	return (
-		<Flex flexDir={"column"} maxW="1400px" mx="auto" w="100%" mt={"75px"} mb={10} px="4" gap={10}>
-			<Main
-				bedrockChecked={bedrockChecked}
-				query={query}
-				serverValue={serverValue}
-				setBedrockChecked={setBedrockChecked}
-				setServerValue={setServerValue}
-				count={count}
-				tags={tags}
-			/>
+		<Flex flexDir={"column"} w="100%" mt={20} mb={10} gap={20}>
+			<Flex
+				flexDir={"column"}
+				maxW="1400px"
+				mx="auto"
+				w="100%"
+				gap={20}
+				px={4}
+				minH={"calc(100vh - (70px + 80px + 80px))"}
+				pos="relative"
+				alignItems={"center"}
+				justifyContent={"center"}
+				pb={20}
+			>
+				<Main tags={tags} />
 
-			<TopServers servers={servers} promoted={randomPromoted} />
+				<TopServers servers={servers} promoted={randomPromoted} />
 
-			{/* <SampleServers sampleServers={sampleServers} setServerValue={setServerValue} setBedrock={setBedrockChecked} />
-			<Divider />
+				<ChevronDownIcon
+					boxSize={20}
+					color="brand.900"
+					pos="absolute"
+					bottom={-20}
+					left="50%"
+					transform="translateX(-50%)"
+				/>
+			</Flex>
+
 			<BotInfo />
-			<Divider />
-			<VStack spacing={"28"} w="100%" align={"start"}>
-				<HowToUse />
-				<PopularServers />
-				<WARWF />
-			</VStack> */}
+
+			<Flex flexDir={"column"} maxW="1400px" mx="auto" w="100%" gap={20} px={4}>
+				<Flex flexDir={"column"} gap={"28"} w="100%">
+					<HowToUse />
+					<PopularServers />
+					<WARWF />
+				</Flex>
+			</Flex>
 		</Flex>
 	);
 }

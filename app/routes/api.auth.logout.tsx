@@ -1,10 +1,8 @@
 import { authenticator } from "@/.server/auth/authenticator";
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { ActionFunctionArgs } from "@remix-run/node";
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
 	return await authenticator.logout(request, {
 		redirectTo: "/"
 	});
 }
-
-export { loader as action };

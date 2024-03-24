@@ -5,14 +5,10 @@ import type { LoaderFunctionArgs } from "@remix-run/node";
 // get to this route
 export async function loader({ request }: LoaderFunctionArgs) {
 	const session = await getSession(request.headers.get("Cookie"));
-	const redirectURL = session.get("redirect");
-	const guildID = session.get("guild");
+	const redirect = session.get("redirect") ?? "/dashboard";
 
 	return await authenticator.authenticate(request, {
-		successRedirect: `/dashboard?guild=${guildID}&redirect=${redirectURL}`,
-		failureRedirect: "/login?message=fail"
+		successRedirect: redirect,
+		throwOnError: true
 	});
 }
-
-// post to this route
-export { loader as action } from "./api.auth.discord";

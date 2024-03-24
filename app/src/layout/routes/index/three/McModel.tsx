@@ -1,3 +1,4 @@
+import { modelConfig } from "@/layout/routes/index/Main";
 import { ModelContainer, ModelLoader } from "@/layout/routes/index/three/Containters";
 import { loadGLTFModel } from "@/layout/routes/index/three/model";
 import config from "@/utils/config";
@@ -8,12 +9,6 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 function easeOutCirc(x: number) {
 	return Math.sqrt(1 - Math.pow(x - 1, 4));
 }
-
-export const modelConfig = {
-	model: "blahaj.glb",
-	width: 1000,
-	height: 1000
-};
 
 export default function McModel() {
 	const refContainer = useRef<HTMLDivElement>();

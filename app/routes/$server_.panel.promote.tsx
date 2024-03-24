@@ -134,7 +134,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 	const adCredits = user.ad_credits;
 
 	const url = new URL(request.url);
-	const bedrock = url.pathname.split("/")[0] === "bedrock";
+	const bedrock = url.pathname.split("/")[1] === "bedrock";
 
 	const server = await db.server.findFirst({
 		where: {

@@ -157,21 +157,19 @@ export default function Tos() {
 				</VStack>
 
 				<VStack w="100%" spacing={5} align={"start"} fontSize={"sm"}>
-					<ListItemTitle>Adding Server Terms</ListItemTitle>
+					<ListItemTitle>Verifying servers Terms</ListItemTitle>
 
 					<VStack align={"start"}>
-						<Text>By adding server you agree to the following terms. If you don't agree, don't add your server.</Text>
+						<Text>You can verify your server if it's yours server only or have permission from the owner.</Text>
 
-						<Text>- You are not allowed to add servers that are not yours.</Text>
-						<Text>- Your server should be online and contain favicon.</Text>
-						<Text>- Your server should not contain any content that is not allowed by Mojang.</Text>
-						<Text>- Make sure you add valid server, because we don't refund any payments.</Text>
-						<Text>- Your server will be added to the list after the payment is successful.</Text>
-						<Text>- We reserve the right to remove your server from the list without any reason.</Text>
-						<Text>- Your server will be removed if it will be offline for so long.</Text>
+						<Text>- Verify only servers you have permission from.</Text>
+						<Text>- Verification allows you to customizing server's tags, description and all other stuff.</Text>
+						<Text>- You can make up to 50 verifications per account.</Text>
+						<Text>- Verification is required to buy server prime subscription.</Text>
+						<Text>- We reserve the right to remove your server verification without any reason.</Text>
 						<Text>
-							- You agree for placing your server on this website's homepage for the time you bought. If you want to
-							remove your server from the homepage before the end of end date, contact us on discord.
+							- After you've verified your server, you can generate a server token. Do not ever share it to anyone
+							else, since it's your private token to use in our services to identify you.
 						</Text>
 					</VStack>
 				</VStack>
@@ -181,10 +179,14 @@ export default function Tos() {
 
 					<VStack align={"start"}>
 						<Text>
-							Prime subscription is a subscription plan that costs {config.primePrice} usd and adds some features to
-							user account.
+							Prime subscription is a subscription plan that can be bought by user for user or their verified
+							server. Prime has plenty of features to use.
 						</Text>
 
+						<Text>
+							- There are 2 prime subscriptions. "User" and "Server", each has different features. (see{" "}
+							<Link to="/prime">Prime page</Link>)
+						</Text>
 						<Text>- Subscription renews automatically every month. You can cancel it anytime in dashboard.</Text>
 						<Text>
 							- If you cancel your subscription, you will still have prime features until the end of the month you
@@ -192,12 +194,15 @@ export default function Tos() {
 						</Text>
 						<Text>- We don't refund any payments.</Text>
 						<Text>- We reserve the right to remove your prime subscription without any reason.</Text>
-						<Text>- We reserve the right to change prime subscription price at any time.</Text>
 						<Text>- We reserve the right to change prime subscription features at any time.</Text>
 						<Text>- Prime subscription helps us to keep this website alive. Thanks for supporting us!</Text>
 						<Text>
 							- If you have any questions about prime subscription or need any help related to it, feel free to
-							contact us on discord.
+							contact us on our{" "}
+							<ChakraLink variant={"link"} href={config.discordServerInvite}>
+								discord server
+							</ChakraLink>{" "}
+							or via email on support@ismcserver.online.
 						</Text>
 					</VStack>
 				</VStack>

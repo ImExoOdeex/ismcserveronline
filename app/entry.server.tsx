@@ -27,6 +27,7 @@ export default async function handleRequest(
 
 		const cache = createEmotionCache(); // basically CacheProvider is there, cause custom cache key. it works without it tho
 
+		// ~<50ms
 		const { pipe, abort } = renderToPipeableStream(
 			<CacheProvider value={cache}>
 				<RemixServer context={remixContext} url={request.url} abortDelay={ABORT_DELAY} />
@@ -65,6 +66,21 @@ export default async function handleRequest(
 			}
 		);
 
+		// const str = renderToString( 41.64ms
+		// 	<CacheProvider value={cache}>
+		// 		<RemixServer context={remixContext} url={request.url} abortDelay={ABORT_DELAY} />
+		// 	</CacheProvider>
+		// );
+		//
+		// responseHeaders.set("Content-Type", "text/html");
+		// responseHeaders.set("x-response-time", Date.now() - Number(loadContext.start) + "ms");
+		//
+		// resolve(
+		// 	new Response("<!DOCTYPE html>" + str, {
+		// 		headers: responseHeaders,
+		// 		status: responseStatusCode
+		// 	})
+		// );
 		setTimeout(abort, ABORT_DELAY);
 	});
 }

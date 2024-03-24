@@ -47,10 +47,6 @@ export default memo(function ChecksTable({ server, serverId, checks, setChecks, 
 
 	// fetcher to fetch data
 	const fetcher = useDebouncedFetcherCallback<typeof action>((data) => {
-		if (data && data.checks.length === 0) {
-			return;
-		}
-
 		if (data.checks) {
 			setChecks((prev) => [...(prev || []), ...data.checks]);
 			setSkip((skip) => skip + 20);

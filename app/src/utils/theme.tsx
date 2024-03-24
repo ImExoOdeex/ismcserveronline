@@ -20,17 +20,20 @@ const themeConfig = {
 	disableTransitionOnChange: true
 } satisfies ThemeConfig;
 
+const brand = "#5954a4";
+const lighterBrand = "#998bdd";
+
 const colors = {
 	brand: {
-		100: "#e8e4f3",
-		200: "#563B9F",
-		300: "#563B9F",
-		400: "#563B9F",
-		500: "#563B9F",
-		600: "#563B9F",
-		700: "#563B9F",
-		800: "#563B9F",
-		900: "#563B9F"
+		100: lighterBrand,
+		200: brand,
+		300: brand,
+		400: brand,
+		500: brand,
+		600: brand,
+		700: brand,
+		800: brand,
+		900: brand
 	},
 	bg: {
 		100: "#ffffff",
@@ -50,6 +53,7 @@ const {
 	Badge,
 	Button,
 	Tag,
+	Progress,
 	Code,
 	Drawer,
 	Divider,
@@ -292,6 +296,7 @@ export default function useTheme() {
 				components: {
 					Badge,
 					Code,
+					Progress,
 					FormLabel,
 					Heading,
 					Drawer,
@@ -362,10 +367,7 @@ export default function useTheme() {
 								bg: "brand.900",
 								color: "whiteAlpha.900",
 								_hover: {
-									bg: "#563B9Fca"
-								},
-								_active: {
-									bg: "#563B9Fe6"
+									bg: "#6943b5"
 								}
 							},
 							sec: {

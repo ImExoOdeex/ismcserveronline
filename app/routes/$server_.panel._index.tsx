@@ -43,7 +43,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 	invariant(user, "User is not logged in");
 
 	const url = new URL(request.url);
-	const bedrock = url.pathname.split("/")[0] === "bedrock";
+	const bedrock = url.pathname.split("/")[1] === "bedrock";
 	const server = await db.server.findFirst({
 		where: {
 			server: params.server?.toLowerCase(),
@@ -158,7 +158,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 	invariant(user, "User is not logged in");
 
 	const url = new URL(request.url);
-	const bedrock = url.pathname.split("/")[0] === "bedrock";
+	const bedrock = url.pathname.split("/")[1] === "bedrock";
 
 	const server = await db.server.findFirst({
 		where: {

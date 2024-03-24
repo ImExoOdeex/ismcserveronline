@@ -1,10 +1,11 @@
 import { authenticator } from "@/.server/auth/authenticator";
 import { Info, sendCommentWebhook, sendDeleteCommentWebhook, sendReportWebhook } from "@/.server/auth/webhooks";
 import { db } from "@/.server/db/db";
-import { getUser, getUserId } from "@/.server/db/models/user";
+import { getUser } from "@/.server/db/models/user";
 import { getServerInfo } from "@/.server/functions/api.server";
 import { requireEnv } from "@/.server/functions/env.server";
 import { cachePrefetchHeaders } from "@/.server/functions/fetchHelpers.server";
+import { notAllowedEndings } from "@/.server/functions/validateServer";
 import type { MinecraftImage } from "@/.server/minecraftImages";
 import { getRandomMinecarftImage } from "@/.server/minecraftImages";
 import { getCookieWithoutDocument } from "@/functions/cookies";
@@ -54,6 +55,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
 	const form = await request.formData();
 	const action = form.get("action");
 
+	const url = new URL(request.url);
+	const bedrock = url.pathname.split("/")[1] === "bedrock";
+
 	switch (action) {
 		case "query":
 			throw redirect(`?query`);
@@ -64,7 +68,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 			const serverId = (await db.server.findFirst({
 				where: {
 					server: server,
-					bedrock: false
+					bedrock
 				}
 			}))!.id;
 
@@ -78,8 +82,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 			try {
 				if (!content) throw new Error("Content is not definied!");
-				if (content.trim().length < 5) throw new Error("Content is too short!");
-				if (content.trim().length > 250) throw new Error("Content is too long!");
+				if (content.trim().length < 2) throw new Error("Content is too short!");
+				if (content.trim().length > 350) throw new Error("Content is too long!");
 
 				const hasCommented = await db.comment.findFirst({
 					where: {
@@ -138,7 +142,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 			const serverId = (await db.server.findFirst({
 				where: {
 					server: server,
-					bedrock: false
+					bedrock
 				}
 			}))!.id;
 
@@ -197,7 +201,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 			const serverId = (await db.server.findFirst({
 				where: {
 					server: server,
-					bedrock: false
+					bedrock
 				}
 			}))!.id;
 
@@ -243,7 +247,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 			const serverId = (await db.server.findFirst({
 				where: {
 					server: server,
-					bedrock: false
+					bedrock
 				}
 			}))!.id;
 
@@ -282,7 +286,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 			const serverId = (await db.server.findFirst({
 				where: {
 					server: server,
-					bedrock: false
+					bedrock
 				}
 			}))!.id;
 
@@ -327,11 +331,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
-	const start = Date.now();
-
 	const server = params.server?.toString().toLowerCase().trim();
 
-	const notAllowedEndings = [".php", ".html", ".htm", ".js", ".css", ".json", ".xml", ".txt", ".md", ".log", ".map"];
 	if (
 		!server?.includes(".") ||
 		server?.length > 35 ||
@@ -346,68 +347,74 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
 	const url = new URL(request.url);
 	const query = url.searchParams.get("query") === "";
-	const pathStrArr = url.pathname.split("/");
-	const bedrock = pathStrArr.length === 2 && pathStrArr[0] === "bedrock";
 
-	let foundServer = (await db.server
-		.findFirst({
-			where: {
-				server,
-				bedrock
-			},
-			select: {
-				id: true,
-				server: true,
-				bedrock: true,
-				online: true,
-				players: true,
-				host: true,
-				language: true,
-				port: true,
-				protocol: true,
-				motd: true,
-				version: true,
-				banner: true,
-				background: true,
-				Tags: true,
-				software: true,
-				favicon: true,
-				ping: true,
-				edition: true,
-				gamemode: true,
-				guid: true,
-				ip: true,
-				plugins: true,
-				owner_id: true,
-				map: true
-			}
-		})
-		.catch(() => null)) as unknown as AnyServerModel | null;
+	const bedrock = url.pathname.split("/")[1] === "bedrock";
+
+	const port = server?.split(":")[1];
+	// if port is 25565 redirect to server without port.
+	if (port && port === (bedrock ? "19132" : "25565")) {
+		throw redirect(`/${bedrock ? "bedrock/" : ""}${server.split(":")[0]}`);
+	}
+
+	let foundServer = (await db.server.findFirst({
+		where: {
+			server,
+			bedrock
+		},
+		select: {
+			id: true,
+			server: true,
+			bedrock: true,
+			online: true,
+			players: true,
+			host: true,
+			language: true,
+			port: true,
+			protocol: true,
+			motd: true,
+			version: true,
+			banner: true,
+			background: true,
+			Tags: true,
+			software: true,
+			favicon: true,
+			ping: true,
+			edition: true,
+			gamemode: true,
+			guid: true,
+			ip: true,
+			plugins: true,
+			owner_id: true,
+			map: true
+		}
+	})) as unknown as AnyServerModel | null;
 
 	const comments = new Promise((r) => {
 		// await new Promise((re) => setTimeout(re, 1000));
 		r(
-			db.comment.findMany({
-				where: {
-					server_id: foundServer?.id
-				},
-				select: {
-					id: true,
-					content: true,
-					created_at: true,
-					updated_at: true,
-					user: {
+			foundServer
+				? db.comment.findMany({
+						where: {
+							server_id: foundServer.id
+						},
 						select: {
-							nick: true,
-							photo: true,
-							id: true
+							id: true,
+							content: true,
+							created_at: true,
+							updated_at: true,
+							user: {
+								select: {
+									nick: true,
+									photo: true,
+									id: true
+								}
+							}
+						},
+						orderBy: {
+							created_at: "desc"
 						}
-					}
-				},
-				orderBy: {
-					created_at: "desc"
-				}
-			})
+				  })
+				: []
 		);
 	}) as Promise<any[]>;
 
@@ -415,8 +422,6 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 		? await getServerInfo(server, query, bedrock)
 		: getServerInfo(server, query, bedrock).then(async (res) => {
 				// using Prisma.DbNull, to null out JSON fields, since null is not allowed in JSON fields.
-				console.log("PROMISE GET SERVER INOF EHHEHE");
-
 				await db.server.update({
 					where: {
 						id: foundServer!.id
@@ -459,16 +464,29 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 					)?.id;
 					if (!token_id) throw new Error("There's no valid API token!");
 
-					await db.check.create({
-						data: {
-							server_id: serverId,
-							online: res.online,
-							players: res.players.online,
-							source: "WEB",
-							client_ip: IP,
-							token_id: token_id
+					// dont create new check if there's already few checks in last 5 minutes from this IP.
+					const checks = await db.check.findMany({
+						where: {
+							server_id: foundServer!.id,
+							checked_at: {
+								gte: dayjs().subtract(5, "minutes").toDate()
+							},
+							client_ip: IP
 						}
 					});
+
+					if (checks.length < 5) {
+						await db.check.create({
+							data: {
+								server_id: serverId,
+								online: res.online,
+								players: res.players.online,
+								source: "WEB",
+								client_ip: IP,
+								token_id: token_id
+							}
+						});
+					}
 				}
 
 				return res;
@@ -482,7 +500,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 		foundServer = (await db.server.create({
 			data: {
 				server,
-				bedrock: false,
+				bedrock,
 
 				online: data.online,
 				players: data.players,
@@ -512,7 +530,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
 	const serverId = foundServer.id;
 
-	const isAuth = await authenticator.isAuthenticated(request);
+	const user = await authenticator.isAuthenticated(request);
 	const [votes, isSaved] = await Promise.all([
 		db.vote.count({
 			where: {
@@ -522,35 +540,12 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 				}
 			}
 		}),
-		// db.check.findMany({
-		// 	where: {
-		// 		server_id: serverId
-		// 	},
-		// 	select: {
-		// 		id: true,
-		// 		online: true,
-		// 		players: true,
-		// 		source: true,
-		// 		Server: {
-		// 			select: {
-		// 				server: true,
-		// 				bedrock: true
-		// 			}
-		// 		},
-		// 		checked_at: true
-		// 	},
-		// 	orderBy: {
-		// 		id: "desc"
-		// 	},
-		// 	take: 20,
-		// 	skip: Number(c) || 0
-		// }),
-		isAuth
+		user
 			? db.savedServer
 					.findFirst({
 						where: {
 							server_id: serverId,
-							user_id: (await getUserId(request))!
+							user_id: user.id
 						}
 					})
 					.then((s) => (s ? true : false))
@@ -564,8 +559,6 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 				credits: ""
 		  } as MinecraftImage)
 		: getRandomMinecarftImage();
-
-	console.log("TIME", Date.now() - start);
 
 	return typeddefer(
 		{ server, data, query, isSaved, foundServer, bedrock, serverId, image, votes, comments },
@@ -665,8 +658,6 @@ export default function $server() {
 
 	return (
 		<Flex gap={5} flexDir={"column"} maxW="1000px" mx="auto" w="100%" mt={"50px"} px={4} mb={5}>
-			{/* <Ad type={adType.small} width={"968px"} /> */}
-
 			{shouldPregenerateStyles && (
 				<VisuallyHidden>
 					{/* pregenerate styles, cause emotion sucks */}
@@ -735,6 +726,7 @@ export default function $server() {
 				bedrock={bedrock}
 				promiseData={promiseData instanceof Promise ? promiseData : Promise.resolve(promiseData)}
 				isOwner={isOwner}
+				verified={!!data.owner_id}
 			/>
 
 			<Suspense fallback={<ServerInfo server={server} data={data} bedrock={bedrock} query={query} />}>
@@ -769,7 +761,13 @@ export default function $server() {
 				<Suspense fallback={<CommentsSkeleton />}>
 					<Await resolve={commentsPromise}>
 						{(freshComments) => (
-							<Comments freshComments={freshComments} comments={comments} setComments={setComments} />
+							<Comments
+								freshComments={freshComments}
+								comments={comments}
+								setComments={setComments}
+								bedrock={bedrock}
+								server={server}
+							/>
 						)}
 					</Await>
 				</Suspense>

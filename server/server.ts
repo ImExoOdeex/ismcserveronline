@@ -1,4 +1,6 @@
-import { GetLoadContextFunction, createRequestHandler } from "@remix-run/express";
+import { PrismaClient } from "@prisma/client";
+import type { GetLoadContextFunction } from "@remix-run/express";
+import { createRequestHandler } from "@remix-run/express";
 import { installGlobals } from "@remix-run/node";
 import compression from "compression";
 import express from "express";
@@ -6,7 +8,7 @@ import morgan from "morgan";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as url from "node:url";
-import { startWsServer } from "server/wsserver";
+import { WsServer } from "server/wsserver";
 import sourceMapSupport from "source-map-support";
 import pack from "../package.json";
 
@@ -14,7 +16,7 @@ import pack from "../package.json";
 	sourceMapSupport.install();
 	installGlobals();
 
-	startWsServer();
+	new WsServer(new PrismaClient());
 
 	const BUILD_PATH = path.resolve("build/server/index.js");
 	// const VERSION_PATH = path.resolve("version.txt");

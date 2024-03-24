@@ -1,6 +1,7 @@
 import { getCookie, getCookieWithoutDocument } from "@/functions/cookies";
 import useRootData from "@/hooks/useRootData";
 import { ClientStyleContext } from "@/utils/ClientContext";
+import config from "@/utils/config";
 import { Box, Link as ChakraLink, Flex, HStack, Stack, Text, Tooltip, VStack } from "@chakra-ui/react";
 import { useCallback, useContext, useMemo, useState } from "react";
 import Link from "./Link";
@@ -32,56 +33,99 @@ export default function Footer() {
 	}, []);
 
 	return (
-		<Box h={"auto"} as="footer" mt={10}>
+		<Flex
+			flexDir={{
+				base: "column",
+				md: "row"
+			}}
+			h={"auto"}
+			as="footer"
+			mt={10}
+			w="100%"
+			maxW="1200px"
+			py={10}
+			px={4}
+			mx="auto"
+			justifyContent={"space-between"}
+			alignItems={{
+				base: "center",
+				md: "start"
+			}}
+			gap={10}
+		>
+			<Box>
+				<VStack align={{ base: "center", md: "start" }}>
+					<Flex flexDir={"row"}>
+						<Text fontWeight={"bold"} fontSize="18px" fontStyle="">
+							ismcserver
+							<Box as="span" color={"green"}>
+								.online
+							</Box>
+						</Text>
+						<Text fontSize={"xs"} fontWeight={600} alignSelf={"end"} mb={1} ml={1.5}>
+							{version}
+						</Text>
+					</Flex>
+					<Text color={"textSec"} fontWeight="600">
+						This site is{" "}
+						<ChakraLink
+							href="https://github.com/ImExoOdeex/ismcserveronline"
+							target="_blank"
+							textDecor={"underline"}
+							variant={"link"}
+						>
+							open source
+						</ChakraLink>{" "}
+					</Text>
+					<Text color={"textSec"} fontWeight={600}>
+						Made with {`<3`} by{" "}
+						<ChakraLink
+							target="_blank"
+							textDecor={"underline"}
+							variant={"link"}
+							href="https://github.com/ImExoOdeex/"
+						>
+							imexoodeex
+						</ChakraLink>
+					</Text>
+				</VStack>
+			</Box>
+
 			<Stack
-				py={{ base: 10, md: "unset" }}
-				rounded={"3xl"}
-				mb={10}
-				mt={15}
-				spacing={[7, 10, 20]}
-				direction={{ base: "column", md: "row" }}
-				justifyContent={"center"}
-				maxW="800px"
+				direction={{
+					base: "column",
+					md: "row"
+				}}
+				spacing={{
+					base: 10,
+					md: 20
+				}}
 				alignItems={{ base: "center", md: "start" }}
-				mx="auto"
 			>
-				<Box>
-					<VStack align={{ base: "center", md: "start" }}>
-						<Flex flexDir={"row"}>
-							<Text fontWeight={"bold"} fontSize="18px" fontStyle="">
-								ismcserver
-								<Box as="span" color={"green"}>
-									.online
-								</Box>
-							</Text>
-							<Text fontSize={"xs"} fontWeight={600} alignSelf={"end"} mb={1} ml={1.5}>
-								{version}
-							</Text>
-						</Flex>
-						<Text color={"textSec"} fontWeight="600">
-							This site is{" "}
-							<ChakraLink
-								href="https://github.com/ImExoOdeex/ismcserveronline"
-								target="_blank"
-								textDecor={"underline"}
-								variant={"link"}
-							>
-								open source
-							</ChakraLink>{" "}
-						</Text>
-						<Text color={"textSec"} fontWeight={600}>
-							Made with {`<3`} by{" "}
-							<ChakraLink
-								target="_blank"
-								textDecor={"underline"}
-								variant={"link"}
-								href="https://github.com/ImExoOdeex/"
-							>
-								imexoodeex
-							</ChakraLink>
-						</Text>
-					</VStack>
-				</Box>
+				<VStack align={"start"} fontWeight="600">
+					<Text fontWeight="700">Media</Text>
+					<ChakraLink
+						href={config.discordServerInvite}
+						color={"textSec"}
+						tabIndex={0}
+						transition={"color .2s"}
+						_hover={{ color: "text" }}
+						cursor="pointer"
+						isExternal
+					>
+						Discord server
+					</ChakraLink>
+					<ChakraLink
+						href={config.twitter}
+						color={"textSec"}
+						transition={"color .2s"}
+						_hover={{ color: "text" }}
+						cursor="pointer"
+						isExternal
+					>
+						Twitter / X
+					</ChakraLink>
+				</VStack>
 
 				<Stack direction={"row"} spacing={{ base: "70px", md: 20 }}>
 					<VStack align={"start"} fontWeight="600">
@@ -142,6 +186,6 @@ export default function Footer() {
 					</VStack>
 				</Stack>
 			</Stack>
-		</Box>
+		</Flex>
 	);
 }

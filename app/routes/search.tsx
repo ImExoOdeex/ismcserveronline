@@ -14,7 +14,7 @@ import SearchForm from "@/layout/routes/search/SearchForm";
 import ServerCard from "@/layout/routes/search/ServerCard";
 import SideFilters from "@/layout/routes/search/SideFilters";
 import type { ServerModel } from "@/types/minecraftServer";
-import { Button, Divider, Flex, HStack, Heading, Spinner, Tag } from "@chakra-ui/react";
+import { Button, Divider, Flex, Heading, HStack, Spinner, Tag } from "@chakra-ui/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import type { MetaArgs, MetaFunction, ShouldRevalidateFunctionArgs } from "@remix-run/react";
 import { useSearchParams } from "@remix-run/react";
@@ -103,8 +103,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	let tags: SearchTag[] = cacheTags || [];
 
 	if (!cacheServers || !cacheTags) {
-		console.log("no cache");
-
 		const promises = [
 			db.tag.findMany({
 				take: 10,
@@ -344,6 +342,12 @@ export default function Search() {
 	const [skip, setSkip] = useState(10);
 	const [ended, setEnded] = useState(false);
 
+	// reset the infinite scroller when the search params change
+	useInsideEffect(() => {
+		setSkip(10);
+		setEnded(false);
+	}, [searchParams.toString()]);
+
 	// fetcher to fetch data
 	const fetcher = useFetcherCallback<typeof apiSearchAction>((data) => {
 		if (data.servers) {
@@ -358,8 +362,6 @@ export default function Search() {
 	});
 
 	const loadNewServers = useCallback(() => {
-		console.log('searchParams.getAll("tag")', searchParams.getAll("tag"));
-
 		fetcher.submit(
 			{
 				version,
@@ -367,7 +369,7 @@ export default function Search() {
 				q: searchParams.get("q") ?? "",
 				sort: searchParams.get("sort") ?? "hot",
 				skip,
-				tags: JSON.stringify(searchParams.getAll("tags"))
+				tags: JSON.stringify(searchParams.getAll("tag"))
 			},
 			{
 				action: `/api/search`,
@@ -375,7 +377,7 @@ export default function Search() {
 			}
 		);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [fetcher, skip]);
+	}, [fetcher, skip, version, locale, tags, searchParams.toString()]);
 
 	return (
 		<Flex flexDir={"column"} maxW="1200px" mx="auto" w="100%" mt={"75px"} mb={10} px="4" gap={10}>
@@ -386,9 +388,10 @@ export default function Search() {
 
 				<SearchForm />
 
-				<HStack>
+				<HStack overflow={"auto"}>
 					{tags.map((tag) => (
 						<Tag
+							minW={"fit-content"}
 							size={"lg"}
 							onClick={() => {
 								setSearchParams((prev) => {

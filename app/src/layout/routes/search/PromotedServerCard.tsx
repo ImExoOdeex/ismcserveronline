@@ -29,6 +29,10 @@ export default memo(function PromotedServerCard({
 		return Color(color).alpha(0.1).string();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
+	const bgColorHover = useMemo(() => {
+		return Color(color).alpha(0.2).string();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	const ref = useRef<HTMLDivElement>(null);
 	const isInView = useInView(ref, { once: true });
@@ -47,7 +51,17 @@ export default memo(function PromotedServerCard({
 	const buttons = useMemo(() => {
 		return (
 			<>
-				<Button as={Link} to={`/${server.server}`} variant={"solid"} bg={bgColor} onClick={handleClick}>
+				<Button
+					as={Link}
+					to={`/${server.server}`}
+					variant={"solid"}
+					bg={bgColor}
+					onClick={handleClick}
+					_hover={{
+						bg: bgColorHover,
+						textDecoration: "none"
+					}}
+				>
 					View
 				</Button>
 				<Button
@@ -57,6 +71,10 @@ export default memo(function PromotedServerCard({
 					leftIcon={<Icon as={FaChevronUp} />}
 					bg={bgColor}
 					onClick={handleClick}
+					_hover={{
+						bg: bgColorHover,
+						textDecoration: "none"
+					}}
 				>
 					Vote ({server._count.Vote})
 				</Button>
@@ -140,10 +158,6 @@ export default memo(function PromotedServerCard({
 										Promoted
 									</Tag>
 								</HStack>
-
-								<Text fontSize={"sm"} color={"textSec"} noOfLines={2}>
-									{server.description}
-								</Text>
 							</Flex>
 
 							{!defaultWrap && (
@@ -158,6 +172,9 @@ export default memo(function PromotedServerCard({
 								</HStack>
 							)}
 						</Flex>
+						<Text fontSize={"sm"} color={"textSec"} noOfLines={2}>
+							{server.description}
+						</Text>
 					</Flex>
 				</Flex>
 

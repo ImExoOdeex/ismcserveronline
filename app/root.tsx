@@ -21,8 +21,7 @@ import { Document } from "./document";
 // ----------------------------- META -----------------------------
 
 export function meta() {
-	const desc =
-		"Check Minecraft server status and data by real-time. Supports Status, Legacy & Query protocols with no cached results.";
+	const desc = "#1 Minecraft server list & status checker. Vote and Check any Minecraft server status in real-time.";
 
 	return [
 		{
@@ -77,7 +76,7 @@ export function meta() {
 		{
 			name: "keywords",
 			content:
-				"Minecraft server check, Server status check, Minecraft server status, Online server status, Minecraft server monitor, Server checker tool, Minecraft server checker, Real-time server status, Minecraft server status checker, Server uptime checker, Minecraft server monitor tool, Minecraft server status monitor, Real-time server monitoring, Server availability checker, Minecraft server uptime checker"
+				"Minecraft server status, Minecraft server checker, Real-time server status, Minecraft server list, Best Minecraft server list, Minecraft best servers, Minecraft server data, Minecraft server info, Minecraft top server list"
 		},
 		{
 			name: "viewport",
@@ -112,14 +111,6 @@ export function meta() {
 			name: "msapplication-TileColor",
 			content: "#563B9F"
 		},
-		{
-			name: "msapplication-TileImage",
-			content: "/mstile-144x144.png"
-		},
-		{
-			name: "msapplication-config",
-			content: "/browserconfig.xml"
-		},
 
 		// twitter
 		{
@@ -128,11 +119,11 @@ export function meta() {
 		},
 		{
 			name: "twitter:site",
-			content: "@imexoodeex"
+			content: "@imcserveronline"
 		},
 		{
 			name: "twitter:creator",
-			content: "@imexoodeex"
+			content: "@imcserveronline"
 		},
 		{
 			name: "twitter:title",
@@ -161,11 +152,6 @@ export function meta() {
 
 export function links() {
 	return [
-		// { rel: "preconnect", href: "https://fonts.googleapis.com" },
-		// {
-		// 	rel: "stylesheet",
-		// 	href: "https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=block"
-		// },
 		{
 			rel: "preconnect",
 			href: "https://fonts.gstatic.com",
@@ -184,7 +170,6 @@ export function links() {
 			href: "/favicon.ico",
 			sizes: "20x20"
 		},
-		// manifest
 		{
 			rel: "manifest",
 			href: "/manifest.json"
@@ -273,25 +258,9 @@ function InsideGlobal() {
 // ----------------------------- LOADER -----------------------------
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
-	const url = new URL(request.url);
-	const term = url.searchParams.get(requireEnv("NO_ADS_PARAM_NAME"));
-
-	const shouldRedirect: boolean = term === requireEnv("NO_ADS_PARAM_VALUE");
-	if (shouldRedirect) {
-		throw redirect(url.pathname, {
-			headers: {
-				"Set-Cookie": `no_ads=${requireEnv("NO_ADS_PARAM_VALUE")}; Path=/; Max-Age=31536000;`
-			}
-		});
-	}
-
 	const user = await getUser(request);
 
 	const isBot = isbot(request.headers.get("user-agent"));
-	const showAds =
-		user?.everPurchased || isBot
-			? false
-			: getCookieWithoutDocument("no_ads", request.headers.get("cookie") ?? "") !== requireEnv("NO_ADS_PARAM_VALUE");
 	// ^^^ code for no ads up there uwu ^^^
 
 	const start = Number(context.start ?? Date.now());
@@ -299,7 +268,6 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
 	return typedjson({
 		cookies: request.headers.get("cookie") ?? "",
-		showAds,
 		user,
 		dashUrl: requireEnv("REDIRECT_URL"),
 		isBot,

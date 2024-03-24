@@ -2,7 +2,6 @@ import { useLocation } from "@remix-run/react";
 import React, { createContext, useCallback, useEffect, useState } from "react";
 import { useTypedRouteLoaderData } from "remix-typedjson";
 import type { loader } from "~/routes/$server";
-import { useAdBlock } from "../hooks/useAdBlock";
 import useUser from "../hooks/useUser";
 
 interface Props {
@@ -14,7 +13,6 @@ interface ContextType {
 	displayLogoInBg: boolean;
 	displayServerBackground: boolean;
 	gradientColor: string;
-	hasAdblock: boolean;
 	updateData: (key: "displayGradient" | "gradientColor" | "displayLogoInBg", value: any) => void;
 }
 
@@ -28,11 +26,10 @@ export function GlobalContext({ children }: Props) {
 		if (loaderData?.foundServer.online === true || loaderData?.foundServer.online === false) {
 			return loaderData.foundServer.online ? "green" : "red";
 		}
-		return path === "/api" ? "green.500" : path.includes("/popular-servers") ? "gold" : "brand.900";
+		return path === "/api" ? "green.500" : "brand.900";
 	}, [loaderData?.foundServer, path]);
 
 	const user = useUser();
-	const hasAdblock = useAdBlock();
 
 	const updateData = useCallback((key: "displayGradient" | "gradientColor" | "displayLogoInBg", value: any) => {
 		setData((prev) => ({ ...prev, [key]: value }));
@@ -55,8 +52,7 @@ export function GlobalContext({ children }: Props) {
 	return (
 		<context.Provider
 			value={{
-				...data,
-				hasAdblock
+				...data
 			}}
 		>
 			{children}

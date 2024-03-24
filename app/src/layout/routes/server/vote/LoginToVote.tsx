@@ -4,7 +4,7 @@ import { useFetcher } from "@remix-run/react";
 import { memo } from "react";
 import { VoteOverlay } from "./Vote";
 
-export default memo(function LoginToVote() {
+export default memo(function LoginToVote({ server, bedrock }: { server: string; bedrock: boolean }) {
 	const loginFetcher = useFetcher<any>();
 
 	return (
@@ -22,7 +22,7 @@ export default memo(function LoginToVote() {
 		>
 			<Heading fontSize={"xl"}>You need to login to vote for this server</Heading>
 
-			<loginFetcher.Form action="/login" method="POST">
+			<loginFetcher.Form action={`/login${`?redirect=${bedrock ? "bedrock/" : ""}/${server}/vote`}`} method="POST">
 				<Button
 					isLoading={loginFetcher.state !== "idle"}
 					type="submit"

@@ -16,9 +16,9 @@ const items = [
 	},
 	{
 		id: 1,
-		title: "List of most played servers",
+		title: "List of most many servers",
 		description: "Find your new favourite Premium Minecraft server to play with friends!",
-		to: "/popular-servers",
+		to: "/search",
 		color: "gold",
 		icon: BiLineChart
 	},
@@ -44,7 +44,7 @@ export default function WARWF() {
 	return (
 		<VStack w="100%" spacing={10}>
 			<VStack w="100%" textAlign={"center"}>
-				<Badge bg={"orange.100"} color={"orange.700"} rounded={"full"} px={3} py={1} variant={"solid"}>
+				<Badge bg={"orange.100"} color={"orange.900"} rounded={"full"} px={3} py={1} variant={"solid"}>
 					<HStack>
 						<Icon as={TbBulb} boxSize="18px" />
 						<Text fontSize={"xs"}>Go explore!</Text>

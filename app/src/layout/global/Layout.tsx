@@ -1,10 +1,11 @@
+import analytics from "@/functions/analytics";
 import { useProgressBar } from "@/hooks/useProgressBar";
 import Fonts from "@/layout/global/Fonts";
 import { Flex } from "@chakra-ui/react";
+import { useLocation } from "@remix-run/react";
 import type { Transition } from "framer-motion";
-import { memo, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import BackgroundUtils from "./BackgroundUtils";
-import Column from "./Column";
 import CookieConstent from "./CookieConsent";
 import Footer from "./Footer";
 import Header from "./Header/Header";
@@ -24,7 +25,7 @@ const progressBarConfig = {
 	heightDuration: 0.4,
 	initialProgress: 10,
 	widthDuration: 0.4,
-	trickleAmount: 3,
+	trickleAmount: 2.75,
 	trickleTime: 175
 };
 
@@ -69,6 +70,12 @@ const Inside = memo(function Inside({
 	setIsMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
 	children: React.ReactNode;
 }) {
+	const path = useLocation().pathname;
+
+	useEffect(() => {
+		analytics.pageView();
+	}, [path]);
+
 	return (
 		<ChakraBox
 			animate={{
@@ -85,9 +92,7 @@ const Inside = memo(function Inside({
 
 			<Header isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
 			<Flex w="100%" minH={"calc(100vh - 69px)"} flex={1} flexDir={"column"} pos="relative">
-				<Column side="left" />
 				{children}
-				<Column side="right" />
 			</Flex>
 			<Footer />
 		</ChakraBox>

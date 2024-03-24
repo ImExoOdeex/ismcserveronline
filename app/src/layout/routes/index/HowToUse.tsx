@@ -1,34 +1,24 @@
-import { Badge, Heading, Icon, ListItem, OrderedList, Stack, Text, VStack } from "@chakra-ui/react";
+import { Badge, Heading, Icon, Stack, Text, VStack } from "@chakra-ui/react";
 import { BiMessageError, BiNetworkChart, BiPointer } from "react-icons/bi";
 
 export default function HowToUse() {
 	return (
 		<VStack spacing={28} width={"100%"} align={"start"} mb={10}>
-			{/* steps */}
-			<VStack spacing={5} width={"100%"} align={"start"}>
-				<Heading as={"h2"} fontSize={{ base: "xl", md: "2xl" }} fontWeight={"black"} letterSpacing={"3px"}>
-					How to check the status of a Minecraft server in few steps?
-				</Heading>
-				<Stack direction={{ base: "column", md: "row" }} spacing={{ base: 5, md: 20 }} alignItems={"center"}>
-					{/* <Icon as={BiPointer} boxSize={"150px"} /> */}
-					<OrderedList color={"textSec"} letterSpacing={"1px"}>
-						<ListItem>Enter the server address you want to check in the input box.</ListItem>
-						<ListItem>
-							Click <b>Search</b> button.
-						</ListItem>
-						<ListItem>Wait for the server status to be fetched.</ListItem>
-						<ListItem>That's it! You can now see the server status and all the information about it.</ListItem>
-					</OrderedList>
-				</Stack>
-			</VStack>
-
 			{/* how to use */}
 			<VStack spacing={5} width={"100%"} align={"start"}>
 				<Heading as={"h3"} fontSize={{ base: "3xl", md: "5xl" }} fontWeight={"black"} letterSpacing={"3px"}>
 					How to use this tool?
 				</Heading>
 				<Stack direction={{ base: "column", md: "row" }} spacing={{ base: 5, md: 20 }} alignItems={"center"}>
-					<Text color={"textSec"} letterSpacing={"1px"} textAlign={"justify"}>
+					<Text
+						fontSize={{
+							base: "md",
+							md: "xl"
+						}}
+						color={"textSec"}
+						letterSpacing={"1px"}
+						textAlign={"justify"}
+					>
 						Simply enter the server address you want to check in input and click <b>Search</b> button. The fetching
 						state shouldn't take more than 5 seconds. After that, you will see the server status, including the server
 						version, player count, and maximum player count. If the server is online, you can then click the big
@@ -53,7 +43,15 @@ export default function HowToUse() {
 				</Heading>
 				<Stack direction={{ base: "column-reverse", md: "row" }} spacing={{ base: 5, md: 20 }} alignItems={"center"}>
 					<Icon as={BiNetworkChart} boxSize={"150px"} />
-					<Text color={"textSec"} letterSpacing={"1px"} textAlign={"justify"}>
+					<Text
+						color={"textSec"}
+						letterSpacing={"1px"}
+						textAlign={"justify"}
+						fontSize={{
+							base: "md",
+							md: "xl"
+						}}
+					>
 						Real-time information about a Minecraft server is fetched and shown on a website that checks the status of
 						servers. Most websites have a feature that lets you enter the hostname or address of the server to get
 						information about its current status. The typical method of getting this information is to send a request
@@ -77,7 +75,15 @@ export default function HowToUse() {
 					Hardly using Discord? We got you covered!
 				</Heading>
 				<Stack direction={{ base: "column", md: "row" }} spacing={{ base: 5, md: 20 }} alignItems={"center"}>
-					<Text color={"textSec"} letterSpacing={"1px"} textAlign={"justify"}>
+					<Text
+						color={"textSec"}
+						letterSpacing={"1px"}
+						textAlign={"justify"}
+						fontSize={{
+							base: "md",
+							md: "xl"
+						}}
+					>
 						With the Minecraft server status Discord bot, checking the status of your favorite Minecraft servers has
 						never been easier. All you need to do is hop into your Discord channel and type in the{" "}
 						<Badge>/status</Badge> command followed by the server's address or hostname. In just a matter of seconds,

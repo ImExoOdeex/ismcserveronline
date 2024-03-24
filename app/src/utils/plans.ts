@@ -6,6 +6,7 @@ const plans = [
 		title: "Server Prime",
 		description: "For invidual server",
 		price: 3.49,
+		ad_credits: 20,
 		color: "sec.900" as const,
 		features: [
 			"Custom background image",
@@ -20,6 +21,7 @@ const plans = [
 		title: "User Prime",
 		description: "For user & all owned servers",
 		price: 5.49,
+		ad_credits: 30,
 		color: "brand.900" as const,
 		features: [
 			"Everything from Server Prime",
@@ -29,6 +31,6 @@ const plans = [
 			"30 free Ad credits"
 		]
 	}
-] as IPlan[];
+] satisfies IPlan[];
 
 export default plans;

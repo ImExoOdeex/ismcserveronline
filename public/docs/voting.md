@@ -1,30 +1,29 @@
 
-# Minecraft Server Data API
+# Voting API
 
-Hi there, in this document we will learn how to use api for Minecraft server data.
+Hi there, in this document we will learn how to use api for votes.
 
 ### Base URL
-`https://api.ismcserver.online/`
-
-# Java
+`https:/ismcserver.online/`
 
 ---
 
-## GET /:serverAddress
+## GET /api/votes
 
-Get server data using standard Minecraft protocol (status). Use this for standard info. Responses are cached for 15 seconds in server memory to prevent spam pinging servers.
+Get votes information about username votes for your server.
 
-## GET /query/:serverAddress
+### Authorization
 
-Get server data using query protocol. This protocol can get more detailed information about the server, but server must have query enabled in `server.properties` configuration file. It's also slower than standard protocol. Responses are cached for 15 seconds in server memory to prevent spam pinging servers.
+This endpoint requires the use of a token, which is generated from the server panel. Insert the token in the `Authorization` header.
 
+### Search Parameters
 
+You can use the following parameters to filter the results:
 
-# Bedrock
+| Parameter | Type | Description                                                | Required |
+|-----------| --- |------------------------------------------------------------|----------|
+| nick      | string | The nickname of the player.                                | No       |
+| hours    | number | The number of hours to search for.                         | No       |
+| thisMonth | boolean | If true, the search will be limited to the current month.  | No       |
 
----
-
-## GET /bedrock/:serverAddress
-
-Get server data using bedrock protocol. Responses aren't cached.
-
+if `hours` and `thisMonth` are specified, api will use `thisMonth` parameter.

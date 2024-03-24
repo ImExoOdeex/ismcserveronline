@@ -17,7 +17,7 @@ export function Document({ children }: DocumentProps) {
 	const clientStyleData = useContext(ClientStyleContext);
 	const reinjectStylesRef = useRef(true);
 
-	let { cookies, showAds } = useTypedLoaderData<typeof loader>();
+	let { cookies } = useTypedLoaderData<typeof loader>();
 
 	// run this only on client, cause the warning shits whole server
 	if (typeof document !== "undefined") {
@@ -48,18 +48,12 @@ export function Document({ children }: DocumentProps) {
 			<head>
 				<Meta />
 				<Links />
-				{showAds && (
-					<script
-						async
-						src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4203392968171424"
-						crossOrigin="anonymous"
-					></script>
-				)}
 			</head>
 			<body>
 				{children}
 				<ScrollRestoration />
 				<Scripts />
+				<script defer data-domain="ismcserver.online" src="https://analytics.ismcserver.online/js/script.js" />
 			</body>
 		</html>
 	);
@@ -91,28 +85,6 @@ export function ErrorBoundary() {
 			<head>
 				<meta name="viewport" content="width=device-width,initial-scale=1" />
 				<link rel="icon" type="image/png" href="/favicon.ico" sizes="20x20" />
-				{/* <!-- Google Tag Manager --> */}
-				<script
-					dangerouslySetInnerHTML={{
-						__html: `(function(w,d,s,l,i){w[l] = w[l] || [];w[l].push({"gtm.start":
-          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-          })(window,document,'script','dataLayer','GTM-WW2Z3RZ');`
-					}}
-				></script>
-				{/* <!-- End Google Tag Manager --> */}
-				{/* <!-- Google tag (gtag.js) --> */}
-				<script async src="https://www.googletagmanager.com/gtag/js?id=G-F1BWR503G2"></script>
-				<script
-					dangerouslySetInnerHTML={{
-						__html: `window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-F1BWR503G2');`
-					}}
-				></script>
 				<Links />
 			</head>
 			<body>
@@ -121,6 +93,9 @@ export function ErrorBoundary() {
 						<InsideErrorBoundary />
 					</Flex>
 				</ChakraBaseProvider>
+				<ScrollRestoration />
+				<Scripts />
+				<script defer data-domain="ismcserver.online" src="https://analytics.ismcserver.online/js/script.js" />
 			</body>
 		</html>
 	);

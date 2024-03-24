@@ -39,7 +39,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 		const server = params.server?.toString().toLowerCase();
 		const url = new URL(request.url);
-		const isBedrock = url.pathname.split("/").length === 2 && url.pathname.split("/")[0] === "bedrock";
+		const isBedrock = url.pathname.split("/")[1] === "bedrock";
 
 		const foundServer = await db.server.findFirst({
 			where: {
@@ -95,22 +95,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
 			}
 		});
 
-		// create second vote if it's weekend and server or owner have prime. weekend starts at 3pm on friday and ends at the end of sunday
+		// create second vote if it's weekend and server or owner have prime or voting user has prime. weekend starts at 3pm on friday and ends at the end of sunday
 		const day = dayjs().day();
 		const hour = dayjs().hour();
 		const isFriday = day === 5 && hour >= 15;
 		const isWeekend = day === 6 || day === 0 || isFriday;
-		console.table({
-			day,
-			hour,
-			isFriday,
-			isWeekend,
-			prime: foundServer.prime,
-			ownerPrime: foundServer?.Owner?.prime,
-			is: isWeekend && (foundServer.prime || foundServer?.Owner?.prime)
-		});
 
-		if (isWeekend && (foundServer.prime || foundServer?.Owner?.prime)) {
+		if (isWeekend && (foundServer.prime || foundServer?.Owner?.prime || user.prime)) {
 			await db.vote.create({
 				data: {
 					server_id: foundServer.id,
@@ -160,8 +151,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 		});
 
 	const url = new URL(request.url);
-	const pathStrArr = url.pathname.split("/");
-	const bedrock = pathStrArr.length === 2 && pathStrArr[0] === "bedrock";
+	const bedrock = url.pathname.split("/")[1] === "bedrock";
 
 	const foundServer = (await db.server
 		.findFirst({
@@ -231,8 +221,6 @@ export default function ServerVote() {
 
 	return (
 		<VStack spacing={"40px"} align="start" maxW="1000px" mx="auto" w="100%" mt={"50px"} px={4} mb={5}>
-			{/* <Ad type={adType.small} width={"968px"} /> */}
-
 			<Button leftIcon={<ArrowBackIcon />} as={Link} to={`/${data.bedrock ? "bedrock/" : ""}${data.server}`}>
 				Go back
 			</Button>
@@ -250,7 +238,7 @@ export default function ServerVote() {
 				/>
 			</Flex>
 
-			{user ? <Vote /> : <LoginToVote />}
+			{user ? <Vote /> : <LoginToVote server={data.server} bedrock={data.bedrock} />}
 
 			<Divider />
 

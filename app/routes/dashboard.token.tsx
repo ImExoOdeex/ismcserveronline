@@ -3,7 +3,7 @@ import { getUserId } from "@/.server/db/models/user";
 import { csrf } from "@/.server/functions/security.server";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import { CopyIcon, ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
-import { Button, Code, Divider, Flex, HStack, Heading, Icon, IconButton, Text, VStack, useToast } from "@chakra-ui/react";
+import { Button, Code, Divider, Flex, Heading, HStack, Icon, IconButton, Text, useToast, VStack } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import dayjs from "dayjs";
@@ -11,6 +11,8 @@ import { useState } from "react";
 import { RiAiGenerate } from "react-icons/ri";
 import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
+import { HiOutlineDocumentDuplicate } from "react-icons/hi";
+import Link from "@/layout/global/Link";
 
 export async function action({ request }: ActionFunctionArgs) {
 	csrf(request);
@@ -204,6 +206,15 @@ export default function DashboardToken() {
 					<GenerateToken />
 				)}
 			</Flex>
+
+			<Button
+				size={"lg"}
+				leftIcon={<Icon as={HiOutlineDocumentDuplicate} boxSize={5} />}
+				as={Link}
+				to={"/api/documentation"}
+			>
+				API Documentation
+			</Button>
 
 			<Divider my={10} />
 

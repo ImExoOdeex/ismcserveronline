@@ -1,3 +1,4 @@
+import { DiscordUser } from "@/.server/auth/authenticator";
 import type { AppLoadContext } from "@remix-run/node";
 import { isSession, redirect, type Session, type SessionStorage } from "@remix-run/server-runtime";
 import { getUser } from "../db/models/user";
@@ -26,7 +27,7 @@ interface AuthenticateOptions {
 	context?: AppLoadContext;
 }
 
-export class Authenticator<User = unknown> {
+export class Authenticator<User = DiscordUser> {
 	public readonly sessionKey: NonNullable<AuthenticatorOptions["sessionKey"]>;
 	public readonly sessionErrorKey: NonNullable<AuthenticatorOptions["sessionErrorKey"]>;
 	public readonly sessionStrategyKey: NonNullable<AuthenticateOptions["sessionStrategyKey"]>;
@@ -44,15 +45,15 @@ export class Authenticator<User = unknown> {
 		request: Request,
 		options: Pick<AuthenticateOptions, "successRedirect" | "failureRedirect" | "throwOnError" | "context"> = {}
 	): Promise<User> {
-		return discordStrategy.authenticate(new Request(request.url, request), this.sessionStorage, {
+		return (await discordStrategy.authenticate(request, this.sessionStorage, {
 			throwOnError: this.throwOnError,
 			...options,
 			name: "discord",
 			sessionKey: this.sessionKey,
 			sessionErrorKey: this.sessionErrorKey,
 			sessionStrategyKey: this.sessionStrategyKey,
-			context: request
-		});
+			context: request.headers as any
+		})) as any;
 	}
 
 	// Check if the user is authenticated. If yes returns User object, else returs null

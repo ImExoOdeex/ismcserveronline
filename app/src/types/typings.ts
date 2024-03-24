@@ -16,6 +16,7 @@ export interface IPlan {
 	title: string;
 	description: string;
 	price: number;
+	ad_credits: number;
 	color: string;
 	features: string[];
 }

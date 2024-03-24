@@ -1,7 +1,7 @@
 import useFetcherCallback from "@/hooks/useFetcherCallback";
 import useUser from "@/hooks/useUser";
 import { ChatIcon, EditIcon } from "@chakra-ui/icons";
-import { Button, Flex, Icon, IconButton, Image, Text, Textarea, VisuallyHiddenInput, useToast } from "@chakra-ui/react";
+import { Button, Flex, Icon, IconButton, Image, Text, Textarea, useToast, VisuallyHiddenInput } from "@chakra-ui/react";
 import { memo, useMemo, useState } from "react";
 import { FiTrash2 } from "react-icons/fi";
 import { TbMessageReport } from "react-icons/tb";
@@ -22,44 +22,30 @@ export default memo(function Comment({
 		return user?.id === comment.user.id;
 	}, [user, comment.user.id]);
 	const fetcher = useFetcherCallback((data) => {
-		const success = (fetcher.data as any).success;
+		const success = data.success;
 		toast({
-			title: success ? "Your comment has been deleted." : (fetcher.data as any).error,
-			status: success ? "success" : "error",
-			duration: 5000,
-			position: "bottom-right",
-			variant: "subtle",
-			isClosable: true
+			title: success ? "Your comment has been deleted." : data.error,
+			status: success ? "success" : "error"
 		});
 		if (success) {
 			setComments((comments) => (comments ? comments.filter((c) => c.id !== comment.id) : comments));
 		}
 	});
 	const reportFetcher = useFetcherCallback((data) => {
-		const success = (reportFetcher.data as any).success;
+		const success = data.success;
 		toast({
-			title: success ? "Comment has been reported." : (reportFetcher.data as any).error,
-			status: success ? "success" : "error",
-			duration: 5000,
-			position: "bottom-right",
-			variant: "subtle",
-			isClosable: true
+			title: success ? "Comment has been reported." : data.error,
+			status: success ? "success" : "error"
 		});
 	});
 	const editFetcher = useFetcherCallback((data) => {
-		const success = (editFetcher.data as any).success;
+		const success = data.success;
 		toast({
-			title: success ? "Comment has been edited." : (editFetcher.data as any).error,
-			status: success ? "success" : "error",
-			duration: 5000,
-			position: "bottom-right",
-			variant: "subtle",
-			isClosable: true
+			title: success ? "Comment has been edited." : data.error,
+			status: success ? "success" : "error"
 		});
 		if (success) {
-			setComments((comments) =>
-				comments ? comments.map((c) => (c.id === comment.id ? (editFetcher.data as any).comment : c)) : comments
-			);
+			setComments((comments) => (comments ? comments.map((c) => (c.id === comment.id ? data.comment : c)) : comments));
 		}
 		setEditingData((prev) => ({
 			...prev,
@@ -77,7 +63,7 @@ export default memo(function Comment({
 			<Flex flexDir={"column"} gap={2}>
 				<Flex w="100%" justifyContent={"space-between"}>
 					<Flex flexDir={"row"} gap={2} alignItems="center">
-						<Flex boxSize={10}>
+						<Flex boxSize={10} minW={10}>
 							<Image
 								src={comment.user.photo ?? "/discordLogo.png"}
 								onError={(e) => {
@@ -93,7 +79,7 @@ export default memo(function Comment({
 							<Flex fontWeight={"semibold"} fontSize={"sm"}>
 								{comment.user.nick}
 							</Flex>
-							<Text fontSize={"sm"}>
+							<Text fontSize={{ base: "xs", md: "sm" }} noOfLines={1}>
 								{new Intl.DateTimeFormat("en-US", {
 									dateStyle: "medium",
 									timeStyle: "short"

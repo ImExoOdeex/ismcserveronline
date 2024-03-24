@@ -2,7 +2,7 @@ import { AnimateFrom } from "@/layout/global/Animated";
 import { Badge, Box, Button, Divider, Flex, Heading, Icon, Image, Text, useColorMode } from "@chakra-ui/react";
 import { HiDownload } from "react-icons/hi";
 
-const pluginName = "ismcso insight";
+const pluginName = "imcso insight";
 
 export default function Plugin() {
 	const { colorMode } = useColorMode();
@@ -10,7 +10,14 @@ export default function Plugin() {
 	return (
 		<Flex flexDir={"column"} maxW="1200px" mx="auto" gap={10} w="100%" mt={20} px={4} pb={20}>
 			<AnimateFrom>
-				<Heading as="h1" fontSize="6xl" ml={4}>
+				<Heading
+					as="h1"
+					fontSize={{
+						base: "3xl",
+						lg: "6xl"
+					}}
+					ml={4}
+				>
 					imcso{" "}
 					<Box
 						as="span"
@@ -39,12 +46,8 @@ export default function Plugin() {
 					<DownloadBox
 						title={"Spigot version"}
 						image={"https://static.spigotmc.org/img/spigot-og.png"}
+						link="/plugin/imcso-insight-1.0.0.jar"
 						buttonText={"Download for Spigot"}
-					/>
-					<DownloadBox
-						title={"Velocity version"}
-						image={"https://avatars.githubusercontent.com/u/41710604?s=200&v=4"}
-						buttonText={"Download for Velocity"}
 					/>
 				</Flex>
 			</AnimateFrom>
@@ -55,17 +58,18 @@ export default function Plugin() {
 interface DownloadBoxProps {
 	title: string;
 	image: string;
+	link: string;
 	buttonText: string;
 }
 
-function DownloadBox({ title, image, buttonText }: DownloadBoxProps) {
+function DownloadBox({ title, image, buttonText, link }: DownloadBoxProps) {
 	return (
 		<Flex flexDir={"column"} gap={4} w="300px">
 			<Image aspectRatio={"1/1"} w="100%" src={image} />
-			<Text fontSize={"lg"} fontWeight={500}>
+			{/* <Text fontSize={"lg"} fontWeight={500}>
 				{title}
-			</Text>
-			<Button variant={"brand"} rightIcon={<Icon as={HiDownload} boxSize={5} />}>
+			</Text> */}
+			<Button variant={"solid"} rightIcon={<Icon as={HiDownload} boxSize={5} />} as="a" href={link} download={pluginName}>
 				{buttonText}
 			</Button>
 		</Flex>

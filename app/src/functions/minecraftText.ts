@@ -284,7 +284,7 @@ export function parse(input: Chat | string, options?: ParseOptions): ParseResult
 			break;
 		}
 		default: {
-			throw new Error("Unexpected server MOTD type: " + typeof input);
+			return [];
 		}
 	}
 

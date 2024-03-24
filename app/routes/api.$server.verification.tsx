@@ -1,6 +1,7 @@
 import { db } from "@/.server/db/db";
 import { getUser } from "@/.server/db/models/user";
 import { getServerInfo } from "@/.server/functions/api.server";
+import { csrf } from "@/.server/functions/security.server";
 import { generateVerificationCode } from "@/.server/functions/verification.server";
 import { redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { typedjson } from "remix-typedjson";
@@ -13,6 +14,8 @@ import invariant from "tiny-invariant";
 
 // GET to check if server has been verified
 export async function loader({ request, params }: LoaderFunctionArgs) {
+	csrf(request);
+
 	try {
 		const user = await getUser(request);
 		invariant(user, "User is not logged in");
@@ -50,6 +53,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 // POST to create a new verification session
 export async function action({ request, params }: ActionFunctionArgs) {
+	csrf(request);
+
 	try {
 		const form = await request.formData();
 		const intent = form.get("intent")?.toString() as "start" | "check";

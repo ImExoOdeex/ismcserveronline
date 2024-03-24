@@ -19,7 +19,7 @@ export default defineConfig({
 	},
 	build: {
 		rollupOptions: {
-			external: ["sharp"]
+			external: ["sharp", "react-markdown", "remark-breaks", "remark-gfm"]
 		}
 	}
 });

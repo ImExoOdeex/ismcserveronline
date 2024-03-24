@@ -1,50 +1,226 @@
+import { Logger } from "@/.server/modules/Logger";
+import type { PrismaClient } from "@prisma/client";
+import "dotenv/config";
 import { Server } from "http";
-import { WebSocket, WebSocketServer } from "ws";
+import type { WebSocket } from "ws";
+import { WebSocketServer } from "ws";
 
-export async function startWsServer() {
-	const server = new Server();
-	const wss = new WebSocketServer({ server });
-	const rooms: Map<string, Set<WebSocket>> = new Map();
-
-	wss.on("connection", (ws) => {
-		let currentRoomId: string | null = null;
-
-		ws.on("message", (message) => {
-			const parsedMessage = JSON.parse(message.toString());
-
-			if (parsedMessage.type === "init") {
-				// check if the room exists
-				const roomId = parsedMessage.roomId;
-				if (!rooms.has(roomId)) {
-					rooms.set(roomId, new Set());
-				}
-				rooms.get(roomId)?.add(ws);
-				currentRoomId = roomId;
-			} else if (parsedMessage.type === "message") {
-				// broadcast the message to all clients in the room
-				const roomId = currentRoomId;
-				if (roomId && rooms.has(roomId)) {
-					rooms.get(roomId)?.forEach((client) => {
-						if (client !== ws) {
-							client.send(JSON.stringify({ type: "message", data: parsedMessage.data }));
-						}
-					});
-				}
-			}
-		});
-
-		ws.on("close", () => {
-			if (currentRoomId && rooms.has(currentRoomId)) {
-				rooms.get(currentRoomId)?.delete(ws);
-			}
-		});
-	});
-
-	server.listen(Number(3005));
-	console.log("WebSocket server started on port 3005");
+interface Message<T extends "server" | "client"> {
+	from: T;
+	intent: T extends "server" ? "Authorize" | "Data" : "Authorize";
+	data: T extends "server" ? { token: string | null; usage: any } : { token: string | null };
 }
 
-function generateRoomId() {
-	// Generate a random room ID (you can implement your own logic here)
+export interface Usage {
+	cpu: number;
+	players: number;
+	maxPlayers: number;
+	tps: number;
+	memory: number;
+	memoryMax: number;
+	uptime: number;
+}
+
+export interface OutgoingMessage<T extends "server" | "client"> {
+	intent: T extends "server" ? "Start" | "Stop" : "Data";
+	data?: T extends "server" ? undefined : { usage: Usage };
+}
+
+interface Client {
+	id: string;
+	type: "server" | "client";
+	ws: WebSocket;
+}
+
+export class WsServer extends WebSocketServer {
+	private rooms = new Map<number, Client[]>();
+
+	constructor(private db: PrismaClient) {
+		const server = new Server();
+		super({ server });
+
+		this.on("connection", (ws) => {
+			let id: string | null = null;
+			let type: "server" | "client" | null = null;
+			let currentRoomId: number | null = null;
+			console.log("WebSocket client connected");
+
+			const disconnectTimeout = setTimeout(() => {
+				closeWithReason("No Authorization message received in 5 seconds. Closing connection.");
+			}, 5000);
+
+			function closeWithReason(reason: string) {
+				ws.close(4000, reason);
+			}
+
+			ws.on("message", async (strMessage) => {
+				const parsedMessage = JSON.parse(strMessage.toString());
+
+				if (parsedMessage.from === "server") {
+					const message = parsedMessage as Message<"server">;
+
+					if (message.intent === "Authorize") {
+						type = "server";
+						const token = message.data.token;
+						if (!token) return closeWithReason("No token provided");
+
+						// add client to room with that server
+						const serverToken = await db.serverToken.findUnique({
+							where: { token }
+						});
+						if (!serverToken) return closeWithReason("Invalid token");
+						const server = await db.server.findUnique({
+							where: { id: serverToken.server_id }
+						});
+						if (!server) return closeWithReason("Server not found");
+						console.log("Authorized with token:", message.data.token);
+
+						clearTimeout(disconnectTimeout);
+
+						const roomId = server.id;
+						id = generateId();
+
+						if (!this.rooms.has(roomId)) {
+							this.rooms.set(roomId, [{ id, type: "server", ws }]);
+							currentRoomId = roomId;
+						} else {
+							const room = this.rooms.get(roomId);
+
+							if (room?.some((c) => c.type === "server")) {
+								console.error("Server already connected to this room", this.rooms);
+								console.log("disconnecting old server");
+								const oldServer = room.find((c) => c.type === "server");
+								oldServer!.ws.close();
+								// return closeWithReason("Server already connected to this room");
+							}
+
+							if (room?.some((c) => c.type === "client")) {
+								ws.send(
+									JSON.stringify({
+										intent: "Start"
+									} as OutgoingMessage<"server">)
+								);
+							}
+
+							room?.push({ id, type: "server", ws });
+							currentRoomId = roomId;
+						}
+
+						console.log("Added client to room", this.rooms);
+					} else if (message.intent === "Data") {
+						console.log("Data from client:", message.data.usage);
+						const usage = message.data.usage;
+						if (!usage) return;
+
+						// send data to all clients in the room
+						const room = currentRoomId ? this.rooms.get(currentRoomId) : null;
+						if (!room) return;
+
+						room.forEach(({ type, ws: client }) => {
+							if (type === "server") return;
+							client.send(
+								JSON.stringify({
+									intent: "Data",
+									data: { usage }
+								} as OutgoingMessage<"client">)
+							);
+						});
+					}
+				} else if (parsedMessage.from === "client") {
+					const message = parsedMessage as Message<"client">;
+
+					if (message.intent === "Authorize") {
+						type = "client";
+						console.log("Authorizing client with token:", message.data.token);
+						const token = message.data.token;
+						if (!token) return closeWithReason("No token provided");
+
+						// add client to room with that server
+						const serverToken = await db.serverToken.findUnique({
+							where: { token }
+						});
+						if (!serverToken) return closeWithReason("Invalid token");
+						const server = await db.server.findUnique({
+							where: { id: serverToken.server_id }
+						});
+						if (!server) return closeWithReason("Server not found");
+
+						clearTimeout(disconnectTimeout);
+
+						id = generateId();
+
+						const roomId = server.id;
+						if (!this.rooms.has(roomId)) {
+							this.rooms.set(roomId, [{ id, type: "client", ws }]);
+							currentRoomId = roomId;
+						} else {
+							this.rooms.get(roomId)?.push({ id, type: "client", ws });
+							currentRoomId = roomId;
+
+							this.rooms
+								.get(roomId)
+								?.filter((c) => c.type === "server")
+								.forEach((c) => {
+									c.ws.send(
+										JSON.stringify({
+											intent: "Start"
+										} as OutgoingMessage<"server">)
+									);
+								});
+						}
+
+						console.log("Added client to room", this.rooms);
+					}
+				}
+			});
+
+			ws.on("close", () => {
+				if (currentRoomId) {
+					if (type) {
+						const clients = this.rooms.get(currentRoomId);
+						if (!clients) {
+							console.error("No room found", currentRoomId);
+							return;
+						}
+						const deleted = clients.splice(
+							clients.findIndex((c) => c.id === id),
+							1
+						);
+						console.log("deleted", deleted);
+						console.log("Removed client from room", this.rooms);
+
+						// if there are no more clients in the room and there is a server, send stop message. if there are no more clients in the room, delete the room
+						if (clients.length === 0) {
+							this.rooms.delete(currentRoomId);
+						} else if (type === "client") {
+							const isSomeClient = clients.some((c) => c.type === "client");
+							if (!isSomeClient) {
+								clients
+									.filter((c) => c.type === "server")
+									.forEach((c) => {
+										c.ws.send(
+											JSON.stringify({
+												intent: "Stop"
+											} as OutgoingMessage<"server">)
+										);
+									});
+							}
+						}
+					}
+				}
+				console.log("WebSocket client disconnected");
+			});
+		});
+
+		server?.listen(Number(process.env.WS_PORT) || 3005);
+		Logger(`WebSocket server running on ws://localhost:${process.env.WS_PORT || 3005}`, "green", "black", true);
+	}
+
+	public getRooms() {
+		return this.rooms;
+	}
+}
+
+function generateId() {
 	return Math.random().toString(36).substring(7);
 }

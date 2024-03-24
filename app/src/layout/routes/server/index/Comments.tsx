@@ -1,5 +1,5 @@
 import useUser from "@/hooks/useUser";
-import { LoginButton } from "@/layout/global/Header/Buttons";
+import DiscordIcon from "@/layout/global/icons/DiscordIcon";
 import { ChatIcon } from "@chakra-ui/icons";
 import { Alert, AlertIcon, AlertTitle, Button, Flex, HStack, Image, Text, Textarea, useToast, VStack } from "@chakra-ui/react";
 import { useFetcher } from "@remix-run/react";
@@ -13,6 +13,8 @@ interface Props {
 	comments: CustomComment[] | null;
 	freshComments: CustomComment[];
 	setComments: React.Dispatch<React.SetStateAction<CustomComment[] | null>>;
+	server: string;
+	bedrock: boolean;
 }
 
 TimeAgo.setDefaultLocale(en.locale);
@@ -30,7 +32,7 @@ export interface CustomComment {
 	};
 }
 
-export default memo(function Comments({ comments, freshComments, setComments }: Props) {
+export default memo(function Comments({ comments, freshComments, setComments, bedrock, server }: Props) {
 	const user = useUser();
 
 	const fetcher = useFetcher<typeof action>();
@@ -127,13 +129,7 @@ export default memo(function Comments({ comments, freshComments, setComments }: 
 					)}
 				</>
 			) : (
-				<Alert status="info" rounded={"md"} w="100%" justifyContent={"space-between"}>
-					<HStack spacing={0}>
-						<AlertIcon />
-						<AlertTitle mr={2}>You must be logged in to comment.</AlertTitle>
-					</HStack>
-					<LoginButton />
-				</Alert>
+				<LoginToComment bedrock={bedrock} server={server} />
 			)}
 
 			<VStack w="100%" alignItems={"flex-start"}>
@@ -142,5 +138,31 @@ export default memo(function Comments({ comments, freshComments, setComments }: 
 				))}
 			</VStack>
 		</Flex>
+	);
+});
+
+const LoginToComment = memo(function LoginToComment({ bedrock, server }: { bedrock: boolean; server: string }) {
+	const fetcher = useFetcher();
+
+	return (
+		<Alert status="info" rounded={"md"} w="100%" justifyContent={"space-between"}>
+			<HStack spacing={0}>
+				<AlertIcon />
+				<AlertTitle mr={2}>You must be logged in to comment.</AlertTitle>
+			</HStack>
+			<fetcher.Form action={`/login${`?redirect=${bedrock ? "bedrock/" : ""}/${server}`}`} method="POST">
+				<Button
+					isLoading={fetcher.state === "submitting"}
+					type="submit"
+					_hover={{ textDecoration: "none", bg: "discord.900" }}
+					px={4}
+					bg="discord.100"
+					color={"white"}
+					rightIcon={<DiscordIcon />}
+				>
+					Log in with Discord
+				</Button>
+			</fetcher.Form>
+		</Alert>
 	);
 });

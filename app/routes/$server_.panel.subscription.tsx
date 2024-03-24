@@ -79,7 +79,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
 	const url = new URL(request.url);
-	const bedrock = url.pathname.split("/")[0] === "bedrock";
+	const bedrock = url.pathname.split("/")[1] === "bedrock";
 
 	const subscription = db.server
 		.findFirst({

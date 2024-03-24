@@ -1,11 +1,10 @@
+import { DiscordUser } from "@/.server/auth/authenticator";
 import { db } from "@/.server/db/db";
+import { requireEnv } from "@/.server/functions/env.server";
 import serverConfig from "@/.server/serverConfig";
 import { DiscordStrategy } from "remix-auth-discord";
 import { type Guild } from "~/routes/dashboard._index";
 import { Info, sendLoginWebhook } from "./webhooks";
-
-if (!process.env.DISCORD_CLIENT_ID) throw new Error("process.env.DISCORD_CLIENT_ID is not defined!");
-if (!process.env.DISCORD_CLIENT_SECRET) throw new Error("process.env.DISCORD_CLIENT_SECRET is not defined!");
 
 async function checkImageExists(imageUrl: string): Promise<boolean> {
 	try {
@@ -34,13 +33,10 @@ function getFullUsername(name: string, discriminator: string) {
 	return name;
 }
 
-export const discordStrategy: any = new DiscordStrategy(
+export const discordStrategy = new DiscordStrategy<DiscordUser>(
 	{
-		clientID: process.env.NODE_ENV === "production" ? process.env.DISCORD_CLIENT_ID : process.env.DISCORD_CLIENT_ID_DEV ?? "",
-		clientSecret:
-			process.env.NODE_ENV === "production"
-				? process.env.DISCORD_CLIENT_SECRET
-				: process.env.DISCORD_CLIENT_SECRET_DEV ?? "",
+		clientID: requireEnv("DISCORD_CLIENT_ID"),
+		clientSecret: requireEnv("DISCORD_CLIENT_SECRET"),
 		scope: ["identify", "email", "guilds"],
 		prompt: "none",
 		callbackURL: `${serverConfig.redirectUrl}/api/auth/discord/callback`
@@ -50,7 +46,7 @@ export const discordStrategy: any = new DiscordStrategy(
 			throw new Error("You need an email on your Discord account to login!");
 		}
 
-		const email: string = profile.emails[0].value;
+		const email = profile.emails[0].value;
 
 		const start = Date.now();
 		const [guilds, photo] = await Promise.all([
@@ -90,20 +86,20 @@ export const discordStrategy: any = new DiscordStrategy(
 			},
 			create: {
 				email: email,
-				nick: getFullUsername(profile.__json.username, profile.__json.discriminator),
+				nick: getFullUsername(profile.__json.global_name || profile.__json.username, profile.__json.discriminator),
 				snowflake: profile.id,
 				guilds: guilds as any,
 				photo
 			},
 			update: {
-				nick: getFullUsername(profile.__json.username, profile.__json.discriminator),
+				nick: getFullUsername(profile.__json.global_name || profile.__json.username, profile.__json.discriminator),
 				snowflake: profile.id,
 				guilds: guilds as any,
 				photo
 			}
 		});
 
-		sendLoginWebhook(user, "discord", new Info((context as any as Request).headers));
+		sendLoginWebhook(user, "discord", new Info(context as unknown as Headers));
 
 		return {
 			email,

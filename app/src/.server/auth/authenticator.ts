@@ -1,7 +1,7 @@
 import { sessionStorage } from "@/.server/session";
 import { Authenticator } from "./authenticator.class";
 
-interface DiscordUser {
+export interface DiscordUser {
 	email: string;
 	snowflake: string;
 	id: number;

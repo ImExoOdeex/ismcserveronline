@@ -1,7 +1,7 @@
 import MLTSPromotedServerCard from "@/layout/routes/server/index/MLTSPromotedServerCard";
 import MLTSServerCard from "@/layout/routes/server/index/MLTSServerCard";
 import type { FlexProps } from "@chakra-ui/react";
-import { Flex, Heading } from "@chakra-ui/react";
+import { Flex, Heading, Spinner } from "@chakra-ui/react";
 import { useInView } from "framer-motion";
 import { memo, useEffect, useRef, useState } from "react";
 import type { UseDataFunctionReturn } from "remix-typedjson";
@@ -15,6 +15,7 @@ interface Props extends FlexProps {
 }
 
 export default memo(function MoreLikeThisServer({ server, players, bedrock, language, ...props }: Props) {
+	const [isLoading, setIsLoading] = useState(true);
 	const [promoted, setPromoted] = useState<MLTSPromoted[]>([]);
 	const [servers, setServers] = useState<MLTSServer[]>([]);
 	console.log({
@@ -38,6 +39,7 @@ export default memo(function MoreLikeThisServer({ server, players, bedrock, lang
 					console.error((data as any).message);
 					return;
 				}
+				setIsLoading(false);
 				setServers(data.servers);
 				setPromoted(data.promoted);
 			});
@@ -47,6 +49,12 @@ export default memo(function MoreLikeThisServer({ server, players, bedrock, lang
 	return (
 		<Flex ref={ref} flexDir={"column"} gap={4} {...props}>
 			<Heading size="md">More Like This Server</Heading>
+
+			{isLoading && (
+				<Flex alignItems={"center"} p={10} w="100%" justifyContent={"center"}>
+					<Spinner />
+				</Flex>
+			)}
 
 			<Flex flexDir={"column"} gap={2} w="100%">
 				<Flex

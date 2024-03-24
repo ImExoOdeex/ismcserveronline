@@ -4,7 +4,7 @@ import { getCounts, getStats } from "@/.server/functions/admin.server";
 import { csrf } from "@/.server/functions/security.server";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import Link from "@/layout/global/Link";
-import { ServerModel } from "@/types/minecraftServer";
+import type { ServerModel } from "@/types/minecraftServer";
 import {
 	Accordion,
 	AccordionButton,
@@ -59,6 +59,10 @@ export async function action({ request }: ActionFunctionArgs) {
 		success: res !== null,
 		message: res
 	});
+}
+
+export function shouldRevalidate() {
+	return false;
 }
 
 export default function DashboardAdmin() {

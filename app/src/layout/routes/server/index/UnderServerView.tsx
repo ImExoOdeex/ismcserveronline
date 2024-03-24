@@ -12,9 +12,10 @@ interface Props {
 	promiseData: Promise<AnyServer>;
 	voteCount: number;
 	isOwner: boolean;
+	verified: boolean;
 }
 
-export default memo(function UnderServerView({ server, bedrock, promiseData, voteCount, isOwner }: Props) {
+export default memo(function UnderServerView({ server, bedrock, promiseData, voteCount, isOwner, verified }: Props) {
 	const toast = useToast();
 
 	return (
@@ -91,6 +92,20 @@ export default memo(function UnderServerView({ server, bedrock, promiseData, vot
 						size="lg"
 					>
 						Panel
+					</Button>
+				)}
+
+				{!verified && (
+					<Button
+						w={{
+							base: "50%",
+							md: "auto"
+						}}
+						as={Link}
+						to={`/${bedrock ? "bedrock/" : ""}${server}/vote?verify`}
+						size="lg"
+					>
+						Verify
 					</Button>
 				)}
 

@@ -1,40 +1,39 @@
-import { formatBigNumbers } from "@/functions/numbers";
-import McModel, { modelConfig } from "@/layout/routes/index/three/McModel";
-import { Box, Flex, HStack, Heading, IconButton, Input, Tag, Text, useToken } from "@chakra-ui/react";
+import dynamic from "@/functions/dynamic";
+import { Box, Flex, Heading, HStack, IconButton, Input, Tag, Text, useMediaQuery } from "@chakra-ui/react";
 import { useFetcher, useNavigate } from "@remix-run/react";
-import { useMemo, useState } from "react";
+import { Suspense, useState } from "react";
 import { BiSearch } from "react-icons/bi";
 import type { SearchTag } from "~/routes/search";
 
-export default function Main({
-	bedrockChecked,
-	serverValue,
-	setBedrockChecked,
-	query,
-	setServerValue,
-	count,
-	tags
-}: {
-	bedrockChecked: boolean;
-	serverValue: string;
-	query: boolean;
-	setBedrockChecked: (e: boolean) => void;
-	setServerValue: (e: string) => void;
-	count: number;
-	tags: SearchTag[];
-}) {
-	const checksNo = useMemo(() => formatBigNumbers(count), [count]);
+const McModel = dynamic(() => {
+	const isMobile = window.innerWidth < 1024;
+	// dont load model on mobile
+	if (isMobile) {
+		return import("@/layout/routes/index/three/Empty");
+	}
+	return import("@/layout/routes/index/three/McModel");
+});
 
-	const [textSec] = useToken("colors", ["textSec"]);
+export const modelConfig = {
+	model: "blahaj.glb",
+	width: 1000,
+	height: 1000
+};
 
+export default function Main({ tags }: { tags: SearchTag[] }) {
 	const searchFetcher = useFetcher();
 	const [search, setSearch] = useState("");
 
 	const navigate = useNavigate();
 
+	const [isMobile] = useMediaQuery("(max-width: 1024px)", {
+		fallback: true,
+		ssr: true
+	});
+
 	return (
 		<Flex gap={10} direction={{ base: "column", md: "row" }} w="100%" justifyContent={"space-between"}>
-			<Flex flexDir={"column"} gap={5} zIndex={1}>
+			<Flex flexDir={"column"} gap={6} zIndex={1}>
 				<Heading
 					as={"h1"}
 					size={{
@@ -42,15 +41,15 @@ export default function Main({
 						md: "3xl"
 					}}
 					lineHeight={"220%"}
-					// bgClip={"text"}
-					// bgGradient={`linear(to-r, ${textSec}, ${textSec}, ${textSec},  #e29db6, #b397e1, ${textSec})`}
 				>
-					#1{" "}
+					<Box as="span" bgClip={"text"} bgGradient={`linear(to-r, #8167d9, #e380a4)`}>
+						#1{" "}
+					</Box>
+					Minecraft server list
+					<br /> &{" "}
 					<Box
 						pos="relative"
 						as="span"
-						// bgClip={"text"}
-						// bgGradient={`linear(to-r, ${textSec}, ${textSec}, ${textSec}, #e29db6, )`}
 						_after={{
 							content: '""',
 							display: "inline-block",
@@ -69,9 +68,9 @@ export default function Main({
 							bg: "green.400"
 						}}
 					>
-						Minecraft
+						real
 					</Box>{" "}
-					server list <br /> & real status checker
+					status checker
 				</Heading>
 
 				<Text as="h2" fontWeight={600} color="textSec">
@@ -99,9 +98,10 @@ export default function Main({
 						/>
 					</HStack>
 
-					<HStack>
+					<HStack overflow={"auto"}>
 						{tags.map((tag) => (
 							<Tag
+								minW={"fit-content"}
 								size={"lg"}
 								onClick={() => {
 									navigate(`/search?tag=${tag.name}`);
@@ -116,21 +116,25 @@ export default function Main({
 				</Flex>
 			</Flex>
 
-			<Flex flex={1} pos="relative">
-				<Flex
-					flex={1}
-					overflow={"visible"}
-					pos="absolute"
-					top={0}
-					left={0}
-					right={0}
-					bottom={0}
-					w={modelConfig.width + "px"}
-					h={modelConfig.height + "px"}
-				>
-					<McModel />
+			{!isMobile && (
+				<Flex flex={1} pos="relative">
+					<Flex
+						flex={1}
+						overflow={"visible"}
+						pos="absolute"
+						top={0}
+						left={0}
+						right={0}
+						bottom={0}
+						w={modelConfig.width + "px"}
+						h={modelConfig.height + "px"}
+					>
+						<Suspense fallback={<></>}>
+							<McModel />
+						</Suspense>
+					</Flex>
 				</Flex>
-			</Flex>
+			)}
 		</Flex>
 	);
 }

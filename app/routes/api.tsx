@@ -2,7 +2,6 @@ import { cachePrefetch } from "@/.server/functions/fetchHelpers.server";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import useUser from "@/hooks/useUser";
 import Link from "@/layout/global/Link";
-import { Ad, adType } from "@/layout/global/ads/Yes";
 import DiscordIcon from "@/layout/global/icons/DiscordIcon";
 import type { MinecraftServerWoQuery } from "@/types/minecraftServer";
 import { CheckIcon, CopyIcon } from "@chakra-ui/icons";
@@ -182,8 +181,6 @@ export default function Api() {
 					</Stack>
 				</VStack>
 
-				<Ad type={adType.small} />
-
 				<VStack w="100%" align={"start"}>
 					<VStack w="100%" align={"start"} spacing={16}>
 						<VStack w="100%" alignItems={"start"} spacing={2}>
@@ -209,7 +206,7 @@ export default function Api() {
 										<Box as="span" color={teal}>
 											await{" "}
 										</Box>
-										request(
+										fetch(
 										<Box as="span" color={"green"}>
 											"https://api.ismcserver.online/hypixel.net"
 										</Box>
@@ -225,7 +222,7 @@ export default function Api() {
 										<Box as="span" color={"gray"}>{` // insert your token here`}</Box>
 									</Flex>
 									<Flex>{`  }`}</Flex>
-									<Flex>{`})`}</Flex>
+									<Flex>{`}).then(res => res.json())`}</Flex>
 									{hasCopied ? (
 										<CheckIcon
 											pos={"absolute"}
@@ -322,7 +319,6 @@ export default function Api() {
 							</Box>
 						</VStack>
 					</VStack>
-					<Ad type={adType.multiplex} />
 				</VStack>
 			</VStack>
 		</>

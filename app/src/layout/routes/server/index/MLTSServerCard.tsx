@@ -1,6 +1,6 @@
 import Link from "@/layout/global/Link";
 import config from "@/utils/config";
-import { Badge, Image as ChakraImage, Flex, HStack, Icon, Text } from "@chakra-ui/react";
+import { Badge, Flex, HStack, Icon, Image as ChakraImage, Text } from "@chakra-ui/react";
 import { memo } from "react";
 import { BiUser } from "react-icons/bi";
 import type { MLTSServer } from "~/routes/api.mlts";
@@ -29,7 +29,10 @@ export default memo(function MLTSServerCard({ server }: Props) {
 			}}
 			transition={`all 0.2s ${config.cubicEase}`}
 			transform={"auto-gpu"}
-			maxW="33%"
+			maxW={{
+				base: "100%",
+				md: "33%"
+			}}
 		>
 			<Flex
 				w="100%"

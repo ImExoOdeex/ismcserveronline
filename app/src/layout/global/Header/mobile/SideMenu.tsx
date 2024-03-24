@@ -5,22 +5,22 @@ import { ArrowForwardIcon, Icon } from "@chakra-ui/icons";
 import {
 	Box,
 	Button,
-	Link as ChakraLink,
 	Divider,
 	Flex,
 	Heading,
 	IconButton,
 	Input,
-	Spinner,
+	Link as ChakraLink,
 	Text,
 	useColorMode,
 	useColorModeValue
 } from "@chakra-ui/react";
-import { useFetcher } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMemo, useState } from "react";
 import { BiSearchAlt } from "react-icons/bi";
 import { mobileMenuTransition } from "../../Layout";
+import useFetcherCallback from "@/hooks/useFetcherCallback";
+import useInsideEffect from "@/hooks/useInsideEffect";
 
 interface Props {
 	isOpen: boolean;
@@ -33,8 +33,8 @@ const routes = [
 		link: "/"
 	},
 	{
-		name: "Popular servers",
-		link: "/popular-servers"
+		name: "Search Servers",
+		link: "/search"
 	},
 	{
 		name: "FAQ",
@@ -52,11 +52,15 @@ export default function SideMenu({ isOpen, setIsOpen }: Props) {
 	const { colorMode, toggleColorMode } = useColorMode();
 
 	const [server, setServer] = useState<string>("");
-	const fetcher = useFetcher();
+	const fetcher = useFetcherCallback();
 	const borderInputAutoFill = useColorModeValue("#dfe4e8", "#262626");
 	const bgInputAutoFill = useColorModeValue("#e2e8f0", "#1d1d1d");
 	const submitting = useMemo(() => {
 		return fetcher.state !== "idle";
+	}, [fetcher.state]);
+
+	useInsideEffect(() => {
+		setIsOpen(false);
 	}, [fetcher.state]);
 
 	const user = useUser();
@@ -145,11 +149,7 @@ export default function SideMenu({ isOpen, setIsOpen }: Props) {
 									placeholder={fetcher.data ? (fetcher.data as any)?.error : "Server address"}
 								/>
 								<Flex pos={"absolute"} top={3} left={0} alignItems={"center"} pl={4}>
-									{submitting ? (
-										<Spinner size={"sm"} />
-									) : (
-										<Icon as={BiSearchAlt} boxSize={5} color={"text"} fill={"text"} />
-									)}
+									<Icon as={BiSearchAlt} boxSize={5} color={"text"} fill={"text"} />
 								</Flex>
 
 								<AnimatePresence initial={false}>

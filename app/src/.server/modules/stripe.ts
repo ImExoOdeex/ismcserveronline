@@ -1,4 +1,5 @@
 import { PaymentIntentMetadata } from "@/types/typings";
+import plans from "@/utils/plans";
 import { User } from "@prisma/client";
 import { json } from "@remix-run/node";
 import Stripe from "stripe";
@@ -208,7 +209,19 @@ export const webhookHandlers = {
 					prime: subscription.status === "active"
 				}
 			});
-			return json({ server }, { status: 200 });
+
+			const user = await db.user.update({
+				where: {
+					id: Number(userId)
+				},
+				data: {
+					ad_credits: {
+						increment: plans[0].ad_credits
+					}
+				}
+			});
+
+			return json({ server, user }, { status: 200 });
 		} else {
 			const user = await db.user.update({
 				where: {
@@ -216,7 +229,10 @@ export const webhookHandlers = {
 				},
 				data: {
 					subId: subscription.id,
-					prime: subscription.status === "active"
+					prime: subscription.status === "active",
+					ad_credits: {
+						increment: plans[1].ad_credits
+					}
 				}
 			});
 

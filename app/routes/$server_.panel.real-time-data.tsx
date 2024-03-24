@@ -1,10 +1,16 @@
+import { db } from "@/.server/db/db";
+import { csrf } from "@/.server/functions/security.server";
+import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import useAnyPrime from "@/hooks/useAnyPrime";
 import useServerPanelData from "@/hooks/useServerPanelData";
 import Link from "@/layout/global/Link";
 import RealTimeServerDataWrapper from "@/layout/routes/server/panel/realtime/RealTimeServerDataWrapper";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import { Alert, AlertDescription, AlertTitle, Button, Flex, HStack } from "@chakra-ui/react";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 import type { MetaArgs, MetaFunction } from "@remix-run/react";
+import { typedjson } from "remix-typedjson";
+import invariant from "tiny-invariant";
 
 export function meta({ params, matches }: MetaArgs) {
 	return [
@@ -15,13 +21,48 @@ export function meta({ params, matches }: MetaArgs) {
 	] as ReturnType<MetaFunction>;
 }
 
+export async function loader({ request, params }: LoaderFunctionArgs) {
+	csrf(request);
+
+	const url = new URL(request.url);
+	const bedrock = url.pathname.split("/")[1] === "bedrock";
+
+	const server = await db.server.findFirst({
+		where: {
+			server: params.server?.toLowerCase(),
+			bedrock
+		},
+		select: {
+			id: true
+		}
+	});
+	invariant(server, "Server not found");
+
+	const token = await db.serverToken
+		.findUnique({
+			where: {
+				server_id: server.id
+			},
+			select: {
+				id: true,
+				token: true,
+				calls: true,
+				created_at: true
+			}
+		})
+		.catch(() => null);
+
+	return typedjson({ token: token?.token || null });
+}
+
 export default function ServerPanel() {
+	const { token } = useAnimationLoaderData<typeof loader>();
 	const server = useServerPanelData();
 	const hasPrime = useAnyPrime(server);
 
 	return (
 		<Flex gap={10} w="100%" flexDir={"column"}>
-			{hasPrime && <RealTimeServerDataWrapper />}
+			{hasPrime && <RealTimeServerDataWrapper token={token} />}
 			{!hasPrime && (
 				<Alert
 					status="warning"

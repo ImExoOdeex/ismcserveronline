@@ -1,5 +1,4 @@
 import { getUserId } from "@/.server/db/models/user";
-import { commitSession, getSession } from "@/.server/session";
 import useUser from "@/hooks/useUser";
 import Link from "@/layout/global/Link";
 import Sidebar from "@/layout/routes/dashboard/Sidebar";
@@ -22,27 +21,8 @@ export function meta({ matches }: MetaArgs) {
 export async function loader({ request }: LoaderFunctionArgs) {
 	const userId = await getUserId(request);
 
-	const cookies = request.headers.get("Cookie");
-	const session = await getSession(cookies);
-
 	if (!userId) {
 		throw redirect("/login");
-	}
-
-	const redirectURL = await session.get("redirect");
-	console.log("redirectURL", redirectURL);
-
-	const guildID = await session.get("guild");
-
-	if (redirectURL) {
-		session.unset("redirect");
-		session.unset("guild");
-
-		throw redirect(`/dashboard/bot/${guildID}${redirectURL === "index" ? "" : "/" + redirectURL}`, {
-			headers: {
-				"Set-Cookie": await commitSession(session)
-			}
-		});
 	}
 
 	return null;
@@ -81,24 +61,17 @@ export default function Dashboard() {
 								bg: "rgba(72, 0, 255, 0.1)",
 								textDecoration: "none"
 							}}
-							_active={{
-								scale: 0.9
-							}}
-							transform={"auto-gpu"}
-							fontWeight={500}
 							rightIcon={<PiCrownSimpleDuotone />}
 						>
 							Prime
 						</Button>
 
-						<logoutFetcher.Form action="/api/auth/logout">
+						<logoutFetcher.Form action="/api/auth/logout" method="DELETE">
 							<Button
-								transform={"auto-gpu"}
 								_hover={{
 									bg: "rgba(255, 0, 0, 0.1)",
 									textDecor: "none"
 								}}
-								_active={{ scale: 0.9 }}
 								type="submit"
 								variant={"ghost"}
 								color={"red"}

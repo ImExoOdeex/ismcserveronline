@@ -2,11 +2,13 @@ import { db } from "@/.server/db/db";
 import { getUserId } from "@/.server/db/models/user";
 import { csrf } from "@/.server/functions/security.server";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import Link from "@/layout/global/Link";
 import { CopyIcon, ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { Button, Divider, Flex, HStack, Heading, Icon, IconButton, Text, VStack, useToast } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { useState } from "react";
+import { HiOutlineDocumentDuplicate } from "react-icons/hi";
 import { RiAiGenerate } from "react-icons/ri";
 import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
@@ -24,7 +26,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 	csrf(request);
 
 	const url = new URL(request.url);
-	const bedrock = url.pathname.split("/")[0] === "bedrock";
+	const bedrock = url.pathname.split("/")[1] === "bedrock";
 
 	const server = await db.server.findFirst({
 		where: {
@@ -62,7 +64,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 	invariant(userId, "User is not logged in");
 
 	const url = new URL(request.url);
-	const bedrock = url.pathname.split("/")[0] === "bedrock";
+	const bedrock = url.pathname.split("/")[1] === "bedrock";
 
 	const server = await db.server.findFirst({
 		where: {
@@ -211,6 +213,15 @@ export default function ServerPanel() {
 					<GenerateToken />
 				)}
 			</Flex>
+
+			<Button
+				size={"lg"}
+				leftIcon={<Icon as={HiOutlineDocumentDuplicate} boxSize={5} />}
+				as={Link}
+				to={"/api/documentation"}
+			>
+				API Documentation
+			</Button>
 
 			<Divider my={10} />
 

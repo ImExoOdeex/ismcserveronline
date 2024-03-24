@@ -1,7 +1,6 @@
 import { getCookie, getCookieWithoutDocument } from "@/functions/cookies";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import useRootData from "@/hooks/useRootData";
-import { Ad, adType } from "@/layout/global/ads/Yes";
 import SystemInfo from "@/layout/routes/faq/SystemInfo";
 import config from "@/utils/config";
 import { Badge, Code, Divider, Heading, Link, Text, VStack } from "@chakra-ui/react";
@@ -207,8 +206,6 @@ export default function Faq() {
 			<Divider />
 
 			<SystemInfo system={system} />
-
-			<Ad type={adType.responsive} />
 		</VStack>
 	);
 }

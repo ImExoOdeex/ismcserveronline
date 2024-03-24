@@ -86,10 +86,6 @@ export default memo(function ServerCard({ server, index, length }: Props) {
 										))}
 									</HStack>
 								</HStack>
-
-								<Text fontSize={"sm"} color={"textSec"} noOfLines={2}>
-									{server.description}
-								</Text>
 							</Flex>
 
 							<HStack
@@ -113,6 +109,9 @@ export default memo(function ServerCard({ server, index, length }: Props) {
 								</Button>
 							</HStack>
 						</Flex>
+						<Text fontSize={"sm"} color={"textSec"} noOfLines={2}>
+							{server.description}
+						</Text>
 					</Flex>
 				</Flex>
 

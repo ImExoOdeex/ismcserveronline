@@ -1,6 +1,8 @@
+import { PrismaClient } from "@prisma/client";
 import cluster from "cluster";
 import os from "os";
 import { HonoApp } from "server/honoapp";
+import { WsServer } from "server/wsserver";
 import sourceMapSupport from "source-map-support";
 import { Logger } from "../app/src/.server/modules/Logger";
 
@@ -23,6 +25,8 @@ if (cluster.isPrimary) {
 	} else {
 		cluster.fork();
 	}
+
+	new WsServer(new PrismaClient());
 
 	cluster.on("exit", (worker) => {
 		Logger(`Worker ${worker.process.pid} died`, "white", "red");

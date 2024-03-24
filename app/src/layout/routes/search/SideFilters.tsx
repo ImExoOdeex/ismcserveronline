@@ -34,7 +34,7 @@ export default memo(function SideFilters({ locale }: Props) {
 	const [searchParams, setSearchParams] = useSearchParams();
 
 	return (
-		<Flex flexDir={"column"} w={{ base: "100%", md: "25%" }} gap={10}>
+		<Flex flexDir={"column"} w={{ base: "100%", md: "calc(25% - 16px)" }} gap={10}>
 			<Flex flexDir={"column"} gap={2}>
 				<Link isExternal href={config.discordServerInvite} fontSize={"xl"} fontWeight={500} color={"textSec"}>
 					<HStack spacing={3}>
