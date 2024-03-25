@@ -17,11 +17,6 @@ export async function action({ request }: ActionFunctionArgs) {
 	invariant(username, "username is required");
 	invariant(avatar, "avatar is required");
 
-	console.log("updating user", {
-		userId,
-		username,
-		avatar
-	});
 	// update user
 	await db.user
 		.update({

@@ -30,7 +30,7 @@ const variants = {
 
 export function AnimateFrom({ children, transition, delay = 0, from = "top" }: AnimateFromTopProps) {
 	return (
-		<AnimatePresence initial={false}>
+		<AnimatePresence initial={true}>
 			<motion.div
 				variants={variants[from]}
 				initial="initial"

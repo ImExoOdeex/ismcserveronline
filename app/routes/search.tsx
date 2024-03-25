@@ -245,8 +245,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 			cache.set(cacheServersKey, JSON.stringify(fetchedServers), cacheTTL),
 			cache.set(`tags`, JSON.stringify(fetchedTags), cacheTTL)
 		]);
-	} else {
-		console.log("cache");
 	}
 
 	// promoted-bedrock-locale-tags
@@ -258,8 +256,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	let randomPromoted: { Server: SearchServer; color: string; id: number }[] = cachePromotedServers || [];
 
 	if (!cachePromotedServers) {
-		console.log("no cache promoted");
-
 		const promotedCount = await db.promoted.count({
 			where: {
 				Server: {
@@ -309,8 +305,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		})) as any;
 
 		await cache.set(promotedServersCacheKey, JSON.stringify(randomPromoted), serverConfig.cache.promotedServers);
-	} else {
-		console.log("cache promoted");
 	}
 
 	return typedjson({ tags, servers, locale: finalLocale, randomPromoted });
@@ -318,8 +312,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export function shouldRevalidate(args: ShouldRevalidateFunctionArgs) {
 	if (args.currentUrl.toString() !== args.nextUrl.toString()) {
-		console.log("revalidating");
-
 		return true;
 	}
 
@@ -353,7 +345,6 @@ export default function Search() {
 		if (data.servers) {
 			setServers((prev) => [...(prev || []), ...data.servers]);
 			setSkip((skip: number) => skip + 10);
-			console.log(data.servers);
 
 			if (data.servers.length < 10) {
 				setEnded(true);

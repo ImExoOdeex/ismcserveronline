@@ -4,6 +4,7 @@ node_modules
 /build
 /public/build
 .env
+.env.prod
 /app/components/config/servers.json
 /public/favicons
 /app/routes/api.test.ts

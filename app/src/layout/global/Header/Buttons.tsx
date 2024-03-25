@@ -76,11 +76,12 @@ export function APIButton() {
 
 export function LoginButton() {
 	const user = useUser();
-	const loginFetcher = useFetcher<any>();
 
-	if (user) {
-		return <ProfilePopover />;
-	}
+	return user ? <ProfilePopover /> : <LoginDiscordButton />;
+}
+
+function LoginDiscordButton() {
+	const loginFetcher = useFetcher();
 
 	return (
 		<loginFetcher.Form action="/login" method="POST">

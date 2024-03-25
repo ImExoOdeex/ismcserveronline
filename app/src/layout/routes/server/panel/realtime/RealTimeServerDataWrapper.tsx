@@ -7,11 +7,11 @@ import RealTimeWaiting from "@/layout/routes/server/panel/realtime/RealTimeWaiti
 import { Flex, Heading, Text } from "@chakra-ui/react";
 import { useState } from "react";
 
-export default function RealTimeServerDataWrapper({ token }: { token: string | null }) {
+export default function RealTimeServerDataWrapper({ token, url }: { url: string; token: string | null }) {
 	const [data, setData] = useState<Usage | null>(null);
 	const [error, setError] = useState<string | null>(null);
 
-	const { isConnected, reconnect } = useWebSocket("ws://localhost:3005", {
+	const { isConnected, reconnect } = useWebSocket(url, {
 		onMessage(message, ws) {
 			const data = JSON.parse(message.data) as OutgoingMessage<"client">;
 
@@ -19,7 +19,8 @@ export default function RealTimeServerDataWrapper({ token }: { token: string | n
 			setData(usage);
 		},
 		onOpen(e, ws) {
-			console.log("onOpen");
+			console.log("authorizing with server token");
+
 			ws.send(
 				JSON.stringify({
 					from: "client",
@@ -29,7 +30,6 @@ export default function RealTimeServerDataWrapper({ token }: { token: string | n
 			);
 		},
 		onClose(e, ws) {
-			console.log("onClose");
 			setError(e.reason || "Connection closed");
 		},
 		onError(e, ws) {

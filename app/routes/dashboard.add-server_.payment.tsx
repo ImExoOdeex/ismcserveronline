@@ -177,13 +177,10 @@ function StripeForm({ server, paymentIntentId }: StripeFormProps) {
 		}).then((res) => res.json());
 
 		if (!res.success) {
-			console.log("api res", res);
 			setError(res?.error || "Unknown error");
 			setSubmitting(false);
 			return;
 		}
-
-		console.log("api res", res);
 
 		await stripe.confirmPayment({
 			elements,

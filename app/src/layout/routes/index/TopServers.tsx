@@ -11,14 +11,15 @@ interface Props {
 
 export default memo(function TopServers({ servers, promoted }: Props) {
 	return (
-		<Flex flexDir="column" gap={2} zIndex={1}>
-			<Stack direction={{ base: "column", md: "row" }} spacing={2}>
+		<Flex flexDir="column" gap={2} zIndex={1} w="100%">
+			<Stack direction={{ base: "column", md: "row" }} spacing={2} w="100%">
 				{promoted.map((server, index) => {
 					return <PromotedServerCard key={index} promoted={server} index={0} length={1} />;
 				})}
 			</Stack>
 
 			<SimpleGrid
+				w="100%"
 				spacing={2}
 				columns={{
 					base: 1,

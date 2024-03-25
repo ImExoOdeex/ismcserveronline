@@ -121,6 +121,7 @@ export default memo(function ProfilePopover() {
 							<HStack>
 								<Image
 									src={user.photo ?? "/discordLogo.png"}
+									alt={"Your avatar"}
 									rounded={"full"}
 									boxSize={{
 										base: 10,

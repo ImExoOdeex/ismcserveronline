@@ -69,8 +69,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	let tags: SearchTag[] = cacheTags || [];
 
 	if (!cacheServers || !cacheTags) {
-		console.log("no cache");
-
 		const promises = [
 			db.tag.findMany({
 				take: 8,

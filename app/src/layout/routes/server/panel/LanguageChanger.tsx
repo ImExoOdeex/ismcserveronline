@@ -34,7 +34,6 @@ export default memo(function LanguageChanger({ locale }: Props) {
 	const toast = useToast();
 
 	const fetcher = useFetcherCallback((data) => {
-		console.log("Language changed", data);
 		if (!data.success) {
 			toast({
 				title: data?.message || "An error occurred while changing the language.",

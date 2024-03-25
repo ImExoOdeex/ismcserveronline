@@ -1,14 +1,13 @@
 import { csrf } from "@/.server/functions/security.server";
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import { typedjson } from "remix-typedjson";
-import { Button, Code, Divider, Flex, Heading, Table, TableContainer, Td, Text, Th, Tr } from "@chakra-ui/react";
-import fs from "fs/promises";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import remarkBreaks from "remark-breaks";
 import Link from "@/layout/global/Link";
 import { ArrowBackIcon } from "@chakra-ui/icons";
+import { Button, Code, Divider, Flex, Heading, Table, TableContainer, Td, Text, Th, Tr } from "@chakra-ui/react";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import fs from "fs/promises";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { typedjson } from "remix-typedjson";
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	csrf(request);
@@ -29,7 +28,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function ApiDocumentation() {
 	const { markdown } = useAnimationLoaderData<typeof loader>();
-	console.log("markdown", markdown);
 
 	return (
 		<Flex flexDir={"column"} gap={4}>
@@ -55,7 +53,7 @@ export default function ApiDocumentation() {
 					th: (props) => <Th {...props} />,
 					tr: (props) => <Tr {...props} />
 				}}
-				remarkPlugins={[remarkGfm, remarkBreaks]}
+				remarkPlugins={[remarkGfm]}
 			>
 				{markdown}
 			</Markdown>

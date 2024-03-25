@@ -14,7 +14,6 @@ export async function action({ request }: ActionFunctionArgs) {
 	const locale = form.get("locale")?.toString();
 	const isBedrock = form.get("version")?.toString() === "bedrock";
 	const query = form.get("q")?.toString() ?? "";
-	console.log(query);
 
 	const sort = form.get("sort")?.toString() as "hot" | "newest" | "oldest" | undefined;
 	const queryLetters = query?.split("");
@@ -23,15 +22,6 @@ export async function action({ request }: ActionFunctionArgs) {
 	const tags = JSON.parse(paramsTags) as string[];
 
 	const skip = Number(form.get("skip")?.toString()) || 0;
-
-	console.table({
-		locale,
-		isBedrock,
-		query,
-		sort,
-		paramsTags,
-		tags
-	});
 
 	const servers = (await db.server.findMany({
 		take: 10,

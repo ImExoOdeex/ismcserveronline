@@ -1,5 +1,6 @@
 import { AnimateFrom } from "@/layout/global/Animated";
-import { Badge, Box, Button, Divider, Flex, Heading, Icon, Image, Text, useColorMode } from "@chakra-ui/react";
+import config from "@/utils/config";
+import { Badge, Box, Button, Divider, Flex, Heading, Icon, Image, Link, Text, useColorMode } from "@chakra-ui/react";
 import { HiDownload } from "react-icons/hi";
 
 const pluginName = "imcso insight";
@@ -51,6 +52,27 @@ export default function Plugin() {
 					/>
 				</Flex>
 			</AnimateFrom>
+
+			<Flex flexDir={"column"} gap={4}>
+				<AnimateFrom delay={0.14}>
+					<Divider />
+				</AnimateFrom>
+
+				<AnimateFrom delay={0.16}>
+					<Text>
+						Plugin should be working on any spigot-compatible server and Java version 8 or higher. If you have any
+						issues, please join our{" "}
+						<Link href={config.discordServerInvite} isExternal variant={"link"}>
+							Discord server
+						</Link>
+						, we'll be happy to help you out. Thanks to{" "}
+						<Link href="https://github.com/sieadev" isExternal variant={"link"}>
+							SieaDev
+						</Link>{" "}
+						for providing help with the plugin!
+					</Text>
+				</AnimateFrom>
+			</Flex>
 		</Flex>
 	);
 }

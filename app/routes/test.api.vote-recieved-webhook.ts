@@ -12,7 +12,6 @@ export async function action({ request }: ActionFunctionArgs) {
 	}
 
 	const body = await request.json();
-	console.log("body", body);
 
 	return typedjson({
 		...body

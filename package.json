@@ -1,22 +1,16 @@
 {
 	"private": true,
 	"sideEffects": false,
-	"version": "3.0.1",
+	"version": "3.1.0",
 	"type": "module",
 	"scripts": {
 		"postinstall": "tsx postinstall.ts",
 		"build": "remix vite:build",
-		"build:remix": "remix build",
-		"dev:remix": "cross-env NODE_ENV=development remix dev",
-		"dev:remix:vite": "cross-env NODE_ENV=development remix vite:dev",
-		"dev:bun": "cross-env NODE_ENV=development bun ./server/server",
 		"dev": "cross-env NODE_ENV=development tsx ./server/server",
 		"dev:hono": "cross-env NODE_ENV=development tsx ./server/honoserver",
-		"dev:hono:cmd": "start cmd @cmd /k \"npm run dev:hono\"",
 		"dev:ws": "cross-env NODE_ENV=development tsx watch ./server/wsserver",
 		"start": "cross-env NODE_ENV=production tsx ./server/honoserver",
-		"start:cmd": "start cmd @cmd /k \"npm run start\"",
-		"start:build": "npm run build && cross-env NODE_ENV=production tsx ./server/honoserver",
+		"start:build": "npm run build && npm run start",
 		"typecheck": "tsc -b",
 		"theme": "chakra-cli tokens app/components/utils/theme.tsx"
 	},
@@ -92,7 +86,6 @@
 		"@types/source-map-support": "^0.5.10",
 		"@types/three": "^0.162.0",
 		"@types/ws": "^8.5.10",
-		"chokidar": "^3.5.3",
 		"cross-env": "^7.0.3",
 		"dotenv": "^16.0.3",
 		"eslint": "^8.27.0",
@@ -109,6 +102,6 @@
 		"vite-tsconfig-paths": "^4.3.1"
 	},
 	"engines": {
-		"node": ">=18"
+		"node": ">=21"
 	}
 }

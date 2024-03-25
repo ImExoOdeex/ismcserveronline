@@ -1,6 +1,6 @@
 import useRootData from "@/hooks/useRootData";
 import Link from "@/layout/global/Link";
-import { Badge, Box, Button, Flex, HStack, Text } from "@chakra-ui/react";
+import { Badge, Box, Button, Flex, HStack, IconButton, Text } from "@chakra-ui/react";
 import { useLocation } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { memo, useCallback, useEffect, useState } from "react";
@@ -140,15 +140,12 @@ export default memo(function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 					</HStack>
 
 					<Box display={{ base: "flex", lg: "none" }} cursor="pointer">
-						<Button
-							variant={"unstyled"}
+						<IconButton
+							aria-label="Open Menu"
+							variant={"ghost"}
 							onClick={() => setIsMenuOpen(!isMenuOpen)}
-							display={"flex"}
-							justifyContent={"center"}
-							alignItems={"center"}
-						>
-							<HamburgerMenu isOpen={isMenuOpen} />
-						</Button>
+							icon={<HamburgerMenu isOpen={isMenuOpen} />}
+						/>
 					</Box>
 				</HStack>
 			</Flex>

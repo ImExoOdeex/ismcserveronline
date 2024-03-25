@@ -15,13 +15,11 @@ export default function useWebSocket(url: string, { onMessage, onOpen, onClose, 
 		const websocket = new WebSocket(url);
 
 		websocket.onopen = (e) => {
-			console.log("///////////// opened");
 			setIsConnected(true);
 			onOpen && onOpen(e, websocket);
 		};
 
 		websocket.onclose = (e) => {
-			console.log("///////////// closed", e.reason);
 			setIsConnected(false);
 			onClose && onClose(e, ws);
 		};
@@ -50,7 +48,6 @@ export default function useWebSocket(url: string, { onMessage, onOpen, onClose, 
 
 	const sendMessage = useCallback(
 		(message: Record<string, any>) => {
-			console.log("sendMessage state", ws?.readyState);
 			if (ws && ws.readyState === WebSocket.OPEN) {
 				ws.send(JSON.stringify(message));
 			} else {

@@ -1,20 +1,18 @@
 import { csrf } from "@/.server/functions/security.server";
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import { typedjson } from "remix-typedjson";
-import { Button, Code, Divider, Flex, Heading, Text } from "@chakra-ui/react";
-import fs from "fs/promises";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import remarkBreaks from "remark-breaks";
 import Link from "@/layout/global/Link";
 import { ArrowBackIcon } from "@chakra-ui/icons";
+import { Button, Code, Divider, Flex, Heading, Text } from "@chakra-ui/react";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import fs from "fs/promises";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { typedjson } from "remix-typedjson";
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	csrf(request);
 
 	const markdown = await fs.readFile("./public/docs/server-data.md", "utf-8").then((data) => {
-		console.log("READED FILE");
 		return data;
 	});
 
@@ -32,7 +30,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function ApiDocumentation() {
 	const { markdown } = useAnimationLoaderData<typeof loader>();
-	console.log("markdown", markdown);
 
 	return (
 		<Flex flexDir={"column"} gap={4}>
@@ -50,7 +47,7 @@ export default function ApiDocumentation() {
 					hr: (props) => <Divider {...props} />,
 					a: (props) => <a {...props} target={"_blank"} rel={"noopener noreferrer"} />
 				}}
-				remarkPlugins={[remarkGfm, remarkBreaks]}
+				remarkPlugins={[remarkGfm]}
 			>
 				{markdown}
 			</Markdown>

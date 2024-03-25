@@ -18,10 +18,6 @@ export default memo(function MoreLikeThisServer({ server, players, bedrock, lang
 	const [isLoading, setIsLoading] = useState(true);
 	const [promoted, setPromoted] = useState<MLTSPromoted[]>([]);
 	const [servers, setServers] = useState<MLTSServer[]>([]);
-	console.log({
-		servers,
-		promoted
-	});
 
 	const ref = useRef(null);
 	const isInView = useInView(ref, { once: true });

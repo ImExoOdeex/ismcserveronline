@@ -82,8 +82,6 @@ export default function DragAndDropFile({ fileName, serverId }: Props) {
 				body
 			}).then((res) => res.json());
 
-			console.log("res", res);
-
 			if (!res.success) {
 				toast({
 					title: "Upload failed",

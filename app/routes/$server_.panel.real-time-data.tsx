@@ -1,4 +1,5 @@
 import { db } from "@/.server/db/db";
+import { requireEnv } from "@/.server/functions/env.server";
 import { csrf } from "@/.server/functions/security.server";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import useAnyPrime from "@/hooks/useAnyPrime";
@@ -52,17 +53,20 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 		})
 		.catch(() => null);
 
-	return typedjson({ token: token?.token || null });
+	const wsUrl = requireEnv("WS_URL");
+	console.log("wsUrl", wsUrl);
+
+	return typedjson({ token: token?.token || null, url: wsUrl });
 }
 
 export default function ServerPanel() {
-	const { token } = useAnimationLoaderData<typeof loader>();
+	const { token, url } = useAnimationLoaderData<typeof loader>();
 	const server = useServerPanelData();
 	const hasPrime = useAnyPrime(server);
 
 	return (
 		<Flex gap={10} w="100%" flexDir={"column"}>
-			{hasPrime && <RealTimeServerDataWrapper token={token} />}
+			{hasPrime && <RealTimeServerDataWrapper token={token} url={url} />}
 			{!hasPrime && (
 				<Alert
 					status="warning"

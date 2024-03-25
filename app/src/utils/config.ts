@@ -4,9 +4,8 @@ const config = {
 	discordServerInvite: "https://discord.gg/e2c4DgRbWN",
 	uploadUrl: "https://s3.ismcserver.online",
 	twitter: "https://twitter.com/imcserveronline",
-	dashUrl: "http://localhost:3000",
+	dashUrl: "https://ismcserver.online",
 	analyticsUrl: "https://analytics.ismcserver.online",
-	// dashUrl: "https://ismcserver.online",
 	ease: [0.4, 0, 0.3, 1],
 	get easeAsString() {
 		return `${this.ease[0]}, ${this.ease[1]}, ${this.ease[2]}, ${this.ease[3]}`;

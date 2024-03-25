@@ -12,7 +12,6 @@ async function checkImageExists(imageUrl: string): Promise<boolean> {
 		const response = await fetch(imageUrl, {
 			method: "head"
 		});
-		console.log("Checked image in", Date.now() - start, "ms");
 
 		return response.ok;
 	} catch (error) {
@@ -58,7 +57,6 @@ export const discordStrategy = new DiscordStrategy<DiscordUser>(
 			})
 				.then((res) => {
 					if (res.ok) {
-						console.log("Fetched guilds in", Date.now() - start, "ms");
 						return res.json();
 					} else {
 						throw new Error("Failed to fetch guilds");
