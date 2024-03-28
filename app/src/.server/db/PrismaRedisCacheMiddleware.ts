@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { copyObjectWithoutKeys, isObject } from "../../functions/utils";
-import { cache as redisCache } from "./redis";
+import redisCache from "./redis";
 
 type Result = Record<string, unknown>;
 type Params = Prisma.MiddlewareParams;

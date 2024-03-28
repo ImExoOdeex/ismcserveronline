@@ -18,7 +18,7 @@ export default memo(function CookieConsent() {
 	const [isCookieConsent, setIsCookieConsent] = useState(loaderConsent ? true : false);
 
 	const accept = useCallback(() => {
-		document.cookie = `${name}=true`;
+		document.cookie = `${name}=true; max-age=${60 * 60 * 24 * 365}; path=/; SameSite=Lax`;
 		setIsCookieConsent(true);
 	}, []);
 

@@ -5,7 +5,7 @@ import { useLocation } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { memo, useCallback, useEffect, useState } from "react";
 import { PiCrownSimpleDuotone } from "react-icons/pi";
-import { APIButton, FAQButton, LoginButton, PopularServersButton } from "./Buttons";
+import { APIButton, Dots, LoginButton, PopularServersButton } from "./Buttons";
 import ServerSearch from "./ServerSearch";
 import ThemeToggle from "./ToggleTheme";
 import HamburgerMenu from "./mobile/HamburgerMenu";
@@ -131,8 +131,8 @@ export default memo(function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 									Prime
 								</Button>
 							)}
+							<Dots />
 							<PopularServersButton />
-							<FAQButton />
 							<APIButton />
 							<ThemeToggle />
 						</HStack>

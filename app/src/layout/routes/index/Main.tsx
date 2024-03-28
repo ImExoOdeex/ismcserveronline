@@ -1,5 +1,8 @@
+import { getCookieWithoutDocument } from "@/functions/cookies";
 import dynamic from "@/functions/dynamic";
-import { Box, Flex, Heading, HStack, IconButton, Input, Tag, Text, useMediaQuery } from "@chakra-ui/react";
+import { capitalize } from "@/functions/utils";
+import useRootData from "@/hooks/useRootData";
+import { Box, Button, Flex, Heading, HStack, IconButton, Input, Tag, Text, useMediaQuery } from "@chakra-ui/react";
 import { useFetcher, useNavigate } from "@remix-run/react";
 import { Suspense, useState } from "react";
 import { BiSearch } from "react-icons/bi";
@@ -21,6 +24,7 @@ export const modelConfig = {
 };
 
 export default function Main({ tags }: { tags: SearchTag[] }) {
+	const { cookies } = useRootData();
 	const searchFetcher = useFetcher();
 	const [search, setSearch] = useState("");
 
@@ -30,6 +34,13 @@ export default function Main({ tags }: { tags: SearchTag[] }) {
 		fallback: true,
 		ssr: true
 	});
+
+	const versions = ["java", "bedrock"] as const;
+	const [version, setVersion] = useState<(typeof versions)[number]>(
+		(getCookieWithoutDocument("version", typeof document === "undefined" ? cookies : document.cookie ?? "") as
+			| (typeof versions)[number]
+			| null) || "java"
+	);
 
 	return (
 		<Flex gap={10} direction={{ base: "column", md: "row" }} w="100%" justifyContent={"space-between"}>
@@ -78,25 +89,53 @@ export default function Main({ tags }: { tags: SearchTag[] }) {
 				</Text>
 
 				<Flex flexDir={"column"} gap={2}>
-					<HStack w="100%" as={searchFetcher.Form} method="POST">
-						<Input
-							size={"lg"}
-							placeholder="Enter exact server address or search by tags, description, etc."
-							variant={"filled"}
-							rounded={"xl"}
-							name="server"
-							value={search}
-							onChange={(e) => setSearch(e.target.value)}
-						/>
-						<IconButton
-							type="submit"
-							aria-label="Search"
-							icon={<BiSearch />}
-							size={"lg"}
-							variant={"brand"}
-							isLoading={searchFetcher.state !== "idle"}
-						/>
-					</HStack>
+					<Flex flexDir={"column"} gap={1}>
+						<HStack spacing={1}>
+							{versions.map((v) => {
+								return (
+									<Button
+										size="sm"
+										key={v}
+										variant={"ghost"}
+										color="brand"
+										onClick={() => {
+											document.cookie = `version=${v}; path=/`;
+											setVersion(v);
+										}}
+										rounded={"lg"}
+										bg={version === v ? "rgba(98, 42, 167,0.3)" : "transparent"}
+										_hover={{
+											bg: "rgba(98, 42, 167, 0.2)"
+										}}
+										_active={{
+											bg: "rgba(98, 42, 167, 0.4)"
+										}}
+									>
+										{capitalize(v)} servers
+									</Button>
+								);
+							})}
+						</HStack>
+						<HStack w="100%" as={searchFetcher.Form} method="POST">
+							<Input
+								size={"lg"}
+								placeholder="Enter exact server address or search by tags, description, etc."
+								variant={"filled"}
+								rounded={"xl"}
+								name="server"
+								value={search}
+								onChange={(e) => setSearch(e.target.value)}
+							/>
+							<IconButton
+								type="submit"
+								aria-label="Search"
+								icon={<BiSearch />}
+								size={"lg"}
+								variant={"brand"}
+								isLoading={searchFetcher.state !== "idle"}
+							/>
+						</HStack>
+					</Flex>
 
 					<HStack overflow={"auto"}>
 						{tags.map((tag) => (

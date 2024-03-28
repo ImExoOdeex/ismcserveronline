@@ -1,5 +1,5 @@
 import { db } from "@/.server/db/db";
-import { cache } from "@/.server/db/redis";
+import cache from "@/.server/db/redis";
 import { csrf } from "@/.server/functions/security.server";
 import serverConfig from "@/.server/serverConfig";
 import { getCookieWithoutDocument } from "@/functions/cookies";
@@ -210,29 +210,40 @@ export async function loader({ request }: LoaderFunctionArgs) {
 							not: {
 								startsWith: "%.%.%.%"
 							}
-						}
+						},
+						online: true
 					}
 				},
-				orderBy: {
-					...(() => {
-						if (sort === "newest") {
-							return {
-								created_at: "desc"
-							};
-						}
-						if (sort === "oldest") {
-							return {
-								created_at: "asc"
-							};
-						}
-
-						return {
-							Vote: {
-								_count: "desc"
+				orderBy: [
+					{
+						...(() => {
+							if (sort === "newest") {
+								return {
+									created_at: "desc"
+								};
 							}
-						};
-					})()
-				}
+							if (sort === "oldest") {
+								return {
+									created_at: "asc"
+								};
+							}
+
+							return {
+								Vote: {
+									_count: "desc"
+								}
+							};
+						})()
+					},
+					{
+						Check: {
+							_count: "desc" as const
+						}
+					},
+					{
+						players: "desc" as const
+					}
+				]
 			}) as unknown as Promise<SearchServer[]>
 		] as const;
 
@@ -415,6 +426,7 @@ export default function Search() {
 							key={t}
 							onClick={() => {
 								setVersion(t);
+								document.cookie = `version=${t}; path=/`;
 								setSearchParams((prev) => {
 									if (t === "bedrock") {
 										prev.set("bedrock", "");

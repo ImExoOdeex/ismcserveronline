@@ -8,6 +8,7 @@ import morgan from "morgan";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as url from "node:url";
+import { MultiEmitter } from "server/MultiEmitter";
 import { WsServer } from "server/wsserver";
 import sourceMapSupport from "source-map-support";
 import pack from "../package.json";
@@ -17,6 +18,7 @@ import pack from "../package.json";
 	installGlobals();
 
 	new WsServer(new PrismaClient());
+	const emitter = new MultiEmitter();
 
 	const BUILD_PATH = path.resolve("build/server/index.js");
 	// const VERSION_PATH = path.resolve("version.txt");
@@ -28,7 +30,8 @@ import pack from "../package.json";
 		return {
 			start: Date.now().toString(),
 			repoVersion: "",
-			version: pack.version
+			version: pack.version,
+			emitter
 		};
 	};
 

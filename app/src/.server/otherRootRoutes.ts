@@ -1,5 +1,5 @@
-import { getCache, setCache } from "@/.server/db/redis";
-import { notAllowedEndings } from "@/.server/functions/validateServer";
+import cache from "@/.server/db/redis";
+import { addressesConfig } from "@/.server/functions/validateServer";
 import config from "@/utils/config";
 import { json, redirectDocument, type EntryContext } from "@remix-run/node";
 import { db } from "./db/db";
@@ -20,16 +20,24 @@ const redirects = [
 		to: "https://status.ismcserver.online"
 	},
 	{
-		from: ["/docs", "/documentation", "/api/docs", "/api"],
+		from: ["/docs", "/documentation", "/api/docs"],
 		to: "/api/documentation"
+	},
+	{
+		from: ["/vote"],
+		to: "https://top.gg/bot/1043569248427061380/vote"
+	},
+	{
+		from: ["/extention"],
+		to: "https://marketplace.visualstudio.com/items?itemName=imexoodeex.jsx-brackets"
 	}
 ];
 
 export const otherRootRoutes: Record<string, Handler> = {
 	"/sitemap.xml": async () => {
-		const cache = await getCache("sitemap");
-		if (cache) {
-			return new Response(cache, {
+		const cached = await cache.get("sitemap");
+		if (cached) {
+			return new Response(cached, {
 				headers: {
 					"Content-Type": "application/xml",
 					"Cache-Control": "public, max-age=86400, stale-while-revalidate=604800"
@@ -64,26 +72,12 @@ export const otherRootRoutes: Record<string, Handler> = {
 		// remove urls that are ip addresses
 		const ipAddresses = new Set<Server>();
 		for (const check of filtered) {
-			const ipRegexWithPortOptional = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}(?::[0-9]{1,5})?$/;
-			if (ipRegexWithPortOptional.test(check.server)) {
+			if (addressesConfig.addressRegex.test(check.server)) {
 				ipAddresses.add(check);
 			}
 		}
 		for (const ipAddress of ipAddresses) {
 			filtered.delete(ipAddress);
-		}
-
-		// remove addresses that end with not allowed endings
-		const notAllowedEndingsUrls = new Set<Server>();
-		for (const check of filtered) {
-			const hasEnding = notAllowedEndings.some((ending) => check.server.endsWith(ending));
-			if (hasEnding) {
-				notAllowedEndingsUrls.add(check);
-			}
-		}
-
-		for (const notAllowedEndingUrl of notAllowedEndingsUrls) {
-			filtered.delete(notAllowedEndingUrl);
 		}
 
 		const data = `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
@@ -132,7 +126,7 @@ export const otherRootRoutes: Record<string, Handler> = {
 		
 		</urlset>`;
 
-		await setCache("sitemap", data, 86400);
+		await cache.set("sitemap", data, 86400);
 
 		return new Response(data, {
 			headers: {

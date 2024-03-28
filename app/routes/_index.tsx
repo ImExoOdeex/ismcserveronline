@@ -1,6 +1,6 @@
 import { db } from "@/.server/db/db";
-import { cache } from "@/.server/db/redis";
-import { isAddress } from "@/.server/functions/validateServer";
+import cache from "@/.server/db/redis";
+import { addressesConfig } from "@/.server/functions/validateServer";
 import serverConfig from "@/.server/serverConfig";
 import { getCookieWithoutDocument } from "@/functions/cookies";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
@@ -22,13 +22,13 @@ import type { SearchServer, SearchTag } from "~/routes/search";
 export async function action({ request }: ActionFunctionArgs) {
 	const formData = await request.formData();
 
-	const bedrock = getCookieWithoutDocument("bedrock", request.headers.get("cookie") ?? "") === "true";
-	const server = formData.get("server")?.toString().toLowerCase();
+	const bedrock = getCookieWithoutDocument("version", request.headers.get("cookie") ?? "") === "bedrock";
+	const server = formData.get("server")?.toString().toLowerCase().trim();
 	if (!server) {
 		return null;
 	}
 
-	if (isAddress(server)) {
+	if (addressesConfig.isValidServerAddress(server)) {
 		return redirect(`/${bedrock ? "bedrock/" : ""}${server}`);
 	}
 	return redirect("/search?q=" + server);
@@ -133,14 +133,22 @@ export async function loader({ request }: LoaderFunctionArgs) {
 							not: {
 								startsWith: "%.%.%.%"
 							}
-						}
+						},
+						online: true
 					}
 				},
-				orderBy: {
-					Vote: {
-						_count: "desc"
+				orderBy: [
+					{
+						Vote: {
+							_count: "desc"
+						}
+					},
+					{
+						Check: {
+							_count: "desc" as const
+						}
 					}
-				}
+				]
 			}) as unknown as Promise<SearchServer[]>
 		] as const;
 

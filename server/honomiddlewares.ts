@@ -1,4 +1,4 @@
-import { MiddlewareHandler } from "hono";
+import type { MiddlewareHandler } from "hono";
 import { getClientIPAddress } from "remix-utils/get-client-ip-address";
 
 // headers
@@ -26,6 +26,12 @@ export function cache(seconds: number): MiddlewareHandler {
 // logger
 type PrintFunc = (str: string, ...rest: string[]) => void;
 
+enum LogPrefix {
+	Outgoing = "-->",
+	Incoming = "<--",
+	Error = "xxx"
+}
+
 export function logger(fn: PrintFunc = console.log): MiddlewareHandler {
 	return async (c, next) => {
 		const path = new URL(c.req.url).pathname;
@@ -45,12 +51,6 @@ export function logger(fn: PrintFunc = console.log): MiddlewareHandler {
 
 		log(fn, LogPrefix.Outgoing, method, path, ip, c.res.status, time(start));
 	};
-
-	enum LogPrefix {
-		Outgoing = "-->",
-		Incoming = "<--",
-		Error = "xxx"
-	}
 
 	function humanize(times: string[]) {
 		const [delimiter, separator] = [",", "."];

@@ -34,7 +34,7 @@ export default memo(function CommentsSkeleton() {
 		<VStack w="100%" alignItems={"flex-start"}>
 			{skeletonComments.map((c, i) => (
 				<>
-					<Skeleton key={"skeleton-" + i} w="100%" h={"111px"} rounded={"md"} p={4} flexDir={"column"} gap={2}>
+					<Skeleton key={"comment-skeleton-" + i} w="100%" h={"111px"} rounded={"md"} p={4} flexDir={"column"} gap={2}>
 						<Flex flexDir={"row"} gap={2} alignItems="center" w="100%">
 							<Skeleton startColor="transparent" endColor="alpha200" rounded={"full"} boxSize="10" />
 							<Skeleton

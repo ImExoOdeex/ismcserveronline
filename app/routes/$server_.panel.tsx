@@ -2,7 +2,6 @@ import { db } from "@/.server/db/db";
 import { getUser } from "@/.server/db/models/user";
 import { decrypt } from "@/.server/modules/encryption";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
-import useEventSourceCallback from "@/hooks/useEventSourceCallback";
 import useRootData from "@/hooks/useRootData";
 import Sidebar from "@/layout/routes/server/panel/Sidebar";
 import { Box, Button, Divider, Flex, Heading, useColorMode, useToast } from "@chakra-ui/react";
@@ -79,23 +78,23 @@ export default function ServerPanel() {
 
 	const { colorMode } = useColorMode();
 
-	useEventSourceCallback(
-		`/api/sse/vote?id=${server.id}`,
-		{
-			event: "new-vote"
-		},
-		(sourceData) => {
-			toast({
-				description: `${sourceData.nick} has voted for ${server.server}!`,
-				status: "info",
-				duration: 5000,
-				containerStyle: {
-					fontWeight: 500
-				},
-				isClosable: false
-			});
-		}
-	);
+	// useEventSourceCallback(
+	// 	`/api/sse/vote?id=${server.id}`,
+	// 	{
+	// 		event: "new-vote"
+	// 	},
+	// 	(sourceData) => {
+	// 		toast({
+	// 			description: `${sourceData.nick} has voted for ${server.server}!`,
+	// 			status: "info",
+	// 			duration: 5000,
+	// 			containerStyle: {
+	// 				fontWeight: 500
+	// 			},
+	// 			isClosable: false
+	// 		});
+	// 	}
+	// );
 
 	return (
 		<Flex flexDir={"column"} w="100%" gap={10} maxW={"1400px"} mx="auto" px={4} mt={5}>

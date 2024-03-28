@@ -1,18 +1,30 @@
 import { db } from "../db/db";
 
 export async function getCounts() {
-	const [users, checks, comments, savedServers] = await Promise.all([
+	const [users, checks, comments, savedServers, verifiedServers, votes, tags] = await Promise.all([
 		db.user.count(),
 		db.check.count(),
 		db.comment.count(),
-		db.savedServer.count()
+		db.savedServer.count(),
+		db.server.count({
+			where: {
+				owner_id: {
+					not: null
+				}
+			}
+		}),
+		db.vote.count(),
+		db.tag.count()
 	]);
 
 	return {
 		users,
 		checks,
 		comments,
-		savedServers
+		savedServers,
+		verifiedServers,
+		votes,
+		tags
 	};
 }
 

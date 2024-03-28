@@ -40,7 +40,14 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 		headers: {
 			Authorization: requireEnv("SUPER_DUPER_API_ACCESS_TOKEN")
 		}
-	}).then((res) => res.json());
+	})
+		.then((res) => res.json())
+		.catch(() => null);
+	if (!guild) {
+		throw new Response("Not found", {
+			status: 404
+		});
+	}
 
 	const userContainsGuild = guild ? (userGuilds.find((g) => g.id === guild.id) ? true : false) : false;
 

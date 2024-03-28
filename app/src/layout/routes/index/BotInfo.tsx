@@ -11,7 +11,7 @@ export default function BotInfo() {
 			gap={10}
 			pos={"relative"}
 			color="whiteAlpha.900"
-			py={10}
+			py={12}
 			bgGradient={`linear(to-r, brand.900, #dc69b4)`}
 		>
 			<DarkMode>

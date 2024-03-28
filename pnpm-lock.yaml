@@ -196,6 +196,9 @@ devDependencies:
   '@types/morgan':
     specifier: ^1.9.4
     version: 1.9.9
+  '@types/node-ipc':
+    specifier: ^9.2.3
+    version: 9.2.3
   '@types/os-utils':
     specifier: ^0.0.4
     version: 0.0.4
@@ -214,9 +217,6 @@ devDependencies:
   '@types/ws':
     specifier: ^8.5.10
     version: 8.5.10
-  chokidar:
-    specifier: ^3.5.3
-    version: 3.6.0
   cross-env:
     specifier: ^7.0.3
     version: 7.0.3
@@ -4795,6 +4795,12 @@ packages:
 
   /@types/ms@0.7.34:
     resolution: {integrity: sha512-nG96G3Wp6acyAgJqGasjODb+acrI7KltPiRxzHPXnP3NgI28bpQDRv53olbqGXbfcgF5aiiHmO3xpwEpS5Ld9g==}
+
+  /@types/node-ipc@9.2.3:
+    resolution: {integrity: sha512-/MvSiF71fYf3+zwqkh/zkVkZj1hl1Uobre9EMFy08mqfJNAmpR0vmPgOUdEIDVgifxHj6G1vYMPLSBLLxoDACQ==}
+    dependencies:
+      '@types/node': 20.11.25
+    dev: true
 
   /@types/node@20.11.25:
     resolution: {integrity: sha512-TBHyJxk2b7HceLVGFcpAUjsa5zIdsPWlR6XHfyGzd0SFu+/NFgQgMAl96MSDZgQDvJAvV6BKsFOrt6zIL09JDw==}

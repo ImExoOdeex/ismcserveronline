@@ -1,5 +1,5 @@
 import { getUser } from "@/.server/db/models/user";
-import { cache } from "@/.server/db/redis";
+import cache from "@/.server/db/redis";
 import { getCounts, getStats } from "@/.server/functions/admin.server";
 import { csrf } from "@/.server/functions/security.server";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
@@ -35,9 +35,11 @@ import { typedjson } from "remix-typedjson";
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	csrf(request);
-	const [user, counts, stats] = await Promise.all([getUser(request), getCounts(), getStats()]);
+	const user = await getUser(request);
 
 	if (!user || user.role !== "ADMIN") throw new Error("Unauthorized");
+
+	const [counts, stats] = await Promise.all([getCounts(), getStats()]);
 
 	return typedjson({
 		counts,
@@ -235,7 +237,7 @@ export default function DashboardAdmin() {
 											</Thead>
 											<Tbody>
 												{stats.checks.map((check) => (
-													<Tr>
+													<Tr key={`check-` + check.id}>
 														<Th>{check.id}</Th>
 														<Th>
 															<Link variant={"link"} to={`/${check.Server.server}`}>
@@ -281,7 +283,7 @@ export default function DashboardAdmin() {
 											</Thead>
 											<Tbody>
 												{stats.savedServers.map((server) => (
-													<Tr>
+													<Tr key={`server-` + server.id}>
 														<Th>{server.id}</Th>
 														<Th>
 															<Image
@@ -334,7 +336,7 @@ export default function DashboardAdmin() {
 											</Thead>
 											<Tbody>
 												{stats.comments.map((comment) => (
-													<Tr>
+													<Tr key={`comment-` + comment.id}>
 														<Th>{comment.id}</Th>
 														<Th>{comment.Server.server}</Th>
 														<Th>{comment.content}</Th>
@@ -371,7 +373,7 @@ export default function DashboardAdmin() {
 											</Thead>
 											<Tbody>
 												{stats.users.map((user) => (
-													<Tr>
+													<Tr key={`user-` + user.id}>
 														<Th>{user.id}</Th>
 														<Th>
 															<Image boxSize={10} rounded={"md"} src={user.photo ?? ""} />

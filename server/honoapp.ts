@@ -6,24 +6,27 @@ import { createRequestHandler } from "@remix-run/server-runtime";
 import type { Context, Env, Input, MiddlewareHandler } from "hono";
 import { Hono } from "hono";
 import { compress } from "hono/compress";
+import type { EventEmitter } from "node:events";
 import * as fs from "node:fs";
 import * as url from "node:url";
 import path from "path";
-import { RedisInstance } from "server/databases/redis";
+import connectDatabases from "server/connect";
 import { cache, customizeHeaders, logger } from "server/honomiddlewares";
 import pack from "../package.json";
 
-const viteDevServer =
-	process.env.NODE_ENV === "production"
-		? undefined
-		: await import("vite").then((vite) =>
-				vite.createServer({
-					server: { middlewareMode: true }
-				})
-		  );
+const isProd = process.env.NODE_ENV === "production";
+
+const viteDevServer = isProd
+	? undefined
+	: await import("vite").then((vite) =>
+			vite.createServer({
+				server: { middlewareMode: true },
+				appType: "custom"
+			})
+	  );
 
 export class HonoApp extends Hono {
-	constructor() {
+	constructor(emitter: EventEmitter) {
 		super();
 
 		this.use("*", customizeHeaders());
@@ -36,23 +39,26 @@ export class HonoApp extends Hono {
 		this.use(
 			"/*",
 			serveStatic({
-				root: "./build/client"
+				root: isProd ? "./public" : "./"
 			})
 		);
 		this.use("*", logger());
 
+		const build = viteDevServer
+			? (viteDevServer.ssrLoadModule("virtual:remix/server-build") as Promise<ServerBuild>)
+			: reimportServer();
+
 		this.use(
 			"*",
 			remix({
-				build: viteDevServer
-					? () => viteDevServer.ssrLoadModule("virtual:remix/server-build") as unknown as Promise<ServerBuild>
-					: () => reimportServer(),
+				build: () => build,
 				mode: process.env.NODE_ENV as "development" | "production",
-				getLoadContext: async () => {
+				getLoadContext: () => {
 					return {
 						start: Date.now().toString(),
 						repoVersion: "",
-						version: pack.version
+						version: pack.version,
+						emitter
 					};
 				}
 			})
@@ -62,18 +68,7 @@ export class HonoApp extends Hono {
 	public async run() {
 		const port = Number(process.env.PORT) || 3000;
 
-		// connecting to databases
-		const redis = new RedisInstance();
-		await redis.connect().then(() => {
-			Logger(`Worker ${process.pid} Connected to the redis`, "green", "black");
-		});
-		global.__redis = redis;
-
-		const db = await import("server/databases/postgresql").then((m) => new m.PrismaClientWithCache());
-		await db.$connect().then(() => {
-			Logger(`Worker ${process.pid} Connected to the database`, "green", "black");
-		});
-		global.__db = db;
+		await connectDatabases();
 
 		serve(
 			{
@@ -84,6 +79,8 @@ export class HonoApp extends Hono {
 				Logger(`Worker ${process.pid} started server at http://localhost:${info.port}`, "green", "black");
 			}
 		);
+
+		return this;
 	}
 }
 
@@ -102,10 +99,10 @@ function remix<E extends Env = Record<string, never>, P extends string = "", I e
 	build,
 	getLoadContext = () => ({} as unknown as AppLoadContext)
 }: RemixMiddlewareOptions<E, P, I>): MiddlewareHandler {
-	return async function middleware(context) {
+	return async function middleware(context, next) {
 		const requestHandler = createRequestHandler(build, mode);
 		const loadContext = getLoadContext(context);
-		return await requestHandler(context.req.raw, loadContext instanceof Promise ? await loadContext : loadContext);
+		return requestHandler(context.req.raw, loadContext instanceof Promise ? await loadContext : loadContext);
 	};
 }
 

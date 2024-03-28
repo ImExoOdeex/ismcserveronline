@@ -4,7 +4,6 @@ import { cachePrefetch } from "@/.server/functions/fetchHelpers.server";
 import { csrf } from "@/.server/functions/security.server";
 import type { MinecraftImage } from "@/.server/minecraftImages";
 import { getRandomMinecarftImage } from "@/.server/minecraftImages";
-import { emitter } from "@/.server/modules/emitter";
 import { sendVoteWebhook } from "@/.server/modules/voting";
 import { getFullFileUrl } from "@/functions/storage";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
@@ -26,7 +25,7 @@ import { InsideErrorBoundary } from "~/document";
 
 const votingHours = 12;
 
-export async function action({ request, params }: ActionFunctionArgs) {
+export async function action({ request, params, context }: ActionFunctionArgs) {
 	csrf(request);
 
 	try {
@@ -111,16 +110,23 @@ export async function action({ request, params }: ActionFunctionArgs) {
 			});
 		}
 
-		emitter.emit(`vote-${foundServer.id}`, {
-			id: vote.id,
-			nick
-		});
-
 		await sendVoteWebhook(foundServer, {
 			server: foundServer.server,
 			bedrock: isBedrock,
 			nick
 		});
+
+		// try {
+		// 	const emitter = context.emitter as MultiEmitter;
+		// 	setTimeout(() => {
+		// 		emitter.send(`vote-${foundServer.id}`, {
+		// 			id: vote.id,
+		// 			nick
+		// 		});
+		// 	}, 1);
+		// } catch (e) {
+		// 	console.error("Failed to send vote event via emitter", e);
+		// }
 
 		return typedjson(
 			{
@@ -129,9 +135,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 			},
 			{
 				headers: {
-					"Set-Cookie": `last-minecraft-nickname=${nick}; Path=/; Max-Age=${
-						60 * 60 * 24 * 365
-					}; SameSite=Strict; HttpOnly; Secure`
+					"Set-Cookie": `last-minecraft-nickname=${nick}; Path=/; Max-Age=${60 * 60 * 24 * 365}; SameSite=Strict`
 				}
 			}
 		);

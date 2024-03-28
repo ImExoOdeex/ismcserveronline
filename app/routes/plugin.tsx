@@ -45,9 +45,9 @@ export default function Plugin() {
 			<AnimateFrom delay={0.12}>
 				<Flex gap={10} mx={"auto"} alignItems={"center"} justifyContent={"center"}>
 					<DownloadBox
-						title={"Spigot version"}
 						image={"https://static.spigotmc.org/img/spigot-og.png"}
 						link="/plugin/imcso-insight-1.0.0.jar"
+						downloadName="imcso-insight-1.0.0.jar"
 						buttonText={"Download for Spigot"}
 					/>
 				</Flex>
@@ -78,20 +78,20 @@ export default function Plugin() {
 }
 
 interface DownloadBoxProps {
-	title: string;
 	image: string;
 	link: string;
+	downloadName: string;
 	buttonText: string;
 }
 
-function DownloadBox({ title, image, buttonText, link }: DownloadBoxProps) {
+function DownloadBox({ image, buttonText, link, downloadName }: DownloadBoxProps) {
 	return (
 		<Flex flexDir={"column"} gap={4} w="300px">
 			<Image aspectRatio={"1/1"} w="100%" src={image} />
 			{/* <Text fontSize={"lg"} fontWeight={500}>
 				{title}
 			</Text> */}
-			<Button variant={"solid"} rightIcon={<Icon as={HiDownload} boxSize={5} />} as="a" href={link} download={pluginName}>
+			<Button variant={"solid"} rightIcon={<Icon as={HiDownload} boxSize={5} />} as="a" href={link} download={downloadName}>
 				{buttonText}
 			</Button>
 		</Flex>

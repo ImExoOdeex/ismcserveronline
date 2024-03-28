@@ -1,11 +1,15 @@
 import useUser from "@/hooks/useUser";
 import Link from "@/layout/global/Link";
+import DiscordIcon from "@/layout/global/icons/DiscordIcon";
+import config from "@/utils/config";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
-import { Badge, Button, HStack, Icon } from "@chakra-ui/react";
+import { Badge, Button, HStack, Icon, IconButton, Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react";
 import { useFetcher } from "@remix-run/react";
 import { BiCode } from "react-icons/bi";
+import { FaDiscord } from "react-icons/fa";
+import { FiDownload } from "react-icons/fi";
+import { HiDotsVertical } from "react-icons/hi";
 import { PiAlignLeftBold } from "react-icons/pi";
-import DiscordIcon from "../icons/DiscordIcon";
 import ProfilePopover from "./ProfilePopover";
 
 export function PopularServersButton() {
@@ -30,26 +34,6 @@ export function PopularServersButton() {
 			}
 		>
 			Servers
-		</Button>
-	);
-}
-
-export function FAQButton() {
-	return (
-		<Button
-			as={Link}
-			to="/faq"
-			transform={"auto-gpu"}
-			_hover={{
-				bg: "alpha",
-				textDecor: "none"
-			}}
-			_active={{ bg: "alpha100", scale: 0.9 }}
-			rounded={"xl"}
-			bg={"transparent"}
-			rightIcon={<InfoOutlineIcon />}
-		>
-			FAQ
 		</Button>
 	);
 }
@@ -102,5 +86,76 @@ function LoginDiscordButton() {
 				Log in
 			</Button>
 		</loginFetcher.Form>
+	);
+}
+
+const utilLinks = [
+	{
+		name: "Faq",
+		icon: InfoOutlineIcon,
+		to: "/faq"
+	},
+	{
+		name: "Plugin",
+		icon: FiDownload,
+		to: "/plugin"
+	},
+	{
+		name: "Discord Server",
+		icon: FaDiscord,
+		to: "/discord",
+		isExternal: true
+	}
+];
+
+export function Dots() {
+	return (
+		<>
+			<Menu>
+				<MenuButton
+					as={IconButton}
+					variant={"unstyled"}
+					aria-label="Open Utility Menu"
+					icon={<HiDotsVertical />}
+					display={{
+						base: "none",
+						lg: "flex"
+					}}
+					alignItems={"center"}
+					justifyContent={"center"}
+					_active={{
+						scale: 1
+					}}
+					opacity={0.8}
+					_hover={{
+						opacity: 1
+					}}
+					transition={`opacity 0.2s ${config.cubicEase}`}
+				/>
+				<MenuList bg="bg">
+					{utilLinks.map((link) => (
+						<MenuItem
+							key={link.name}
+							h={10}
+							bg="transparent"
+							fontWeight={500}
+							icon={<Icon as={link.icon} boxSize={5} />}
+							commandSpacing={2}
+							as={Link}
+							to={link.to}
+							_hover={{
+								bg: "alpha",
+								textDecor: "none"
+							}}
+							_active={{ bg: "alpha100" }}
+							_focus={{ bg: "alpha100" }}
+							isExternal={link?.isExternal ?? false}
+						>
+							{link.name}
+						</MenuItem>
+					))}
+				</MenuList>
+			</Menu>
+		</>
 	);
 }

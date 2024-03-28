@@ -1,6 +1,6 @@
 import { getUser } from "@/.server/db/models/user";
 import { requireEnv } from "@/.server/functions/env.server";
-import { isAddress } from "@/.server/functions/validateServer";
+import { addressesConfig } from "@/.server/functions/validateServer";
 import { getCookieWithoutDocument } from "@/functions/cookies";
 import Layout from "@/layout/global/Layout";
 import { GlobalContext } from "@/utils/GlobalContext";
@@ -290,15 +290,15 @@ export function shouldRevalidate({ nextUrl }: ShouldRevalidateFunctionArgs) {
 
 export async function action({ request }: ActionFunctionArgs) {
 	const formData = await request.formData();
-	const bedrock = getCookieWithoutDocument("bedrock", request.headers.get("Cookie") ?? "");
+	const bedrock = getCookieWithoutDocument("version", request.headers.get("Cookie") ?? "") === "bedrock";
 
-	const server = formData.get("server")?.toString().toLowerCase();
+	const server = formData.get("server")?.toString().toLowerCase().trim();
 
 	if (!server) {
 		return null;
 	}
 
-	if (isAddress(server)) {
+	if (addressesConfig.isValidServerAddress(server)) {
 		return redirect(`/${bedrock ? "bedrock/" : ""}${server}`);
 	}
 	return redirect("/search?q=" + server);

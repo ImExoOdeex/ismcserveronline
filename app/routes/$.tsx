@@ -1,3 +1,4 @@
+import { Flex } from "@chakra-ui/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { InsideErrorBoundary } from "~/document";
 
@@ -12,5 +13,9 @@ export default function () {
 }
 
 export function ErrorBoundary() {
-	return <InsideErrorBoundary />;
+	return (
+		<Flex w={"100%"} flex={1} alignItems={"center"} justifyContent={"center"}>
+			<InsideErrorBoundary />
+		</Flex>
+	);
 }

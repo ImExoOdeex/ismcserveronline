@@ -5,13 +5,12 @@ import { getUser } from "@/.server/db/models/user";
 import { getServerInfo } from "@/.server/functions/api.server";
 import { requireEnv } from "@/.server/functions/env.server";
 import { cachePrefetchHeaders } from "@/.server/functions/fetchHelpers.server";
-import { notAllowedEndings } from "@/.server/functions/validateServer";
+import { addressesConfig } from "@/.server/functions/validateServer";
 import type { MinecraftImage } from "@/.server/minecraftImages";
 import { getRandomMinecarftImage } from "@/.server/minecraftImages";
 import { getCookieWithoutDocument } from "@/functions/cookies";
 import { getFullFileUrl } from "@/functions/storage";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
-import useEventSourceCallback from "@/hooks/useEventSourceCallback";
 import useUser from "@/hooks/useUser";
 import Link from "@/layout/global/Link";
 import type { ICheck } from "@/layout/routes/server/index/ChecksTable";
@@ -27,12 +26,27 @@ import type { tabs } from "@/layout/routes/server/index/Tabs";
 import Tabs from "@/layout/routes/server/index/Tabs";
 import UnderServerView from "@/layout/routes/server/index/UnderServerView";
 import type { AnyServer, AnyServerModel, BedrockServer, JavaServer, MinecraftServer } from "@/types/minecraftServer";
-import { Divider, Flex, HStack, Heading, Icon, Stack, Text, VStack, VisuallyHidden, useToast } from "@chakra-ui/react";
+import config from "@/utils/config";
+import {
+	Alert,
+	AlertIcon,
+	CloseButton,
+	Divider,
+	Flex,
+	HStack,
+	Heading,
+	Icon,
+	Stack,
+	Text,
+	VStack,
+	VisuallyHidden
+} from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import type { ActionFunctionArgs, HeadersArgs, LinksFunction, LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { Await, type ShouldRevalidateFunction } from "@remix-run/react";
 import dayjs from "dayjs";
+import { AnimatePresence, motion } from "framer-motion";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { BiBug, BiInfoCircle } from "react-icons/bi";
 import { typeddefer, typedjson } from "remix-typedjson";
@@ -334,11 +348,12 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 	const server = params.server?.toString().toLowerCase().trim();
 
 	if (
-		!server?.includes(".") ||
-		server?.length > 35 ||
-		notAllowedEndings.some((ending) => {
-			return server.endsWith(ending);
-		})
+		!server ||
+		addressesConfig.invalidEndings.some((ending) => server.endsWith(ending)) ||
+		server.length > addressesConfig.maxLength ||
+		server.length < addressesConfig.minLength ||
+		!addressesConfig.isValidServerAddress(server) ||
+		server === "favicon.ico"
 	) {
 		throw new Response("Not found", {
 			status: 404
@@ -560,8 +575,24 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 		  } as MinecraftImage)
 		: getRandomMinecarftImage();
 
+	const ipRegexWithPortOptional = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}(?::[0-9]{1,5})?$/;
+	const isIpOnly = ipRegexWithPortOptional.test(server);
+
 	return typeddefer(
-		{ server, data, query, isSaved, foundServer, bedrock, serverId, image, votes, comments },
+		{
+			server,
+			data,
+			query,
+			isSaved,
+			foundServer,
+			bedrock,
+			serverId,
+			image,
+			votes,
+			comments,
+			isIpOnly,
+			hideIpAlert: getCookieWithoutDocument("ip-only-alert-hidden", request.headers.get("cookie") ?? "") === "true"
+		},
 		{
 			headers: {
 				"Cache-Control": "public, max-age=2",
@@ -605,6 +636,8 @@ export default function $server() {
 		isSaved,
 		bedrock,
 		serverId,
+		hideIpAlert,
+		isIpOnly,
 		votes: dbVotes,
 		comments: commentsPromise,
 		data: promiseData, // data is there promise data, cause it's streaming, so "foundServer" is a data rn.
@@ -615,27 +648,25 @@ export default function $server() {
 	const [comments, setComments] = useState<any[] | null>(null);
 
 	const [votes, setVotes] = useState<number>(dbVotes);
-	const toast = useToast();
-	useEventSourceCallback(
-		`/api/sse/vote?id=${serverId}`,
-		{
-			event: "new-vote"
-		},
-		(sourceData) => {
-			toast({
-				description: `${sourceData.nick} has voted for ${data.server}!`,
-				status: "info",
-				duration: 5000,
-				containerStyle: {
-					fontWeight: 500
-				},
-				isClosable: false,
-				variant: "subtle"
-			});
+	// const toast = useToast();
+	// useEventSourceCallback(
+	// 	`/api/sse/vote?id=${serverId}`,
+	// 	{
+	// 		event: "new-vote"
+	// 	},
+	// 	(sourceData) => {
+	// 		toast({
+	// 			description: `${sourceData.nick} has voted for ${data.server}!`,
+	// 			status: "info",
+	// 			containerStyle: {
+	// 				fontWeight: 500
+	// 			},
+	// 			isClosable: false
+	// 		});
 
-			setVotes((v) => v + 1);
-		}
-	);
+	// 		setVotes((v) => v + 1);
+	// 	}
+	// );
 
 	const user = useUser();
 	const isOwner = useMemo(() => {
@@ -656,8 +687,45 @@ export default function $server() {
 	const [skip, setSkip] = useState(0);
 	const [checks, setChecks] = useState<ICheck[] | null>(null);
 
+	const [ipOnlyAlertShown, setIpOnlyAlertShown] = useState(!hideIpAlert);
+
 	return (
 		<Flex gap={5} flexDir={"column"} maxW="1000px" mx="auto" w="100%" mt={"50px"} px={4} mb={5}>
+			<div>
+				<AnimatePresence mode="wait">
+					{isIpOnly && ipOnlyAlertShown && (
+						<motion.div
+							style={{
+								overflow: "hidden"
+							}}
+							animate={{ height: "auto", opacity: 1 }}
+							exit={{
+								height: 0,
+								opacity: 0,
+								scale: 0.95
+							}}
+							transition={{
+								duration: 0.3,
+								ease: config.ease
+							}}
+						>
+							<Alert status="warning" mb={10} justifyContent={"space-between"} alignItems={"center"}>
+								<HStack>
+									<AlertIcon />
+									<Text fontWeight={500}>IP only servers are excluded from server list</Text>
+								</HStack>
+								<CloseButton
+									onClick={() => {
+										setIpOnlyAlertShown(false);
+										document.cookie = "ip-only-alert-hidden=true; path=/; max-age=31536000";
+									}}
+								/>
+							</Alert>
+						</motion.div>
+					)}
+				</AnimatePresence>
+			</div>
+
 			{shouldPregenerateStyles && (
 				<VisuallyHidden>
 					{/* pregenerate styles, cause emotion sucks */}
@@ -672,7 +740,7 @@ export default function $server() {
 							md: 28
 						}}
 					/>
-					<Motd motd={data?.motd.html} />
+					<Motd motd={data?.motd?.html} />
 					<ServerInfo bedrock={bedrock} data={data} query={query} server={server} />
 				</VisuallyHidden>
 			)}
@@ -713,8 +781,8 @@ export default function $server() {
 				<McFonts />
 
 				{/* displaying motd */}
-				<Suspense fallback={data.online ? <Motd motd={data?.motd.html} /> : <></>}>
-					<Await resolve={promiseData}>{(freshData) => <Motd motd={freshData.motd.html} />}</Await>
+				<Suspense fallback={data.online ? <Motd motd={data?.motd?.html} /> : <></>}>
+					<Await resolve={promiseData}>{(freshData) => <Motd motd={freshData.motd?.html} />}</Await>
 				</Suspense>
 			</Flex>
 
