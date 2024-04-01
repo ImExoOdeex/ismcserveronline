@@ -6,6 +6,7 @@ import { getFullFileUrl } from "@/functions/storage";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import useAnyPrime from "@/hooks/useAnyPrime";
 import useDebouncedFetcherCallback from "@/hooks/useDebouncedFetcherCallback";
+import Link from "@/layout/global/Link";
 import { useProgressBarContext } from "@/layout/global/ProgressBarContext";
 import DragAndDropFile from "@/layout/routes/server/panel/DragAndDropFile";
 import LanguageChanger from "@/layout/routes/server/panel/LanguageChanger";
@@ -454,7 +455,10 @@ export default function ServerPanel() {
 						{!hasPrime && (
 							<Tooltip label="This feature requires prime subscription." hasArrow>
 								<IconButton
+									as={Link}
+									to={`/${server.bedrock ? "bedrock/" : ""}${server.server}/panel/subscription`}
 									aria-label="Info"
+									_hover={{ bg: "rgba(255, 119, 0, 0.1)" }}
 									icon={
 										<InfoOutlineIcon
 											color="orange"

@@ -17,6 +17,9 @@ dependencies:
   '@chakra-ui/icons':
     specifier: ^2.1.1
     version: 2.1.1(@chakra-ui/system@2.6.2)(react@18.2.0)
+  '@chakra-ui/progress':
+    specifier: ^2.2.0
+    version: 2.2.0(@chakra-ui/system@2.6.2)(react@18.2.0)
   '@chakra-ui/react':
     specifier: ^2.8.2
     version: 2.8.2(@emotion/react@11.11.4)(@emotion/styled@11.11.0)(@types/react@18.2.64)(framer-motion@7.10.3)(react-dom@18.2.0)(react@18.2.0)

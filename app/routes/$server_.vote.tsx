@@ -20,6 +20,7 @@ import type { ActionFunctionArgs, LoaderFunctionArgs, MetaArgs, MetaFunction } f
 import dayjs from "dayjs";
 import type { UseDataFunctionReturn } from "remix-typedjson";
 import { typedjson } from "remix-typedjson";
+import type { MultiEmitter } from "server/MultiEmitter";
 import invariant from "tiny-invariant";
 import { InsideErrorBoundary } from "~/document";
 
@@ -116,17 +117,15 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
 			nick
 		});
 
-		// try {
-		// 	const emitter = context.emitter as MultiEmitter;
-		// 	setTimeout(() => {
-		// 		emitter.send(`vote-${foundServer.id}`, {
-		// 			id: vote.id,
-		// 			nick
-		// 		});
-		// 	}, 1);
-		// } catch (e) {
-		// 	console.error("Failed to send vote event via emitter", e);
-		// }
+		try {
+			const emitter = context.emitter as MultiEmitter;
+			emitter.send(`vote-${foundServer.id}`, {
+				id: vote.id,
+				nick
+			});
+		} catch (e) {
+			console.error("Failed to send vote event via emitter", e);
+		}
 
 		return typedjson(
 			{

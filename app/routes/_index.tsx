@@ -37,7 +37,7 @@ export async function action({ request }: ActionFunctionArgs) {
 export function meta({ matches }: MetaArgs) {
 	return [
 		{
-			title: "#1 Minecraft server list & status checker | IsMcServer.online"
+			title: "#1 Minecraft server list & status checker"
 		},
 		...matches[0].meta
 	] as ReturnType<MetaFunction>;

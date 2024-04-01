@@ -1,93 +1,55 @@
 import { PrismaClient } from "@prisma/client";
-import type { GetLoadContextFunction } from "@remix-run/express";
-import { createRequestHandler } from "@remix-run/express";
 import { installGlobals } from "@remix-run/node";
-import compression from "compression";
-import express from "express";
-import morgan from "morgan";
-import * as fs from "node:fs";
-import * as path from "node:path";
-import * as url from "node:url";
+import cluster from "cluster";
+import os from "os";
+import { ExpressApp } from "server/ExpressApp";
 import { MultiEmitter } from "server/MultiEmitter";
-import { WsServer } from "server/wsserver";
+import { WsServer } from "server/WsServer";
 import sourceMapSupport from "source-map-support";
-import pack from "../package.json";
+import { Logger } from "../app/src/.server/modules/Logger";
 
-(async () => {
-	sourceMapSupport.install();
-	installGlobals();
+sourceMapSupport.install();
+installGlobals();
 
-	new WsServer(new PrismaClient());
-	const emitter = new MultiEmitter();
+if (process.env.NODE_ENV === "production") {
+	if (cluster.isPrimary) {
+		Logger(`Master ${process.pid} is running`, "magenta", "white");
 
-	const BUILD_PATH = path.resolve("build/server/index.js");
-	// const VERSION_PATH = path.resolve("version.txt");
-	// const repoVersion = fs.readFileSync(VERSION_PATH, "utf-8").trim();
+		Logger(
+			'__     ______     __    __     ______     ______     ______     ______     __   __   ______     ______     ______     __   __     __         __     __   __     ______   \n/\\ \\   /\\  ___\\   /\\ "-./  \\   /\\  ___\\   /\\  ___\\   /\\  ___\\   /\\  == \\   /\\ \\ / /  /\\  ___\\   /\\  == \\   /\\  __ \\   /\\ "-.\\ \\   /\\ \\       /\\ \\   /\\ "-.\\ \\   /\\  ___\\  \n\\ \\ \\  \\ \\___  \\  \\ \\ \\-./\\ \\  \\ \\ \\____  \\ \\___  \\  \\ \\  __\\   \\ \\  __<   \\ \\ \\\'/   \\ \\  __\\   \\ \\  __<   \\ \\ \\/\\ \\  \\ \\ \\-.  \\  \\ \\ \\____  \\ \\ \\  \\ \\ \\-.  \\  \\ \\  __\\  \n \\ \\_\\  \\/\\_____\\  \\ \\_\\ \\ \\_\\  \\ \\_____\\  \\/\\_____\\  \\ \\_____\\  \\ \\_\\ \\_\\  \\ \\__|    \\ \\_____\\  \\ \\_\\ \\_\\  \\ \\_____\\  \\ \\_\\\\"\\_\\  \\ \\_____\\  \\ \\_\\  \\ \\_\\\\"\\_\\  \\ \\_____\\\n  \\/_/   \\/_____/   \\/_/  \\/_/   \\/_____/   \\/_____/   \\/_____/   \\/_/ /_/   \\/_/      \\/_____/   \\/_/ /_/   \\/_____/   \\/_/ \\/_/   \\/_____/   \\/_/   \\/_/ \\/_/   \\/_____/',
+			"green",
+			"black",
+			true
+		);
 
-	const initialBuild = await reimportServer();
+		for (let i = 0; i < os.availableParallelism(); i++) {
+			cluster.fork();
+		}
 
-	const getLoadContext: GetLoadContextFunction = () => {
-		return {
-			start: Date.now().toString(),
-			repoVersion: "",
-			version: pack.version,
-			emitter
-		};
-	};
+		new WsServer(new PrismaClient());
 
-	const viteDevServer =
-		process.env.NODE_ENV === "production"
-			? undefined
-			: await import("vite").then((vite) =>
-					vite.createServer({
-						server: { middlewareMode: true }
-					})
-			  );
+		// resend the message to the rest of the workers except the original sender
+		cluster.on("message", (worker, message) => {
+			console.log("cluster message: ", message);
+			Object.values(cluster?.workers ?? {}).forEach((w) => {
+				if (w !== worker) {
+					console.log("resending: ", message);
+					w?.send(message);
+				}
+			});
+		});
 
-	const remixHandler = createRequestHandler({
-		build: viteDevServer ? async () => viteDevServer.ssrLoadModule("virtual:remix/server-build") : await reimportServer(),
-		mode: initialBuild.mode,
-		getLoadContext
-	});
-
-	const app = express();
-
-	app.use(compression());
-
-	// http://expressjs.com/en/advanced/best-practice-security.html#at-a-minimum-disable-x-powered-by-header
-	app.disable("x-powered-by");
-
-	if (viteDevServer) {
-		app.use(viteDevServer.middlewares);
+		cluster.on("exit", (worker) => {
+			Logger(`Worker ${worker.process.pid} died`, "white", "red");
+			cluster.fork();
+		});
 	} else {
-		// Remix fingerprints its assets so we can cache forever.
-		app.use("/build", express.static("public/build", { immutable: true, maxAge: "1y" }));
+		Logger(`Worker ${process.pid} started`, "blue", "white");
 
-		// Everything else (like favicon.ico) is cached for an hour. You may want to be
-		// more aggressive with this caching.
-		app.use(express.static("public", { maxAge: "1h" }));
+		const emitter = new MultiEmitter();
+
+		new ExpressApp(emitter).run();
 	}
-
-	app.use(morgan("tiny"));
-
-	app.all("*", remixHandler);
-
-	const port = process.env.PORT || 3000;
-
-	app.listen(port, async () => {
-		console.log(`Express server listening on port ${port}`);
-	});
-
-	/**
-	 * @returns {Promise<ServerBuild>}
-	 */
-	async function reimportServer() {
-		const stat = fs.statSync(BUILD_PATH);
-
-		// convert build path to URL for Windows compatibility with dynamic `import`
-		const BUILD_URL = url.pathToFileURL(BUILD_PATH).href;
-
-		// use a timestamp query parameter to bust the import cache
-		return await import(BUILD_URL + "?t=" + stat.mtimeMs);
-	}
-})();
+} else {
+	new ExpressApp(new MultiEmitter()).run();
+}

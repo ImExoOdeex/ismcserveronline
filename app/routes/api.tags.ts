@@ -1,6 +1,7 @@
 import { db } from "@/.server/db/db";
 import { getUser } from "@/.server/db/models/user";
 import { csrf } from "@/.server/functions/security.server";
+import { normalizeTag } from "@/functions/utils";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
@@ -68,7 +69,7 @@ export async function action({ request }: ActionFunctionArgs) {
 					doesTagExist ||
 					(await db.tag.create({
 						data: {
-							name: newTag,
+							name: normalizeTag(newTag),
 							createdByServerId: serverId
 						}
 					}));

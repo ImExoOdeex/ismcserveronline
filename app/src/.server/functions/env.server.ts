@@ -28,6 +28,8 @@ const envs = [
 	"ENCRYPTION_KEY",
 	"TESTING_KEY",
 	"WS_URL",
+	"API_URL",
+	"BOT_API",
 	// opitional
 	"DISABLE_REDIS_CACHE",
 	"REDIS_CACHE_LOGGING"

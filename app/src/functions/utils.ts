@@ -32,3 +32,8 @@ export function getResizedUrl(path: string, width?: number, height?: number): st
 		height ? `height=${height},` : ""
 	}quality=100${path}`;
 }
+
+export function normalizeTag(tag: string) {
+	// replace all -, _, and spaces with a single space
+	return tag.replace(/[-_ ]+/g, " ").trim();
+}

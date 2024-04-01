@@ -6,7 +6,7 @@ import type { IconType } from "react-icons";
 import { BiServer, BiSolidTime } from "react-icons/bi";
 import { FaMemory } from "react-icons/fa";
 import { FiCpu, FiUser } from "react-icons/fi";
-import type { Usage } from "../../../../../../../server/wsserver";
+import type { Usage } from "../../../../../../../server/WsServer";
 
 export default memo(function RealTimeConnected({ data }: { data: Usage }) {
 	const memoryPercent = (data.memory / data.memoryMax) * 100;

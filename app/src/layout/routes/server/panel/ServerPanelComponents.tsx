@@ -1,3 +1,4 @@
+import { normalizeTag } from "@/functions/utils";
 import useFetcherCallback from "@/hooks/useFetcherCallback";
 import { useProgressBarContext } from "@/layout/global/ProgressBarContext";
 import TagsAutocompleteInput from "@/layout/routes/server/panel/TagsAutocompleteInput";
@@ -106,10 +107,10 @@ export const Tags = memo(function Tags({ tags: dbTags, serverId }: { tags: strin
 
 	const [submitting, setSubmitting] = useState<string[]>([]);
 
-	const { done } = useProgressBarContext();
+	const { startAndDone } = useProgressBarContext();
 
 	const addFetcher = useFetcherCallback<typeof action>((data) => {
-		done();
+		startAndDone();
 		setSubmitting((prev) => (prev = prev.filter((id) => id !== (data as any).tag.name)));
 	});
 
@@ -134,8 +135,10 @@ export const Tags = memo(function Tags({ tags: dbTags, serverId }: { tags: strin
 							input={search}
 							setInput={setSearch}
 							onSubmit={(tag) => {
+								tag = normalizeTag(tag);
+
 								if (tags.includes(tag) || tag.length < 2) {
-									done();
+									startAndDone();
 									return;
 								}
 
@@ -200,10 +203,10 @@ export const ServerTag = memo(function ServerTag({
 }) {
 	const [isDragging, setIsDragging] = useState(false);
 
-	const { done, start } = useProgressBarContext();
+	const { startAndDone } = useProgressBarContext();
 
 	const deleteFetcher = useFetcherCallback<typeof action>((data) => {
-		done();
+		startAndDone();
 		console.log("delete tag fetcher", data);
 	});
 
@@ -211,7 +214,6 @@ export const ServerTag = memo(function ServerTag({
 		(async () => {
 			setTags((prev) => prev.filter((t) => t !== tag));
 
-			start();
 			deleteFetcher.submit(
 				{
 					tag,
@@ -244,7 +246,7 @@ export const ServerTag = memo(function ServerTag({
 					}}
 					onDragEnd={(e, info) => {
 						setIsDragging(false);
-						if (info.velocity.y > 1000 || info.velocity.y < -1000) {
+						if (info.velocity.y > 700 || info.velocity.y < -700) {
 							deleteTag();
 						}
 					}}

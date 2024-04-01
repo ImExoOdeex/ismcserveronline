@@ -89,7 +89,7 @@ export function ErrorBoundary() {
 			</head>
 			<body>
 				<ChakraBaseProvider theme={theme}>
-					<Flex h="100%" minH={"calc(100vh - 80px)"} px={4}>
+					<Flex flex={1} px={4} alignItems={"center"} justifyContent={"center"} minH="100vh">
 						<InsideErrorBoundary />
 					</Flex>
 				</ChakraBaseProvider>

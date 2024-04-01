@@ -1,6 +1,6 @@
 import { getUser } from "@/.server/db/models/user";
-import { requireEnv } from "@/.server/functions/env.server";
 import { addressesConfig } from "@/.server/functions/validateServer";
+import serverConfig from "@/.server/serverConfig";
 import { getCookieWithoutDocument } from "@/functions/cookies";
 import Layout from "@/layout/global/Layout";
 import { GlobalContext } from "@/utils/GlobalContext";
@@ -21,7 +21,8 @@ import { Document } from "./document";
 // ----------------------------- META -----------------------------
 
 export function meta() {
-	const desc = "#1 Minecraft server list & status checker. Vote and Check any Minecraft server status in real-time.";
+	const desc =
+		"Minecraft server list & status checker. Vote and Check any Minecraft server status in real-time. Get detailed server information, vote for your favorite server, and more.";
 
 	return [
 		{
@@ -67,7 +68,7 @@ export function meta() {
 		},
 		{
 			property: "og:site_name",
-			content: "IsMcServer.online"
+			content: "Minecraft server list & status checker"
 		},
 		{
 			property: "og:type",
@@ -261,7 +262,6 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 	const user = await getUser(request);
 
 	const isBot = isbot(request.headers.get("user-agent"));
-	// ^^^ code for no ads up there uwu ^^^
 
 	const start = Number(context.start ?? Date.now());
 	const locales = getClientLocales(request);
@@ -269,7 +269,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 	return typedjson({
 		cookies: request.headers.get("cookie") ?? "",
 		user,
-		dashUrl: requireEnv("REDIRECT_URL"),
+		dashUrl: serverConfig.redirectUrl,
 		isBot,
 		locales,
 		version: (context?.version as string | undefined) ?? "v3",

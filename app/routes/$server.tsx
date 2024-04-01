@@ -11,6 +11,7 @@ import { getRandomMinecarftImage } from "@/.server/minecraftImages";
 import { getCookieWithoutDocument } from "@/functions/cookies";
 import { getFullFileUrl } from "@/functions/storage";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import useEventSourceCallback from "@/hooks/useEventSourceCallback";
 import useUser from "@/hooks/useUser";
 import Link from "@/layout/global/Link";
 import type { ICheck } from "@/layout/routes/server/index/ChecksTable";
@@ -39,7 +40,8 @@ import {
 	Stack,
 	Text,
 	VStack,
-	VisuallyHidden
+	VisuallyHidden,
+	useToast
 } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import type { ActionFunctionArgs, HeadersArgs, LinksFunction, LoaderFunctionArgs, MetaArgs, MetaFunction } from "@remix-run/node";
@@ -648,25 +650,25 @@ export default function $server() {
 	const [comments, setComments] = useState<any[] | null>(null);
 
 	const [votes, setVotes] = useState<number>(dbVotes);
-	// const toast = useToast();
-	// useEventSourceCallback(
-	// 	`/api/sse/vote?id=${serverId}`,
-	// 	{
-	// 		event: "new-vote"
-	// 	},
-	// 	(sourceData) => {
-	// 		toast({
-	// 			description: `${sourceData.nick} has voted for ${data.server}!`,
-	// 			status: "info",
-	// 			containerStyle: {
-	// 				fontWeight: 500
-	// 			},
-	// 			isClosable: false
-	// 		});
+	const toast = useToast();
+	useEventSourceCallback(
+		`/api/sse/vote?id=${serverId}`,
+		{
+			event: "new-vote"
+		},
+		(sourceData) => {
+			toast({
+				description: `${sourceData.nick} has voted for ${data.server}!`,
+				status: "info",
+				containerStyle: {
+					fontWeight: 500
+				},
+				isClosable: false
+			});
 
-	// 		setVotes((v) => v + 1);
-	// 	}
-	// );
+			setVotes((v) => v + 1);
+		}
+	);
 
 	const user = useUser();
 	const isOwner = useMemo(() => {
