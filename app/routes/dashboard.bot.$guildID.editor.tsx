@@ -46,6 +46,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 	const formData = await request.formData();
 	const type = formData.get("type") as "livecheck" | "alert";
+	const status = formData.get("status")?.toString().toUpperCase() as "ONLINE" | "OFFLINE";
 	const message = formData.get("message") as string;
 
 	const { success, message: resMessage } = await fetch(`${serverConfig.botApi}/${guildID}/custom-messages`, {
@@ -55,7 +56,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 		},
 		body: new URLSearchParams({
 			type,
-			message
+			message,
+			status
 		})
 	}).then((res) => res.json());
 

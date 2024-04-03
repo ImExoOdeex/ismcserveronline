@@ -13,6 +13,7 @@ import {
 	AccordionPanel,
 	Box,
 	Button,
+	Link as ChakraLink,
 	Divider,
 	Flex,
 	Heading,
@@ -382,6 +383,90 @@ export default function DashboardAdmin() {
 														<Th>{user.email}</Th>
 														<Th>{user.snowflake}</Th>
 														<Th>{new Date(user.created_at).toLocaleString()}</Th>
+													</Tr>
+												))}
+											</Tbody>
+										</Table>
+									</TableContainer>
+								</Flex>
+							</AccordionPanel>
+						</AccordionItem>
+
+						<AccordionItem>
+							<AccordionButton>
+								<Box as="span" flex="1" textAlign="left">
+									Votes
+								</Box>
+								<AccordionIcon />
+							</AccordionButton>
+							<AccordionPanel pb={4}>
+								<Flex display={"flex"} flexDir={"column"}>
+									<TableContainer>
+										<Table variant="simple">
+											<Thead>
+												<Tr>
+													<Th>Id</Th>
+													<Th>Server</Th>
+													<Th>Nick</Th>
+													<Th>Reward Collected</Th>
+													<Th>Created At</Th>
+												</Tr>
+											</Thead>
+											<Tbody>
+												{stats.votes.map((vote) => (
+													<Tr key={`vote-` + vote.id}>
+														<Th>{vote.id}</Th>
+														<Th>{vote.Server.server}</Th>
+														<Th>{vote.nick}</Th>
+														<Th>{vote.reward_collected}</Th>
+														<Th>{new Date(vote.created_at).toLocaleString()}</Th>
+													</Tr>
+												))}
+											</Tbody>
+										</Table>
+									</TableContainer>
+								</Flex>
+							</AccordionPanel>
+						</AccordionItem>
+
+						<AccordionItem>
+							<AccordionButton>
+								<Box as="span" flex="1" textAlign="left">
+									Verified servers
+								</Box>
+								<AccordionIcon />
+							</AccordionButton>
+							<AccordionPanel pb={4}>
+								<Flex display={"flex"} flexDir={"column"}>
+									<TableContainer>
+										<Table variant="simple">
+											<Thead>
+												<Tr>
+													<Th>Id</Th>
+													<Th>Server</Th>
+													<Th>Owner</Th>
+													<Th>Banner</Th>
+													<Th>Verified At</Th>
+												</Tr>
+											</Thead>
+											<Tbody>
+												{stats.verifiedServers.map((server) => (
+													<Tr key={`verified-server-` + server.id}>
+														<Th>{server.id}</Th>
+														<Th>{server.server}</Th>
+														<Th>{server.Owner?.nick ?? "Not verified"}</Th>
+														<Th>
+															<ChakraLink href={server.banner ?? ""} isExternal>
+																{server.banner ? server.banner + ".webp" : "No banner"}
+															</ChakraLink>
+														</Th>
+														<Th>
+															{server.Verification.find((v) => v.success)?.success
+																? new Date(
+																		server.Verification.find((v) => v.success)!.verified_at!
+																  ).toLocaleString()
+																: ""}
+														</Th>
 													</Tr>
 												))}
 											</Tbody>

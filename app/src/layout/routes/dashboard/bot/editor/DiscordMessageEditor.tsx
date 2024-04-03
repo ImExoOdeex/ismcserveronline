@@ -45,7 +45,6 @@ interface Props {
 	data?: FormatData;
 }
 
-// This was fucking hell, but still better than svelte :)
 export default function DiscordMessageEditor({ type, message, setMessage, data }: Props) {
 	return (
 		<Flex

@@ -29,7 +29,7 @@ export async function getCounts() {
 }
 
 export async function getStats() {
-	const [users, checks, comments, savedServers] = await Promise.all([
+	const [users, checks, comments, savedServers, votes, verifiedServers] = await Promise.all([
 		db.user.findMany({
 			orderBy: {
 				created_at: "desc"
@@ -62,6 +62,30 @@ export async function getStats() {
 				Server: true
 			},
 			take: 10
+		}),
+		db.vote.findMany({
+			orderBy: {
+				created_at: "desc"
+			},
+			include: {
+				Server: true
+			},
+			take: 10
+		}),
+		db.server.findMany({
+			where: {
+				owner_id: {
+					not: null
+				}
+			},
+			orderBy: {
+				created_at: "desc"
+			},
+			include: {
+				Owner: true,
+				Verification: true
+			},
+			take: 10
 		})
 	]);
 
@@ -69,6 +93,8 @@ export async function getStats() {
 		users,
 		checks,
 		comments,
-		savedServers
+		savedServers,
+		votes,
+		verifiedServers
 	};
 }

@@ -91,6 +91,10 @@ export default function Sidebar() {
 				base: "100%",
 				md: "300px"
 			}}
+			minW={{
+				base: "100%",
+				md: "300px"
+			}}
 		>
 			<Flex w="100%" alignItems={"center"} mb={2}>
 				<Text fontSize={"2xl"} fontWeight={600}>

@@ -1,6 +1,6 @@
 import type { DiscordMessageType } from "@/layout/routes/dashboard/bot/editor/DiscordMessageEditor";
 import { Code, Divider, Flex, Heading, ListItem, Text, UnorderedList } from "@chakra-ui/react";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 
 interface Props {
 	type: DiscordMessageType;
@@ -87,7 +87,7 @@ export default function Placeholders({ type }: Props) {
 
 				<UnorderedList listStyleType={"none"} spacing={1.5} marginInlineStart={"0px"}>
 					{placeholdersType.map((pl) => (
-						<>
+						<React.Fragment key={pl.placeholder}>
 							<Divider />
 							<ListItem>
 								<Flex flexDir={"column"} gap={0.5}>
@@ -95,7 +95,7 @@ export default function Placeholders({ type }: Props) {
 									<Code bg="transparent">{pl.placeholder}</Code>
 								</Flex>
 							</ListItem>
-						</>
+						</React.Fragment>
 					))}
 				</UnorderedList>
 			</Flex>

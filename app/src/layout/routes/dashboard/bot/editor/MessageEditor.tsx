@@ -19,8 +19,6 @@ export default function MessageEditor({ message, setMessage }: Props) {
 		footer: false
 	});
 
-	// const inputID = useId();
-
 	return (
 		<Flex
 			w={{
