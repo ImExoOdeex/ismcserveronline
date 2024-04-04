@@ -4,7 +4,7 @@ import { CheckIcon, CopyIcon } from "@chakra-ui/icons";
 import { Button, Flex, HStack, Icon, Spinner, Text, useToast } from "@chakra-ui/react";
 import { Await } from "@remix-run/react";
 import { Suspense, memo } from "react";
-import { TbSquareRoundedChevronsUpFilled } from "react-icons/tb";
+import { BiUpvote } from "react-icons/bi";
 
 interface Props {
 	server: string;
@@ -118,7 +118,7 @@ export default memo(function UnderServerView({ server, bedrock, promiseData, vot
 					variant={"brand"}
 					as={Link}
 					to={`/${bedrock ? "bedrock/" : ""}${server}/vote`}
-					rightIcon={<Icon as={TbSquareRoundedChevronsUpFilled} boxSize={6} />}
+					rightIcon={<Icon as={BiUpvote} boxSize={6} />}
 				>
 					Vote ({voteCount || 0})
 				</Button>

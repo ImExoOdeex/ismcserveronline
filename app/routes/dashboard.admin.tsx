@@ -1,7 +1,10 @@
 import { getUser } from "@/.server/db/models/user";
 import cache from "@/.server/db/redis";
 import { getCounts, getStats } from "@/.server/functions/admin.server";
+import { requireEnv } from "@/.server/functions/env.server";
 import { csrf } from "@/.server/functions/security.server";
+import serverConfig from "@/.server/serverConfig";
+import { copyObjectWithoutKeys } from "@/functions/utils";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import Link from "@/layout/global/Link";
 import type { ServerModel } from "@/types/minecraftServer";
@@ -18,6 +21,7 @@ import {
 	Flex,
 	Heading,
 	Image,
+	SimpleGrid,
 	Table,
 	TableContainer,
 	Tbody,
@@ -30,8 +34,6 @@ import {
 } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
-import { useRef, useState } from "react";
-import { useCountUp } from "react-countup";
 import { typedjson } from "remix-typedjson";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -40,11 +42,20 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 	if (!user || user.role !== "ADMIN") throw new Error("Unauthorized");
 
-	const [counts, stats] = await Promise.all([getCounts(), getStats()]);
+	const [counts, stats, bot] = await Promise.all([
+		getCounts(),
+		getStats(),
+		fetch(serverConfig.botApi + "/stats", {
+			headers: {
+				Authorization: requireEnv("SUPER_DUPER_API_ACCESS_TOKEN")
+			}
+		}).then((res) => res.json())
+	]);
 
 	return typedjson({
 		counts,
-		stats
+		stats,
+		bot
 	});
 }
 
@@ -69,32 +80,32 @@ export function shouldRevalidate() {
 }
 
 export default function DashboardAdmin() {
-	const { counts, stats } = useAnimationLoaderData<typeof loader>();
+	const { counts, stats, bot } = useAnimationLoaderData<typeof loader>();
 
 	const flushFetcher = useFetcher();
 
-	const cpuRef = useRef(null);
-	const cpuCount = useCountUp({
-		start: 0,
-		end: 0,
-		ref: cpuRef,
-		duration: 0.5
-	});
+	// const cpuRef = useRef(null);
+	// const cpuCount = useCountUp({
+	// 	start: 0,
+	// 	end: 0,
+	// 	ref: cpuRef,
+	// 	duration: 0.5
+	// });
 
-	const [cpuHistory, setCpuHistory] = useState([
-		{
-			name: new Date().toLocaleTimeString(),
-			percent: 0
-		}
-	]);
+	// const [cpuHistory, setCpuHistory] = useState([
+	// 	{
+	// 		name: new Date().toLocaleTimeString(),
+	// 		percent: 0
+	// 	}
+	// ]);
 
-	const [usage, setUsage] = useState({
-		cpu: 0,
-		memory: {
-			total: 0,
-			used: 0
-		}
-	});
+	// const [usage, setUsage] = useState({
+	// 	cpu: 0,
+	// 	memory: {
+	// 		total: 0,
+	// 		used: 0
+	// 	}
+	// });
 
 	// useEventSourceCallback(
 	// 	"/api/admin/sse/usage",
@@ -127,54 +138,6 @@ export default function DashboardAdmin() {
 
 					<Icon as={FiCpu} boxSize={20} />
 				</Flex>
-
-				<AreaChart
-					key={Math.random()}
-					width={700}
-					height={200}
-					data={cpuHistory}
-					margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-				>
-					<defs>
-						<linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
-							<stop offset="5%" stopColor="#40cf77" stopOpacity={0.8} />
-							<stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
-						</linearGradient>
-					</defs>
-					<YAxis domain={[0, 100]} includeHidden />
-					<Tooltip
-						animationEasing="ease-in-out"
-						animationDuration={400}
-						content={({ active, payload, label }) => {
-							if (active) {
-								return (
-									<Flex p={2} bg={"rgba(255,255,255,0.9)"} rounded={"md"} color={"black"}>
-										{payload![0].value}%
-									</Flex>
-								);
-							}
-							return null;
-						}}
-					/>
-
-					<ReferenceLine y={25} stroke="#6a6a6a" strokeDasharray="3 10" />
-					<ReferenceLine y={50} stroke="#6a6a6a" strokeDasharray="3 10" />
-					<ReferenceLine y={75} stroke="#6a6a6a" strokeDasharray="3 10" />
-					<ReferenceLine y={100} stroke="#6a6a6a" strokeDasharray="3 10" />
-					<Area
-						isAnimationActive={false}
-						baseValue={0}
-						max={100}
-						min={0}
-						type="natural"
-						dataKey="percent"
-						stroke="#82ca9d"
-						fillOpacity={1}
-						fill="url(#colorPv)"
-						animationEasing="ease-out"
-						animationDuration={1000}
-					/>
-				</AreaChart>
 			</Flex>
 
 			<Text fontSize={"2xl"}>
@@ -477,6 +440,43 @@ export default function DashboardAdmin() {
 						</AccordionItem>
 					</Accordion>
 				</Flex>
+			</Flex>
+
+			<Flex flexDir={"column"} gap={4}>
+				<Heading fontSize={"2xl"}>Bot Stats</Heading>
+
+				<Heading fontSize={"lg"}>Guilds</Heading>
+				<Wrap justifyContent={"space-between"} w="100%" alignItems={"center"} gap={4}>
+					{bot.biggestGuilds.map((guild: { id: string; name: string; memberCount: number; icon: string }) => {
+						return (
+							<Flex key={guild.id} flexDir={"column"} gap={2}>
+								<Image src={guild.icon} boxSize={20} rounded={"md"} />
+								<Text fontWeight={600}>{guild.name}</Text>
+								<Text>{guild.memberCount} members</Text>
+							</Flex>
+						);
+					})}
+				</Wrap>
+
+				<Heading fontSize={"lg"}>Stats</Heading>
+				<SimpleGrid columns={2} gap={4}>
+					{Object.entries(copyObjectWithoutKeys(bot, ["biggestGuilds"])).map(([key, value]: [any, any]) => (
+						<Flex
+							key={key}
+							flexDir={"column"}
+							gap={1}
+							p={4}
+							border="1px solid"
+							borderColor={"alpha300"}
+							rounded={"xl"}
+						>
+							<Text fontWeight={500}>{camelCaseToTitleCase(key)}</Text>
+							<Text fontWeight={600} fontSize={"2xl"}>
+								{value}
+							</Text>
+						</Flex>
+					))}
+				</SimpleGrid>
 			</Flex>
 		</Flex>
 	);

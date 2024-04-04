@@ -7,6 +7,7 @@ import os from "os";
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	csrf(request);
+
 	const user = await getUser(request, {
 		role: true
 	});
@@ -32,22 +33,32 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		}
 	}
 
-	return new EventStream(request, (send) => {
-		async function handle() {
-			const data = await constructData();
-			console.log("handle", data);
-			send(JSON.stringify(data), {
-				channel: "usage"
-			});
-		}
+	try {
+		return new EventStream(request, (send) => {
+			async function handle() {
+				console.log("aborted", request.signal.aborted);
+				if (!request.signal.aborted) {
+					const data = await constructData();
+					console.log("handle", data);
+					send(JSON.stringify(data), {
+						channel: "usage"
+					});
+				}
+			}
 
-		const interval = setInterval(async () => {
-			await handle();
-		}, 1000);
+			const interval = setInterval(async () => {
+				await handle();
+			}, 250);
 
-		return () => {
-			// Return a cleanup function
-			clearInterval(interval);
-		};
-	});
+			return () => {
+				// Return a cleanup function
+				clearInterval(interval);
+			};
+		});
+	} catch (e) {
+		console.error(e);
+		return new Response("Internal Server Error", {
+			status: 500
+		});
+	}
 }

@@ -7,7 +7,6 @@
 		"postinstall": "tsx postinstall.ts",
 		"build": "remix vite:build",
 		"dev": "cross-env NODE_ENV=development tsx ./server/server",
-		"dev:ws": "cross-env NODE_ENV=development tsx watch ./server/wsserver",
 		"start": "cross-env NODE_ENV=production tsx ./server/server",
 		"start:build": "npm run build && npm run start",
 		"typecheck": "tsc -b",

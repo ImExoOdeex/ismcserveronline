@@ -4,7 +4,8 @@ import { cachePrefetch } from "@/.server/functions/fetchHelpers.server";
 import { csrf } from "@/.server/functions/security.server";
 import type { MinecraftImage } from "@/.server/minecraftImages";
 import { getRandomMinecarftImage } from "@/.server/minecraftImages";
-import { sendVoteWebhook } from "@/.server/modules/voting";
+import { decrypt } from "@/.server/modules/encryption";
+import { sendVotePacket, sendVoteWebhook } from "@/.server/modules/voting";
 import { getFullFileUrl } from "@/functions/storage";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import useUser from "@/hooks/useUser";
@@ -52,6 +53,11 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
 				vote_webhook_password: true,
 				vote_webhook_url: true,
 				prime: true,
+				host: true,
+				votifier_host: true,
+				votifier_port: true,
+				votifier_token: true,
+				using_votifier: true,
 				Owner: {
 					select: {
 						id: true,
@@ -108,6 +114,17 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
 					user_id: user.id,
 					nick
 				}
+			});
+		}
+
+		if (foundServer.using_votifier && foundServer.votifier_token) {
+			await sendVotePacket({
+				host: foundServer.votifier_host || foundServer.server,
+				port: foundServer.votifier_port,
+				token: await decrypt(foundServer.votifier_token),
+				nick
+			}).catch((e) => {
+				console.error("Failed to send votifier packet", e);
 			});
 		}
 

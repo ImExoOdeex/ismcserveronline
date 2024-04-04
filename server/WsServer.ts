@@ -49,8 +49,8 @@ export class WsServer extends WebSocketServer {
 				closeWithReason("No Authorization message received in 5 seconds. Closing connection.");
 			}, 5000);
 
-			function closeWithReason(reason: string) {
-				ws.close(4000, reason);
+			function closeWithReason(reason: string, code = 4000) {
+				ws.close(code, reason);
 			}
 
 			ws.on("message", async (strMessage) => {
@@ -62,13 +62,13 @@ export class WsServer extends WebSocketServer {
 					if (message.intent === "Authorize") {
 						type = "server";
 						const token = message.data.token;
-						if (!token) return closeWithReason("No token provided");
+						if (!token) return closeWithReason("No token provided", 4001);
 
 						// add client to room with that server
 						const serverToken = await db.serverToken.findUnique({
 							where: { token }
 						});
-						if (!serverToken) return closeWithReason("Invalid token");
+						if (!serverToken) return closeWithReason("Invalid token", 4001);
 						const server = await db.server.findUnique({
 							where: { id: serverToken.server_id }
 						});

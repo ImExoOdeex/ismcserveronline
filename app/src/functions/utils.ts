@@ -37,3 +37,7 @@ export function normalizeTag(tag: string) {
 	// replace all -, _, and spaces with a single space
 	return tag.replace(/[-_ ]+/g, " ").trim();
 }
+
+export function removePortFromHost(host: string): string {
+	return host.split(":")[0];
+}

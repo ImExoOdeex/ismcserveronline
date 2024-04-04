@@ -51,5 +51,7 @@ if (process.env.NODE_ENV === "production") {
 		new ExpressApp(emitter).run();
 	}
 } else {
+	new WsServer(new PrismaClient());
+
 	new ExpressApp(new MultiEmitter()).run();
 }

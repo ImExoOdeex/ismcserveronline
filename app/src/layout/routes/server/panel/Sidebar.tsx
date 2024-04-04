@@ -3,6 +3,7 @@ import Link from "@/layout/global/Link";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import { Button, Flex, HStack, Icon, Image, Text, Tooltip } from "@chakra-ui/react";
 import { useLocation } from "@remix-run/react";
+import { BiUpvote } from "react-icons/bi";
 import { FaHashtag } from "react-icons/fa";
 import { FiCpu, FiCreditCard, FiSettings } from "react-icons/fi";
 import { MdOutlineWebhook } from "react-icons/md";
@@ -27,6 +28,12 @@ const buttons = [
 		to: "/webhook",
 		requiresSubscription: false,
 		icon: MdOutlineWebhook
+	},
+	{
+		name: "Voting",
+		to: "/voting",
+		requiresSubscription: false,
+		icon: BiUpvote
 	},
 	{
 		name: "API Token",

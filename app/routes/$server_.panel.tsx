@@ -37,7 +37,11 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 				vote_webhook_url: true,
 				vote_webhook_password: true,
 				prime: true,
-				subId: true
+				subId: true,
+				using_votifier: true,
+				votifier_port: true,
+				votifier_token: true,
+				votifier_host: true
 			}
 		})
 		.then(async (server) => {
@@ -45,7 +49,8 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
 			return {
 				...server,
-				vote_webhook_password: server.vote_webhook_password ? await decrypt(server.vote_webhook_password) : null
+				vote_webhook_password: server.vote_webhook_password ? await decrypt(server.vote_webhook_password) : null,
+				votifier_token: server.votifier_token ? await decrypt(server.votifier_token) : null
 			};
 		});
 	if (!server) throw new Response("Server not found", { status: 404 });

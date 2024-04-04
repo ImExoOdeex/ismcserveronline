@@ -56,6 +56,11 @@ model Server {
   language           String?
   message_from_owner String?
 
+  votifier_token String?
+  votifier_host  String?
+  votifier_port  Int     @default(8192)
+  using_votifier Boolean @default(false)
+
   // --- Server data ---
   server  String
   host    String?

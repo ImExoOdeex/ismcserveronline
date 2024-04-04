@@ -6,11 +6,14 @@ import serverConfig from "@/.server/serverConfig";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import Link from "@/layout/global/Link";
 import BotNotOnServer from "@/layout/routes/dashboard/bot/BotNotOnServer";
+import config from "@/utils/config";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { Button, Flex, HStack, Heading, Image, Stack } from "@chakra-ui/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { useLocation, useOutlet } from "@remix-run/react";
+import type { Transition } from "framer-motion";
+import { motion } from "framer-motion";
 import { typedjson } from "remix-typedjson";
 import { InsideErrorBoundary } from "~/document";
 import type { Guild } from "./dashboard.bot._index";
@@ -54,6 +57,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 	return typedjson({ guild: userContainsGuild ? guild : null });
 }
 
+// WIP
 export default function $guildID() {
 	const { guild } = useAnimationLoaderData<typeof loader>();
 
@@ -77,6 +81,10 @@ export default function $guildID() {
 			name: "Editor",
 			path: `/dashboard/bot/${guild.id}/editor`
 		}
+		// {
+		// 	name: "Chat sync",
+		// 	path: `/dashboard/bot/${guild.id}/chat-sync`
+		// }
 	];
 
 	return (
@@ -102,8 +110,36 @@ export default function $guildID() {
 
 				<HStack>
 					{links.map((link) => (
-						<Button key={link.name} as={Link} variant={pathname === link.path ? "brand" : "ghost"} to={link.path}>
+						<Button
+							key={link.name}
+							as={Link}
+							variant={"ghost"}
+							to={link.path}
+							pos="relative"
+							color={pathname === link.path ? "whiteAlpha.900" : "textSec"}
+						>
 							{link.name}
+							{pathname === link.path && (
+								<Flex
+									as={motion.div}
+									layout
+									layoutId="guild-setting"
+									transition={
+										{
+											ease: config.ease,
+											duration: 0.3
+										} as Transition as any
+									}
+									pos="absolute"
+									bottom={0}
+									top={0}
+									left={0}
+									right={0}
+									zIndex={-1}
+									bg="brand.900"
+									rounded={"xl"}
+								/>
+							)}
 						</Button>
 					))}
 				</HStack>

@@ -66,7 +66,15 @@ export default function Dashboard() {
 							Prime
 						</Button>
 
-						<logoutFetcher.Form action="/api/auth/logout" method="DELETE">
+						<Box
+							as={logoutFetcher.Form}
+							action="/api/auth/logout"
+							method="DELETE"
+							display={{
+								base: "none",
+								md: "block"
+							}}
+						>
 							<Button
 								_hover={{
 									bg: "rgba(255, 0, 0, 0.1)",
@@ -80,7 +88,7 @@ export default function Dashboard() {
 							>
 								Logout
 							</Button>
-						</logoutFetcher.Form>
+						</Box>
 					</HStack>
 				</Flex>
 
