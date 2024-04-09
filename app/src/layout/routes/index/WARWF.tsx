@@ -8,7 +8,7 @@ import { TbBulb, TbChecks } from "react-icons/tb";
 const items = [
 	{
 		id: 0,
-		title: "Minecrat server status",
+		title: "Minecraft server status",
 		description: "Check any Minecraft servers status on both, Java and Bedrock edition!",
 		to: "",
 		color: "green",
