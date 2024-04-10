@@ -5,6 +5,7 @@ import { csrf } from "@/.server/functions/security.server";
 import { getSession } from "@/.server/session";
 import { toStripeAmount } from "@/functions/payments";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import CouponForm from "@/layout/routes/prime/CouponForm";
 import SubscriptionForm from "@/layout/routes/prime/SubscriptionForm";
 import plans from "@/utils/plans";
 import { CheckIcon } from "@chakra-ui/icons";
@@ -13,8 +14,10 @@ import type { LoaderFunctionArgs } from "@remix-run/node";
 import { Elements } from "@stripe/react-stripe-js";
 import type { Stripe } from "@stripe/stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useCountUp } from "react-countup";
 import { redirect, typedjson } from "remix-typedjson";
+import type { Stripe as StripeType } from "stripe";
 import invariant from "tiny-invariant";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -76,6 +79,35 @@ export default function PrimeSubscribe() {
 	const plan = plans.find((p) => p.type === subType);
 	invariant(plan, "Invalid plan");
 
+	const [price, setPrice] = useState(plan.price);
+	const [didStart, setDidStart] = useState(false);
+	const countUpRef = useRef(null);
+	const { update } = useCountUp({
+		ref: countUpRef,
+		end: plan.price,
+		start: plan.price,
+		duration: 2,
+		decimals: 2,
+		onStart: () => setDidStart(true),
+		useEasing: true
+	});
+
+	// coupon
+	const [addedCoupon, setAddedCoupon] = useState<StripeType.Response<StripeType.Coupon> | null>(null);
+	console.log("addedCoupon", addedCoupon);
+
+	useEffect(() => {
+		if (addedCoupon) {
+			const discount = (addedCoupon?.percent_off as number) / 100;
+			const newPrice = plan.price - plan.price * discount;
+			setPrice(newPrice);
+			update(newPrice);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [addedCoupon]);
+
+	const [serverId, setServerId] = useState<number | null>(null);
+
 	return (
 		<Flex w="100%" maxW={"1400px"} mx={"auto"} flexDir={"column"} gap={10} px={4} mt={20}>
 			<Flex
@@ -100,9 +132,18 @@ export default function PrimeSubscribe() {
 								<Box as="span" fontSize={"2xl"} color={planColor}>
 									$
 								</Box>
-								<Text fontSize={"5xl"}>{plan.price}</Text>
+								<Text fontSize={"5xl"} ref={countUpRef}>
+									{!didStart ? price : undefined}
+								</Text>
 							</Flex>
 						</Flex>
+
+						<CouponForm
+							addedCoupon={addedCoupon}
+							setAddedCoupon={setAddedCoupon}
+							color={planColor}
+							serverId={serverId}
+						/>
 					</Flex>
 
 					<Elements
@@ -173,7 +214,13 @@ export default function PrimeSubscribe() {
 				}
 			`}
 						</style>
-						<SubscriptionForm verifiedServers={verifiedServers} subType={subType} />
+						<SubscriptionForm
+							verifiedServers={verifiedServers}
+							subType={subType}
+							coupon={addedCoupon?.id}
+							serverId={serverId}
+							setServerId={setServerId}
+						/>
 					</Elements>
 				</Flex>
 

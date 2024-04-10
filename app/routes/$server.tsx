@@ -681,6 +681,9 @@ export default function $server() {
 	const [shouldPregenerateStyles, setShouldPregenerateStyles] = useState(true);
 	useEffect(() => {
 		setShouldPregenerateStyles(false);
+		console.log("Server Id", serverId);
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [server]);
 
 	// checks table data

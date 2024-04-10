@@ -49,7 +49,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
 			headers: {
 				Authorization: requireEnv("SUPER_DUPER_API_ACCESS_TOKEN")
 			}
-		}).then((res) => res.json())
+		})
+			.then((res) => res.json())
+			.catch(() => null)
 	]);
 
 	return typedjson({
@@ -442,42 +444,44 @@ export default function DashboardAdmin() {
 				</Flex>
 			</Flex>
 
-			<Flex flexDir={"column"} gap={4}>
-				<Heading fontSize={"2xl"}>Bot Stats</Heading>
+			{bot && (
+				<Flex flexDir={"column"} gap={4}>
+					<Heading fontSize={"2xl"}>Bot Stats</Heading>
 
-				<Heading fontSize={"lg"}>Guilds</Heading>
-				<Wrap justifyContent={"space-between"} w="100%" alignItems={"center"} gap={4}>
-					{bot.biggestGuilds.map((guild: { id: string; name: string; memberCount: number; icon: string }) => {
-						return (
-							<Flex key={guild.id} flexDir={"column"} gap={2}>
-								<Image src={guild.icon} boxSize={20} rounded={"md"} />
-								<Text fontWeight={600}>{guild.name}</Text>
-								<Text>{guild.memberCount} members</Text>
+					<Heading fontSize={"lg"}>Guilds</Heading>
+					<Wrap justifyContent={"space-between"} w="100%" alignItems={"center"} gap={4}>
+						{bot.biggestGuilds.map((guild: { id: string; name: string; memberCount: number; icon: string }) => {
+							return (
+								<Flex key={guild.id} flexDir={"column"} gap={2}>
+									<Image src={guild.icon} boxSize={20} rounded={"md"} />
+									<Text fontWeight={600}>{guild.name}</Text>
+									<Text>{guild.memberCount} members</Text>
+								</Flex>
+							);
+						})}
+					</Wrap>
+
+					<Heading fontSize={"lg"}>Stats</Heading>
+					<SimpleGrid columns={2} gap={4}>
+						{Object.entries(copyObjectWithoutKeys(bot, ["biggestGuilds"])).map(([key, value]: [any, any]) => (
+							<Flex
+								key={key}
+								flexDir={"column"}
+								gap={1}
+								p={4}
+								border="1px solid"
+								borderColor={"alpha300"}
+								rounded={"xl"}
+							>
+								<Text fontWeight={500}>{camelCaseToTitleCase(key)}</Text>
+								<Text fontWeight={600} fontSize={"2xl"}>
+									{value}
+								</Text>
 							</Flex>
-						);
-					})}
-				</Wrap>
-
-				<Heading fontSize={"lg"}>Stats</Heading>
-				<SimpleGrid columns={2} gap={4}>
-					{Object.entries(copyObjectWithoutKeys(bot, ["biggestGuilds"])).map(([key, value]: [any, any]) => (
-						<Flex
-							key={key}
-							flexDir={"column"}
-							gap={1}
-							p={4}
-							border="1px solid"
-							borderColor={"alpha300"}
-							rounded={"xl"}
-						>
-							<Text fontWeight={500}>{camelCaseToTitleCase(key)}</Text>
-							<Text fontWeight={600} fontSize={"2xl"}>
-								{value}
-							</Text>
-						</Flex>
-					))}
-				</SimpleGrid>
-			</Flex>
+						))}
+					</SimpleGrid>
+				</Flex>
+			)}
 		</Flex>
 	);
 }

@@ -311,12 +311,13 @@ export const webhookHandlers = {
 };
 
 export const subscriptionHandlers = {
-	async createSubscription(user: Pick<User, "email" | "id" | "nick">, amount: number, serverId?: number) {
+	async createSubscription(user: Pick<User, "email" | "id" | "nick">, amount: number, serverId?: number, coupon?: string) {
 		const product = await createProduct(user, "ismcserver.online prime subscription");
 		const customer = await createCustomer(user);
 
 		return await stripe.subscriptions.create({
 			customer: customer.id,
+			coupon,
 			items: [
 				{
 					price_data: {

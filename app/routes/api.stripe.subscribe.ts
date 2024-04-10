@@ -22,6 +22,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 		const form = await request.formData();
 		const serverId = Number(form.get("serverId")) as number | undefined;
+		const coupon = (form.get("coupon") as string | undefined) || undefined;
 
 		const plan = plans.find((p) => p.type === subType);
 		invariant(plan, "Invalid plan");
@@ -40,10 +41,12 @@ export async function action({ request }: ActionFunctionArgs) {
 			invariant(!server.prime, "This server is already subscribed");
 		}
 
-		const subscription = await subscriptionHandlers.createSubscription(user, plan.price, serverId);
+		const subscription = await subscriptionHandlers.createSubscription(user, plan.price, serverId, coupon);
 
 		const paymentIntent = (subscription.latest_invoice as Stripe.Invoice).payment_intent as Stripe.PaymentIntent | null;
 
+		console.log("sub", subscription);
+		console.log("paymentIntent", paymentIntent);
 		if (paymentIntent) {
 			await stripe.paymentIntents.update(paymentIntent.id, {
 				metadata: {
@@ -61,7 +64,7 @@ export async function action({ request }: ActionFunctionArgs) {
 			return json({
 				type: "setup",
 				clientSecret: (subscription.pending_setup_intent as Stripe.SetupIntent).client_secret,
-				paymentIntentId: paymentIntent!.id
+				paymentIntentId: (subscription.pending_setup_intent as Stripe.SetupIntent).id
 			});
 		} else {
 			return json({

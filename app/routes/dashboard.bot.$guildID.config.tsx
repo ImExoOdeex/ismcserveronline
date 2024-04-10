@@ -96,7 +96,7 @@ export default function Config() {
 
 			<Text color={"textSec"}>
 				To edit status colors for the bot's embed responses, click on the "Color Fill" icon located on the bottom right
-				corner of the color box. This will open up the color picker. To save your changes, click on the "Update" button.
+				corner of the color box. This will open up the color picker. Changes will be saved automatically.
 			</Text>
 		</>
 	);

@@ -80,8 +80,9 @@ export default function Editor() {
 			<Divider my={10} />
 
 			<Text color={"textSec"}>
-				To edit status colors for the bot's embed responses, click on the "Color Fill" icon located on the bottom right
-				corner of the color box. This will open up the color picker. To save your changes, click on the "Update" button.
+				To edit the messages, select which status message you want to edit, and then start editing! Changes are saved
+				automatically. Pro tip: If you wanna use an image, you can upload it to Discord and then copy the link to the
+				image and paste it in the message box or use service like imgur to host the image.
 			</Text>
 		</>
 	);
