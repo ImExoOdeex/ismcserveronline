@@ -1,6 +1,9 @@
 import { vitePlugin as remix } from "@remix-run/dev";
+import { installGlobals } from "@remix-run/node";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
+
+installGlobals();
 
 export default defineConfig({
 	plugins: [
@@ -9,10 +12,10 @@ export default defineConfig({
 			manifest: true,
 			future: {
 				v3_throwAbortReason: true,
-				v3_fetcherPersist: true
-			}
+				v3_fetcherPersist: true,
+			},
 		}),
-		tsconfigPaths()
+		tsconfigPaths(),
 	],
 	ssr: {
 		noExternal: [
@@ -23,12 +26,12 @@ export default defineConfig({
 			"dayjs/plugin/relativeTime",
 			"react-markdown",
 			"remark-breaks",
-			"remark-gfm"
-		]
+			"remark-gfm",
+		],
 	},
 	build: {
 		rollupOptions: {
-			external: ["sharp"]
-		}
-	}
+			external: ["sharp"],
+		},
+	},
 });

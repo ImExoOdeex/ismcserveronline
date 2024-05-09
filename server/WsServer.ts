@@ -1,14 +1,16 @@
 import { Logger } from "@/.server/modules/Logger";
 import type { PrismaClient } from "@prisma/client";
 import "dotenv/config";
-import { Server } from "http";
+import { Server } from "node:http";
 import type { WebSocket } from "ws";
 import { WebSocketServer } from "ws";
 
 interface Message<T extends "server" | "client"> {
 	from: T;
 	intent: T extends "server" ? "Authorize" | "Data" : "Authorize";
-	data: T extends "server" ? { token: string | null; usage: any } : { token: string | null };
+	data: T extends "server"
+		? { token: string | null; usage: any }
+		: { token: string | null };
 }
 
 export interface Usage {
@@ -46,7 +48,9 @@ export class WsServer extends WebSocketServer {
 			console.log("WebSocket client connected");
 
 			const disconnectTimeout = setTimeout(() => {
-				closeWithReason("No Authorization message received in 5 seconds. Closing connection.");
+				closeWithReason(
+					"No Authorization message received in 5 seconds. Closing connection.",
+				);
 			}, 5000);
 
 			function closeWithReason(reason: string, code = 4000) {
@@ -66,11 +70,11 @@ export class WsServer extends WebSocketServer {
 
 						// add client to room with that server
 						const serverToken = await db.serverToken.findUnique({
-							where: { token }
+							where: { token },
 						});
 						if (!serverToken) return closeWithReason("Invalid token", 4001);
 						const server = await db.server.findUnique({
-							where: { id: serverToken.server_id }
+							where: { id: serverToken.server_id },
 						});
 						if (!server) return closeWithReason("Server not found");
 						console.log("Authorized with token:", message.data.token);
@@ -87,7 +91,10 @@ export class WsServer extends WebSocketServer {
 							const room = this.rooms.get(roomId);
 
 							if (room?.some((c) => c.type === "server")) {
-								console.error("Server already connected to this room", this.rooms);
+								console.error(
+									"Server already connected to this room",
+									this.rooms,
+								);
 								console.log("disconnecting old server");
 								const oldServer = room.find((c) => c.type === "server");
 								oldServer!.ws.close();
@@ -97,8 +104,8 @@ export class WsServer extends WebSocketServer {
 							if (room?.some((c) => c.type === "client")) {
 								ws.send(
 									JSON.stringify({
-										intent: "Start"
-									} as OutgoingMessage<"server">)
+										intent: "Start",
+									} as OutgoingMessage<"server">),
 								);
 							}
 
@@ -121,8 +128,8 @@ export class WsServer extends WebSocketServer {
 							client.send(
 								JSON.stringify({
 									intent: "Data",
-									data: { usage }
-								} as OutgoingMessage<"client">)
+									data: { usage },
+								} as OutgoingMessage<"client">),
 							);
 						});
 					}
@@ -137,11 +144,11 @@ export class WsServer extends WebSocketServer {
 
 						// add client to room with that server
 						const serverToken = await db.serverToken.findUnique({
-							where: { token }
+							where: { token },
 						});
 						if (!serverToken) return closeWithReason("Invalid token");
 						const server = await db.server.findUnique({
-							where: { id: serverToken.server_id }
+							where: { id: serverToken.server_id },
 						});
 						if (!server) return closeWithReason("Server not found");
 
@@ -163,8 +170,8 @@ export class WsServer extends WebSocketServer {
 								.forEach((c) => {
 									c.ws.send(
 										JSON.stringify({
-											intent: "Start"
-										} as OutgoingMessage<"server">)
+											intent: "Start",
+										} as OutgoingMessage<"server">),
 									);
 								});
 						}
@@ -184,7 +191,7 @@ export class WsServer extends WebSocketServer {
 						}
 						const deleted = clients.splice(
 							clients.findIndex((c) => c.id === id),
-							1
+							1,
 						);
 						console.log("deleted", deleted);
 						console.log("Removed client from room", this.rooms);
@@ -200,8 +207,8 @@ export class WsServer extends WebSocketServer {
 									.forEach((c) => {
 										c.ws.send(
 											JSON.stringify({
-												intent: "Stop"
-											} as OutgoingMessage<"server">)
+												intent: "Stop",
+											} as OutgoingMessage<"server">),
 										);
 									});
 							}
@@ -213,7 +220,14 @@ export class WsServer extends WebSocketServer {
 		});
 
 		server?.listen(Number(process.env.WS_PORT) || 3005);
-		Logger(`WebSocket server running on ws://localhost:${process.env.WS_PORT || 3005}`, "green", "black", true);
+		Logger(
+			`WebSocket server running on ws://localhost:${
+				process.env.WS_PORT || 3005
+			}`,
+			"green",
+			"black",
+			true,
+		);
 	}
 
 	public getRooms() {

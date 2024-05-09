@@ -1,78 +1,76 @@
-import { Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { redirect } from "remix-typedjson";
 import { authenticator } from "../../auth/authenticator";
 import { db } from "../db";
 
 export async function getUserId(request: Request) {
-	const auth = await authenticator.isAuthenticated(request);
+    const auth = await authenticator.isAuthenticated(request);
 
-	if (!auth) {
-		return null;
-	}
+    if (!auth) {
+        return null;
+    }
 
-	return auth.id;
+    return auth.id;
 }
 
 export async function getUser<
-	T extends Prisma.UserSelect = {
-		id: true;
-		nick: true;
-		email: true;
-		photo: true;
-		prime: true;
-		role: true;
-		everPurchased: true;
-	}
+    T extends Prisma.UserSelect = {
+        id: true;
+        nick: true;
+        email: true;
+        photo: true;
+        prime: true;
+        role: true;
+        everPurchased: true;
+    }
 >(
-	request: Request,
-	select: T = {
-		id: true,
-		nick: true,
-		email: true,
-		photo: true,
-		prime: true,
-		role: true,
-		everPurchased: true
-	} as T
+    request: Request,
+    select: T = {
+        id: true,
+        nick: true,
+        email: true,
+        photo: true,
+        prime: true,
+        role: true,
+        everPurchased: true
+    } as T
 ): Promise<Prisma.UserGetPayload<{
-	select: NonNullable<T>;
+    select: NonNullable<T>;
 }> | null> {
-	const auth = await authenticator.isAuthenticated(request);
+    const auth = await authenticator.isAuthenticated(request);
 
-	if (!auth) {
-		return null;
-	}
-	if (!auth.id || !auth.email) {
-		throw redirect("/relog");
-	}
+    if (!auth) {
+        return null;
+    }
+    if (!auth.id || !auth.email) {
+        throw redirect("/relog");
+    }
 
-	const user = await db.user.findUnique({
-		where: {
-			email: auth.email
-		},
-		select
-	});
+    const user = await db.user.findUnique({
+        where: {
+            email: auth.email
+        },
+        select
+    });
 
-	return user as any;
+    return user as any;
 }
 
 export async function isUserAuthInDB(request: Request) {
-	const auth = await authenticator.isAuthenticated(request);
+    const auth = await authenticator.isAuthenticated(request);
 
-	if (!auth) {
-		return false;
-	}
+    if (!auth) {
+        return false;
+    }
 
-	const isInDB: boolean = (await db.user.findUnique({
-		where: {
-			email: auth.email
-		},
-		select: {
-			id: true
-		}
-	}))
-		? true
-		: false;
+    const isInDB: boolean = !!(await db.user.findUnique({
+        where: {
+            email: auth.email
+        },
+        select: {
+            id: true
+        }
+    }));
 
-	return isInDB;
+    return isInDB;
 }

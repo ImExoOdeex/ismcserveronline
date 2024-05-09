@@ -4,16 +4,16 @@ import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
 
 export async function action({ request }: ActionFunctionArgs) {
-	invariant(process.env.NODE_ENV === "development");
+    invariant(process.env.NODE_ENV === "development");
 
-	const auth = request.headers.get("Authorization");
-	if (auth !== requireEnv("TESTING_KEY")) {
-		throw new Response("Unauthorized", { status: 401 });
-	}
+    const auth = request.headers.get("Authorization");
+    if (auth !== requireEnv("TESTING_KEY")) {
+        throw new Response("Unauthorized", { status: 401 });
+    }
 
-	const body = await request.json();
+    const body = await request.json();
 
-	return typedjson({
-		...body
-	});
+    return typedjson({
+        ...body
+    });
 }

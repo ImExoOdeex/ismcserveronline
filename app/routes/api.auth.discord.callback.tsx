@@ -4,11 +4,11 @@ import type { LoaderFunctionArgs } from "@remix-run/node";
 
 // get to this route
 export async function loader({ request }: LoaderFunctionArgs) {
-	const session = await getSession(request.headers.get("Cookie"));
-	const redirect = session.get("redirect") ?? "/dashboard";
+    const session = await getSession(request.headers.get("Cookie"));
+    const redirect = session.get("redirect") ?? "/dashboard";
 
-	return await authenticator.authenticate(request, {
-		successRedirect: redirect,
-		throwOnError: true
-	});
+    return await authenticator.authenticate(request, {
+        successRedirect: redirect,
+        throwOnError: true
+    });
 }

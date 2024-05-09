@@ -3,7 +3,19 @@ import { getUserId } from "@/.server/db/models/user";
 import { csrf } from "@/.server/functions/security.server";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
 import { CopyIcon, ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
-import { Button, Code, Divider, Flex, Heading, HStack, Icon, IconButton, Text, useToast, VStack } from "@chakra-ui/react";
+import {
+    Button,
+    Code,
+    Divider,
+    Flex,
+    Heading,
+    HStack,
+    Icon,
+    IconButton,
+    Text,
+    useToast,
+    VStack
+} from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import dayjs from "dayjs";
@@ -15,225 +27,229 @@ import { HiOutlineDocumentDuplicate } from "react-icons/hi";
 import Link from "@/layout/global/Link";
 
 export async function action({ request }: ActionFunctionArgs) {
-	csrf(request);
-	const userId = await getUserId(request);
-	invariant(userId, "User is not logged in");
+    csrf(request);
+    const userId = await getUserId(request);
+    invariant(userId, "User is not logged in");
 
-	const userExistsInDb = (await db.token.findUnique({
-		where: {
-			user_id: userId
-		}
-	}))
-		? true
-		: false;
+    const userExistsInDb = !!(await db.token.findUnique({
+        where: {
+            user_id: userId
+        }
+    }));
 
-	if (userExistsInDb) throw new Error("Token already exists");
+    if (userExistsInDb) throw new Error("Token already exists");
 
-	const token = crypto.randomUUID();
+    const token = crypto.randomUUID();
 
-	await db.token.create({
-		data: {
-			token: token,
-			user_id: userId
-		}
-	});
+    await db.token.create({
+        data: {
+            token: token,
+            user_id: userId
+        }
+    });
 
-	return typedjson({
-		success: true
-	});
+    return typedjson({
+        success: true
+    });
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-	csrf(request);
-	const userId = await getUserId(request);
-	invariant(userId, "User is not logged in");
+    csrf(request);
+    const userId = await getUserId(request);
+    invariant(userId, "User is not logged in");
 
-	const token = await db.token
-		.findUnique({
-			where: {
-				user_id: userId
-			},
-			select: {
-				_count: {
-					select: {
-						check: true
-					}
-				},
-				id: true,
-				token: true,
-				created_at: true
-			}
-		})
-		.catch(() => null);
+    const token = await db.token
+        .findUnique({
+            where: {
+                user_id: userId
+            },
+            select: {
+                _count: {
+                    select: {
+                        check: true
+                    }
+                },
+                id: true,
+                token: true,
+                created_at: true
+            }
+        })
+        .catch(() => null);
 
-	const lastMonthCount = token
-		? await db.check.count({
-				where: {
-					token_id: token?.id,
-					checked_at: {
-						gte: dayjs().subtract(1, "month").toDate()
-					}
-				}
-		  })
-		: 0;
+    const lastMonthCount = token
+        ? await db.check.count({
+              where: {
+                  token_id: token?.id,
+                  checked_at: {
+                      gte: dayjs().subtract(1, "month").toDate()
+                  }
+              }
+          })
+        : 0;
 
-	return typedjson({
-		token,
-		lastMonthCount
-	});
+    return typedjson({
+        token,
+        lastMonthCount
+    });
 }
 
 export default function DashboardToken() {
-	const { token, lastMonthCount } = useAnimationLoaderData<typeof loader>();
+    const { token, lastMonthCount } = useAnimationLoaderData<typeof loader>();
 
-	const [show, setShow] = useState(false);
+    const [show, setShow] = useState(false);
 
-	const toast = useToast();
+    const toast = useToast();
 
-	return (
-		<Flex flexDir={"column"} gap={4} alignItems={"flex-start"}>
-			<VStack align="start" w="100%">
-				<Heading fontSize={"2xl"} fontWeight={600}>
-					Your API Token
-				</Heading>
-				<Text>Here you can generate your token for our API.</Text>
+    return (
+        <Flex flexDir={"column"} gap={4} alignItems={"flex-start"}>
+            <VStack align="start" w="100%">
+                <Heading fontSize={"2xl"} fontWeight={600}>
+                    Your API Token
+                </Heading>
+                <Text>Here you can generate your token for our API.</Text>
 
-				<Divider />
-			</VStack>
+                <Divider />
+            </VStack>
 
-			<Flex
-				flexDir={{
-					base: "column",
-					md: "row"
-				}}
-				gap={4}
-				alignItems={{
-					base: "flex-start",
-					md: "center"
-				}}
-				p={4}
-				rounded={"xl"}
-				border="1px solid"
-				borderColor={"alpha300"}
-				w="100%"
-				justifyContent={"space-between"}
-			>
-				<Flex flexDir={"column"} gap={0.5} flex={1}>
-					<Text fontWeight={500}>Token</Text>
-					<Text fontSize={"xl"} fontWeight={600}>
-						{token ? (
-							<HStack>
-								<Text
-									fontSize={{
-										base: "sm",
-										md: "xl"
-									}}
-									fontWeight={600}
-									fontFamily={"monospace"}
-								>
-									{show ? token.token : "*".repeat(token.token.length)}
-								</Text>
-								<IconButton
-									onClick={() => setShow(!show)}
-									aria-label={"Show Token"}
-									icon={!show ? <ViewIcon /> : <ViewOffIcon />}
-									size={"sm"}
-									bg="alpha"
-									_hover={{
-										bg: "alpha100"
-									}}
-									_active={{
-										bg: "alpha200"
-									}}
-								/>
-								<IconButton
-									onClick={() => {
-										navigator.clipboard.writeText(token.token).then(() => {
-											toast({
-												title: "Token copied to clipboard.",
-												status: "success",
-												duration: 3000,
-												variant: "subtle",
-												position: "bottom-right",
-												isClosable: true
-											});
-										});
-									}}
-									aria-label={"Copy Token"}
-									icon={<CopyIcon />}
-									size={"sm"}
-									bg="alpha"
-									_hover={{
-										bg: "alpha100"
-									}}
-									_active={{
-										bg: "alpha200"
-									}}
-								/>
-							</HStack>
-						) : (
-							"None"
-						)}
-					</Text>
-				</Flex>
+            <Flex
+                flexDir={{
+                    base: "column",
+                    md: "row"
+                }}
+                gap={4}
+                alignItems={{
+                    base: "flex-start",
+                    md: "center"
+                }}
+                p={4}
+                rounded={"xl"}
+                border="1px solid"
+                borderColor={"alpha300"}
+                w="100%"
+                justifyContent={"space-between"}
+            >
+                <Flex flexDir={"column"} gap={0.5} flex={1}>
+                    <Text fontWeight={500}>Token</Text>
+                    <Text fontSize={"xl"} fontWeight={600}>
+                        {token ? (
+                            <HStack>
+                                <Text
+                                    fontSize={{
+                                        base: "sm",
+                                        md: "xl"
+                                    }}
+                                    fontWeight={600}
+                                    fontFamily={"monospace"}
+                                >
+                                    {show ? token.token : "*".repeat(token.token.length)}
+                                </Text>
+                                <IconButton
+                                    onClick={() => setShow(!show)}
+                                    aria-label={"Show Token"}
+                                    icon={!show ? <ViewIcon /> : <ViewOffIcon />}
+                                    size={"sm"}
+                                    bg="alpha"
+                                    _hover={{
+                                        bg: "alpha100"
+                                    }}
+                                    _active={{
+                                        bg: "alpha200"
+                                    }}
+                                />
+                                <IconButton
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(token.token).then(() => {
+                                            toast({
+                                                title: "Token copied to clipboard.",
+                                                status: "success",
+                                                duration: 3000,
+                                                variant: "subtle",
+                                                position: "bottom-right",
+                                                isClosable: true
+                                            });
+                                        });
+                                    }}
+                                    aria-label={"Copy Token"}
+                                    icon={<CopyIcon />}
+                                    size={"sm"}
+                                    bg="alpha"
+                                    _hover={{
+                                        bg: "alpha100"
+                                    }}
+                                    _active={{
+                                        bg: "alpha200"
+                                    }}
+                                />
+                            </HStack>
+                        ) : (
+                            "None"
+                        )}
+                    </Text>
+                </Flex>
 
-				{token ? (
-					<HStack
-						w={{
-							base: "100%",
-							md: "50%"
-						}}
-					>
-						<Flex flexDir={"column"} gap={0.5} flex={1}>
-							<Text fontWeight={500}>Checks</Text>
-							<Text fontSize={"xl"} fontWeight={600}>
-								<Text fontSize={"xl"} fontWeight={600} fontFamily={"monospace"}>
-									{token._count.check}
-								</Text>
-							</Text>
-						</Flex>
+                {token ? (
+                    <HStack
+                        w={{
+                            base: "100%",
+                            md: "50%"
+                        }}
+                    >
+                        <Flex flexDir={"column"} gap={0.5} flex={1}>
+                            <Text fontWeight={500}>Checks</Text>
+                            <Text fontSize={"xl"} fontWeight={600}>
+                                <Text fontSize={"xl"} fontWeight={600} fontFamily={"monospace"}>
+                                    {token._count.check}
+                                </Text>
+                            </Text>
+                        </Flex>
 
-						<Flex flexDir={"column"} gap={0.5} flex={1}>
-							<Text fontWeight={500}>Last month</Text>
-							<Text fontSize={"xl"} fontWeight={600}>
-								<Text fontSize={"xl"} fontWeight={600} fontFamily={"monospace"}>
-									{lastMonthCount}
-								</Text>
-							</Text>
-						</Flex>
-					</HStack>
-				) : (
-					<GenerateToken />
-				)}
-			</Flex>
+                        <Flex flexDir={"column"} gap={0.5} flex={1}>
+                            <Text fontWeight={500}>Last month</Text>
+                            <Text fontSize={"xl"} fontWeight={600}>
+                                <Text fontSize={"xl"} fontWeight={600} fontFamily={"monospace"}>
+                                    {lastMonthCount}
+                                </Text>
+                            </Text>
+                        </Flex>
+                    </HStack>
+                ) : (
+                    <GenerateToken />
+                )}
+            </Flex>
 
-			<Button
-				size={"lg"}
-				leftIcon={<Icon as={HiOutlineDocumentDuplicate} boxSize={5} />}
-				as={Link}
-				to={"/api/documentation"}
-			>
-				API Documentation
-			</Button>
+            <Button
+                size={"lg"}
+                leftIcon={<Icon as={HiOutlineDocumentDuplicate} boxSize={5} />}
+                as={Link}
+                to={"/api/documentation"}
+            >
+                API Documentation
+            </Button>
 
-			<Divider my={10} />
+            <Divider my={10} />
 
-			<Text>
-				You can use your token to access our API. Put this token in the <Code>Authorization</Code> header of your
-				requests. Keep your token safe. In case you want to delete it, you have to contact us.
-			</Text>
-		</Flex>
-	);
+            <Text>
+                You can use your token to access our API. Put this token in the{" "}
+                <Code>Authorization</Code> header of your requests. Keep your token safe. In case
+                you want to delete it, you have to contact us.
+            </Text>
+        </Flex>
+    );
 }
 
 function GenerateToken() {
-	const fetcher = useFetcher();
+    const fetcher = useFetcher();
 
-	return (
-		<fetcher.Form method="POST">
-			<Button variant={"brand"} type="submit" isLoading={fetcher.state !== "idle"} rightIcon={<Icon as={RiAiGenerate} />}>
-				Generate Token
-			</Button>
-		</fetcher.Form>
-	);
+    return (
+        <fetcher.Form method="POST">
+            <Button
+                variant={"brand"}
+                type="submit"
+                isLoading={fetcher.state !== "idle"}
+                rightIcon={<Icon as={RiAiGenerate} />}
+            >
+                Generate Token
+            </Button>
+        </fetcher.Form>
+    );
 }

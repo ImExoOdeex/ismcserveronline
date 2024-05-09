@@ -2,10 +2,10 @@ import { Global } from "@emotion/react";
 import { memo } from "react";
 
 export default memo(function McFonts() {
-	return (
-		<>
-			<Global
-				styles={`
+    return (
+        <>
+            <Global
+                styles={`
 		@font-face {
 			font-family: 'Minecraft';
 			font-display: block;
@@ -17,7 +17,7 @@ export default memo(function McFonts() {
 			src: url('/EnchantingTable.ttf') format('truetype');
 		}
  `}
-			/>
-		</>
-	);
+            />
+        </>
+    );
 });

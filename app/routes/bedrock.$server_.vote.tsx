@@ -1,1 +1,9 @@
-export { ErrorBoundary, action, default, loader, meta, shouldRevalidate } from "./$server_.vote";
+export {
+    ErrorBoundary,
+    action,
+    default,
+    handle,
+    loader,
+    meta,
+    shouldRevalidate
+} from "./$server_.vote";

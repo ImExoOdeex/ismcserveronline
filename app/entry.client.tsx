@@ -1,44 +1,45 @@
 import { ClientStyleContext, createEmotionCache } from "@/utils/ClientContext";
 import { CacheProvider } from "@emotion/react";
 import { RemixBrowser } from "@remix-run/react";
-import React, { startTransition, useCallback, useState } from "react";
+import type React from "react";
+import { startTransition, useCallback, useState } from "react";
 import { hydrate } from "react-dom";
 
 interface ClientCacheProviderProps {
-	children: React.ReactNode;
-	time: number;
+    children: React.ReactNode;
+    time: number;
 }
 
 function ClientCacheProvider({ children, time }: ClientCacheProviderProps) {
-	const [cache, setCache] = useState(createEmotionCache());
+    const [cache, setCache] = useState(createEmotionCache());
 
-	const reset = useCallback(() => {
-		return setCache(createEmotionCache());
-	}, []);
+    const reset = useCallback(() => {
+        return setCache(createEmotionCache());
+    }, []);
 
-	return (
-		<ClientStyleContext.Provider value={{ reset, hydrationTime: time }}>
-			<CacheProvider value={cache}>{children}</CacheProvider>
-		</ClientStyleContext.Provider>
-	);
+    return (
+        <ClientStyleContext.Provider value={{ reset, hydrationTime: time }}>
+            <CacheProvider value={cache}>{children}</CacheProvider>
+        </ClientStyleContext.Provider>
+    );
 }
 
 function hydration() {
-	let now = Date.now(); // initial hydration time
+    const now = Date.now(); // initial hydration time
 
-	startTransition(() => {
-		// hydrate, since hydrateRoot bugs with streaming with emotion
-		hydrate(
-			<ClientCacheProvider time={now}>
-				<RemixBrowser />
-			</ClientCacheProvider>,
-			document
-		);
-	});
+    startTransition(() => {
+        // hydrate, since hydrateRoot bugs with streaming with emotion
+        hydrate(
+            <ClientCacheProvider time={now}>
+                <RemixBrowser />
+            </ClientCacheProvider>,
+            document
+        );
+    });
 }
 
 if (typeof requestIdleCallback === "function") {
-	requestIdleCallback(hydration);
+    requestIdleCallback(hydration);
 } else {
-	setTimeout(hydration, 1);
+    setTimeout(hydration, 1);
 }

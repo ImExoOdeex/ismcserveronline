@@ -3,11 +3,11 @@ import { Link as RemixLink, type LinkProps as RemixLinkProps } from "@remix-run/
 type Props = LinkProps & RemixLinkProps;
 
 function Link({ to, children, ...rest }: Props) {
-	return (
-		<ChakraLink prefetch="intent" transition={".1s"} as={RemixLink} to={to} {...rest}>
-			{children}
-		</ChakraLink>
-	);
+    return (
+        <ChakraLink prefetch="intent" transition={".1s"} as={RemixLink} to={to} {...rest}>
+            {children}
+        </ChakraLink>
+    );
 }
 
 export default Link;

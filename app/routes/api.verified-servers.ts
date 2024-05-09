@@ -6,34 +6,34 @@ import { typedjson } from "remix-typedjson";
 import invariant from "tiny-invariant";
 
 export interface APIVerifiedServer {
-	id: number;
-	server: string;
-	bedrock: boolean;
-	favicon: string | null;
+    id: number;
+    server: string;
+    bedrock: boolean;
+    favicon: string | null;
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-	csrf(request);
+    csrf(request);
 
-	const user = await getUser(request, {
-		id: true
-	});
-	invariant(user, "User is not logged in");
+    const user = await getUser(request, {
+        id: true
+    });
+    invariant(user, "User is not logged in");
 
-	const servers = (await db.server.findMany({
-		where: {
-			owner_id: user.id
-		},
-		select: {
-			id: true,
-			server: true,
-			bedrock: true,
-			favicon: true
-		}
-	})) as APIVerifiedServer[];
+    const servers = (await db.server.findMany({
+        where: {
+            owner_id: user.id
+        },
+        select: {
+            id: true,
+            server: true,
+            bedrock: true,
+            favicon: true
+        }
+    })) as APIVerifiedServer[];
 
-	return typedjson({
-		success: true,
-		servers
-	});
+    return typedjson({
+        success: true,
+        servers
+    });
 }

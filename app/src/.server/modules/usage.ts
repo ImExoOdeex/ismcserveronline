@@ -1,9 +1,8 @@
-import { cpuUsage } from "os-utils";
-
 export async function getCpuUsage(): Promise<number> {
-	return new Promise((r) => {
-		cpuUsage((v) => {
-			r(Number((v * 100).toFixed(0)));
-		});
-	});
+    throw new Error("Not implemented");
+    // return new Promise((r) => {
+    //     cpuUsage((v) => {
+    //         r(Number((v * 100).toFixed(0)));
+    //     });
+    // });
 }

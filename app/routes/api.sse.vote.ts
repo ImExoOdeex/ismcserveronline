@@ -5,30 +5,30 @@ import type { MultiEmitter } from "server/MultiEmitter";
 import invariant from "tiny-invariant";
 
 export interface NewVote {
-	id: string;
-	nick: string;
+    id: string;
+    nick: string;
 }
 
 export function loader({ request, context }: LoaderFunctionArgs) {
-	csrf(request);
+    csrf(request);
 
-	const url = new URL(request.url);
-	const id = url.searchParams.get("id");
-	invariant(id, "id is required");
+    const url = new URL(request.url);
+    const id = url.searchParams.get("id");
+    invariant(id, "id is required");
 
-	const eventName = `vote-${id}`;
+    const eventName = `vote-${id}`;
 
-	return eventStream(request.signal, (send) => {
-		const emitter = context.emitter as MultiEmitter;
+    return eventStream(request.signal, (send) => {
+        const emitter = context.emitter as MultiEmitter;
 
-		function handle(data: NewVote) {
-			send({ event: "new-vote", data: JSON.stringify(data) });
-		}
+        function handle(data: NewVote) {
+            send({ event: "new-vote", data: JSON.stringify(data) });
+        }
 
-		emitter.on(eventName, handle);
+        emitter.on(eventName, handle);
 
-		return () => {
-			emitter.off(eventName, handle);
-		};
-	});
+        return () => {
+            emitter.off(eventName, handle);
+        };
+    });
 }
