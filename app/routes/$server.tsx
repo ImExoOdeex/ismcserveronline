@@ -651,6 +651,7 @@ export function meta({ data, matches }: MetaArgs) {
     if (!data || typeof data !== "object" || !("server" in data) || !("bedrock" in data)) return [];
 
     return [
+        ...matches[0].meta,
         {
             title: data
                 ? data.server + "'s status | IsMcServer.online"
@@ -679,8 +680,7 @@ export function meta({ data, matches }: MetaArgs) {
             content: data
                 ? `${config.dashUrl}/${data.bedrock ? "bedrock/" : ""}${data.server}`
                 : config.dashUrl
-        },
-        ...matches[0].meta
+        }
     ] as ReturnType<MetaFunction>;
 }
 

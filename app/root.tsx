@@ -27,16 +27,11 @@ import { Document } from "./document";
 
 // ----------------------------- META -----------------------------
 
-export function meta({ matches }: MetaArgs) {
+export function meta({ params }: MetaArgs) {
     const desc =
         "Minecraft server list & status checker. Vote and Check any Minecraft server status in real-time. Get detailed server information, vote for your favorite server, and more.";
 
-    const shouldSkipDefaultOgTags = matches.some((match) => {
-        if (typeof match.handle !== "object") return false;
-        if (!match.handle) return false;
-        if (!("hasCustomOgs" in match.handle)) return false;
-        if (match.handle.hasCustomOgs) return true;
-    });
+    const shouldSkipDefaultOgTags = "server" in params;
 
     return [
         {
