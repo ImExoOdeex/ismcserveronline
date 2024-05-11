@@ -1,10 +1,14 @@
 import serverConfig from "@/.server/serverConfig";
-import type { BedrockServer, MinecraftServer, MinecraftServerWoQuery } from "@/types/minecraftServer";
+import type {
+    BedrockServer,
+    MinecraftServer,
+    MinecraftServerWoQuery
+} from "@/types/minecraftServer";
 import { requireEnv } from "./env.server";
 
-async function sleep(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-}
+// async function sleep(ms: number) {
+//     return new Promise((resolve) => setTimeout(resolve, ms));
+// }
 
 export async function getServerInfo<T extends boolean = false, K extends boolean = false>(
     address: string,
@@ -21,5 +25,5 @@ export async function getServerInfo<T extends boolean = false, K extends boolean
         headers: {
             Authorization: requireEnv("API_TOKEN")
         }
-    }).then((res) => res.json());
+    }).then((res) => res.json()) as any;
 }

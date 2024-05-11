@@ -31,6 +31,7 @@ import ServerView from "@/layout/routes/server/index/ServerView";
 import type { tabs } from "@/layout/routes/server/index/Tabs";
 import Tabs from "@/layout/routes/server/index/Tabs";
 import UnderServerView from "@/layout/routes/server/index/UnderServerView";
+import Widget from "@/layout/routes/server/index/Widget";
 import type {
     AnyServer,
     AnyServerModel,
@@ -647,11 +648,37 @@ export function headers({ loaderHeaders }: HeadersArgs) {
 }
 
 export function meta({ data, matches }: MetaArgs) {
+    if (!data || typeof data !== "object" || !("server" in data) || !("bedrock" in data)) return [];
+
     return [
         {
             title: data
-                ? (data as any).server + "'s status | IsMcServer.online"
+                ? data.server + "'s status | IsMcServer.online"
                 : "Server not found | IsMcServer.online"
+        },
+        {
+            name: "og:title",
+            content: data
+                ? data.server + "'s status | IsMcServer.online"
+                : "Server not found | IsMcServer.online"
+        },
+        {
+            name: "og:description",
+            content: data
+                ? `Check ${data.server}'s status, players, motd, version and more!`
+                : "Server not found | IsMcServer.online"
+        },
+        {
+            name: "og:image",
+            content: data
+                ? `${config.dashUrl}/${data.bedrock ? "bedrock/" : ""}${data.server}/widget`
+                : `${config.dashUrl}/logo-wallpaper.png`
+        },
+        {
+            name: "og:url",
+            content: data
+                ? `${config.dashUrl}/${data.bedrock ? "bedrock/" : ""}${data.server}`
+                : config.dashUrl
         },
         ...matches[0].meta
     ] as ReturnType<MetaFunction>;
@@ -906,6 +933,8 @@ export default function $server() {
                 </Suspense>
             )}
 
+            <Widget />
+
             <MoreLikeThisServer
                 server={server}
                 players={data?.players.online}
@@ -917,6 +946,7 @@ export default function $server() {
             <Stack direction={{ base: "column", md: "row" }} spacing={{ base: "auto", md: 7 }}>
                 <HStack
                     as={"a"}
+                    target={"_blank"}
                     href="https://github.com/ImExoOdeex/ismcserveronline/issues"
                     color={"textSec"}
                     fontWeight={500}

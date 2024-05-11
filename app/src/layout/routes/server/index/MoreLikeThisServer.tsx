@@ -31,7 +31,6 @@ export default memo(function MoreLikeThisServer({
     useEffect(() => {
         if (!isInView) return;
 
-        console.log("in view");
         fetch(
             `/api/mlts?players=${players}&server=${server}${
                 language ? `&language=${language}` : ""
