@@ -28,7 +28,7 @@ export default function PopularServers() {
                     textAlign={"center"}
                     color={"textSec"}
                 >
-                    Explore over hunderts of available servers in our database on{" "}
+                    Explore over hundreds of available servers in our database on our{" "}
                     <Link variant={"link"} to="/search">
                         Servers
                     </Link>{" "}
