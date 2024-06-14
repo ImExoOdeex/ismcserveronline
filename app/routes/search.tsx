@@ -420,7 +420,7 @@ export default function Search() {
         >
             {/* top  */}
             <Flex flexDir={"column"} gap={2}>
-                <Heading size={"lg"}>Explore tousands of Minecraft Servers</Heading>
+                <Heading size={"lg"}>Explore thousands of Minecraft Servers</Heading>
                 <Divider mb={2} />
 
                 <SearchForm />
