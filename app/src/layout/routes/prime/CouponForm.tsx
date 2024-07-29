@@ -20,9 +20,16 @@ interface Props {
     setAddedCoupon: React.Dispatch<React.SetStateAction<Stripe.Response<Stripe.Coupon> | null>>;
     color: string;
     serverId: number | null;
+    isServer: boolean;
 }
 
-export default function CouponForm({ addedCoupon, setAddedCoupon, color, serverId }: Props) {
+export default function CouponForm({
+    addedCoupon,
+    setAddedCoupon,
+    color,
+    serverId,
+    isServer
+}: Props) {
     const toast = useToast();
 
     const [hidden, setHidden] = useState(true);
@@ -137,7 +144,7 @@ export default function CouponForm({ addedCoupon, setAddedCoupon, color, serverI
                             placeholder="Enter coupon"
                             value={coupon}
                             onChange={(e) => setCoupon(e.target.value)}
-                            isDisabled={isSubmitting || !serverId}
+                            isDisabled={isSubmitting || (isServer && !serverId)}
                         />
                         <InputRightElement scale={0.8} transform={"auto-gpu"}>
                             <IconButton
@@ -150,7 +157,7 @@ export default function CouponForm({ addedCoupon, setAddedCoupon, color, serverI
                         </InputRightElement>
                     </InputGroup>
 
-                    {!serverId && (
+                    {isServer && !serverId && (
                         <Text
                             fontWeight={500}
                             color={colorMode === "light" ? "orangered" : "orange"}

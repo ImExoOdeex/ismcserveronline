@@ -21,7 +21,6 @@ import type {
 import { redirect } from "@remix-run/node";
 import dayjs from "dayjs";
 import { typedjson } from "remix-typedjson";
-import { getClientLocales } from "remix-utils/locales/server";
 import type { SearchServer, SearchTag } from "~/routes/search";
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -56,20 +55,21 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
     let cookieLocale = getCookieWithoutDocument("locale", request.headers.get("Cookie") ?? "");
     cookieLocale = cookieLocale === "us" ? "en" : cookieLocale;
-    const locales = getClientLocales(request);
-    const locale = locales
-        ? locales[0].split("-")[0] === "us"
-            ? "en"
-            : locales[0].split("-")[0]
-        : "en";
+    // const locales = getClientLocales(request);
+    const locale = "en";
+    // locales
+    //     ? locales[0].split("-")[0] === "us"
+    //         ? "en"
+    //         : locales[0].split("-")[0]
+    //     : "en";
 
-    const url = new URL(request.url);
-    const spLocale = url.searchParams.get("lang");
+    // const url = new URL(request.url);
+    // const spLocale = url.searchParams.get("lang");
 
-    let finalLocale = spLocale || cookieLocale || locale;
-    finalLocale = finalLocale === "us" ? "en" : finalLocale;
+    // let locale = spLocale || cookieLocale || locale;
+    // locale = locale === "us" ? "en" : locale;
 
-    const cacheServersKey = `servers-${bedrock}-hot-${finalLocale}`;
+    const cacheServersKey = `servers-${bedrock}-hot-${locale}`;
     const cacheServersStr = await cache.get(cacheServersKey);
     const cacheServers = cacheServersStr ? JSON.parse(cacheServersStr) : null;
     const cacheTagsStr = await cache.get("tags");
@@ -131,10 +131,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
                         AND: {
                             OR: [
                                 {
-                                    language: finalLocale === "en" ? "en" : finalLocale
+                                    language: locale === "en" ? "en" : locale
                                 },
                                 {
-                                    language: finalLocale === "en" ? null : finalLocale
+                                    language: locale === "en" ? null : locale
                                 }
                             ]
                         },
@@ -174,7 +174,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     }
 
     // promoted-bedrock-locale-tags
-    const promotedServersCacheKey = `promoted-${bedrock}-${finalLocale}`;
+    const promotedServersCacheKey = `promoted-${bedrock}-${locale}`;
     const cachePromotedServersStr = await cache.get(promotedServersCacheKey);
     const cachePromotedServers = cachePromotedServersStr
         ? JSON.parse(cachePromotedServersStr)
@@ -188,7 +188,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
             where: {
                 Server: {
                     bedrock,
-                    language: finalLocale
+                    language: locale
                 }
             }
         });
@@ -223,7 +223,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
             where: {
                 Server: {
                     bedrock,
-                    language: finalLocale
+                    language: locale
                 },
                 status: "Active"
             },

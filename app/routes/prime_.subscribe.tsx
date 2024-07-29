@@ -153,6 +153,7 @@ export default function PrimeSubscribe() {
                             setAddedCoupon={setAddedCoupon}
                             color={planColor}
                             serverId={serverId}
+                            isServer={plan.type === "server"}
                         />
                     </Flex>
 

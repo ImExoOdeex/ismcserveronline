@@ -6,6 +6,7 @@ import { InfoOutlineIcon } from "@chakra-ui/icons";
 import {
     Badge,
     Button,
+    type ButtonProps,
     HStack,
     Icon,
     IconButton,
@@ -74,7 +75,11 @@ export function LoginButton() {
     return user ? <ProfilePopover /> : <LoginDiscordButton />;
 }
 
-function LoginDiscordButton() {
+interface DiscordLoginButtonProps extends ButtonProps {
+    text?: string;
+}
+
+export function LoginDiscordButton({ text = "Log in", ...props }: DiscordLoginButtonProps) {
     const loginFetcher = useFetcher();
 
     return (
@@ -92,8 +97,9 @@ function LoginDiscordButton() {
                 transform={"auto-gpu"}
                 _active={{ scale: 0.9 }}
                 rightIcon={<DiscordIcon />}
+                {...props}
             >
-                Log in
+                {text}
             </Button>
         </loginFetcher.Form>
     );

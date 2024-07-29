@@ -49,9 +49,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
             headers: {
                 Authorization: requireEnv("SUPER_DUPER_API_ACCESS_TOKEN")
             }
-        })
-            .then((res) => res.json())
-            .catch(() => null)
+        }).then((res) => res.json())
+        // .catch(() => null)
     ]);
 
     return typedjson({

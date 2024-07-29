@@ -81,17 +81,18 @@ export function meta({ params }: MetaArgs) {
                   {
                       property: "og:site_name",
                       content: "Minecraft server list & status checker"
+                  },
+                  {
+                      name: "keywords",
+                      content:
+                          "Minecraft server status, Minecraft server checker, Real-time server status, Minecraft server list, Best Minecraft server list, Minecraft best servers, Minecraft server data, Minecraft server info, Minecraft top server list"
                   }
               ]),
         {
             property: "og:type",
             content: "website"
         },
-        {
-            name: "keywords",
-            content:
-                "Minecraft server status, Minecraft server checker, Real-time server status, Minecraft server list, Best Minecraft server list, Minecraft best servers, Minecraft server data, Minecraft server info, Minecraft top server list"
-        },
+
         {
             name: "viewport",
             content: "width=device-width,initial-scale=1"

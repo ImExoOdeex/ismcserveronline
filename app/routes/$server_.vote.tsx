@@ -224,6 +224,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
     return typedjson(
         {
             data: foundServer,
+            server,
             vote,
             image
         },
@@ -231,7 +232,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
     );
 }
 
-export function meta({ data, matches }: MetaArgs) {
+export function meta({ data, matches }: MetaArgs & { data: UseDataFunctionReturn<typeof loader> }) {
     return [
         {
             title: data
@@ -239,6 +240,10 @@ export function meta({ data, matches }: MetaArgs) {
                   (data as UseDataFunctionReturn<typeof loader>).data.server +
                   "! | IsMcServer.online"
                 : "Server not found | IsMcServer.online"
+        },
+        {
+            name: "keywords",
+            content: `vote for ${data.server}, ${data.server} vote, ${data.server} voting, ${data.server} miecraft server vote, ${data.server} server vote, ${data.server} mc server`
         },
         ...matches[0].meta
     ] as ReturnType<MetaFunction>;

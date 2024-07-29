@@ -4,8 +4,8 @@ import { CacheProvider } from "@emotion/react";
 import type { AppLoadContext, EntryContext } from "@remix-run/node";
 import { createReadableStreamFromReadable } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
-import { renderToPipeableStream } from "react-dom/server";
 import { PassThrough } from "node:stream";
+import { renderToPipeableStream } from "react-dom/server";
 
 const ABORT_DELAY = 7000;
 
@@ -59,6 +59,7 @@ export default async function handleRequest(
                 },
                 onError(error: unknown) {
                     responseStatusCode = 500;
+
                     if (shellRendered) {
                         console.error(error);
                     }

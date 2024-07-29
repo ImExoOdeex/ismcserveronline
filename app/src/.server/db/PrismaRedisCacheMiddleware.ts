@@ -1,3 +1,4 @@
+import { Logger } from "@/.server/modules/Logger";
 import { Prisma } from "@prisma/client";
 import { copyObjectWithoutKeys, isObject } from "../../functions/utils";
 import redisCache from "./redis";
@@ -15,6 +16,12 @@ interface AllowedModelConfig<T extends ModelName = ModelName, K extends string[]
 
 const enabled = process.env.DISABLE_REDIS_CACHE !== "true";
 const loggingEnabled = process.env.REDIS_CACHE_LOGGING === "true";
+
+if (enabled) {
+    Logger("Redis cache is enabled", "green", "black");
+} else {
+    Logger("Redis cache is disabled", "red", "black");
+}
 
 function logger(...args: any[]) {
     if (!loggingEnabled) return;
@@ -206,14 +213,14 @@ export async function redisCacheMiddleware<T = Result>(
                 logger("Cache hit - returning cached result for findFirst:", cacheKey);
                 return cache as T;
             }
-                logger(
-                    "Cache miss or partial cache for findFirst - executing query and caching result:",
-                    cacheKey
-                );
-                logger("Result Cache:", cache && copyObjectWithoutKeys(cache, ["favicon"] as any));
-                result = await goOn();
-                await redisCache.set(cacheKey, JSON.stringify(result));
-                return result;
+            logger(
+                "Cache miss or partial cache for findFirst - executing query and caching result:",
+                cacheKey
+            );
+            logger("Result Cache:", cache && copyObjectWithoutKeys(cache, ["favicon"] as any));
+            result = await goOn();
+            await redisCache.set(cacheKey, JSON.stringify(result));
+            return result;
         }
         logger("Cache key not found for findFirst, proceeding with the next middleware");
         return goOn();

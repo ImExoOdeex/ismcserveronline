@@ -59,11 +59,11 @@ export function Document({ children }: DocumentProps) {
                 {children}
                 <ScrollRestoration />
                 <Scripts />
-                <script
+                {/* <script
                     defer
                     data-domain="ismcserver.online"
                     src="https://analytics.ismcserver.online/js/script.js"
-                />
+                /> */}
             </body>
         </html>
     );
@@ -110,11 +110,11 @@ export function ErrorBoundary() {
                 </ChakraBaseProvider>
                 <ScrollRestoration />
                 <Scripts />
-                <script
+                {/* <script
                     defer
                     data-domain="ismcserver.online"
                     src="https://analytics.ismcserver.online/js/script.js"
-                />
+                /> */}
             </body>
         </html>
     );

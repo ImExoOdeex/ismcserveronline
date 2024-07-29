@@ -1,5 +1,16 @@
 import type { DiscordMessageType } from "@/layout/routes/dashboard/bot/editor/DiscordMessageEditor";
-import { Code, Divider, Flex, Heading, ListItem, Text, UnorderedList } from "@chakra-ui/react";
+import config from "@/utils/config";
+import {
+    Code,
+    type CodeProps,
+    Divider,
+    Flex,
+    Heading,
+    ListItem,
+    Text,
+    UnorderedList,
+    useColorModeValue
+} from "@chakra-ui/react";
 import React, { useMemo } from "react";
 
 interface Props {
@@ -10,7 +21,31 @@ export interface Placeholder {
     name: string;
     placeholder: string;
     replaceWith?: string;
+    isMention?: boolean;
 }
+
+const mentions = [
+    {
+        name: "@user",
+        placeholder: "<@USER_ID>",
+        isMention: true
+    },
+    {
+        name: "@role",
+        placeholder: "<@&ROLE_ID>",
+        isMention: true
+    },
+    {
+        name: "@everyone",
+        placeholder: "@everyone",
+        isMention: true
+    },
+    {
+        name: "@channel",
+        placeholder: "<#CHANNEL_ID>",
+        isMention: true
+    }
+];
 
 export const placeholders = {
     livecheck: [
@@ -43,7 +78,8 @@ export const placeholders = {
         {
             name: "Max Players",
             placeholder: "{maxPlayers}"
-        }
+        },
+        ...mentions
     ],
     alert: [
         {
@@ -53,7 +89,8 @@ export const placeholders = {
         {
             name: "Date and Time",
             placeholder: "{datetime}"
-        }
+        },
+        ...mentions
     ]
 } as Record<DiscordMessageType, Placeholder[]>;
 
@@ -61,6 +98,22 @@ export default function Placeholders({ type }: Props) {
     const placeholdersType = useMemo(() => {
         return placeholders[type];
     }, [type]);
+
+    const mentionBg = useColorModeValue("hsl(235 85.6% 64.7% / 0.8) !important", "#5057a3df");
+
+    const mentionStyles = {
+        bg: mentionBg,
+        textColor: "white",
+        _hover: { bg: "#5865f2" },
+        cursor: "pointer",
+        fontWeight: 500,
+        px: 1,
+        py: "1px",
+        rounded: "sm",
+        w: "max",
+        fontFamily: "Montserrat",
+        transition: `all 0.2s ${config.ease.join(", ")}`
+    } as CodeProps;
 
     return (
         <Flex
@@ -92,7 +145,7 @@ export default function Placeholders({ type }: Props) {
                             <Divider />
                             <ListItem>
                                 <Flex flexDir={"column"} gap={0.5}>
-                                    <Text>{pl.name}</Text>
+                                    <Text {...(pl.isMention ? mentionStyles : {})}>{pl.name}</Text>
                                     <Code bg="transparent">{pl.placeholder}</Code>
                                 </Flex>
                             </ListItem>

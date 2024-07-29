@@ -57,7 +57,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
                         startsWith: "%.%",
                         not: {
                             startsWith: "%.%.%.%",
-                            equals: server
+                            contains: server
                         }
                     },
                     language,

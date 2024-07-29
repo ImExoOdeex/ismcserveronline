@@ -51,7 +51,8 @@ export default memo(function BackgroundUtils() {
                             objectFit={"cover"}
                             objectPosition={"center"}
                             sx={{
-                                WebkitMaskImage: "linear-gradient(to top, transparent 2%, black 50%)"
+                                WebkitMaskImage:
+                                    "linear-gradient(to top, transparent 2%, black 50%)"
                             }}
                         />
                     </motion.div>
@@ -82,7 +83,8 @@ export default memo(function BackgroundUtils() {
                             objectFit={"cover"}
                             objectPosition={"center"}
                             sx={{
-                                WebkitMaskImage: "linear-gradient(to top, transparent 2%, black 50%)"
+                                WebkitMaskImage:
+                                    "linear-gradient(to top, transparent 2%, black 50%)"
                             }}
                         />
                     </motion.div>
@@ -91,7 +93,11 @@ export default memo(function BackgroundUtils() {
 
             {displayGradient && !backgroundUrl && (
                 <>
-                    <svg style={{ width: "100%", opacity: colorMode === "light" ? 0.25 : 0.2 }}>
+                    <svg
+                        style={{ width: "100%", opacity: colorMode === "light" ? 0.25 : 0.2 }}
+                        aria-label="Gradient"
+                        role="img"
+                    >
                         <defs>
                             <linearGradient id="background-gradient" gradientTransform="rotate(70)">
                                 <stop
@@ -105,7 +111,11 @@ export default memo(function BackgroundUtils() {
                         <rect fill="url('#background-gradient')" width="100%" height="100%" />
                     </svg>
 
-                    <svg style={{ width: "100%", opacity: colorMode === "light" ? 0.25 : 0.2 }}>
+                    <svg
+                        style={{ width: "100%", opacity: colorMode === "light" ? 0.25 : 0.2 }}
+                        aria-label="Gradient"
+                        role="img"
+                    >
                         <defs>
                             <linearGradient
                                 id="background-gradient2"

@@ -1,13 +1,14 @@
 import analytics from "@/functions/analytics";
+import dynamic from "@/functions/dynamic";
 import { useProgressBar } from "@/hooks/useProgressBar";
 import Fonts from "@/layout/global/Fonts";
 import { Flex } from "@chakra-ui/react";
 import { useLocation } from "@remix-run/react";
 import type { Transition } from "framer-motion";
-import { memo, useEffect, useMemo, useState } from "react";
+import { Suspense, memo, useEffect, useMemo, useState } from "react";
+import { ClientOnly } from "remix-utils/client-only";
 import BackgroundUtils from "./BackgroundUtils";
 import CookieConstent from "./CookieConsent";
-import Footer from "./Footer";
 import Header from "./Header/Header";
 import SideMenu from "./Header/mobile/SideMenu";
 import { ChakraBox } from "./MotionComponents";
@@ -28,6 +29,8 @@ const progressBarConfig = {
     trickleAmount: 2.75,
     trickleTime: 175
 };
+
+const Footer = dynamic(() => import("./Footer"));
 
 export default memo(function Layout({ children }: { children?: React.ReactNode }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -77,6 +80,7 @@ const Inside = memo(function Inside({
 }) {
     const path = useLocation().pathname;
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         analytics.pageView();
     }, [path]);
@@ -99,7 +103,13 @@ const Inside = memo(function Inside({
             <Flex w="100%" minH={"calc(100vh - 69px)"} flex={1} flexDir={"column"} pos="relative">
                 {children}
             </Flex>
-            <Footer />
+            <ClientOnly>
+                {() => (
+                    <Suspense fallback={null}>
+                        <Footer />
+                    </Suspense>
+                )}
+            </ClientOnly>
         </ChakraBox>
     );
 });

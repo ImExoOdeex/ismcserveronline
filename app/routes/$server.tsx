@@ -70,7 +70,7 @@ import dayjs from "dayjs";
 import { AnimatePresence, motion } from "framer-motion";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { BiBug, BiInfoCircle } from "react-icons/bi";
-import { typeddefer, typedjson } from "remix-typedjson";
+import { type UseDataFunctionReturn, typeddefer, typedjson } from "remix-typedjson";
 import { getClientIPAddress } from "remix-utils/get-client-ip-address";
 import { InsideErrorBoundary } from "~/document";
 
@@ -647,11 +647,8 @@ export function headers({ loaderHeaders }: HeadersArgs) {
     return headers;
 }
 
-export function meta({ data, matches }: MetaArgs) {
-    if (!data || typeof data !== "object" || !("server" in data) || !("bedrock" in data)) return [];
-
+export function meta({ data, matches }: MetaArgs & { data: UseDataFunctionReturn<typeof loader> }) {
     return [
-        ...matches[0].meta,
         {
             title: data
                 ? data.server + "'s status | IsMcServer.online"
@@ -680,7 +677,12 @@ export function meta({ data, matches }: MetaArgs) {
             content: data
                 ? `${config.dashUrl}/${data.bedrock ? "bedrock/" : ""}${data.server}`
                 : config.dashUrl
-        }
+        },
+        {
+            name: "kewords",
+            content: `${data.server} status, status for ${data.server}, ${data.server} server status, ${data.server} server live data, ${data.server} info, ${data.server} data, ${data.server} Minecraft server, ${data.server} Minecraft server status, ${data.server} mc server rewiew`
+        },
+        ...matches[0].meta
     ] as ReturnType<MetaFunction>;
 }
 

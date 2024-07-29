@@ -26,7 +26,8 @@ import {
     Text,
     VStack,
     Wrap,
-    WrapItem
+    WrapItem,
+    useToast
 } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
@@ -106,15 +107,22 @@ export async function action({ request, params }: ActionFunctionArgs) {
         }
     }
 
-    const res = await (
-        await fetch(`${serverConfig.botApi}/${guildID}/livecheck/edit/${number}`, {
-            method: "POST",
-            headers: {
-                Authorization: requireEnv("SUPER_DUPER_API_ACCESS_TOKEN")
-            },
-            body: formData
+    console.log("formData", formData);
+
+    const res = await fetch(`${serverConfig.botApi}/${guildID}/livecheck/edit/${number}`, {
+        method: "POST",
+        headers: {
+            Authorization: requireEnv("SUPER_DUPER_API_ACCESS_TOKEN")
+        },
+        body: new URLSearchParams({
+            address: formData.get("address")?.toString()!,
+            edition: formData.get("edition")?.toString()!,
+            channel: formData.get("channel")?.toString()!,
+            _action: formData.get("_action")?.toString()!,
+            alertChannel: formData.get("alertChannel")?.toString()!,
+            alertEnabled: formData.get("alertEnabled")?.toString()!
         })
-    ).json();
+    }).then((res) => res.json());
 
     getUser(request).then((user) => {
         if (user) {
@@ -133,11 +141,22 @@ export default function Index() {
     const { livecheck, channels } = useAnimationLoaderData<typeof loader>();
 
     const progressBar = useProgressBarContext();
-    const livecheckFetcher = useDebouncedFetcherCallback((_data) => {
+    const toast = useToast();
+    const livecheckFetcher = useDebouncedFetcherCallback((data) => {
         setIsEditing(false);
         setTimeout(() => {
             revalidate();
         }, 7000);
+
+        if (!data.success) {
+            toast({
+                title: data.message,
+                description:
+                    "Please make sure bot has permissions to access channel you've selected.",
+                status: "error"
+            });
+            return;
+        }
 
         progressBar.startAndDone();
     });

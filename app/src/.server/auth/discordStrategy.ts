@@ -42,7 +42,9 @@ export const discordStrategy = new DiscordStrategy<DiscordUser>(
     },
     async ({ profile, accessToken, context }) => {
         if (!profile?.emails?.length) {
-            throw new Error("You need an email on your Discord account to login!");
+            throw new Error(
+                "You need an email on your Discord account to login. Please add your email to your Discord account."
+            );
         }
 
         const email = profile.emails[0].value;
@@ -59,7 +61,7 @@ export const discordStrategy = new DiscordStrategy<DiscordUser>(
                     if (res.ok) {
                         return res.json();
                     }
-                        throw new Error("Failed to fetch guilds");
+                    throw new Error("Failed to fetch guilds");
                 })
                 .then((res) => {
                     return res
@@ -67,10 +69,11 @@ export const discordStrategy = new DiscordStrategy<DiscordUser>(
                         .sort((a: Guild, b: Guild) => {
                             if (a.owner === true && b.owner !== true) {
                                 return -1;
-                            }if (b.owner === true && a.owner !== true) {
+                            }
+                            if (b.owner === true && a.owner !== true) {
                                 return 1;
                             }
-                                return 0;
+                            return 0;
                         });
                 }),
             getPhotoURL(profile.__json.id, profile.__json.avatar)

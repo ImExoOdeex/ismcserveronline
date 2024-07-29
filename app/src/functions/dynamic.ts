@@ -7,5 +7,5 @@ export default function dynamic<T extends ComponentType<any>>(
     if (typeof window !== "undefined") {
         return lazy(cb);
     }
-        return (() => ({ default: null })) as unknown as LazyExoticComponent<T>;
+    return (() => ({ default: null })) as unknown as LazyExoticComponent<T>;
 }
