@@ -4,10 +4,8 @@ import DiscordIcon from "@/layout/global/icons/DiscordIcon";
 import config from "@/utils/config";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import {
-    Badge,
     Button,
     type ButtonProps,
-    HStack,
     Icon,
     IconButton,
     Menu,
@@ -37,12 +35,7 @@ export function PopularServersButton() {
             rounded={"xl"}
             bg={"transparent"}
             pos={"relative"}
-            rightIcon={
-                <HStack>
-                    <Icon as={PiAlignLeftBold} />
-                    <Badge colorScheme="green">New</Badge>
-                </HStack>
-            }
+            rightIcon={<Icon as={PiAlignLeftBold} />}
         >
             Servers
         </Button>
