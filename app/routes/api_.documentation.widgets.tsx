@@ -25,7 +25,14 @@ import { typedjson } from "remix-typedjson";
 export async function loader({ request }: LoaderFunctionArgs) {
     csrf(request);
 
-    const markdown = await fs.readFile("./public/docs/widgets.md", "utf-8");
+    let markdown = await fs.readFile("./public/docs/widgets.md", "utf-8");
+
+    const searchParams = new URL(request.url).searchParams;
+    const serverParam = searchParams.get("server");
+
+    if (serverParam) {
+        markdown = markdown.replaceAll("hypixel.net", serverParam);
+    }
 
     return typedjson(
         {
@@ -33,7 +40,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
         },
         {
             headers: {
-                "Cache-Control": "max-age=360, stale-while-revalidate=60"
+                "Cache-Control": "public, s-max-age=360, max-age=360, stale-while-revalidate=60"
             }
         }
     );
