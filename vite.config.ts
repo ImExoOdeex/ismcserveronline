@@ -28,10 +28,5 @@ export default defineConfig({
             "remark-breaks",
             "remark-gfm"
         ]
-    },
-    build: {
-        rollupOptions: {
-            external: ["sharp"]
-        }
     }
 });

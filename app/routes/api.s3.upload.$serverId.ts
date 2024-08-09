@@ -4,11 +4,10 @@ import { csrf } from "@/.server/functions/security.server";
 import { updateServerImage, uploadStreamToS3 } from "@/.server/modules/s3";
 import serverConfig from "@/.server/serverConfig";
 import {
-    unstable_parseMultipartFormData as parseMultipartFormData,
-    type ActionFunctionArgs
+    type ActionFunctionArgs,
+    unstable_parseMultipartFormData as parseMultipartFormData
 } from "@remix-run/node";
 import { typedjson } from "remix-typedjson";
-import sharp from "sharp";
 import invariant from "tiny-invariant";
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -63,12 +62,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
                     const buffer = await AsyncIterableToBuffer(data);
 
-                    const processed = await sharp(buffer)
-                        .webp({
-                            quality: 100
-                        })
-                        .resize(name === "banner" ? 1024 : 1920)
-                        .toBuffer();
+                    // const processed = await sharp(buffer)
+                    //     .webp({
+                    //         quality: 100
+                    //     })
+                    //     .resize(name === "banner" ? 1024 : 1920)
+                    //     .toBuffer();
+                    const processed = buffer;
 
                     // allow up to 10MB
                     console.log("size", (buffer.byteLength / 1024 / 1024).toFixed(2) + "MB");
@@ -97,7 +97,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
                         await updateServerImage("banner", file, serverId);
 
                         return `${serverConfig.uploadsUrl}/${file}`;
-                    }if (name === "background") {
+                    }
+                    if (name === "background") {
                         // background is a prime only feature
                         if (!(server.prime || user.prime)) {
                             throw new Error("User or server does not have prime");

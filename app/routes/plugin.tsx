@@ -1,3 +1,4 @@
+import { capitalize } from "@/functions/utils";
 import { AnimateFrom } from "@/layout/global/Animated";
 import config from "@/utils/config";
 import {
@@ -13,9 +14,19 @@ import {
     Text,
     useColorMode
 } from "@chakra-ui/react";
+import type { MetaArgs, MetaFunction } from "@remix-run/react";
 import { HiDownload } from "react-icons/hi";
 
 const pluginName = "imcso insight";
+
+export function meta({ matches }: MetaArgs) {
+    return [
+        {
+            title: `${capitalize(pluginName)} Plugin`
+        },
+        ...matches[0].meta
+    ] satisfies ReturnType<MetaFunction>;
+}
 
 export default function Plugin() {
     const { colorMode } = useColorMode();
@@ -62,10 +73,10 @@ export default function Plugin() {
                 <Flex gap={10} mx={"auto"} alignItems={"center"} justifyContent={"center"}>
                     <DownloadBox
                         image={"https://static.spigotmc.org/img/spigot-og.png"}
-                        link="/plugin/imcso-insight-1.1.0.jar"
-                        downloadName="imcso-insight-1.1.0.jar"
+                        link="/plugin/imcso-insight-1.2.0.jar"
+                        downloadName="imcso-insight-1.2.0.jar"
                         buttonText={"Download for Spigot"}
-                        version={"1.1.0"}
+                        version={"1.2.0"}
                     />
                 </Flex>
             </AnimateFrom>

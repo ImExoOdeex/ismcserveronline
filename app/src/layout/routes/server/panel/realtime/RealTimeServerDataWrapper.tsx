@@ -1,25 +1,35 @@
-import type { OutgoingMessage, Usage } from "@/../../server/wsserver";
+import type { OutgoingMessage, Usage } from "@/../../server/WsServer";
 import useWebSocket from "@/hooks/useWebsocket";
 import RealTimeConnected from "@/layout/routes/server/panel/realtime/RealTimeConnected";
 import RealTimeConnecting from "@/layout/routes/server/panel/realtime/RealTimeConnecting";
 import RealTimeError from "@/layout/routes/server/panel/realtime/RealTimeError";
 import RealTimeWaiting from "@/layout/routes/server/panel/realtime/RealTimeWaiting";
 import { Flex, Heading, Text } from "@chakra-ui/react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 export default function RealTimeServerDataWrapper({
     token,
     url
 }: { url: string; token: string | null }) {
     const [data, setData] = useState<Usage | null>(null);
+    const [consoleMessages, setConsoleMessages] = useState<string[]>([]);
     const [error, setError] = useState<string | null>(null);
 
-    const { isConnected, reconnect } = useWebSocket(url, {
+    const { isConnected, reconnect, sendMessage } = useWebSocket(url, {
         onMessage(message, _ws) {
             const data = JSON.parse(message.data) as OutgoingMessage<"client">;
 
             const usage = data.intent === "Data" ? (data.data?.usage as Usage) : null;
-            setData(usage);
+            usage && setData(usage);
+
+            const consoleMessage =
+                data.intent === "ConsoleMessage" ? (data.data?.consoleMessage as string) : null;
+            consoleMessage && setConsoleMessages((prev) => [...prev, consoleMessage]);
+
+            console.table({
+                intent: data.intent,
+                data: data.data
+            });
         },
         onOpen(_e, ws) {
             console.log("authorizing with server token");
@@ -40,6 +50,17 @@ export default function RealTimeServerDataWrapper({
             setError(e instanceof Error ? e.message : "Unknown error");
         }
     });
+
+    const sendComamnd = useCallback(
+        (command: string) => {
+            sendMessage({
+                from: "client",
+                intent: "Command",
+                data: { command }
+            });
+        },
+        [sendMessage]
+    );
 
     return (
         <Flex flexDir={"column"} gap={4}>
@@ -66,7 +87,13 @@ export default function RealTimeServerDataWrapper({
                     if (!data) {
                         return <RealTimeWaiting />;
                     }
-                    return <RealTimeConnected data={data} />;
+                    return (
+                        <RealTimeConnected
+                            data={data}
+                            consoleMessages={consoleMessages}
+                            sendComamnd={sendComamnd}
+                        />
+                    );
                 }
                 return <RealTimeConnecting />;
             })()}
