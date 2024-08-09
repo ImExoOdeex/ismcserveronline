@@ -19,6 +19,7 @@ import type { MetaArgs, MetaFunction } from "@remix-run/react";
 import { HiDownload } from "react-icons/hi";
 
 const pluginName = "imcso insight";
+const version = import.meta.env.VITE_PLUGIN_VERSION ?? "1.2.2";
 
 export function meta({ matches }: MetaArgs) {
     return [
@@ -74,10 +75,9 @@ export default function Plugin() {
                 <Flex gap={10} mx={"auto"} alignItems={"center"} justifyContent={"center"}>
                     <DownloadBox
                         image={"https://static.spigotmc.org/img/spigot-og.png"}
-                        link="/plugin/imcso-insight-1.2.1.jar"
-                        downloadName="imcso-insight-1.2.1.jar"
+                        link={`/plugin/imcso-insight-${version}.jar`}
+                        downloadName={`imcso-insight-${version}.jar`}
                         buttonText={"Download for Spigot"}
-                        version={"1.2.1"}
                     />
                 </Flex>
             </AnimateFrom>
@@ -139,10 +139,9 @@ interface DownloadBoxProps {
     link: string;
     downloadName: string;
     buttonText: string;
-    version: string;
 }
 
-function DownloadBox({ image, buttonText, link, downloadName, version }: DownloadBoxProps) {
+function DownloadBox({ image, buttonText, link, downloadName }: DownloadBoxProps) {
     return (
         <Flex flexDir={"column"} gap={4} w="300px">
             <Image aspectRatio={"1/1"} w="100%" src={image} />
