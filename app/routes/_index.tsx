@@ -14,6 +14,8 @@ import { ChevronDownIcon } from "@chakra-ui/icons";
 import { Flex } from "@chakra-ui/react";
 import type {
     ActionFunctionArgs,
+    HeadersArgs,
+    HeadersFunction,
     LoaderFunctionArgs,
     MetaArgs,
     MetaFunction
@@ -37,6 +39,15 @@ export async function action({ request }: ActionFunctionArgs) {
         return redirect(`/${bedrock ? "bedrock/" : ""}${server}`);
     }
     return redirect("/search?q=" + server);
+}
+
+export function headers(_: HeadersArgs) {
+    const headers = new Headers();
+
+    headers.append("Cache-Control", "public, s-maxage=3600");
+    headers.append("Vary", "Cookie, Accept-Encoding");
+
+    return headers satisfies ReturnType<HeadersFunction>;
 }
 
 export function meta({ matches }: MetaArgs) {
