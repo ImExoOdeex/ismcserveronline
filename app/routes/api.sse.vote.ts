@@ -1,4 +1,3 @@
-import { csrf } from "@/.server/functions/security.server";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { eventStream } from "remix-utils/sse/server";
 import type { MultiEmitter } from "server/MultiEmitter";
@@ -10,7 +9,7 @@ export interface NewVote {
 }
 
 export function loader({ request, context }: LoaderFunctionArgs) {
-    csrf(request);
+    // csrf(request);
 
     const url = new URL(request.url);
     const id = url.searchParams.get("id");

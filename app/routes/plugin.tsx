@@ -5,6 +5,7 @@ import {
     Badge,
     Box,
     Button,
+    Code,
     Divider,
     Flex,
     Heading,
@@ -73,10 +74,10 @@ export default function Plugin() {
                 <Flex gap={10} mx={"auto"} alignItems={"center"} justifyContent={"center"}>
                     <DownloadBox
                         image={"https://static.spigotmc.org/img/spigot-og.png"}
-                        link="/plugin/imcso-insight-1.2.0.jar"
-                        downloadName="imcso-insight-1.2.0.jar"
+                        link="/plugin/imcso-insight-1.2.1.jar"
+                        downloadName="imcso-insight-1.2.1.jar"
                         buttonText={"Download for Spigot"}
-                        version={"1.2.0"}
+                        version={"1.2.1"}
                     />
                 </Flex>
             </AnimateFrom>
@@ -99,6 +100,34 @@ export default function Plugin() {
                         </Link>{" "}
                         for providing help with the plugin!
                     </Text>
+                </AnimateFrom>
+            </Flex>
+
+            <Flex flexDir={"column"} gap={4}>
+                <AnimateFrom delay={0.18}>
+                    <Heading size={"md"}>Using Java 9+ and real time stats?</Heading>
+                </AnimateFrom>
+
+                <AnimateFrom delay={0.2}>
+                    <Flex flexDir={"column"} gap={2}>
+                        <Text>
+                            Due to Java Virtual Machine limitations when it comes to accessing
+                            Operating System variables, you may need to add the following JVM
+                            argument to your server startup script:{" "}
+                            <Code>
+                                --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED
+                            </Code>
+                        </Text>
+
+                        <Text>
+                            Add it right after the <Code>java</Code> keyword. For example:{" "}
+                            <Code>
+                                java
+                                --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED{" "}
+                                {"<rest>"}
+                            </Code>
+                        </Text>
+                    </Flex>
                 </AnimateFrom>
             </Flex>
         </Flex>
