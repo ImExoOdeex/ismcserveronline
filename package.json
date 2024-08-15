@@ -62,7 +62,7 @@
 		"react-time-ago": "^7.2.1",
 		"recharts": "^2.12.2",
 		"remark-breaks": "^4.0.0",
-		"remark-gfm": "^4.0.0",
+		"remark-gfm": "^3.0.1",
 		"remix": "2.8.1",
 		"remix-auth-discord": "^1.2.1",
 		"remix-typedjson": "^0.4.1",
