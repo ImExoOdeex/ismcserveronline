@@ -38,7 +38,14 @@ export default memo(function ServerView({
     const boxBg = useColorModeValue("rgba(252, 252, 252, 0.8)", "rgba(17, 17, 23, 0.8)");
 
     return (
-        <Flex flexDir={"column"} pos="relative" {...props}>
+        <Flex
+            flexDir={"column"}
+            pos="relative"
+            as={motion.div}
+            layout={"position"}
+            layoutId={"server-view-" + server}
+            {...props}
+        >
             <Flex pos="relative">
                 {image.credits && (
                     <Link

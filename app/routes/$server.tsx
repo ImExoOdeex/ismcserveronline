@@ -648,6 +648,10 @@ export function headers({ loaderHeaders }: HeadersArgs) {
 }
 
 export function meta({ data, matches }: MetaArgs & { data: UseDataFunctionReturn<typeof loader> }) {
+    const aspectRatio = 4 / 1;
+    const width = 1920;
+    const height = width / aspectRatio;
+
     return [
         {
             title: data
@@ -673,13 +677,21 @@ export function meta({ data, matches }: MetaArgs & { data: UseDataFunctionReturn
                 : `${config.dashUrl}/logo-wallpaper.png`
         },
         {
+            property: "og:image:width",
+            content: width
+        },
+        {
+            property: "og:image:height",
+            content: height
+        },
+        {
             name: "og:url",
             content: data
                 ? `${config.dashUrl}/${data.bedrock ? "bedrock/" : ""}${data.server}`
                 : config.dashUrl
         },
         {
-            name: "kewords",
+            name: "keywords",
             content: `${data.server} status, status for ${data.server}, ${data.server} server status, ${data.server} server live data, ${data.server} info, ${data.server} data, ${data.server} Minecraft server, ${data.server} Minecraft server status, ${data.server} mc server rewiew`
         },
         ...matches[0].meta

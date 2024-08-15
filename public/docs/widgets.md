@@ -24,5 +24,5 @@ You can use the following parameters to customize the results:
 - Rounded image: https://ismcserver.online/hypixel.net/widget?rounded
 ![Rounded Widget](https://ismcserver.online/hypixel.net/widget?rounded)
 
-- Dark Rounded image: https://ismcserver.online/hypixel.net/widget?rounded
+- Dark Rounded image: https://ismcserver.online/hypixel.net/widget?dark&rounded
 ![Dark Rounded Widget](https://ismcserver.online/hypixel.net/widget?dark&rounded)

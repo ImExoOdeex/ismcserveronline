@@ -45,10 +45,7 @@ export function meta({ params }: MetaArgs) {
             name: "description",
             content: desc
         },
-        {
-            name: "image",
-            content: `${config.dashUrl}/logo-wallpaper.png`
-        },
+
         // og tags
         ...(shouldSkipDefaultOgTags
             ? []
@@ -66,6 +63,10 @@ export function meta({ params }: MetaArgs) {
                       content: `${config.dashUrl}/logo-wallpaper.png`
                   },
                   // set sizes for image
+                  {
+                      name: "image",
+                      content: `${config.dashUrl}/logo-wallpaper.png`
+                  },
                   {
                       property: "og:image:width",
                       content: "3840"
