@@ -1,13 +1,14 @@
 import { inputAnatomy, tableAnatomy, tagAnatomy } from "@chakra-ui/anatomy";
 import {
+    type ThemeConfig,
+    type ThemeOverride,
+    type ToastProviderProps,
     theme as chakraTheme,
     createMultiStyleConfigHelpers,
     extendBaseTheme,
-    mergeThemeOverride,
-    type ThemeConfig,
-    type ThemeOverride
+    mergeThemeOverride
 } from "@chakra-ui/react";
-import { mode, type StyleFunctionProps } from "@chakra-ui/theme-tools";
+import { type StyleFunctionProps, mode } from "@chakra-ui/theme-tools";
 import type { Dict } from "@chakra-ui/utils";
 import { useLocation } from "@remix-run/react";
 import { useMemo } from "react";
@@ -451,3 +452,13 @@ export default function useTheme() {
 
     return theme;
 }
+
+export const toastOptions = {
+    defaultOptions: {
+        duration: 5000,
+        isClosable: true,
+        position: "bottom-right",
+        variant: "subtle",
+        status: "success"
+    }
+} satisfies ToastProviderProps;

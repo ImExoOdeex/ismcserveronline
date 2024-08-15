@@ -23,6 +23,7 @@ import type { ICheck } from "@/layout/routes/server/index/ChecksTable";
 import ChecksTable from "@/layout/routes/server/index/ChecksTable";
 import Comments from "@/layout/routes/server/index/Comments";
 import CommentsSkeleton from "@/layout/routes/server/index/CommentsSkeleton";
+import LookingForStatistics from "@/layout/routes/server/index/LookingForStatistics";
 import McFonts from "@/layout/routes/server/index/McFonts";
 import MoreLikeThisServer from "@/layout/routes/server/index/MoreLikeThisServer";
 import Motd from "@/layout/routes/server/index/Motd";
@@ -947,14 +948,14 @@ export default function $server() {
                 </Suspense>
             )}
 
-            <Widget />
+            <Widget my={5} />
 
             <MoreLikeThisServer
                 server={server}
                 players={data?.players.online}
                 bedrock={bedrock}
                 language={data.language}
-                my={10}
+                // my={10}
             />
 
             <Stack direction={{ base: "column", md: "row" }} spacing={{ base: "auto", md: 7 }}>
@@ -980,6 +981,13 @@ export default function $server() {
                     <Icon as={BiInfoCircle} />
                 </HStack>
             </Stack>
+
+            {!bedrock && !data.owner_id && (
+                <>
+                    <Divider my={5} />
+                    <LookingForStatistics />
+                </>
+            )}
         </Flex>
     );
 }

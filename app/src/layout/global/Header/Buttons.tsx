@@ -120,7 +120,7 @@ const utilLinks = [
 export function Dots() {
     return (
         <>
-            <Menu>
+            <Menu isLazy>
                 <MenuButton
                     as={IconButton}
                     variant={"unstyled"}

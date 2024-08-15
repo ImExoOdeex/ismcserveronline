@@ -6,7 +6,7 @@ import { getCookieWithoutDocument } from "@/functions/cookies";
 import Layout from "@/layout/global/Layout";
 import { GlobalContext } from "@/utils/GlobalContext";
 import config from "@/utils/config";
-import useTheme from "@/utils/theme";
+import useTheme, { toastOptions } from "@/utils/theme";
 import { ChakraBaseProvider, cookieStorageManagerSSR, useConst } from "@chakra-ui/react";
 import type {
     ActionFunctionArgs,
@@ -223,15 +223,7 @@ function InsideGlobal() {
     return (
         <ChakraBaseProvider
             resetCSS
-            toastOptions={{
-                defaultOptions: {
-                    duration: 5000,
-                    isClosable: true,
-                    position: "bottom-right",
-                    variant: "subtle",
-                    status: "success"
-                }
-            }}
+            toastOptions={toastOptions}
             theme={customTheme}
             colorModeManager={cookieManager}
         >

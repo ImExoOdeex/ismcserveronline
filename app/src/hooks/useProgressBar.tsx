@@ -1,6 +1,5 @@
 import { useLocation, useNavigation } from "@remix-run/react";
 import { useCallback, useEffect, useState } from "react";
-import { flushSync } from "react-dom";
 import useInsideEffect from "./useInsideEffect";
 
 interface Props {
@@ -83,14 +82,14 @@ export function useProgressBar({
     }, []);
 
     const startAndDone = useCallback(() => {
-        flushSync(() => {
-            start();
+        start();
+
+        // next tick
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                done(true);
+            });
         });
-        // i tried to start() and then done() with flushSync but it didn't work smh // nvm idk how this stupid react works,
-        // but if id now read {progress}, it would still show old value (0), but done() would not work so idfk
-        setTimeout(() => {
-            done(true);
-        }, 40);
     }, [start, done]);
 
     useInsideEffect(() => {

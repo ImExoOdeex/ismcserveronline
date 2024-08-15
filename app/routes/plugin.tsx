@@ -44,7 +44,7 @@ export default function Plugin() {
                     }}
                     ml={4}
                 >
-                    imcso{" "}
+                    IMCSO{" "}
                     <Box
                         as="span"
                         bgClip="text"
@@ -105,10 +105,29 @@ export default function Plugin() {
 
             <Flex flexDir={"column"} gap={4}>
                 <AnimateFrom delay={0.18}>
-                    <Heading size={"md"}>Using Java 9+ and real time stats?</Heading>
+                    <Heading size={"md"}>How to use it?</Heading>
                 </AnimateFrom>
 
                 <AnimateFrom delay={0.2}>
+                    <Flex flexDir={"column"} gap={2}>
+                        <Text>
+                            To use our plugin, you need to verify your server first. Simply search
+                            for your server and click "Verify" button. After you've verified your
+                            server, you can download the plugin and install it on your server. If
+                            you plan to use the real-time stats feature, please note that it is a
+                            prime feature and we cannot guarantee compatibility with all server
+                            software. It has been tested on Spigot 1.8.8 and Paper 1.20.4 servers.
+                        </Text>
+                    </Flex>
+                </AnimateFrom>
+            </Flex>
+
+            <Flex flexDir={"column"} gap={4}>
+                <AnimateFrom delay={0.22}>
+                    <Heading size={"md"}>Using Java 9+ and real time stats?</Heading>
+                </AnimateFrom>
+
+                <AnimateFrom delay={0.24}>
                     <Flex flexDir={"column"} gap={2}>
                         <Text>
                             Due to Java Virtual Machine limitations when it comes to accessing
