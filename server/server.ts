@@ -4,54 +4,61 @@ import os from "node:os";
 import { ExpressApp } from "server/ExpressApp";
 import { MultiEmitter } from "server/MultiEmitter";
 import { WsServer } from "server/WsServer";
-import sourceMapSupport from "source-map-support";
+import { sendExplosion } from "server/explosions";
 import { Logger } from "../app/src/.server/modules/Logger";
 
-sourceMapSupport.install();
-
 if (process.env.NODE_ENV === "production") {
-	if (cluster.isPrimary) {
-		Logger(`Master ${process.pid} is running`, "magenta", "white");
+    if (cluster.isPrimary) {
+        Logger(`Master ${process.pid} is running`, "magenta", "white");
 
-		Logger(
-			'__     ______     __    __     ______     ______     ______     ______     __   __   ______     ______     ______     __   __     __         __     __   __     ______   \n/\\ \\   /\\  ___\\   /\\ "-./  \\   /\\  ___\\   /\\  ___\\   /\\  ___\\   /\\  == \\   /\\ \\ / /  /\\  ___\\   /\\  == \\   /\\  __ \\   /\\ "-.\\ \\   /\\ \\       /\\ \\   /\\ "-.\\ \\   /\\  ___\\  \n\\ \\ \\  \\ \\___  \\  \\ \\ \\-./\\ \\  \\ \\ \\____  \\ \\___  \\  \\ \\  __\\   \\ \\  __<   \\ \\ \\\'/   \\ \\  __\\   \\ \\  __<   \\ \\ \\/\\ \\  \\ \\ \\-.  \\  \\ \\ \\____  \\ \\ \\  \\ \\ \\-.  \\  \\ \\  __\\  \n \\ \\_\\  \\/\\_____\\  \\ \\_\\ \\ \\_\\  \\ \\_____\\  \\/\\_____\\  \\ \\_____\\  \\ \\_\\ \\_\\  \\ \\__|    \\ \\_____\\  \\ \\_\\ \\_\\  \\ \\_____\\  \\ \\_\\\\"\\_\\  \\ \\_____\\  \\ \\_\\  \\ \\_\\\\"\\_\\  \\ \\_____\\\n  \\/_/   \\/_____/   \\/_/  \\/_/   \\/_____/   \\/_____/   \\/_____/   \\/_/ /_/   \\/_/      \\/_____/   \\/_/ /_/   \\/_____/   \\/_/ \\/_/   \\/_____/   \\/_/   \\/_/ \\/_/   \\/_____/',
-			"green",
-			"black",
-			true,
-		);
+        Logger(
+            '__     ______     __    __     ______     ______     ______     ______     __   __   ______     ______     ______     __   __     __         __     __   __     ______   \n/\\ \\   /\\  ___\\   /\\ "-./  \\   /\\  ___\\   /\\  ___\\   /\\  ___\\   /\\  == \\   /\\ \\ / /  /\\  ___\\   /\\  == \\   /\\  __ \\   /\\ "-.\\ \\   /\\ \\       /\\ \\   /\\ "-.\\ \\   /\\  ___\\  \n\\ \\ \\  \\ \\___  \\  \\ \\ \\-./\\ \\  \\ \\ \\____  \\ \\___  \\  \\ \\  __\\   \\ \\  __<   \\ \\ \\\'/   \\ \\  __\\   \\ \\  __<   \\ \\ \\/\\ \\  \\ \\ \\-.  \\  \\ \\ \\____  \\ \\ \\  \\ \\ \\-.  \\  \\ \\  __\\  \n \\ \\_\\  \\/\\_____\\  \\ \\_\\ \\ \\_\\  \\ \\_____\\  \\/\\_____\\  \\ \\_____\\  \\ \\_\\ \\_\\  \\ \\__|    \\ \\_____\\  \\ \\_\\ \\_\\  \\ \\_____\\  \\ \\_\\\\"\\_\\  \\ \\_____\\  \\ \\_\\  \\ \\_\\\\"\\_\\  \\ \\_____\\\n  \\/_/   \\/_____/   \\/_/  \\/_/   \\/_____/   \\/_____/   \\/_____/   \\/_/ /_/   \\/_/      \\/_____/   \\/_/ /_/   \\/_____/   \\/_/ \\/_/   \\/_____/   \\/_/   \\/_/ \\/_/   \\/_____/',
+            "green",
+            "black",
+            true
+        );
 
-		for (let i = 0; i < os.availableParallelism(); i++) {
-			cluster.fork();
-		}
+        const workers = new Set<number>();
 
-		new WsServer(new PrismaClient());
+        for (let i = 0; i < os.availableParallelism(); i++) {
+            const worker = cluster.fork();
+            worker.on("online", () => {
+                Logger(`Worker ${worker.process.pid} started`, "blue", "white");
+                worker.process.pid && workers.add(worker.process.pid);
+            });
+        }
 
-		// resend the message to the rest of the workers except the original sender
-		cluster.on("message", (worker, message) => {
-			console.log("cluster message: ", message);
-			for (const w of Object.values(
-				cluster?.workers ?? ({} as NodeJS.Dict<Worker | undefined>),
-			)) {
-				if (w !== worker) {
-					console.log("resending: ", message);
-					w?.send(message);
-				}
-			}
-		});
+        new WsServer(new PrismaClient());
 
-		cluster.on("exit", (worker) => {
-			Logger(`Worker ${worker.process.pid} died`, "white", "red");
-			cluster.fork();
-		});
-	} else {
-		Logger(`Worker ${process.pid} started`, "blue", "white");
+        // resend the message to the rest of the workers except the original sender
+        cluster.on("message", (worker, message) => {
+            console.log("cluster message: ", message);
+            for (const w of Object.values(
+                cluster?.workers ?? ({} as NodeJS.Dict<Worker | undefined>)
+            )) {
+                if (w !== worker) {
+                    console.log("resending: ", message);
+                    w?.send(message);
+                }
+            }
+        });
 
-		const emitter = new MultiEmitter();
+        cluster.on("exit", (worker, code) => {
+            Logger(`Worker ${worker.process.pid} died`, "white", "red");
+            cluster.fork();
+            worker.process.pid && workers.delete(worker.process.pid);
+            sendExplosion(code, workers.size);
+        });
+    } else {
+        // Logger(`Worker ${process.pid} started`, "blue", "white");
 
-		new ExpressApp(emitter).run();
-	}
+        new ExpressApp(new MultiEmitter()).run();
+
+        setTimeout(() => {
+            throw new Error("Testing");
+        }, 20_000);
+    }
 } else {
-	new WsServer(new PrismaClient());
-
-	new ExpressApp(new MultiEmitter()).run();
+    new WsServer(new PrismaClient());
+    new ExpressApp(new MultiEmitter()).run();
 }

@@ -1,6 +1,7 @@
 import { useActionKey } from "@/hooks/useActionKey";
 import useUser from "@/hooks/useUser";
 import Link from "@/layout/global/Link";
+import AdaptiveAvatar from "@/layout/routes/dashboard/AdaptiveAvatar";
 import config from "@/utils/config";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import {
@@ -11,7 +12,6 @@ import {
     HStack,
     Icon,
     IconButton,
-    Image,
     Menu,
     MenuButton,
     MenuItem,
@@ -119,10 +119,10 @@ export default memo(function ProfilePopover() {
                             }}
                         >
                             <HStack>
-                                <Image
-                                    src={user.photo ?? "/discordLogo.png"}
+                                <AdaptiveAvatar
+                                    photo={user.photo}
+                                    name={user.nick}
                                     alt={"Your avatar"}
-                                    rounded={"full"}
                                     boxSize={{
                                         base: 10,
                                         md: 8
@@ -162,8 +162,9 @@ export default memo(function ProfilePopover() {
                                 px={2}
                             >
                                 <HStack spacing={4}>
-                                    <Image
-                                        src={user.photo ?? "/discordLogo.png"}
+                                    <AdaptiveAvatar
+                                        photo={user.photo}
+                                        name={user.nick}
                                         rounded={"full"}
                                         boxSize={"42px"}
                                     />
