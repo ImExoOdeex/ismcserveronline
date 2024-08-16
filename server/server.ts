@@ -53,10 +53,6 @@ if (process.env.NODE_ENV === "production") {
         // Logger(`Worker ${process.pid} started`, "blue", "white");
 
         new ExpressApp(new MultiEmitter()).run();
-
-        setTimeout(() => {
-            throw new Error("Testing");
-        }, 20_000);
     }
 } else {
     new WsServer(new PrismaClient());
