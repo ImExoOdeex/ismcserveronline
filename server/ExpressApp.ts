@@ -1,4 +1,3 @@
-import { Logger } from "@/.server/modules/Logger";
 import type { GetLoadContextFunction } from "@remix-run/express";
 import { createRequestHandler } from "@remix-run/express";
 import compression from "compression";
@@ -9,8 +8,9 @@ import * as fs from "node:fs";
 import type { Server } from "node:http";
 import * as path from "node:path";
 import * as url from "node:url";
-import type { MultiEmitter } from "server/MultiEmitter";
+import { Logger } from "../app/src/.server/modules/Logger";
 import pack from "../package.json";
+import type { MultiEmitter } from "./MultiEmitter";
 
 const BUILD_PATH = path.resolve("build/server/index.js");
 

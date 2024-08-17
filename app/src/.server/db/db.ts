@@ -1,7 +1,7 @@
-import { redisCacheMiddleware } from "@/.server/db/PrismaRedisCacheMiddleware";
 import { PrismaClient } from "@prisma/client";
+import { redisCacheMiddleware } from "./PrismaRedisCacheMiddleware";
 
-export let db: PrismaClient;
+// export let db: PrismaClient;
 
 class PrismaClientWithCache extends PrismaClient {
     constructor() {
@@ -17,4 +17,4 @@ declare global {
 if (!global.__db) {
     global.__db = new PrismaClientWithCache();
 }
-db = global.__db;
+export const db = global.__db;

@@ -1,7 +1,7 @@
 {
 	"private": true,
 	"sideEffects": false,
-	"version": "3.3.0",
+	"version": "3.3.1",
 	"type": "module",
 	"scripts": {
 		"postinstall": "tsx postinstall.ts",
@@ -104,12 +104,8 @@
 	},
 	"pnpm": {
 		"supportedArchitectures": {
-			"os": [
-				"linux"
-			],
-			"cpu": [
-				"x64"
-			]
+			"os": ["linux"],
+			"cpu": ["x64"]
 		}
 	},
 	"engines": {

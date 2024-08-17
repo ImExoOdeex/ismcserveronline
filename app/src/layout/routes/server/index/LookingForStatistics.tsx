@@ -1,15 +1,21 @@
 import Link from "@/layout/global/Link";
-import { Box, Button, Flex, HStack, Heading, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import { memo } from "react";
 
 export default memo(function LFS() {
     return (
         <Flex
-            flexDir={"row"}
+            flexDir={{
+                base: "column",
+                md: "row"
+            }}
             w={"100%"}
             justifyContent={"space-between"}
             alignItems={"center"}
-            gap={10}
+            gap={{
+                base: 4,
+                md: 10
+            }}
         >
             <Flex flexDir={"column"} gap={1}>
                 <Heading size="md">Looking for easy access to your server?</Heading>
@@ -28,11 +34,16 @@ export default memo(function LFS() {
                 </Text>
             </Flex>
 
-            <HStack>
-                <Button as={Link} to={"/plugin"}>
-                    Plugin
-                </Button>
-            </HStack>
+            <Button
+                as={Link}
+                to={"/plugin"}
+                w={{
+                    base: "100%",
+                    md: "auto"
+                }}
+            >
+                Plugin
+            </Button>
         </Flex>
     );
 });

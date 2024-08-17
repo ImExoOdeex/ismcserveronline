@@ -10,7 +10,7 @@ export async function sendExplosion(code: number, workersLeft: number) {
             content: null,
             embeds: [
                 {
-                    title: `ismcserver.online worker has exploded with code ${code}`,
+                    title: `ismcserver.online worker has exploded with code ${code} :boom:`,
                     description: `**Workers left**: ${workersLeft}/${os.availableParallelism()}`,
                     color: 65400
                 }

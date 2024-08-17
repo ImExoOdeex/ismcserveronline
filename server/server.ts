@@ -1,11 +1,11 @@
 import { PrismaClient } from "@prisma/client";
-import cluster from "node:cluster";
+import cluster, { type Worker } from "node:cluster";
 import os from "node:os";
-import { ExpressApp } from "server/ExpressApp";
-import { MultiEmitter } from "server/MultiEmitter";
-import { WsServer } from "server/WsServer";
-import { sendExplosion } from "server/explosions";
 import { Logger } from "../app/src/.server/modules/Logger";
+import { ExpressApp } from "./ExpressApp";
+import { MultiEmitter } from "./MultiEmitter";
+import { WsServer } from "./WsServer";
+import { sendExplosion } from "./explosions";
 
 if (process.env.NODE_ENV === "production") {
     if (cluster.isPrimary) {
@@ -53,6 +53,10 @@ if (process.env.NODE_ENV === "production") {
         // Logger(`Worker ${process.pid} started`, "blue", "white");
 
         new ExpressApp(new MultiEmitter()).run();
+
+        // setTimeout(() => {
+        //     throw new Error("Server did not start");
+        // }, 10_000);
     }
 } else {
     new WsServer(new PrismaClient());

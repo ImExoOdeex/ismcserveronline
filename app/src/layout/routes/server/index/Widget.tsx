@@ -21,10 +21,14 @@ export default memo(function Widget(props: Props) {
 
     return (
         <Flex
-            flexDir={"row"}
+            flexDir={{
+                base: "column",
+                md: "row"
+            }}
             w={"100%"}
             justifyContent={"space-between"}
             alignItems={"center"}
+            gap={4}
             {...props}
         >
             <Flex flexDir={"column"}>
@@ -32,11 +36,31 @@ export default memo(function Widget(props: Props) {
                 <Text>Wanna get a cool image widget of server status?</Text>
             </Flex>
 
-            <HStack>
-                <Button as={Link} to={`/api/documentation/widgets?server=${server}`}>
+            <HStack
+                w={{
+                    base: "100%",
+                    md: "auto"
+                }}
+            >
+                <Button
+                    as={Link}
+                    to={`/api/documentation/widgets?server=${server}`}
+                    w={{
+                        base: "100%",
+                        md: "auto"
+                    }}
+                >
                     Widget docs
                 </Button>
-                <Button onClick={copyWidgetLink}>Copy widget link</Button>
+                <Button
+                    w={{
+                        base: "100%",
+                        md: "auto"
+                    }}
+                    onClick={copyWidgetLink}
+                >
+                    Copy widget link
+                </Button>
             </HStack>
         </Flex>
     );

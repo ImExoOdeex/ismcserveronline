@@ -1,5 +1,5 @@
-import { requireEnv } from "@/.server/functions/env.server";
 import { Redis, type RedisOptions } from "ioredis";
+import { requireEnv } from "../functions/env.server";
 
 declare global {
     var __redis: Redis | undefined;

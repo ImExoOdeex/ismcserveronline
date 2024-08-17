@@ -1,9 +1,9 @@
-import { Logger } from "@/.server/modules/Logger";
 import type { PrismaClient } from "@prisma/client";
 import "dotenv/config";
 import { Server } from "node:http";
 import type { WebSocket } from "ws";
 import { WebSocketServer } from "ws";
+import { Logger } from "../app/src/.server/modules/Logger";
 
 interface Message<T extends "server" | "client"> {
     from: T;

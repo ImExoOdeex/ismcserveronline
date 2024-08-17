@@ -1,5 +1,6 @@
 import useUser from "@/hooks/useUser";
 import DiscordIcon from "@/layout/global/icons/DiscordIcon";
+import AdaptiveAvatar from "@/layout/routes/dashboard/AdaptiveAvatar";
 import { ChatIcon } from "@chakra-ui/icons";
 import {
     Alert,
@@ -8,7 +9,6 @@ import {
     Button,
     Flex,
     HStack,
-    Image,
     Text,
     Textarea,
     VStack,
@@ -123,8 +123,9 @@ export default memo(function Comments({
                                     alignItems={"center"}
                                 >
                                     <HStack spacing={3}>
-                                        <Image
-                                            src={user.photo ?? "/default.png"}
+                                        <AdaptiveAvatar
+                                            photo={user.photo ?? "/default.png"}
+                                            name={user.nick}
                                             alt={user.nick}
                                             boxSize={10}
                                             borderRadius={"full"}
