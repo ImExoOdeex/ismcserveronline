@@ -47,7 +47,6 @@ export class WsServer extends WebSocketServer {
             let id: string | null = null;
             let type: "server" | "client" | null = null;
             let currentRoomId: number | null = null;
-            console.log("WebSocket client connected");
 
             const disconnectTimeout = setTimeout(() => {
                 closeWithReason(
@@ -80,7 +79,6 @@ export class WsServer extends WebSocketServer {
                             where: { id: serverToken.server_id }
                         });
                         if (!server) return closeWithReason("Server not found");
-                        console.log("Authorized with token:", message.data.token);
 
                         clearTimeout(disconnectTimeout);
 
@@ -95,7 +93,6 @@ export class WsServer extends WebSocketServer {
 
                             if (room?.some((c) => c.type === "server")) {
                                 console.error("Server already connected to this room", this.rooms);
-                                console.log("disconnecting old server");
                                 const oldServer = room.find((c) => c.type === "server");
                                 oldServer!.ws.close();
                                 // return closeWithReason("Server already connected to this room");
@@ -112,8 +109,6 @@ export class WsServer extends WebSocketServer {
                             room?.push({ id, type: "server", ws });
                             currentRoomId = roomId;
                         }
-
-                        console.log("Added client to room", this.rooms);
                     } else if (message.intent === "Data") {
                         // console.log("Data from client:", message.data.usage);
                         const usage = message.data.usage;
@@ -157,7 +152,6 @@ export class WsServer extends WebSocketServer {
 
                     if (message.intent === "Authorize") {
                         type = "client";
-                        console.log("Authorizing client with token:", message.data.token);
                         const token = message.data.token;
                         if (!token) return closeWithReason("No token provided");
 
@@ -195,8 +189,6 @@ export class WsServer extends WebSocketServer {
                                 );
                             }
                         }
-
-                        console.log("Added client to room", this.rooms);
                     } else if (message.intent === "Command") {
                         const command = message.data.command;
                         if (!command) return;
@@ -226,12 +218,10 @@ export class WsServer extends WebSocketServer {
                     console.error("No room found", currentRoomId);
                     return;
                 }
-                const deleted = clients.splice(
+                clients.splice(
                     clients.findIndex((c) => c.id === id),
                     1
                 );
-                console.log("deleted", deleted);
-                console.log("Removed client from room", this.rooms);
 
                 // if there are no more clients in the room and there is a server, send stop message. if there are no more clients in the room, delete the room
                 if (clients.length === 0) {
@@ -250,7 +240,6 @@ export class WsServer extends WebSocketServer {
                         }
                     }
                 }
-                console.log("WebSocket client disconnected");
             });
         });
 
