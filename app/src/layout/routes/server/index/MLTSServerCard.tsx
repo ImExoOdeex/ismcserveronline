@@ -1,6 +1,6 @@
 import Link from "@/layout/global/Link";
 import config from "@/utils/config";
-import { Badge, Flex, HStack, Icon, Image as ChakraImage, Text } from "@chakra-ui/react";
+import { Badge, Image as ChakraImage, Flex, HStack, Icon, Text } from "@chakra-ui/react";
 import { memo } from "react";
 import { BiUser } from "react-icons/bi";
 import type { MLTSServer } from "~/routes/api.mlts";
@@ -17,7 +17,6 @@ export default memo(function MLTSServerCard({ server }: Props) {
             rounded={"lg"}
             p={4}
             gap={4}
-            minH={"133px"}
             as={Link}
             to={`/${server.bedrock ? "bedrock/" : ""}${server.server}`}
             _hover={{
@@ -45,7 +44,7 @@ export default memo(function MLTSServerCard({ server }: Props) {
                 <Flex gap={4} w="100%">
                     <ChakraImage
                         src={server.favicon ?? "/mc-icon.png"}
-                        boxSize={24}
+                        boxSize={20}
                         sx={{
                             imageRendering: "pixelated"
                         }}

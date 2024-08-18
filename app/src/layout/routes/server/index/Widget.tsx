@@ -2,6 +2,8 @@ import Link from "@/layout/global/Link";
 import { Button, Flex, type FlexProps, HStack, Heading, Text, useToast } from "@chakra-ui/react";
 import { useParams } from "@remix-run/react";
 import { memo, useCallback } from "react";
+import { HiOutlineDocumentText } from "react-icons/hi";
+import { TbPictureInPictureOn } from "react-icons/tb";
 
 interface Props extends FlexProps {}
 
@@ -20,20 +22,10 @@ export default memo(function Widget(props: Props) {
     }, [toast]);
 
     return (
-        <Flex
-            flexDir={{
-                base: "column",
-                md: "row"
-            }}
-            w={"100%"}
-            justifyContent={"space-between"}
-            alignItems={"center"}
-            gap={4}
-            {...props}
-        >
-            <Flex flexDir={"column"}>
+        <Flex flexDir={"column"} w={"100%"} gap={4} p={4} bg={"alpha"} rounded={"lg"} {...props}>
+            <Flex flexDir={"column"} gap={2}>
                 <Heading size="md">Image widget</Heading>
-                <Text>Wanna get a cool image widget of server status?</Text>
+                <Text>Wanna get a cool image widget of this server status?</Text>
             </Flex>
 
             <HStack
@@ -49,6 +41,7 @@ export default memo(function Widget(props: Props) {
                         base: "100%",
                         md: "auto"
                     }}
+                    rightIcon={<HiOutlineDocumentText />}
                 >
                     Widget docs
                 </Button>
@@ -58,6 +51,7 @@ export default memo(function Widget(props: Props) {
                         md: "auto"
                     }}
                     onClick={copyWidgetLink}
+                    rightIcon={<TbPictureInPictureOn />}
                 >
                     Copy widget link
                 </Button>

@@ -1,23 +1,21 @@
 import Link from "@/layout/global/Link";
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import { memo } from "react";
+import { LuPlug2 } from "react-icons/lu";
 
 export default memo(function LFS() {
     return (
         <Flex
-            flexDir={{
-                base: "column",
-                md: "row"
-            }}
+            flexDir={"column"}
             w={"100%"}
             justifyContent={"space-between"}
-            alignItems={"center"}
-            gap={{
-                base: 4,
-                md: 10
-            }}
+            gap={5}
+            p={4}
+            rounded={"lg"}
+            bg={"alpha"}
+            alignItems={"flex-start"}
         >
-            <Flex flexDir={"column"} gap={1}>
+            <Flex flexDir={"column"} gap={2}>
                 <Heading size="md">Looking for easy access to your server?</Heading>
                 <Text>
                     Install{" "}
@@ -34,14 +32,7 @@ export default memo(function LFS() {
                 </Text>
             </Flex>
 
-            <Button
-                as={Link}
-                to={"/plugin"}
-                w={{
-                    base: "100%",
-                    md: "auto"
-                }}
-            >
+            <Button as={Link} to={"/plugin"} px={6} rightIcon={<LuPlug2 />}>
                 Plugin
             </Button>
         </Flex>

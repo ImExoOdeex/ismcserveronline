@@ -404,6 +404,8 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
         throw redirect(`/${bedrock ? "bedrock/" : ""}${server.split(":")[0]}`);
     }
 
+    const dataPromise = getServerInfo(server, query, bedrock);
+
     let foundServer = (await db.server.findFirst({
         where: {
             server,
@@ -466,8 +468,8 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
     });
 
     let data = !foundServer
-        ? await getServerInfo(server, query, bedrock)
-        : getServerInfo(server, query, bedrock).then(async (res) => {
+        ? await dataPromise
+        : dataPromise.then(async (res) => {
               // using Prisma.DbNull, to null out JSON fields, since null is not allowed in JSON fields.
               await db.server.update({
                   where: {
@@ -484,7 +486,10 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
                       port: bedrock ? (res as BedrockServer).port.ipv4 : (res as JavaServer).port,
 
                       // java only
-                      favicon: bedrock ? null : (res as JavaServer).favicon,
+                      favicon: bedrock
+                          ? null
+                          : (res as JavaServer).favicon ??
+                            (foundServer as unknown as JavaServer).favicon,
                       ping: bedrock ? null : (res as MinecraftServer).ping,
 
                       // bedrock stuff
@@ -536,7 +541,13 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
                   }
               }
 
-              return res;
+              return {
+                  ...res,
+                  favicon: bedrock
+                      ? null
+                      : (res as JavaServer).favicon ??
+                        (foundServer as unknown as JavaServer).favicon
+              };
           });
 
     const cookie = getCookieWithoutDocument("tracking", request.headers.get("cookie") ?? "");
@@ -875,7 +886,9 @@ export default function $server() {
                 {/* displaying motd */}
                 <Suspense fallback={data.online ? <Motd motd={data?.motd?.html} /> : <></>}>
                     <Await resolve={promiseData}>
-                        {(freshData) => <Motd motd={freshData.motd?.html} />}
+                        {(freshData) =>
+                            freshData.online ? <Motd motd={freshData?.motd?.html} /> : <></>
+                        }
                     </Await>
                 </Suspense>
             </Flex>
@@ -958,7 +971,12 @@ export default function $server() {
                 // my={10}
             />
 
-            <Stack direction={{ base: "column", md: "row" }} spacing={{ base: "auto", md: 7 }}>
+            <Stack
+                direction={{ base: "column", md: "row" }}
+                spacing={{ base: "auto", md: 7 }}
+                justifyContent={"space-between"}
+                w={"100%"}
+            >
                 <HStack
                     as={"a"}
                     target={"_blank"}
