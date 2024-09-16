@@ -1,7 +1,7 @@
 import cache from "@/.server/db/redis";
 import { addressesConfig } from "@/.server/functions/validateServer";
 import config from "@/utils/config";
-import { json, redirectDocument, type EntryContext } from "@remix-run/node";
+import { type EntryContext, json, redirectDocument } from "@remix-run/node";
 import { db } from "./db/db";
 
 type Handler = (request: Request, remixContext: EntryContext) => Promise<Response | null> | null;
@@ -28,7 +28,7 @@ const redirects = [
         to: "https://top.gg/bot/1043569248427061380/vote"
     },
     {
-        from: ["/extention"],
+        from: ["/extension"],
         to: "https://marketplace.visualstudio.com/items?itemName=imexoodeex.jsx-brackets"
     }
 ];
@@ -40,7 +40,8 @@ export const otherRootRoutes: Record<string, Handler> = {
             return new Response(cached, {
                 headers: {
                     "Content-Type": "application/xml",
-                    "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800"
+                    "Cache-Control":
+                        "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800"
                 }
             });
         }
@@ -143,7 +144,8 @@ export const otherRootRoutes: Record<string, Handler> = {
             {
                 headers: {
                     "Content-Type": "text/plain",
-                    "Cache-Control": "public, max-age=86400"
+                    "Cache-Control":
+                        "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800"
                 }
             }
         );
@@ -197,7 +199,8 @@ export const otherRootRoutes: Record<string, Handler> = {
 
             {
                 headers: {
-                    "Cache-Control": "public, max-age=86400"
+                    "Cache-Control":
+                        "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800"
                 }
             }
         );
@@ -207,11 +210,17 @@ export const otherRootRoutes: Record<string, Handler> = {
             return from.map((path) => {
                 return {
                     [path]: async () => {
-                        return redirectDocument(to);
+                        return redirectDocument(to, {
+                            headers: {
+                                "Cache-Control":
+                                    "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800"
+                            }
+                        });
                     }
                 };
             });
         })
+        // biome-ignore lint/performance/noAccumulatingSpread: <explanation>
         .reduce((acc, curr) => ({ ...acc, ...curr }), {})
 };
 

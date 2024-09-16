@@ -47,7 +47,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         },
         {
             headers: {
-                "Cache-Control": "max-age=360, stale-while-revalidate=60"
+                "Cache-Control": "max-age=360, s-maxage=360, stale-while-revalidate=86400"
             }
         }
     );

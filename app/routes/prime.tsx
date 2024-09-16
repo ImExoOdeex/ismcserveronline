@@ -1,3 +1,4 @@
+import { cachePageHeaders } from "@/.server/functions/headers";
 import { commitSession, getSession } from "@/.server/session";
 import type { IPlan } from "@/types/typings";
 import config from "@/utils/config";
@@ -24,6 +25,8 @@ import React from "react";
 import { FiCreditCard } from "react-icons/fi";
 import { redirect } from "remix-typedjson";
 import invariant from "tiny-invariant";
+
+export const headers = cachePageHeaders;
 
 export function meta({ matches }: MetaArgs) {
     return [

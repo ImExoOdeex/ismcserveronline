@@ -7,8 +7,9 @@ import { Badge, Code, Divider, Heading, Link, Text, VStack } from "@chakra-ui/re
 import type { MetaArgs, MetaFunction } from "@remix-run/node";
 
 import os from "node:os";
-import { useEffect, useState } from "react";
+import { useCallback, useLayoutEffect, useState } from "react";
 import { typedjson } from "remix-typedjson";
+import { cachePageHeaders } from "../src/.server/functions/headers";
 
 export function meta({ matches }: MetaArgs) {
     return [
@@ -50,11 +51,13 @@ export async function loader() {
         },
         {
             headers: {
-                "Cache-Control": "public, max-age=60"
+                "Cache-Control": "public, max-age=60, s-maxage=60, stale-while-revalidate=86400"
             }
         }
     );
 }
+
+export const headers = cachePageHeaders;
 
 export default function Faq() {
     const { system } = useAnimationLoaderData<typeof loader>();
@@ -66,7 +69,7 @@ export default function Faq() {
         getCookieWithoutDocument(name, cookies) === "no-track" ? "no-track" : "track"
     );
 
-    function toggleTracking() {
+    const toggleTracking = useCallback(() => {
         const cookie = getCookie(name);
         if (cookie === "track" || !cookie) {
             document.cookie = `${name}=no-track`;
@@ -75,10 +78,10 @@ export default function Faq() {
             document.cookie = `${name}=track`;
             setCookieState("track");
         }
-    }
+    }, []);
 
-    useEffect(() => {
-        setCookieState(getCookie(name) === "no-track" ? "no-track" : "track" ?? "track");
+    useLayoutEffect(() => {
+        setCookieState(getCookie(name) === "no-track" ? "no-track" : "track");
     }, []);
 
     return (

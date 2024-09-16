@@ -1,5 +1,6 @@
 import { db } from "@/.server/db/db";
 import cache from "@/.server/db/redis";
+import { cachePageHeaders } from "@/.server/functions/headers";
 import { csrf } from "@/.server/functions/security.server";
 import serverConfig from "@/.server/serverConfig";
 import { getCookieWithoutDocument } from "@/functions/cookies";
@@ -347,6 +348,8 @@ export function shouldRevalidate(args: ShouldRevalidateFunctionArgs) {
 
     return false;
 }
+
+export const headers = cachePageHeaders;
 
 export default function Search() {
     const {

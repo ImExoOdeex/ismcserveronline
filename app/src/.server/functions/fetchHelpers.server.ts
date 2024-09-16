@@ -11,7 +11,7 @@ export function cachePrefetchHeaders(
     const headersHaveCacheControl = headers.has("Cache-Control");
 
     if (isGet && prefetch && !headersHaveCacheControl) {
-        headers.set("Cache-Control", "public, max-age=5");
+        headers.set("Cache-Control", "private, max-age=5");
     }
 
     return headers;
@@ -33,7 +33,7 @@ export function cachePrefetch(request: Request, options: ResponseInit = {}) {
     const headersHaveCacheControl = headers?.has("Cache-Control");
 
     if (isGet && isPrefetch && !headersHaveCacheControl) {
-        headers.set("Cache-Control", "public, max-age=5");
+        headers.set("Cache-Control", "private, max-age=5");
     }
     options.headers = headers;
 

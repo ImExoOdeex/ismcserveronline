@@ -1,3 +1,4 @@
+import { cachePageHeaders } from "@/.server/functions/headers";
 import Link from "@/layout/global/Link";
 import config from "@/utils/config";
 import {
@@ -6,13 +7,15 @@ import {
     Divider,
     Heading,
     ListItem,
+    type ListItemProps,
     OrderedList,
     Text,
     UnorderedList,
-    VStack,
-    type ListItemProps
+    VStack
 } from "@chakra-ui/react";
 import type { MetaArgs, MetaFunction } from "@remix-run/node";
+
+export const headers = cachePageHeaders;
 
 export function meta({ matches }: MetaArgs) {
     return [
@@ -24,14 +27,6 @@ export function meta({ matches }: MetaArgs) {
 }
 
 export default function Tos() {
-    function ListItemTitle({ children, ...props }: ListItemProps) {
-        return (
-            <ListItem fontWeight={"bold"} fontSize={"xl"} {...props}>
-                {children}
-            </ListItem>
-        );
-    }
-
     return (
         <VStack
             align={"start"}
@@ -305,5 +300,13 @@ export default function Tos() {
                 Copyright imexoodeex © {new Date().getFullYear()}
             </Text>
         </VStack>
+    );
+}
+
+function ListItemTitle({ children, ...props }: ListItemProps) {
+    return (
+        <ListItem fontWeight={"bold"} fontSize={"xl"} {...props}>
+            {children}
+        </ListItem>
     );
 }
