@@ -105,12 +105,12 @@ export default memo(function ServerCard({ server, index, length }: Props) {
                                 alignItems={"flex-start"}
                                 w="fit-content"
                             >
-                                <Button as={Link} to={`/${server.server}`} variant={"solid"}>
+                                <Button as={Link} to={`/${server.bedrock ? "bedrock/" : ""}${server.server}`} variant={"solid"}>
                                     View
                                 </Button>
                                 <Button
                                     as={Link}
-                                    to={`/${server.server}/vote`}
+                                    to={`/${server.bedrock ? "bedrock/" : ""}${server.server}/vote`}
                                     variant={"solid"}
                                     leftIcon={<Icon as={FaChevronUp} />}
                                 >
