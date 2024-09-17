@@ -1,12 +1,8 @@
-import type { HeadersArgs } from "@remix-run/node";
+import type { HeadersArgs, HeadersFunction } from "@remix-run/node";
 
-export function cachePageHeaders({ loaderHeaders }: HeadersArgs) {
-    if (loaderHeaders.get("Cache-Control")) {
-        return loaderHeaders;
-    }
-
+export function cachePageHeaders({ loaderHeaders }: HeadersArgs): ReturnType<HeadersFunction> {
     return new Headers({
-        "Cache-Control": "public, s-maxage=360, stale-while-revalidate=86400",
+        "Cache-Control": loaderHeaders.get("Cache-Control") ?? "public, s-maxage=360, stale-while-revalidate=86400",
         Vary: "Cookie, Accept-Encoding"
     });
 }
