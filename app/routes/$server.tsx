@@ -642,8 +642,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
         },
         {
             headers: {
-                "Cache-Control": "public, max-age=2, s-maxage=2",
-                Vary: "Cookie",
+                "Cache-Control": "public, max-age=2",
                 ...(cachePrefetchHeaders(request) || ({} as Headers))
             }
         }
@@ -654,7 +653,10 @@ export function headers({ loaderHeaders }: HeadersArgs) {
     const cache = loaderHeaders.get("Cache-Control");
 
     const headers = new Headers();
-    if (cache) headers.set("Cache-Control", cache);
+    if (cache) {
+        headers.set("Cache-Control", cache);
+        headers.set("Vary", "Cookie");
+    }
 
     return headers;
 }
