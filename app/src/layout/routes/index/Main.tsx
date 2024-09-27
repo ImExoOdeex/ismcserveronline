@@ -21,8 +21,39 @@ import type { SearchTag } from "~/routes/search";
 
 const McModel = dynamic(() => {
     const isMobile = window.innerWidth < 1024;
+    function doesSupportWebGl(): boolean {
+        if (window.WebGLRenderingContext) {
+            // biome-ignore lint/style/noVar: <explanation>
+            // biome-ignore lint/correctness/noInnerDeclarations: <explanation>
+            var canvas = document.createElement("canvas");
+            // biome-ignore lint/style/noVar: <explanation>
+            // biome-ignore lint/correctness/noInnerDeclarations: <explanation>
+            var names = ["webgl2", "webgl", "experimental-webgl", "moz-webgl", "webkit-3d"];
+            // biome-ignore lint/style/noVar: <explanation>
+            // biome-ignore lint/correctness/noInnerDeclarations: <explanation>
+            var context: any = false;
+
+            for (let i = 0; i < names.length; i++) {
+                try {
+                    context = canvas.getContext(names[i]);
+                    if (context && typeof context.getParameter === "function") {
+                        return true;
+                    }
+                } catch (_) {}
+            }
+
+            // WebGL is supported, but disabled
+            return false;
+        }
+
+        // WebGL not supported
+        return false;
+    }
+
+    const doesSupportWebGL = doesSupportWebGl();
+
     // dont load model on mobile
-    if (isMobile) {
+    if (isMobile || !doesSupportWebGL) {
         return import("@/layout/routes/index/three/Empty");
     }
     return import("@/layout/routes/index/three/McModel");
