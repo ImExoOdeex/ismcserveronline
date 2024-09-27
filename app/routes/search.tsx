@@ -523,7 +523,9 @@ export default function Search() {
                                 </Flex>
                                 {servers.map((server, i) => (
                                     <ServerCard
-                                        key={server.id}
+                                        key={
+                                            server.id + "-" + (server.bedrock ? "bedrock" : "java")
+                                        }
                                         server={server}
                                         index={i}
                                         length={servers.length}

@@ -1,12 +1,15 @@
+import { getUser } from "@/.server/db/models/user";
 import { requireEnv } from "@/.server/functions/env.server";
 import { cachePrefetch } from "@/.server/functions/fetchHelpers.server";
 import { requireUserGuild } from "@/.server/functions/secureDashboard.server";
 import { csrf } from "@/.server/functions/security.server";
 import serverConfig from "@/.server/serverConfig";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
+import useUser from "@/hooks/useUser";
+import Link from "@/layout/global/Link";
 import AlertEditor from "@/layout/routes/dashboard/bot/editor/AlertEditor";
 import LivecheckEditor from "@/layout/routes/dashboard/bot/editor/LivecheckEditor";
-import { Divider, Text, VStack } from "@chakra-ui/react";
+import { Divider, Flex, Text, VStack, useToken } from "@chakra-ui/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { typedjson } from "remix-typedjson";
 
@@ -41,6 +44,15 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
 export async function action({ request, params }: ActionFunctionArgs) {
     csrf(request);
+    const user = await getUser(request, {
+        prime: true
+    });
+    if (!user?.prime) {
+        return typedjson({
+            success: false,
+            message: "Prime is required to use this feature."
+        });
+    }
     const guildID = params.guildID!;
     await requireUserGuild(request, guildID);
 
@@ -72,9 +84,39 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 export default function Editor() {
     const { messages, channels, roles } = useAnimationLoaderData<typeof loader>();
+    const user = useUser(true);
+    const [brand] = useToken("colors", ["brand"]);
 
     return (
         <>
+            {!user.prime && (
+                <Flex
+                    color={"textSec"}
+                    p={4}
+                    bg={"bgSec"}
+                    borderRadius={10}
+                    border={"2px solid"}
+                    fontWeight={"medium"}
+                    borderColor={"brand"}
+                    boxShadow={`0px 0px 10px ${brand}`}
+                    w="100%"
+                    align={"center"}
+                    justify={"center"}
+                    textAlign={"center"}
+                >
+                    <Text>
+                        Running website, API and constantly running bot is not cheap. That's why we
+                        have to lock some features behind Prime subscription. If you want to support
+                        us, to keep running our services and get access to all features, consider
+                        subscribing to{" "}
+                        <Link to={"/prime"} color={"brand"} textDecor={"underline"}>
+                            Prime
+                        </Link>{" "}
+                        💖
+                    </Text>
+                </Flex>
+            )}
+
             <VStack w="100%" align={"start"} spacing={7}>
                 <LivecheckEditor channels={channels} messages={messages} roles={roles} />
                 <AlertEditor channels={channels} messages={messages} roles={roles} />

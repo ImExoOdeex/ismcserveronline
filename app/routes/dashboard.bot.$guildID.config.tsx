@@ -52,10 +52,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
     const formData = await request.formData();
 
-    const updatedValue =
-        formData.get("onlineColor")?.toString() || formData.get("offlineColor")?.toString();
+    const onlineColor = formData.get("onlineColor")?.toString();
+    const offlineColor = formData.get("offlineColor")?.toString();
+
+    const updatedValue = onlineColor || offlineColor;
+
     invariant(updatedValue, "No color provided");
-    const updatedColor = formData.get("onlineColor")?.toString() ? "onlineColor" : "offlineColor";
+    const updatedColor = onlineColor ? "onlineColor" : "offlineColor";
 
     const res = await fetch(`${serverConfig.botApi}/${guildID}/config/edit`, {
         method: "POST",

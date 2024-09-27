@@ -1,4 +1,5 @@
 import type { FormatData } from "@/hooks/useFormattedDiscordText";
+import useUser from "@/hooks/useUser";
 import MessageEditor from "@/layout/routes/dashboard/bot/editor/MessageEditor";
 import Placeholders from "@/layout/routes/dashboard/bot/editor/Placeholders";
 import Preview from "@/layout/routes/dashboard/bot/editor/Preview";
@@ -46,6 +47,8 @@ interface Props {
 }
 
 export default function DiscordMessageEditor({ type, message, setMessage, data }: Props) {
+    const user = useUser(true);
+
     return (
         <Flex
             flexDir={{
@@ -54,6 +57,8 @@ export default function DiscordMessageEditor({ type, message, setMessage, data }
             }}
             w="100%"
             gap={4}
+            pointerEvents={user.prime ? "auto" : "none"}
+            opacity={user.prime ? 1 : 0.5}
         >
             <Placeholders type={type} />
 
