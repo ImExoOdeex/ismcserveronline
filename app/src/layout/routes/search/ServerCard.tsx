@@ -114,7 +114,7 @@ export default memo(function ServerCard({ server, index, length }: Props) {
                                     variant={"solid"}
                                     leftIcon={<Icon as={FaChevronUp} />}
                                 >
-                                    Vote ({server._count.Vote})
+                                    Vote ({server.votes_month})
                                 </Button>
                             </HStack>
                         </Flex>
@@ -141,7 +141,7 @@ export default memo(function ServerCard({ server, index, length }: Props) {
                         variant={"solid"}
                         leftIcon={<Icon as={FaChevronUp} />}
                     >
-                        Vote ({server._count.Vote})
+                        Vote ({server.votes_month})
                     </Button>
                 </HStack>
             </Flex>

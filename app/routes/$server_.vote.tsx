@@ -3,7 +3,7 @@ import { getUser, getUserId } from "@/.server/db/models/user";
 import { cachePrefetch } from "@/.server/functions/fetchHelpers.server";
 import { csrf } from "@/.server/functions/security.server";
 import type { MinecraftImage } from "@/.server/minecraftImages";
-import { getRandomMinecarftImage } from "@/.server/minecraftImages";
+import { getRandomMinecraftImage } from "@/.server/minecraftImages";
 import { decrypt } from "@/.server/modules/encryption";
 import { sendVotePacket, sendVoteWebhook } from "@/.server/modules/voting";
 import { getFullFileUrl } from "@/functions/storage";
@@ -116,7 +116,8 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
         const isFriday = day === 5 && hour >= 15;
         const isWeekend = day === 6 || day === 0 || isFriday;
 
-        if (isWeekend && (foundServer.prime || foundServer?.Owner?.prime || user.prime)) {
+        const shouldCreateSecondVote = isWeekend && (foundServer.prime || foundServer?.Owner?.prime || user.prime);
+        if (shouldCreateSecondVote) {
             await db.vote.create({
                 data: {
                     server_id: foundServer.id,
@@ -125,6 +126,17 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
                 }
             });
         }
+
+        await db.server.update({
+            where: {
+                id: foundServer.id
+            },
+            data: {
+                votes_month: {
+                    increment: shouldCreateSecondVote ? 2 : 1
+                }
+            }
+        });
 
         if (foundServer.using_votifier && foundServer.votifier_token) {
             await sendVotePacket({
@@ -160,9 +172,8 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
             },
             {
                 headers: {
-                    "Set-Cookie": `last-minecraft-nickname=${nick}; Path=/; Max-Age=${
-                        60 * 60 * 24 * 365
-                    }; SameSite=Strict`
+                    "Set-Cookie": `last-minecraft-nickname=${nick}; Path=/; Max-Age=${60 * 60 * 24 * 365
+                        }; SameSite=Strict`
                 }
             }
         );
@@ -203,23 +214,23 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
     // vote in last 12 hours
     const vote = userId
         ? await db.vote.findFirst({
-              where: {
-                  server_id: foundServer.id,
-                  user_id: userId,
-                  created_at: {
-                      gte: dayjs().subtract(votingHours, "hours").toDate()
-                  }
-              }
-          })
+            where: {
+                server_id: foundServer.id,
+                user_id: userId,
+                created_at: {
+                    gte: dayjs().subtract(votingHours, "hours").toDate()
+                }
+            }
+        })
         : null;
 
     const image = foundServer.banner
         ? ({
-              credits: "",
-              name: foundServer.server + "'s banner",
-              url: getFullFileUrl(foundServer.banner, "banner")
-          } as MinecraftImage)
-        : getRandomMinecarftImage();
+            credits: "",
+            name: foundServer.server + "'s banner",
+            url: getFullFileUrl(foundServer.banner, "banner")
+        } as MinecraftImage)
+        : getRandomMinecraftImage();
 
     return typedjson(
         {
@@ -237,8 +248,8 @@ export function meta({ data, matches }: MetaArgs & { data: UseDataFunctionReturn
         {
             title: data
                 ? "Vote for " +
-                  (data as UseDataFunctionReturn<typeof loader>).data.server +
-                  "! | IsMcServer.online"
+                (data as UseDataFunctionReturn<typeof loader>).data.server +
+                "! | IsMcServer.online"
                 : "Server not found | IsMcServer.online"
         },
         {

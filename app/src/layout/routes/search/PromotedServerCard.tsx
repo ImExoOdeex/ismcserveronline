@@ -82,11 +82,11 @@ export default memo(function PromotedServerCard({
                         textDecoration: "none"
                     }}
                 >
-                    Vote ({server._count.Vote})
+                    Vote ({server.votes_month})
                 </Button>
             </>
         );
-    }, [server._count.Vote, server.server, bgColor, bgColorHover, handleClick]);
+    }, [server.votes_month, server.server, bgColor, bgColorHover, handleClick]);
 
     return (
         <Flex
@@ -105,9 +105,9 @@ export default memo(function PromotedServerCard({
                     defaultWrap
                         ? "column"
                         : {
-                              base: "column",
-                              md: "row"
-                          }
+                            base: "column",
+                            md: "row"
+                        }
                 }
                 gap={4}
             >
@@ -188,9 +188,9 @@ export default memo(function PromotedServerCard({
                         defaultWrap
                             ? "flex"
                             : {
-                                  base: "flex",
-                                  md: "none"
-                              }
+                                base: "flex",
+                                md: "none"
+                            }
                     }
                     justifyContent={"flex-end"}
                     w="100%"

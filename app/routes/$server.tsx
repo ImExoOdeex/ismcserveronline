@@ -12,7 +12,7 @@ import { requireEnv } from "@/.server/functions/env.server";
 import { cachePrefetchHeaders } from "@/.server/functions/fetchHelpers.server";
 import { addressesConfig } from "@/.server/functions/validateServer";
 import type { MinecraftImage } from "@/.server/minecraftImages";
-import { getRandomMinecarftImage } from "@/.server/minecraftImages";
+import { getRandomMinecraftImage } from "@/.server/minecraftImages";
 import { getCookieWithoutDocument } from "@/functions/cookies";
 import { getFullFileUrl } from "@/functions/storage";
 import useAnimationLoaderData from "@/hooks/useAnimationLoaderData";
@@ -441,26 +441,26 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
     const commentsPromise = foundServer
         ? db.comment.findMany({
-              where: {
-                  server_id: foundServer.id
-              },
-              select: {
-                  id: true,
-                  content: true,
-                  created_at: true,
-                  updated_at: true,
-                  user: {
-                      select: {
-                          nick: true,
-                          photo: true,
-                          id: true
-                      }
-                  }
-              },
-              orderBy: {
-                  created_at: "desc"
-              }
-          })
+            where: {
+                server_id: foundServer.id
+            },
+            select: {
+                id: true,
+                content: true,
+                created_at: true,
+                updated_at: true,
+                user: {
+                    select: {
+                        nick: true,
+                        photo: true,
+                        id: true
+                    }
+                }
+            },
+            orderBy: {
+                created_at: "desc"
+            }
+        })
         : null;
     const comments = new Promise<NonNullable<typeof commentsPromise>>((r) => {
         // await new Promise((re) => setTimeout(re, 1000));
@@ -470,85 +470,85 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
     let data = !foundServer
         ? await dataPromise
         : dataPromise.then(async (res) => {
-              // using Prisma.DbNull, to null out JSON fields, since null is not allowed in JSON fields.
-              await db.server.update({
-                  where: {
-                      id: foundServer?.id
-                  },
-                  data: {
-                      online: res.online,
-                      players: res.players,
-                      motd: res.motd,
-                      version: res.version ?? undefined,
-                      software: bedrock ? null : (res as JavaServer).software,
-                      protocol: res.protocol,
-                      host: res.host,
-                      port: bedrock ? (res as BedrockServer).port.ipv4 : (res as JavaServer).port,
+            // using Prisma.DbNull, to null out JSON fields, since null is not allowed in JSON fields.
+            await db.server.update({
+                where: {
+                    id: foundServer?.id
+                },
+                data: {
+                    online: res.online,
+                    players: res.players,
+                    motd: res.motd,
+                    version: res.version ?? undefined,
+                    software: bedrock ? null : (res as JavaServer).software,
+                    protocol: res.protocol,
+                    host: res.host,
+                    port: bedrock ? (res as BedrockServer).port.ipv4 : (res as JavaServer).port,
 
-                      // java only
-                      favicon: bedrock
-                          ? null
-                          : (res as JavaServer).favicon ??
-                            (foundServer as unknown as JavaServer).favicon,
-                      ping: bedrock ? null : (res as MinecraftServer).ping,
+                    // java only
+                    favicon: bedrock
+                        ? null
+                        : (res as JavaServer).favicon ??
+                        (foundServer as unknown as JavaServer).favicon,
+                    ping: bedrock ? null : (res as MinecraftServer).ping,
 
-                      // bedrock stuff
-                      edition: bedrock ? (res as BedrockServer).edition : null,
-                      gamemode: bedrock ? (res as BedrockServer).gamemode : Prisma.DbNull,
-                      guid: bedrock ? (res as BedrockServer).guid : null,
+                    // bedrock stuff
+                    edition: bedrock ? (res as BedrockServer).edition : null,
+                    gamemode: bedrock ? (res as BedrockServer).gamemode : Prisma.DbNull,
+                    guid: bedrock ? (res as BedrockServer).guid : null,
 
-                      // query stuff
-                      ip: query ? (res as MinecraftServer).ip : null,
-                      plugins: query ? (res as MinecraftServer).plugins : Prisma.DbNull,
-                      map: query ? (res as MinecraftServer).map : null
-                  }
-              });
+                    // query stuff
+                    ip: query ? (res as MinecraftServer).ip : null,
+                    plugins: query ? (res as MinecraftServer).plugins : Prisma.DbNull,
+                    map: query ? (res as MinecraftServer).map : null
+                }
+            });
 
-              if (!blockTracking && data) {
-                  const IP = getClientIPAddress(request.headers);
+            if (!blockTracking && data) {
+                const IP = getClientIPAddress(request.headers);
 
-                  const token_id = (
-                      await db.token.findUnique({
-                          where: {
-                              token: requireEnv("API_TOKEN")
-                          }
-                      })
-                  )?.id;
-                  if (!token_id) throw new Error("There's no valid API token!");
+                const token_id = (
+                    await db.token.findUnique({
+                        where: {
+                            token: requireEnv("API_TOKEN")
+                        }
+                    })
+                )?.id;
+                if (!token_id) throw new Error("There's no valid API token!");
 
-                  // dont create new check if there's already few checks in last 5 minutes from this IP.
-                  const checks = await db.check.findMany({
-                      where: {
-                          server_id: foundServer?.id,
-                          checked_at: {
-                              gte: dayjs().subtract(5, "minutes").toDate()
-                          },
-                          client_ip: IP
-                      }
-                  });
+                // dont create new check if there's already few checks in last 5 minutes from this IP.
+                const checks = await db.check.findMany({
+                    where: {
+                        server_id: foundServer?.id,
+                        checked_at: {
+                            gte: dayjs().subtract(5, "minutes").toDate()
+                        },
+                        client_ip: IP
+                    }
+                });
 
-                  if (checks.length < 5) {
-                      await db.check.create({
-                          data: {
-                              server_id: serverId,
-                              online: res.online,
-                              players: res.players.online,
-                              source: "WEB",
-                              client_ip: IP,
-                              token_id: token_id
-                          }
-                      });
-                  }
-              }
+                if (checks.length < 5) {
+                    await db.check.create({
+                        data: {
+                            server_id: serverId,
+                            online: res.online,
+                            players: res.players.online,
+                            source: "WEB",
+                            client_ip: IP,
+                            token_id: token_id
+                        }
+                    });
+                }
+            }
 
-              return {
-                  ...res,
-                  favicon: bedrock
-                      ? null
-                      : (res as JavaServer).favicon ??
-                        (foundServer as unknown as JavaServer).favicon
-              };
-          });
+            return {
+                ...res,
+                favicon: bedrock
+                    ? null
+                    : (res as JavaServer).favicon ??
+                    (foundServer as unknown as JavaServer).favicon
+            };
+        });
 
     const cookie = getCookieWithoutDocument("tracking", request.headers.get("cookie") ?? "");
     const blockTracking = cookie === "no-track";
@@ -600,23 +600,23 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
         }),
         user
             ? db.savedServer
-                  .findFirst({
-                      where: {
-                          server_id: serverId,
-                          user_id: user.id
-                      }
-                  })
-                  .then((s) => !!s)
+                .findFirst({
+                    where: {
+                        server_id: serverId,
+                        user_id: user.id
+                    }
+                })
+                .then((s) => !!s)
             : false
     ]);
 
     const image = foundServer.banner
         ? ({
-              name: "Server banner",
-              url: getFullFileUrl(foundServer.banner, "banner"),
-              credits: ""
-          } as MinecraftImage)
-        : getRandomMinecarftImage();
+            name: "Server banner",
+            url: getFullFileUrl(foundServer.banner, "banner"),
+            credits: ""
+        } as MinecraftImage)
+        : getRandomMinecraftImage();
 
     const ipRegexWithPortOptional = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}(?::[0-9]{1,5})?$/;
     const isIpOnly = ipRegexWithPortOptional.test(server);
@@ -661,7 +661,7 @@ export function headers({ loaderHeaders }: HeadersArgs) {
     return headers;
 }
 
-export function meta({ data, matches }: MetaArgs & { data: UseDataFunctionReturn<typeof loader> }) {
+export function meta({ data, matches, error }: MetaArgs & { data: UseDataFunctionReturn<typeof loader> }) {
     const aspectRatio = 4 / 1;
     const width = 1920;
     const height = width / aspectRatio;
@@ -706,7 +706,9 @@ export function meta({ data, matches }: MetaArgs & { data: UseDataFunctionReturn
         },
         {
             name: "keywords",
-            content: `${data.server} status, status for ${data.server}, ${data.server} server status, ${data.server} server live data, ${data.server} info, ${data.server} data, ${data.server} Minecraft server, ${data.server} Minecraft server status, ${data.server} mc server rewiew`
+            content: data
+                ? `${data.server} status, status for ${data.server}, ${data.server} server status, ${data.server} server live data, ${data.server} info, ${data.server} data, ${data.server} Minecraft server, ${data.server} Minecraft server status, ${data.server} mc server rewiew`
+                : ""
         },
         ...matches[0].meta
     ] as ReturnType<MetaFunction>;
@@ -970,7 +972,7 @@ export default function $server() {
                 players={data?.players.online}
                 bedrock={bedrock}
                 language={data.language}
-                // my={10}
+            // my={10}
             />
 
             <Stack

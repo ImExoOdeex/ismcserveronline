@@ -131,7 +131,7 @@ export default function StatusColor({
                             transition={"transform .2s"}
                             cursor={"pointer"}
                             as={"label"}
-                            for={`${type}Color`}
+                            htmlFor={`${type}Color`}
                             position={"absolute"}
                             right={1}
                             bottom={1}

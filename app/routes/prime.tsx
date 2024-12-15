@@ -98,11 +98,10 @@ export default function Prime() {
             <Flex flexDir={"column"} w="100%" gap={5} mt={10}>
                 <Divider />
 
-                <Text letterSpacing={"1px"}>
-                    Hey! This is one of my <i>side</i> project, and I'm not making any money from it
-                    (yes, even from ads). I need to pay yearly for the domain and monthly for a
-                    hosting. If you want to support us, buy a prime subscription or add your server
-                    on homepage. Thanks!
+                <Text letterSpacing={"1px"} maxW='2xl' textAlign={'center'} alignSelf={'center'}>
+                    Hey! This is one of my <i>side</i> project, and I'm not making any money from it. 
+                    I need to pay yearly for the domain and monthly for a hosting. 
+                    If you want to support us, buy a prime subscription. Thanks!
                 </Text>
             </Flex>
         </Flex>

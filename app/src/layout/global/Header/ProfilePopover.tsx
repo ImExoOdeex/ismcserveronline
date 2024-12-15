@@ -51,7 +51,9 @@ export default memo(function ProfilePopover() {
     const actionKey = useActionKey();
     const navigate = useNavigate();
 
-    useEventListener("keydown", (e) => {
+    useEventListener(null, "keydown", (e) => {
+        if (!e) return;
+
         const isMac = /(Mac|iPhone|iPod|iPad)/i.test(navigator?.platform);
         const hotkey = isMac ? "metaKey" : "ctrlKey";
 
@@ -180,15 +182,15 @@ export default memo(function ProfilePopover() {
                                                 user.role === "ADMIN"
                                                     ? "pink"
                                                     : user.prime
-                                                      ? "purple"
-                                                      : "green"
+                                                        ? "purple"
+                                                        : "green"
                                             }
                                         >
                                             {user.role === "ADMIN"
                                                 ? "Admin"
                                                 : user.prime
-                                                  ? "Prime"
-                                                  : "User"}
+                                                    ? "Prime"
+                                                    : "User"}
                                         </Badge>
                                     </Flex>
                                 </HStack>

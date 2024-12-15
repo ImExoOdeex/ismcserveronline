@@ -4,15 +4,11 @@ import compression from "compression";
 import type { Application } from "express";
 import express from "express";
 import morgan from "morgan";
-import * as fs from "node:fs";
 import type { Server } from "node:http";
-import * as path from "node:path";
-import * as url from "node:url";
 import { Logger } from "../app/src/.server/modules/Logger";
+import * as build from "../build/server/index.js";
 import pack from "../package.json";
 import type { MultiEmitter } from "./MultiEmitter";
-
-const BUILD_PATH = path.resolve("build/server/index.js");
 
 export class ExpressApp {
     private app: Application;
@@ -25,8 +21,6 @@ export class ExpressApp {
     }
 
     private async initialize() {
-        const initialBuild = await this.reimportServer();
-
         const getLoadContext: GetLoadContextFunction = () => {
             return {
                 start: Date.now().toString(),
@@ -48,8 +42,8 @@ export class ExpressApp {
         const remixHandler = createRequestHandler({
             build: viteDevServer
                 ? async () => viteDevServer.ssrLoadModule("virtual:remix/server-build")
-                : await this.reimportServer(),
-            mode: initialBuild.mode,
+                : build as any,
+            mode: build.mode,
             getLoadContext
         });
 
@@ -67,13 +61,6 @@ export class ExpressApp {
         this.app.use(morgan("tiny"));
 
         this.app.all("*", remixHandler);
-    }
-
-    private async reimportServer() {
-        const stat = fs.statSync(BUILD_PATH);
-        const BUILD_URL = url.pathToFileURL(BUILD_PATH).href;
-
-        return await import(BUILD_URL + "?t=" + stat.mtimeMs);
     }
 
     public async run() {

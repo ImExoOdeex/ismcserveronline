@@ -9,7 +9,6 @@ import {
     HStack,
     Stack,
     Text,
-    Tooltip,
     VStack
 } from "@chakra-ui/react";
 import { useCallback, useContext, useMemo, useState } from "react";
@@ -164,21 +163,6 @@ export default function Footer() {
                     <VStack align={"start"} fontWeight="600">
                         <HStack w="100%" justifyContent={"space-between"}>
                             <Text fontWeight="700">Other</Text>
-                            <HStack>
-                                {/* <Tooltip label="Time server took to handle request" hasArrow>
-									<Text fontWeight="500" fontSize={"xs"}>
-										{timings.requestHandledIn}ms
-									</Text>
-								</Tooltip> */}
-                                <Tooltip
-                                    label="Time from request start to client hydration"
-                                    hasArrow
-                                >
-                                    <Text fontWeight="500" fontSize={"xs"}>
-                                        {requestStartToHydration}ms
-                                    </Text>
-                                </Tooltip>
-                            </HStack>
                         </HStack>
                         <Text color={"textSec"}>
                             <ChakraLink

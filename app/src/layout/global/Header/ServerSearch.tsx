@@ -22,7 +22,9 @@ export default function ServerSearch() {
 
     const inputRef = useRef<HTMLInputElement>(null);
 
-    useEventListener("keydown", (event: any) => {
+    useEventListener(null, "keydown", (event: any) => {
+        if (!event) return;
+
         const isMac = /(Mac|iPhone|iPod|iPad)/i.test(navigator?.platform);
         const hotkey = isMac ? "metaKey" : "ctrlKey";
         if (event?.key?.toLowerCase() === "k" && event[hotkey] && inputRef.current) {
@@ -53,7 +55,7 @@ export default function ServerSearch() {
             method="POST"
             style={{ position: "relative", minWidth: "302px", width: "100%" }}
         >
-            <Box as="label" srOnly for="search">
+            <Box as="label" srOnly htmlFor="search">
                 Search
             </Box>
 

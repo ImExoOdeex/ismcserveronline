@@ -1,5 +1,6 @@
 import type { FlexProps } from "@chakra-ui/react";
-import { Box, Flex, Heading, keyframes, useToken } from "@chakra-ui/react";
+import { Box, Flex, Heading, useToken } from "@chakra-ui/react";
+import { keyframes } from "@emotion/react";
 import { useMemo } from "react";
 
 interface Props {

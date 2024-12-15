@@ -25,7 +25,9 @@ export default function ThemeToggle() {
         });
     }, [toggleColorMode]);
 
-    useEventListener("keydown", (event) => {
+    useEventListener(null, "keydown", (event) => {
+        if (!event) return;
+
         const isMac = /(Mac|iPhone|iPod|iPad)/i.test(navigator?.platform);
         const hotkey = isMac ? "metaKey" : "ctrlKey";
         if (event?.key?.toLowerCase() === "i" && event[hotkey] && !event.shiftKey) {

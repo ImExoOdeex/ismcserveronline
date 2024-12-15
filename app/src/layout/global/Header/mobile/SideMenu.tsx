@@ -1,3 +1,5 @@
+import useFetcherCallback from "@/hooks/useFetcherCallback";
+import useInsideEffect from "@/hooks/useInsideEffect";
 import useUser from "@/hooks/useUser";
 import Link from "@/layout/global/Link";
 import config from "@/utils/config";
@@ -5,12 +7,12 @@ import { ArrowForwardIcon, Icon } from "@chakra-ui/icons";
 import {
     Box,
     Button,
+    Link as ChakraLink,
     Divider,
     Flex,
     Heading,
     IconButton,
     Input,
-    Link as ChakraLink,
     Text,
     useColorMode,
     useColorModeValue
@@ -19,8 +21,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useMemo, useState } from "react";
 import { BiSearchAlt } from "react-icons/bi";
 import { mobileMenuTransition } from "../../Layout";
-import useFetcherCallback from "@/hooks/useFetcherCallback";
-import useInsideEffect from "@/hooks/useInsideEffect";
 
 interface Props {
     isOpen: boolean;
@@ -106,7 +106,7 @@ export default function SideMenu({ isOpen, setIsOpen }: Props) {
 
                     <Flex w="100%" flexDir={"column"} gap={4}>
                         <fetcher.Form method="POST" style={{ position: "relative", width: "100%" }}>
-                            <Box as="label" srOnly for="search">
+                            <Box as="label" srOnly htmlFor="search">
                                 Search
                             </Box>
 

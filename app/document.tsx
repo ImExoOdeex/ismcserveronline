@@ -59,11 +59,11 @@ export function Document({ children }: DocumentProps) {
                 {children}
                 <ScrollRestoration />
                 <Scripts />
-                {/* <script
+                <script
                     defer
-                    data-domain="ismcserver.online"
-                    src="https://analytics.ismcserver.online/js/script.js"
-                /> */}
+                    src="https://analytics.dreamy-ui.com/script.js"
+                    data-website-id="0830f1e1-af6c-4c7c-a165-420119bbf91b"
+                />
             </body>
         </html>
     );

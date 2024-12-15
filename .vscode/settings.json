@@ -1,4 +1,5 @@
 {
 	"typescript.tsdk": "node_modules\\typescript\\lib",
-	"jsx-brackets.enabled": true
+	"jsx-brackets.enabled": true,
+	"cursorcord.app.privacyMode.enable": true
 }

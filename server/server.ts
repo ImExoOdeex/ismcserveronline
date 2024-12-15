@@ -1,11 +1,11 @@
 import { PrismaClient } from "@prisma/client";
+import cron from "node-cron";
 import cluster, { type Worker } from "node:cluster";
 import os from "node:os";
 import { Logger } from "../app/src/.server/modules/Logger";
-import { ExpressApp } from "./ExpressApp";
+import { sendExplosion } from "./explosions";
 import { MultiEmitter } from "./MultiEmitter";
 import { WsServer } from "./WsServer";
-import { sendExplosion } from "./explosions";
 
 if (process.env.NODE_ENV === "production") {
     if (cluster.isPrimary) {
@@ -32,12 +32,10 @@ if (process.env.NODE_ENV === "production") {
 
         // resend the message to the rest of the workers except the original sender
         cluster.on("message", (worker, message) => {
-            console.log("cluster message: ", message);
             for (const w of Object.values(
                 cluster?.workers ?? ({} as NodeJS.Dict<Worker | undefined>)
             )) {
                 if (w !== worker) {
-                    console.log("resending: ", message);
                     w?.send(message);
                 }
             }
@@ -49,10 +47,22 @@ if (process.env.NODE_ENV === "production") {
             worker.process.pid && workers.delete(worker.process.pid);
             sendExplosion(code, workers.size);
         });
+
+        cron.schedule("0 0 1 * *", async () => {
+            const db = new PrismaClient();
+            await db.server.updateMany({
+                data: {
+                    votes_month: 0
+                }
+            });
+        });
     } else {
         // Logger(`Worker ${process.pid} started`, "blue", "white");
 
-        new ExpressApp(new MultiEmitter()).run();
+
+        import("./ExpressApp").then(({ ExpressApp }) => {
+            new ExpressApp(new MultiEmitter()).run();
+        });
 
         // setTimeout(() => {
         //     throw new Error("Server did not start");
@@ -60,5 +70,7 @@ if (process.env.NODE_ENV === "production") {
     }
 } else {
     new WsServer(new PrismaClient());
-    new ExpressApp(new MultiEmitter()).run();
+    import("./ExpressApp").then(({ ExpressApp }) => {
+        new ExpressApp(new MultiEmitter()).run();
+    });
 }

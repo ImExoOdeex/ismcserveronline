@@ -1,7 +1,6 @@
 import useRootData from "@/hooks/useRootData";
 import Link from "@/layout/global/Link";
-import { StarIcon } from "@chakra-ui/icons";
-import { Button, DarkMode, Divider, Flex, HStack, Heading, Image, Text } from "@chakra-ui/react";
+import { Button, DarkMode, Flex, HStack, Heading, Image, Text } from "@chakra-ui/react";
 import { BiAddToQueue } from "react-icons/bi";
 import { TbLayoutDashboard } from "react-icons/tb";
 
@@ -51,42 +50,6 @@ export default function BotInfo() {
                             }}
                             gap={1.5}
                         >
-                            <Link
-                                isExternal
-                                aria-label="Reviews on Wumpus.store"
-                                to={`https://wumpus.store/bot/${discordClient}`}
-                                title={"Rated 5/5 on Wumpus.store"}
-                                display={"flex"}
-                                alignItems={"center"}
-                                gap={2}
-                                _hover={{
-                                    textDecoration: "none"
-                                }}
-                            >
-                                <Flex gap={1}>
-                                    {new Array(5).fill(0).map((_, i) => (
-                                        <StarIcon
-                                            key={i}
-                                            boxSize={5}
-                                            color={"rgba(221, 209, 242, 0.4)"}
-                                            stroke={"#dbd2ef"}
-                                            strokeWidth={"1.5px"}
-                                        />
-                                    ))}
-                                </Flex>
-                                <Flex opacity={0.75} fontWeight={600} gap={1}>
-                                    on
-                                    <Image
-                                        alt="Wumpus.store"
-                                        boxSize={6}
-                                        src="https://cdn.discordapp.com/emojis/1184215185964146728.webp?size=96&quality=lossless"
-                                    />
-                                    .store
-                                </Flex>
-                            </Link>
-
-                            <Divider />
-
                             <Link
                                 isExternal
                                 aria-label="Vote on Top.gg"

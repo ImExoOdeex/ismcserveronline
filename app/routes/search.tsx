@@ -19,7 +19,6 @@ import { Button, Divider, Flex, HStack, Heading, Spinner, Tag } from "@chakra-ui
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import type { MetaArgs, MetaFunction, ShouldRevalidateFunctionArgs } from "@remix-run/react";
 import { useSearchParams } from "@remix-run/react";
-import dayjs from "dayjs";
 import { useCallback, useState } from "react";
 import { redirect, typedjson } from "remix-typedjson";
 import { getClientLocales } from "remix-utils/locales/server";
@@ -50,9 +49,7 @@ export interface SearchServer {
     Tags: {
         name: string;
     }[];
-    _count: {
-        Vote: number;
-    };
+    votes_month: number;
 }
 
 export interface SearchPromotedServer {
@@ -101,7 +98,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const cacheServersKey = `servers-${isBedrock}-${sort ?? "hot"}-${finalLocale}-${paramsTags.join(
         ","
     )}-${query ?? ""}`;
-    const cacheServersStr = await cache.get(cacheServersKey);
+    // const cacheServersStr = await cache.get(cacheServersKey);
+    const cacheServersStr = null;
     const cacheServers = cacheServersStr ? JSON.parse(cacheServersStr) : null;
     const cacheTagsStr = await cache.get("tags");
     const cacheTags = cacheTagsStr ? JSON.parse(cacheTagsStr) : null;
@@ -144,17 +142,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
                             name: true
                         }
                     },
-                    _count: {
-                        select: {
-                            Vote: {
-                                where: {
-                                    created_at: {
-                                        gte: dayjs().startOf("month").toDate()
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    votes_month: true
                 },
                 where: {
                     AND: {
@@ -242,21 +230,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
                             }
 
                             return {
-                                Vote: {
-                                    _count: "desc"
-                                }
+                                votes_month: "desc"
                             };
-                        })()
-                    },
-                    {
-                        Check: {
+                        })(),
+                    }, {
+                        Comment: {
                             _count: "desc" as const
                         }
-                    },
-                    {
-                        players: "desc" as const
-                    }
-                ]
+                    }],
             }) as unknown as Promise<SearchServer[]>
         ] as const;
 

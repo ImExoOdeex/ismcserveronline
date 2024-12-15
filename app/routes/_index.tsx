@@ -21,7 +21,6 @@ import type {
     MetaFunction
 } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import dayjs from "dayjs";
 import { typedjson } from "remix-typedjson";
 import type { SearchServer, SearchTag } from "~/routes/search";
 
@@ -64,21 +63,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const bedrock = getCookieWithoutDocument("bedrock", cookies ?? "") === "true";
     const query = getCookieWithoutDocument("query", cookies ?? "") === "true";
 
-    let cookieLocale = getCookieWithoutDocument("locale", request.headers.get("Cookie") ?? "");
-    cookieLocale = cookieLocale === "us" ? "en" : cookieLocale;
-    // const locales = getClientLocales(request);
     const locale = "en";
-    // locales
-    //     ? locales[0].split("-")[0] === "us"
-    //         ? "en"
-    //         : locales[0].split("-")[0]
-    //     : "en";
-
-    // const url = new URL(request.url);
-    // const spLocale = url.searchParams.get("lang");
-
-    // let locale = spLocale || cookieLocale || locale;
-    // locale = locale === "us" ? "en" : locale;
 
     const cacheServersKey = `servers-${bedrock}-hot-${locale}`;
     const cacheServersStr = await cache.get(cacheServersKey);
@@ -124,17 +109,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
                             name: true
                         }
                     },
-                    _count: {
-                        select: {
-                            Vote: {
-                                where: {
-                                    created_at: {
-                                        gte: dayjs().startOf("month").toDate()
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    votes_month: true
                 },
                 where: {
                     AND: {
@@ -160,15 +135,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
                 },
                 orderBy: [
                     {
-                        Vote: {
-                            _count: "desc"
-                        }
+                        votes_month: "desc"
                     },
-                    {
-                        Check: {
-                            _count: "desc" as const
-                        }
-                    }
                 ]
             }) as unknown as Promise<SearchServer[]>
         ] as const;

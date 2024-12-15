@@ -38,7 +38,7 @@ const colors = {
     },
     bg: {
         100: "#ffffff",
-        900: "#111117"
+        900: "#0d0d0f"
     },
     sec: {
         100: "#93b8e9",
@@ -167,9 +167,9 @@ export default function useTheme() {
                             bgGradient:
                                 user?.everPurchased || path.startsWith("/prime")
                                     ? mode(
-                                          "linear(145deg, #1ebc6d -100%, #ccd4ed 15%, #f7e8f7 50%, #d2c1e6 100%)",
-                                          "linear(145deg, #1ebc6d -100%, #10091f 15%, #130d1c 50%, #1d1525 100%)"
-                                      )(props)
+                                        "linear(145deg, #1ebc6d -100%, #dad9f0 15%, #f9f1f9 50%, #e4d8f2 100%)",
+                                        "linear(145deg, #1ebc6d -100%, #100e23 15%, #0d0b13 50%, #1c141b 100%)"
+                                    )(props)
                                     : undefined,
                             backgroundAttachment: "fixed",
                             overflowY: "scroll",

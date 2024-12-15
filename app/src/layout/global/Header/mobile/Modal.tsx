@@ -77,7 +77,7 @@ export default function Modal({
                             method="POST"
                             style={{ position: "relative", minWidth: "302px", width: "100%" }}
                         >
-                            <Box as="label" srOnly for="search">
+                            <Box as="label" srOnly htmlFor="search">
                                 Search
                             </Box>
 

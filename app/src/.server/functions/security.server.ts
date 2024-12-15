@@ -2,7 +2,9 @@ import serverConfig from "@/.server/serverConfig";
 import { json } from "@remix-run/server-runtime";
 
 export function csrf(req: Request) {
-    const origin = new URL(req.url).origin;
+    if (process.env.NODE_ENV === "development") return;
+    const url = new URL(req.url);
+    const origin = url.origin;
 
     if (origin !== serverConfig.dashUrl)
         throw json({
