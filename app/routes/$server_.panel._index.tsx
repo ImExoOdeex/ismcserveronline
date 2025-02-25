@@ -530,9 +530,8 @@ export default function ServerPanel() {
                             <Tooltip label="This feature requires prime subscription." hasArrow>
                                 <IconButton
                                     as={Link}
-                                    to={`/${server.bedrock ? "bedrock/" : ""}${
-                                        server.server
-                                    }/panel/subscription`}
+                                    to={`/${server.bedrock ? "bedrock/" : ""}${server.server
+                                        }/panel/subscription`}
                                     aria-label="Info"
                                     _hover={{ bg: "rgba(255, 119, 0, 0.1)" }}
                                     icon={

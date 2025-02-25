@@ -42,7 +42,7 @@ export default memo(function ServerInfo({ server, bedrock, data, query }: Props)
     );
 
     const players = useMinecraftTextFormatting(
-        (data.players as unknown as ServerModel.Players<any>).list?.map((p) => p.name).join(", ")
+        typeof data.players === 'object' ? (data.players as unknown as ServerModel.Players<any>).list?.map((p) => p.name).join(", ") : data.players
     );
 
     const software = useMinecraftTextFormatting((data as unknown as JavaServer).software ?? "");

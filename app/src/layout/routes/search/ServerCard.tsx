@@ -44,7 +44,10 @@ export default memo(function ServerCard({ server, index, length }: Props) {
 
                     <Flex flexDir={"column"} gap={1} overflow={"hidden"} w="100%">
                         <Flex w="100%" justifyContent={"space-between"}>
-                            <Flex flexDir={"column"} gap={1} maxW={"60%"}>
+                            <Flex flexDir={"column"} gap={1} maxW={{
+                                base: "100%",
+                                md: "60%"
+                            }}>
                                 <Link
                                     to={`/${server.bedrock ? "bedrock/" : ""}${server.server}`}
                                     fontSize="lg"
