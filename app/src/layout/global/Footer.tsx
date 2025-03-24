@@ -16,6 +16,7 @@ import Link from "./Link";
 export default function Footer() {
   const name = "tracking";
   const { noTrack, version } = useRootData();
+  console.log(noTrack);
 
   const [cookieState, setCookieState] = useState<"track" | "no-track">(
     noTrack === "no-track" ? "no-track" : "track"

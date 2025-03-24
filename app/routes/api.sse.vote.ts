@@ -26,7 +26,12 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 
         emitter.on(eventName, handle);
 
+        const timeout = setTimeout(() => {
+            emitter.off(eventName, handle);
+        }, 89_000);
+
         return () => {
+            clearTimeout(timeout);
             emitter.off(eventName, handle);
         };
     });

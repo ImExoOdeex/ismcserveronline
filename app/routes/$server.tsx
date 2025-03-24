@@ -483,6 +483,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
                     software: bedrock ? null : (res as JavaServer).software,
                     protocol: res.protocol,
                     host: res.host,
+                    
                     port: bedrock ? (res as BedrockServer).port.ipv4 : (res as JavaServer).port,
 
                     // java only
@@ -498,7 +499,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
                     guid: bedrock ? (res as BedrockServer).guid : null,
 
                     // query stuff
-                    ip: query ? (res as MinecraftServer).ip : null,
+                    ip: !bedrock ? (res as MinecraftServer).ip : null,
                     plugins: query ? (res as MinecraftServer).plugins : Prisma.DbNull,
                     map: query ? (res as MinecraftServer).map : null
                 }
@@ -524,7 +525,8 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
                             gte: dayjs().subtract(5, "minutes").toDate()
                         },
                         client_ip: IP
-                    }
+                    },
+                     take: 6
                 });
 
                 if (checks.length < 5) {

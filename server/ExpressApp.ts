@@ -10,6 +10,15 @@ import * as build from "../build/server/index.js";
 import pack from "../package.json";
 import type { MultiEmitter } from "./MultiEmitter";
 
+declare module "@remix-run/server-runtime" {
+    interface AppLoadContext {
+        emitter: MultiEmitter;
+        start: string;
+        repoVersion: string;
+        version: string;
+    }
+}
+
 export class ExpressApp {
     private app: Application;
     private server: Server | null = null;
@@ -34,10 +43,10 @@ export class ExpressApp {
             process.env.NODE_ENV === "production"
                 ? undefined
                 : await import("vite").then((vite) =>
-                      vite.createServer({
-                          server: { middlewareMode: true }
-                      })
-                  );
+                    vite.createServer({
+                        server: { middlewareMode: true }
+                    })
+                );
 
         const remixHandler = createRequestHandler({
             build: viteDevServer

@@ -57,10 +57,12 @@ if (process.env.NODE_ENV === "production") {
             });
         });
     } else {
-        // Logger(`Worker ${process.pid} started`, "blue", "white");
+        Logger(`Worker ${process.pid} initializing...`, "blue", "white");
 
-
+        const start = performance.now();
         import("./ExpressApp").then(({ ExpressApp }) => {
+            const end = performance.now();
+            Logger(`Imported module in ${end - start}ms`, "blue", "white");
             new ExpressApp(new MultiEmitter()).run();
         });
 

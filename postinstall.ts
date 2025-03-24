@@ -13,7 +13,10 @@ try {
 		const packageObject = JSON.parse(packageString);
 		fs.writeFileSync(
 			path,
-			JSON.stringify({ type: "module", ...packageObject }, null, 2),
+			JSON.stringify({
+				...packageObject,
+				type: "module",
+			}, null, 2),
 		);
 		console.log(`Patched ${path}`);
 	}

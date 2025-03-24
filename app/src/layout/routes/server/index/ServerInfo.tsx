@@ -4,7 +4,7 @@ import type {
     AnyServerModel,
     JavaServer,
     MinecraftServer,
-    ServerModel
+    ServerModel,
 } from "@/types/minecraftServer";
 import {
     Button,
@@ -17,7 +17,7 @@ import {
     Td,
     Text,
     Tr,
-    VStack
+    VStack,
 } from "@chakra-ui/react";
 import { useFetcher } from "@remix-run/react";
 import { memo, useMemo } from "react";
@@ -29,7 +29,12 @@ interface Props {
     query: boolean;
 }
 
-export default memo(function ServerInfo({ server, bedrock, data, query }: Props) {
+export default memo(function ServerInfo({
+    server,
+    bedrock,
+    data,
+    query,
+}: Props) {
     const fetcher = useFetcher();
     const busy = useMemo(() => {
         return fetcher.state !== "idle";
@@ -42,14 +47,26 @@ export default memo(function ServerInfo({ server, bedrock, data, query }: Props)
     );
 
     const players = useMinecraftTextFormatting(
-        typeof data.players === 'object' ? (data.players as unknown as ServerModel.Players<any>).list?.map((p) => p.name).join(", ") : data.players
+        typeof data.players === "object"
+            ? (data.players as unknown as ServerModel.Players<any>).list
+                ?.map((p) => p.name)
+                .join(", ")
+            : data.players
     );
 
-    const software = useMinecraftTextFormatting((data as unknown as JavaServer).software ?? "");
+    const software = useMinecraftTextFormatting(
+        (data as unknown as JavaServer).software ?? ""
+    );
 
     if (!data.online) return null;
     return (
-        <VStack spacing={"20px"} align="start" fontWeight={600} w="100%" maxW={"100%"}>
+        <VStack
+            spacing={"20px"}
+            align="start"
+            fontWeight={600}
+            w="100%"
+            maxW={"100%"}
+        >
             <Heading as={"h2"} fontSize="lg">
                 General info
             </Heading>
@@ -61,8 +78,8 @@ export default memo(function ServerInfo({ server, bedrock, data, query }: Props)
                             <Tr>
                                 <Td>Players</Td>
                                 <Td fontWeight={"normal"}>
-                                    {(data.players as unknown as ServerModel.Players<any>).online} /{" "}
-                                    {(data.players as unknown as ServerModel.Players<any>).max}
+                                    {(data.players as unknown as ServerModel.Players<any>).online}{" "}
+                                    / {(data.players as unknown as ServerModel.Players<any>).max}
                                 </Td>
                             </Tr>
                             <Tr>
@@ -70,7 +87,7 @@ export default memo(function ServerInfo({ server, bedrock, data, query }: Props)
                                 <Td
                                     fontWeight={"normal"}
                                     dangerouslySetInnerHTML={{
-                                        __html: version
+                                        __html: version,
                                     }}
                                 />
                             </Tr>
@@ -107,7 +124,7 @@ export default memo(function ServerInfo({ server, bedrock, data, query }: Props)
                                         <Td
                                             fontWeight={"normal"}
                                             dangerouslySetInnerHTML={{
-                                                __html: players
+                                                __html: players,
                                             }}
                                         />
                                     ) : (
@@ -154,9 +171,11 @@ export default memo(function ServerInfo({ server, bedrock, data, query }: Props)
                         <Tbody>
                             <Tr>
                                 <Td>Host</Td>
-                                <Td fontWeight={"normal"}>{(data as unknown as AnyServer).host}</Td>
+                                <Td fontWeight={"normal"}>
+                                    {(data as unknown as AnyServer).host}
+                                </Td>
                             </Tr>
-                            {query && (
+                            {!bedrock && (
                                 <Tr>
                                     <Td>IP</Td>
                                     <Td
@@ -189,7 +208,7 @@ export default memo(function ServerInfo({ server, bedrock, data, query }: Props)
                                     <Td
                                         fontWeight={"normal"}
                                         dangerouslySetInnerHTML={{
-                                            __html: software
+                                            __html: software,
                                         }}
                                     />
                                 </Tr>

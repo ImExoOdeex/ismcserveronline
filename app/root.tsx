@@ -281,7 +281,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   return typedjson({
     mcNick: getCookieWithoutDocument("last-minecraft-nickname", cookies),
     mcEdition: getCookieWithoutDocument("version", cookies),
-    noTrack: getCookieWithoutDocument("no-track", cookies),
+    noTrack: getCookieWithoutDocument("tracking", cookies),
     colorMode: getCookieWithoutDocument("chakra-ui-color-mode", cookies),
     cookieConsent: getCookieWithoutDocument("cookie-consent", cookies),
     user,
@@ -326,3 +326,4 @@ export async function action({ request }: ActionFunctionArgs) {
 // ----------------------------- ERROR -----------------------------
 
 export { ErrorBoundary } from "./document";
+
