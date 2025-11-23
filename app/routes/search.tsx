@@ -15,9 +15,21 @@ import SearchForm from "@/layout/routes/search/SearchForm";
 import ServerCard from "@/layout/routes/search/ServerCard";
 import SideFilters from "@/layout/routes/search/SideFilters";
 import type { ServerModel } from "@/types/minecraftServer";
-import { Button, Divider, Flex, HStack, Heading, Spinner, Tag } from "@chakra-ui/react";
+import {
+    Button,
+    Divider,
+    Flex,
+    HStack,
+    Heading,
+    Spinner,
+    Tag,
+} from "@chakra-ui/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
-import type { MetaArgs, MetaFunction, ShouldRevalidateFunctionArgs } from "@remix-run/react";
+import type {
+    MetaArgs,
+    MetaFunction,
+    ShouldRevalidateFunctionArgs,
+} from "@remix-run/react";
 import { useSearchParams } from "@remix-run/react";
 import { useCallback, useState } from "react";
 import { redirect, typedjson } from "remix-typedjson";
@@ -27,9 +39,9 @@ import type { action as apiSearchAction } from "./api.search";
 export function meta({ matches }: MetaArgs) {
     return [
         {
-            title: "Search servers | IsMcServer.online"
+            title: "Search servers | IsMcServer.online",
         },
-        ...matches[0].meta
+        ...matches[0].meta,
     ] satisfies ReturnType<MetaFunction>;
 }
 
@@ -64,7 +76,10 @@ export interface SearchTag {
 
 export async function loader({ request }: LoaderFunctionArgs) {
     csrf(request);
-    let cookieLocale = getCookieWithoutDocument("locale", request.headers.get("Cookie") ?? "");
+    let cookieLocale = getCookieWithoutDocument(
+        "locale",
+        request.headers.get("Cookie") ?? ""
+    );
     cookieLocale = cookieLocale === "us" ? "en" : cookieLocale;
     const locales = getClientLocales(request);
     const locale = locales
@@ -91,11 +106,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const isBedrock = url.searchParams.get("bedrock") === "";
 
     const query = url.searchParams.get("q");
-    const sort = url.searchParams.get("sort") as "hot" | "newest" | "oldest" | undefined;
     const queryLetters = query?.split("");
     const paramsTags = url.searchParams.getAll("tag");
 
-    const cacheServersKey = `servers-${isBedrock}-${sort ?? "hot"}-${finalLocale}-${paramsTags.join(
+    const cacheServersKey = `servers-${isBedrock}-${finalLocale}-${paramsTags.join(
         ","
     )}-${query ?? ""}`;
     // const cacheServersStr = await cache.get(cacheServersKey);
@@ -112,13 +126,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
             db.tag.findMany({
                 take: 10,
                 select: {
-                    name: true
+                    name: true,
                 },
                 orderBy: {
                     servers: {
-                        _count: "desc"
-                    }
-                }
+                        _count: "desc",
+                    },
+                },
             }) as Promise<SearchTag[]>,
             db.server.findMany({
                 take: 10,
@@ -134,15 +148,15 @@ export async function loader({ request }: LoaderFunctionArgs) {
                     owner_id: true,
                     Owner: {
                         select: {
-                            prime: true
-                        }
+                            prime: true,
+                        },
                     },
                     Tags: {
                         select: {
-                            name: true
-                        }
+                            name: true,
+                        },
                     },
-                    votes_month: true
+                    votes_month: true,
                 },
                 where: {
                     AND: {
@@ -153,14 +167,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
                                     language:
                                         finalLocale === "en" || finalLocale === "us"
                                             ? "en"
-                                            : finalLocale
+                                            : finalLocale,
                                 },
                                 {
                                     language:
                                         finalLocale === "en" || finalLocale === "us"
                                             ? null
-                                            : finalLocale
-                                }
+                                            : finalLocale,
+                                },
                             ],
                             ...(() => {
                                 if (paramsTags.length > 0) {
@@ -168,14 +182,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
                                         Tags: {
                                             some: {
                                                 name: {
-                                                    in: paramsTags
-                                                }
-                                            }
-                                        }
+                                                    in: paramsTags,
+                                                },
+                                            },
+                                        },
                                     };
                                 }
                                 return {};
-                            })()
+                            })(),
                         },
                         OR: [
                             {
@@ -184,13 +198,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
                                         if (queryLetters && queryLetters.length > 0) {
                                             return queryLetters.map((letter) => ({
                                                 server: {
-                                                    contains: letter
-                                                }
+                                                    contains: letter,
+                                                },
                                             }));
                                         }
                                         return [];
-                                    })()
-                                ]
+                                    })(),
+                                ],
                             },
                             (() => {
                                 if (!query) return {};
@@ -199,46 +213,33 @@ export async function loader({ request }: LoaderFunctionArgs) {
                                     Tags: {
                                         some: {
                                             name: {
-                                                contains: query || undefined
-                                            }
-                                        }
-                                    }
+                                                contains: query || undefined,
+                                            },
+                                        },
+                                    },
                                 };
-                            })()
+                            })(),
                         ],
                         server: {
                             startsWith: "%.%",
                             not: {
-                                startsWith: "%.%.%.%"
-                            }
+                                startsWith: "%.%.%.%",
+                            },
                         },
-                        online: true
-                    }
+                        online: true,
+                    },
                 },
                 orderBy: [
                     {
-                        ...(() => {
-                            if (sort === "newest") {
-                                return {
-                                    created_at: "desc"
-                                };
-                            }
-                            if (sort === "oldest") {
-                                return {
-                                    created_at: "asc"
-                                };
-                            }
-
-                            return {
-                                votes_month: "desc"
-                            };
-                        })(),
-                    }, {
+                        votes_month: "desc",
+                    },
+                    {
                         Comment: {
-                            _count: "desc" as const
-                        }
-                    }],
-            }) as unknown as Promise<SearchServer[]>
+                            _count: "desc" as const,
+                        },
+                    },
+                ],
+            }) as unknown as Promise<SearchServer[]>,
         ] as const;
 
         const [fetchedTags, fetchedServers] = await Promise.all(promises);
@@ -248,7 +249,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
         const cacheTTL = serverConfig.cache.searchServersNTags;
         await Promise.all([
             cache.set(cacheServersKey, JSON.stringify(fetchedServers), cacheTTL),
-            cache.set("tags", JSON.stringify(fetchedTags), cacheTTL)
+            cache.set("tags", JSON.stringify(fetchedTags), cacheTTL),
         ]);
     }
 
@@ -268,9 +269,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
             where: {
                 Server: {
                     bedrock: isBedrock,
-                    language: finalLocale === "us" ? "en" : finalLocale
-                }
-            }
+                    language: finalLocale === "us" ? "en" : finalLocale,
+                },
+            },
         });
         const skip = Math.floor(Math.random() * promotedCount);
         randomPromoted = (await db.promoted.findMany({
@@ -287,29 +288,29 @@ export async function loader({ request }: LoaderFunctionArgs) {
                         players: true,
                         Tags: {
                             select: {
-                                name: true
-                            }
+                                name: true,
+                            },
                         },
                         _count: {
                             select: {
-                                Vote: true
-                            }
-                        }
-                    }
+                                Vote: true,
+                            },
+                        },
+                    },
                 },
-                color: true
+                color: true,
             },
             skip,
             where: {
                 Server: {
                     bedrock: isBedrock,
-                    language: finalLocale === "us" ? "en" : finalLocale
+                    language: finalLocale === "us" ? "en" : finalLocale,
                 },
-                status: "Active"
+                status: "Active",
             },
             orderBy: {
-                created_at: "desc"
-            }
+                created_at: "desc",
+            },
         })) as any;
 
         await cache.set(
@@ -337,7 +338,7 @@ export default function Search() {
         tags,
         servers: dbServers,
         locale,
-        randomPromoted
+        randomPromoted,
     } = useAnimationLoaderData<typeof loader>();
 
     const versions = ["java", "bedrock"] as const;
@@ -382,11 +383,11 @@ export default function Search() {
                 q: searchParams.get("q") ?? "",
                 sort: searchParams.get("sort") ?? "hot",
                 skip,
-                tags: JSON.stringify(searchParams.getAll("tag"))
+                tags: JSON.stringify(searchParams.getAll("tag")),
             },
             {
                 action: "/api/search",
-                method: "POST"
+                method: "POST",
             }
         );
     }, [fetcher, skip, version, locale, tags, searchParams.toString()]);
@@ -479,7 +480,7 @@ export default function Search() {
                 <Flex
                     flexDir={{
                         base: "column",
-                        md: "row"
+                        md: "row",
                     }}
                     w="100%"
                     gap={4}

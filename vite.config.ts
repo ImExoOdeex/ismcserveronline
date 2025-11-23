@@ -5,7 +5,18 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 installGlobals();
 
-export default defineConfig({
+export default defineConfig(({ isSsrBuild }) => ({
+  build: {
+    rollupOptions: isSsrBuild
+      ? {
+          input: ["./server/server.ts", "./server/ExpressApp.ts"],
+          output: {
+            entryFileNames: "[name].js",
+            format: "esm",
+          },
+        }
+      : undefined,
+  },
   plugins: [
     remix({
       ignoredRouteFiles: ["**/.*"],
@@ -29,4 +40,4 @@ export default defineConfig({
       "remark-gfm",
     ],
   },
-});
+}));

@@ -22,9 +22,9 @@ if (!global.__db) {
 export const db = global.__db;
 
 const actions = [
-  "beforeExit",
-  "exit",
-  "uncaughtException",
+  // "beforeExit",
+  // "exit",
+  // "uncaughtException",
   "SIGINT",
   "SIGTERM",
 ] as const;
