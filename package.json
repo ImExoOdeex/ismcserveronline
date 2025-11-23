@@ -6,8 +6,8 @@
   "scripts": {
     "postinstall": "tsx postinstall.ts",
     "build": "remix vite:build",
-    "dev": "cross-env NODE_ENV=development node ./build/server/index2.js",
-    "start": "cross-env NODE_ENV=production node ./build/server/index.js",
+    "dev": "cross-env NODE_ENV=development node --env-file .env ./build/server/index2.js",
+    "start": "cross-env NODE_ENV=production node --env-file .env ./build/server/index.js",
     "start:build": "npm run build && npm run start",
     "typecheck": "tsc -b",
     "theme": "chakra-cli tokens app/components/utils/theme.tsx",

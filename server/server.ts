@@ -22,7 +22,7 @@ Logger(
 const workers = new Set<number>();
 
 cluster.setupPrimary({
-  exec: "./build/server/ExpressApp.js",
+  exec: "./build/server/index2.js",
   stdio: ["inherit", "inherit", "inherit", "ipc"],
 });
 
